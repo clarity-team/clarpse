@@ -9,6 +9,7 @@ A lightweight polyglot source code analysis tool.
 - Python (Coming Soon)
 
 ### Getting Started
+```java
     // Create a new ParseRequestContent Object representing a codebase
     ParseRequestContent rawData = new ParseRequestContent();
     // set the language type, see Supported Languages section below
@@ -23,9 +24,11 @@ A lightweight polyglot source code analysis tool.
                                                +  " }                                                                          ";
     final ParseService = new ParseService();
     OOPSourceCodeModel generatedSourceCodeModel = parseService.parseProject(rawData);
-   
+```
+
 The OOPSourceCodeModel contains contains components from which key properties of the code base may be extracted. The JSON representation of the generatedSourceCodeModel for this example is provided below:
 
+```json
         "components": {
         "com.foo.SampleClass.sampleMethod.sampleMethodParam": {
             "uniqueName": "com.foo.SampleClass.sampleMethod.sampleMethodParam",
@@ -153,6 +156,6 @@ The OOPSourceCodeModel contains contains components from which key properties of
         }
     }
     }
-
+```
 
 
