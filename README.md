@@ -15,7 +15,7 @@ A lightweight polyglot source code analysis tool.
     // set the language type, see Supported Languages section below
     rawData.setLanguage("java");
     // insert a sample source file
-    rawData.insertFile(new RawFile("foo.java", "foo.java", "package com.foo                                                                "
+    rawData.insertFile(new RawFile("foo.java", "package com.foo                                                                "
                                                +  " public class SampleClass {                                                 "
                                                +  "     /** Sample Doc Comment */                                              "
                                                +  "     @SampleAnnotation                                                      "
