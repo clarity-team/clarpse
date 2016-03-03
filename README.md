@@ -26,7 +26,7 @@ A lightweight polyglot source code analysis tool.
     OOPSourceCodeModel generatedSourceCodeModel = parseService.parseProject(rawData);
 ```
 
-The OOPSourceCodeModel contains contains components from which key properties of the code base may be extracted. The JSON representation of the generatedSourceCodeModel for this example is provided below:
+The OOPSourceCodeModel contains contains components from which key properties of the code base may be extracted. As expected, the format remains the same irregardless of the original input language specified. The JSON representation of the generatedSourceCodeModel for this example is provided below:
 
 ```json
         "components": {
