@@ -1,5 +1,5 @@
 # Clarpse
-A lightweight polyglot source code analysis tool.
+A lightweight polyglot source code analysis tool. Clarpse breaks down a programming language into components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner.
 
 ### Supported Languages
 - Java
