@@ -2,7 +2,7 @@
 
 [Explore Clarpse](http://clarityviews.ca:9080/github/java/zir0-93/clarpse)
 
-A lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a programming language into components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner.
+A lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a programming language into components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. To build the project with maven, run the goal "clean package assembly:single" to run the tests and produce the updated clarpse jar.
 
 ### Supported Languages
 - Java
@@ -14,9 +14,7 @@ A lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse br
 ### Getting Started
 ```java
     // Create a new ParseRequestContent Object representing a codebase
-    ParseRequestContent rawData = new ParseRequestContent();
-    // set the language type, see Supported Languages section below
-    rawData.setLanguage("java");
+    ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
     // insert a sample source file
     rawData.insertFile(new RawFile("foo.java", "package com.foo                                                                "
                                                +  " public class SampleClass {                                                 "
@@ -29,7 +27,7 @@ A lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse br
     OOPSourceCodeModel generatedSourceCodeModel = parseService.parseProject(rawData);
 ```
 
-The OOPSourceCodeModel contains contains components from which key properties of the code base may be extracted. As expected, the format remains the same irregardless of the original input language specified. The JSON representation of the generatedSourceCodeModel for this example is provided below:
+The OOPSourceCodeModel contains contains components from which key properties of the code base may be extracted. These components can be of the following type: Class, Inteface, Method, MethodParam, Enum, EnumConstant, Annotation, InterfaceConstant, LocalVar and Field. As expected, the format remains the same irregardless of the original input language specified. The JSON representation of the generatedSourceCodeModel for this example is provided below:
 
 ```json
         "components": {
@@ -160,5 +158,3 @@ The OOPSourceCodeModel contains contains components from which key properties of
     }
     }
 ```
-
-
