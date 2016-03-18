@@ -9,55 +9,58 @@ import java.util.ArrayList;
  */
 public class TypeReference {
 
-	private String type;
-	private ArrayList<Integer> lines = new ArrayList<Integer>();
+    private String type;
+    private ArrayList<Integer> lines = new ArrayList<Integer>();
 
-	public TypeReference(String externalTypeName, int lineNum) {
+    public TypeReference(final String externalTypeName, final int lineNum) {
 
-		type = externalTypeName;
-		lines.add(lineNum);
-	}
+        type = externalTypeName;
+        lines.add(lineNum);
+    }
 
-	public TypeReference(TypeReference ref) {
-		for (final Integer lineNum : ref.getReferenceLineNums()) {
-			lines.add(lineNum);
-		}
-		type = ref.getExternalTypeName();
-	}
+    public TypeReference() {
+    }
 
-	/**
-	 * @return the externalTypeName
-	 */
-	public String getExternalTypeName() {
-		return type;
-	}
+    public TypeReference(final TypeReference ref) {
+        for (final Integer lineNum : ref.getReferenceLineNums()) {
+            lines.add(lineNum);
+        }
+        type = ref.getExternalTypeName();
+    }
 
-	/**
-	 * @param externalTypeName
-	 *            the externalTypeName to set
-	 */
-	public void setExternalTypeName(final String externalTypeName) {
-		type = externalTypeName;
-	}
+    /**
+     * @return the externalTypeName
+     */
+    public String getExternalTypeName() {
+        return type;
+    }
 
-	public void insertReferenceLineNum(final int lineNum) {
-		if (!lines.contains(lineNum)) {
-			lines.add(lineNum);
-		}
-	}
+    /**
+     * @param externalTypeName
+     *            the externalTypeName to set
+     */
+    public void setExternalTypeName(final String externalTypeName) {
+        type = externalTypeName;
+    }
 
-	/**
-	 * @return the referenceLineNums
-	 */
-	public ArrayList<Integer> getReferenceLineNums() {
-		return lines;
-	}
+    public void insertReferenceLineNum(final int lineNum) {
+        if (!lines.contains(lineNum)) {
+            lines.add(lineNum);
+        }
+    }
 
-	/**
-	 * @param referenceLineNums
-	 *            the referenceLineNum to set
-	 */
-	public void setReferenceLineNum(ArrayList<Integer> referenceLineNums) {
-		lines = referenceLineNums;
-	}
+    /**
+     * @return the referenceLineNums
+     */
+    public ArrayList<Integer> getReferenceLineNums() {
+        return lines;
+    }
+
+    /**
+     * @param referenceLineNums
+     *            the referenceLineNum to set
+     */
+    public void setReferenceLineNum(final ArrayList<Integer> referenceLineNums) {
+        lines = referenceLineNums;
+    }
 }
