@@ -27,8 +27,8 @@ public class ParseRequestContent implements Serializable {
      * @param language
      *            the language to set
      */
-    public void setLanguage(final String language) {
-        this.language = language;
+    public void setLanguage(final Lang language) {
+        this.language = language.getValue();
     }
 
     public ParseRequestContent() {

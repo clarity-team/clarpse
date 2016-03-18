@@ -5,14 +5,16 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: Heyn
+    Checkstyle-Configuration: Clarpse
     Description: none
 -->
 <module name="Checker">
   <property name="severity" value="warning"/>
   <module name="TreeWalker">
     <module name="JavadocMethod">
+      <property name="severity" value="ignore"/>
       <property name="suppressLoadErrors" value="true"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
     <module name="JavadocType"/>
     <module name="JavadocVariable">
@@ -81,7 +83,10 @@
     <module name="TodoComment"/>
     <module name="UpperEll"/>
   </module>
-  <module name="JavadocPackage"/>
+  <module name="JavadocPackage">
+    <property name="severity" value="ignore"/>
+    <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+  </module>
   <module name="NewlineAtEndOfFile"/>
   <module name="Translation"/>
   <module name="FileLength"/>

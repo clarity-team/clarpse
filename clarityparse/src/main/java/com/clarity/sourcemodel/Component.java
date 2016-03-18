@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import com.clarity.ClarityUtil;
-import com.clarity.sourcemodel.OOPSourceModelConstants.JavaComponentTypes;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentTypes;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -473,7 +473,7 @@ public class Component implements Serializable {
     }
 
     public boolean isBaseComponent() {
-        final JavaComponentTypes temp = (JavaComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
+        final ComponentTypes temp = (ComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
                 componentType, OOPSourceModelConstants.getJavaComponentTypes());
         if (temp == null) {
             return false;
@@ -483,7 +483,7 @@ public class Component implements Serializable {
     }
 
     public boolean isMethodComponent() {
-        final JavaComponentTypes temp = (JavaComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
+        final ComponentTypes temp = (ComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
                 componentType, OOPSourceModelConstants.getJavaComponentTypes());
         if (temp == null) {
             return false;
@@ -493,7 +493,7 @@ public class Component implements Serializable {
     }
 
     public boolean isVariableComponent(final String componentType) {
-        final JavaComponentTypes temp = (JavaComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
+        final ComponentTypes temp = (ComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
                 componentType, OOPSourceModelConstants.getJavaComponentTypes());
         if (temp == null) {
             return false;
@@ -519,7 +519,7 @@ public class Component implements Serializable {
         return currParentClassName;
     }
 
-    public void insertTypeReference(final ArrayList<TypeReference> externalClassTypeReferenceList) {
+    public void insertTypeReferences(final ArrayList<TypeReference> externalClassTypeReferenceList) {
         for (final TypeReference typeRef : externalClassTypeReferenceList) {
             insertTypeReference(typeRef);
         }
