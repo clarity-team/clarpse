@@ -492,7 +492,7 @@ public class Component implements Serializable {
         }
     }
 
-    public boolean isVariableComponent(final String componentType) {
+    public boolean isVariableComponent() {
         final ComponentTypes temp = (ComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
                 componentType, OOPSourceModelConstants.getJavaComponentTypes());
         if (temp == null) {
