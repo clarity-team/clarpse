@@ -29,7 +29,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     OOPSourceCodeModel generatedSourceCodeModel = parseService.parseProject(rawData);
 ```
 
-The OOPSourceCodeModel contains contains components from which key properties of the code base may be extracted. These components can be of the following type: Class, Inteface, Method, MethodParam, Enum, EnumConstant, Annotation, InterfaceConstant, LocalVar and Field. As expected, the format remains the same irregardless of the original input language specified. The JSON representation of the generatedSourceCodeModel for this example is provided below:
+The OOPSourceCodeModel class contains components from which key properties of the code base may be extracted. These components can be of the following type: Class, Inteface, Method, MethodParam, Enum, EnumConstant, Annotation, InterfaceConstant, LocalVar and Field (See OOPSourceCodeModelConstants.ComponentTypes). As expected, the format remains the same irregardless of the original input language specified. The JSON representation of the generatedSourceCodeModel for this example is provided below:
 
 ```json
         "components": {
