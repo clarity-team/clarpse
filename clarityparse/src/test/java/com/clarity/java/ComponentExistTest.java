@@ -42,8 +42,7 @@ public class ComponentExistTest {
 
     @BeforeClass
     public static final void parseJavaSourceFile() throws Exception {
-        final ParseRequestContent rawData = new ParseRequestContent();
-        rawData.setLanguage(Lang.JAVA);
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", codeString));
         final ParseService parseService = new ParseService();
         generatedSourceModel = parseService.parseProject(rawData);

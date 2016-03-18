@@ -31,7 +31,8 @@ public class ParseRequestContent implements Serializable {
         this.language = language.getValue();
     }
 
-    public ParseRequestContent() {
+    public ParseRequestContent(final Lang language) {
+        this.language = language.getValue();
     }
 
     private static final long serialVersionUID = 196237203663853669L;
