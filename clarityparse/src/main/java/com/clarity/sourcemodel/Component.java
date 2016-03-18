@@ -502,9 +502,9 @@ public class Component implements Serializable {
         }
     }
 
-    public boolean isTestRelatedComponent(final Component cmp) {
+    public boolean isTestRelatedComponent() {
 
-        return cmp.getAnnotations().toString().toLowerCase().contains("Test".toLowerCase());
+        return getAnnotations().toString().toLowerCase().contains("Test".toLowerCase());
     }
 
     /**
