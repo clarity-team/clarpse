@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -12,15 +11,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.clarity.ClarityUtil;
 import com.clarity.sourcemodel.OOPSourceModelConstants.JavaComponentTypes;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Polyglot representation of an individual code unit (classes,
- * methodComponents, fieldComponents, etc..) that is typically used to build a
- * piece of code.
+ * Representation of the individual code level components (classes,
+ * methodComponents, fieldComponents, etc..) that are used to create a code
+ * base.
  *
  * @author Muntazir Fadhel
  */
@@ -40,15 +38,13 @@ public class Component implements Serializable {
         componentType = component.getComponentType();
         declarationTypeSnippet = component.getDeclarationTypeSnippet();
         exceptions = component.getExceptions();
-        externalTypeReferences = component.getExternalClassTypeReferences();
+        externalClassTypeReferences = component.getExternalClassTypeReferences();
         implementedClasses = component.getImplementedClasses();
         imports = component.getImports();
         componentName = component.getComponentName();
         packageName = component.getPackageName();
         superClasses = component.getSuperClasses();
         value = component.getValue();
-        uniqueName = component.getUniqueName();
-        comment = component.getComment();
         startLine = component.getStartLine();
         endLine = component.getEndLine();
     }
@@ -60,20 +56,27 @@ public class Component implements Serializable {
 
     }
 
+    @JsonProperty("start")
+    private String startLine;
+
+    @JsonProperty("end")
+    private String endLine;
+
     private static final long serialVersionUID = 1L;
-
-    private String uniqueName = null;
-
-    public void setUniqueName() {
-        uniqueName = getUniqueName();
-    }
+    /**
+     * If the component is invoked Using an array.
+     */
 
     /**
      * Value of the component.
      */
-    private String value = null;
+    private String value;
     /**
      * Component package componentName.
+     */
+    private String packageName;
+    /**
+     * Exceptions.
      */
 
     /**
@@ -81,23 +84,12 @@ public class Component implements Serializable {
      */
     private String comment;
 
-    private String packageName = null;
-    /**
-     * Exceptions.
-     */
     private ArrayList<String> exceptions = new ArrayList<String>();
     /**
      * list of classes the current component implements.
      */
     @JsonProperty("implements")
     private ArrayList<String> implementedClasses = new ArrayList<String>();
-
-    @JsonProperty("start")
-    private String startLine;
-
-    @JsonProperty("end")
-    private String endLine;
-
     /**
      * Array list of imported resources for the class.
      */
@@ -115,7 +107,7 @@ public class Component implements Serializable {
      * Type of code piece the current component represents.
      */
     @JsonProperty("component")
-    private String componentType = null;
+    private String componentType;
     /**
      * List of annotations for the current component.
      */
@@ -125,58 +117,28 @@ public class Component implements Serializable {
      * references to other class components in the project.
      */
     @JsonProperty("refs")
-    private ArrayList<TypeReference> externalTypeReferences = new ArrayList<TypeReference>();
+    private ArrayList<TypeReference> externalClassTypeReferences = new ArrayList<TypeReference>();
     /**
      * componentName of the current component.
      */
 
-    private String componentName = null;
+    private String componentName;
     /**
      * code of the current component.
      */
-    private String code = null;
+    private String code;
     /*
      * This is different from the type in the following way... eg) 'public
      * ArrayList<String> tempList; type -> String declarationTypeSnippet ->
      * ArrayList<String>
      */
-    private String declarationTypeSnippet = null;
+    private String declarationTypeSnippet;
 
     @JsonProperty("children")
     private final ArrayList<String> childComponents = new ArrayList<String>();
 
     public ArrayList<String> getChildComponents() {
         return childComponents;
-    }
-
-    /**
-     * @return the startLine
-     */
-    public String getStartLine() {
-        return startLine;
-    }
-
-    /**
-     * @param a
-     *            the startLine to set
-     */
-    public void setStartLine(final int a) {
-        startLine = String.valueOf(a);
-    }
-
-    /**
-     * @return the endLine
-     */
-    public String getEndLine() {
-        return endLine;
-    }
-
-    /**
-     * @param b
-     *            the endLine to set
-     */
-    public void setEndLine(final int b) {
-        endLine = String.valueOf(b);
     }
 
     /**
@@ -196,8 +158,35 @@ public class Component implements Serializable {
     }
 
     /**
-     * @return component unique name
+     * @return the startLine
      */
+    public String getStartLine() {
+        return startLine;
+    }
+
+    /**
+     * @param startLine
+     *            the startLine to set
+     */
+    public void setStartLine(final String startLine) {
+        this.startLine = startLine;
+    }
+
+    /**
+     * @return the endLine
+     */
+    public String getEndLine() {
+        return endLine;
+    }
+
+    /**
+     * @param endLine
+     *            the endLine to set
+     */
+    public void setEndLine(final String endLine) {
+        this.endLine = endLine;
+    }
+
     public String getUniqueName() {
         return packageName + "." + componentName;
     }
@@ -217,106 +206,11 @@ public class Component implements Serializable {
     }
 
     /**
-     * @return the comment
+     * @param childComponentName
+     *            name of the child component of the current component
      */
-    public String getComment() {
-        return comment;
-    }
-
-    /**
-     * @param comment
-     *            the comment to set
-     */
-    public void setComment(final String comment) {
-        this.comment = comment;
-    }
-
-    /**
-     * Sets the child component to the given component and inherits all the
-     * child component's external type references.
-     *
-     * @param childComponent
-     *            the child component of the current component
-     */
-    public final void insertChildComponent(final Component childComponent) {
-        childComponents.add(childComponent.getUniqueName());
-
-        for (final TypeReference ref : childComponent.getExternalClassTypeReferences()) {
-            final TypeReference temp = new TypeReference(ref);
-            insertExternalClassType(temp);
-        }
-    }
-
-    /**
-     * Retuns the short version name of the current component's parent class.
-     * eg) if componentName = AClass.ANestedInterface.Amethod.variable1 then
-     * parentClassName = ANestedInterface
-     *
-     * @param components
-     *            list of all the components.
-     * @return name of the current component's parent class.
-     */
-    public String getParentClassUniqueName(final LinkedHashMap<String, Component> components) {
-
-        String currParentClassName = uniqueName;
-        if (this.isBaseComponent()) {
-            return currParentClassName;
-        } else {
-            final int numberOfParentCmps = StringUtils.countMatches(componentName, ".");
-            for (int i = numberOfParentCmps; i > 0; i--) {
-                currParentClassName = ClarityUtil.getParentComponentUniqueName(currParentClassName);
-                if (components.containsKey(currParentClassName)
-                        && components.get(currParentClassName).isBaseComponent()) {
-                    break;
-                }
-            }
-            return currParentClassName;
-        }
-    }
-
-    /**
-     * @param type
-     *            type of parent component, returns the first one found
-     * @param components
-     *            list of all components
-     * @return the first parent component of the given type found
-     */
-    public final Component getParentComponent(final OOPSourceModelConstants.JavaComponentTypes type,
-            final Map<String, Component> components) {
-
-        String currParentClassName = uniqueName;
-        final int numberOfParentCmps = StringUtils.countMatches(componentName, ".");
-        for (int i = numberOfParentCmps; i > 0; i--) {
-            currParentClassName = ClarityUtil.getParentComponentUniqueName(currParentClassName);
-            if (components.containsKey(currParentClassName)
-                    && (ClarityUtil.getObjectFromStringObjectKeyValueMap(components.get(currParentClassName)
-                            .getComponentType(), OOPSourceModelConstants.getJavaComponentTypes()) == type)) {
-                return components.get(currParentClassName);
-            }
-        }
-        return null;
-    }
-
-    @JsonIgnore
-    public boolean isBaseComponent() {
-        final JavaComponentTypes temp = (JavaComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
-                componentType, OOPSourceModelConstants.getJavaComponentTypes());
-        if (temp == null) {
-            return false;
-        } else {
-            return temp.isBaseComponent();
-        }
-    }
-
-    @JsonIgnore
-    public boolean isMethodomponent() {
-        final JavaComponentTypes temp = (JavaComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
-                componentType, OOPSourceModelConstants.getJavaComponentTypes());
-        if (temp == null) {
-            return false;
-        } else {
-            return temp.isMethodComponent();
-        }
+    public final void insertChildComponent(final String childComponentName) {
+        childComponents.add(childComponentName);
     }
 
     /**
@@ -353,7 +247,32 @@ public class Component implements Serializable {
      * @return string representing external class type
      */
     public final ArrayList<TypeReference> getExternalClassTypeReferences() {
-        return externalTypeReferences;
+        return externalClassTypeReferences;
+    }
+
+    /**
+     * Inserts a external class type reference.
+     */
+    public final void insertTypeReference(final TypeReference ref) {
+
+        boolean alreadyExists = false;
+        // If an external type reference to the same class already exists,
+        // update the line numbers if needed...
+        for (final TypeReference currentRef : externalClassTypeReferences) {
+            if (currentRef.getExternalTypeName().equals(ref.getExternalTypeName())) {
+                alreadyExists = true;
+                for (final int lineNum : ref.getReferenceLineNums()) {
+                    if (!currentRef.getReferenceLineNums().contains(lineNum)) {
+                        currentRef.insertReferenceLineNum(lineNum);
+                    }
+                }
+            }
+        }
+        // doesn't already exist, simply add it to the list
+        if (!alreadyExists) {
+            final TypeReference newRef = new TypeReference(ref);
+            externalClassTypeReferences.add(newRef);
+        }
     }
 
     /**
@@ -383,29 +302,6 @@ public class Component implements Serializable {
     public final ArrayList<String> getSuperClasses() {
         return superClasses;
     }
-
-    /**
-     * @param ref
-     *            the type reference to be inserted for the current component.
-     */
-    public final void insertExternalClassType(TypeReference ref) {
-
-        boolean typeRefAlreadyExists = false;
-        for (final TypeReference currRefs : externalTypeReferences) {
-            if (currRefs.getExternalTypeName().equals(ref.getExternalTypeName())) {
-                typeRefAlreadyExists = true;
-                for (final int lineNums : ref.getReferenceLineNums()) {
-                    if (!currRefs.getReferenceLineNums().contains(lineNums)) {
-                        currRefs.insertReferenceLineNum(lineNums);
-                    }
-                }
-            }
-        }
-        if (!typeRefAlreadyExists) {
-            externalTypeReferences.add(ref);
-        }
-    }
-
     /**
      * @param componentCode
      *            component code
@@ -420,6 +316,14 @@ public class Component implements Serializable {
      */
     public final void setDeclarationTypeSnippet(final String componentDeclarationTypeFragment) {
         declarationTypeSnippet = componentDeclarationTypeFragment;
+    }
+
+    /**
+     * @param externalReferences
+     *            arraylist of external classes referenced.
+     */
+    public final void setExternalTypeReferences(final ArrayList<TypeReference> externalReferences) {
+        externalClassTypeReferences = externalReferences;
     }
 
     /**
@@ -502,5 +406,122 @@ public class Component implements Serializable {
 
     public void setValue(final String value) {
         this.value = value;
+    }
+
+    /**
+     * @return the comment
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * @param comment
+     *            the comment to set
+     */
+    public void setComment(final String comment) {
+        this.comment = comment;
+    }
+
+    /**
+     * Returns the short version name of the current component's parent class.
+     * eg) if componentName = AClass.ANestedInterface.Amethod.variable1 then
+     * parentClassName = ANestedInterface
+     *
+     * @param map
+     *            list of all the components.
+     * @return name of the current component's parent class.
+     */
+    public Component getParentBaseComponent(final Map<String, Component> map) {
+
+        String currParentClassName = getUniqueName();
+        final int numberOfParentCmps = StringUtils.countMatches(getComponentName(), ".");
+        for (int i = numberOfParentCmps; i > 0; i--) {
+            currParentClassName = getParentComponentUniqueName(currParentClassName);
+            if (map.containsKey(currParentClassName)
+                    && map.get(currParentClassName).isBaseComponent()) {
+                break;
+            }
+        }
+        return map.get(currParentClassName);
+    }
+
+    /**
+     * @param uniqueComponentName
+     *            Component package name + containing hierarchical name.
+     * @return parent component name
+     */
+    public String getParentComponentUniqueName(final String componentFullName) {
+
+        final int lastPeriod = componentFullName.lastIndexOf(".");
+        final String currParentClassName = getUniqueName().substring(0, lastPeriod);
+        return currParentClassName;
+    }
+
+    public Component getParentMethodComponent(final Map<String, Component> components) {
+
+        String currParentClassName = getUniqueName();
+        final int numberOfParentCmps = StringUtils.countMatches(getComponentName(), ".");
+        for (int i = numberOfParentCmps; i > 0; i--) {
+            currParentClassName = getParentComponentUniqueName(currParentClassName);
+            if (components.containsKey(currParentClassName)
+                    && components.get(currParentClassName).isMethodComponent()) {
+                break;
+            }
+        }
+        return components.get(currParentClassName);
+    }
+
+    public boolean isBaseComponent() {
+        final JavaComponentTypes temp = (JavaComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
+                componentType, OOPSourceModelConstants.getJavaComponentTypes());
+        if (temp == null) {
+            return false;
+        } else {
+            return temp.isBaseComponent();
+        }
+    }
+
+    public boolean isMethodComponent() {
+        final JavaComponentTypes temp = (JavaComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
+                componentType, OOPSourceModelConstants.getJavaComponentTypes());
+        if (temp == null) {
+            return false;
+        } else {
+            return temp.isMethodComponent();
+        }
+    }
+
+    public boolean isVariableComponent(final String componentType) {
+        final JavaComponentTypes temp = (JavaComponentTypes) ClarityUtil.getObjectFromStringObjectKeyValueMap(
+                componentType, OOPSourceModelConstants.getJavaComponentTypes());
+        if (temp == null) {
+            return false;
+        } else {
+            return temp.isVariableComponent();
+        }
+    }
+
+    public boolean isTestRelatedComponent(final Component cmp) {
+
+        return cmp.getAnnotations().toString().toLowerCase().contains("Test".toLowerCase());
+    }
+
+    /**
+     * @param componentName
+     *            Component hierarchical name.
+     * @return parent component name
+     */
+    public String getParentComponentUniqueName() {
+
+        final int lastPeriod = getUniqueName().lastIndexOf(".");
+        final String currParentClassName = getUniqueName().substring(0, lastPeriod);
+        return currParentClassName;
+    }
+
+    public void insertTypeReference(final ArrayList<TypeReference> externalClassTypeReferenceList) {
+        for (final TypeReference typeRef : externalClassTypeReferenceList) {
+            insertTypeReference(typeRef);
+        }
     }
 }

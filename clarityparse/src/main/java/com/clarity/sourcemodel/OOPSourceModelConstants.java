@@ -3,18 +3,32 @@ package com.clarity.sourcemodel;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
- * Contains Constant values for all Source Code Model Related entities.
- *
+ * Constants related to source code model entities.
  * @author Muntazir Fadhel
+ *
  */
 public final class OOPSourceModelConstants {
 
     /**
-     * hidden constructor.
+     * private constructor.
      */
-    private OOPSourceModelConstants() { }
+    private OOPSourceModelConstants() { };
+
+    static final Map<String, String> JAVA_COLLECTIONS
+    =
+    new HashMap<String, String>();
+
+    /**
+     * @return the javaCollections
+     */
+    public static
+    Map<String, String> getJavaCollections() {
+        return JAVA_COLLECTIONS;
+    }
+    static {
+        JAVA_COLLECTIONS.put("java.util.ArrayList", "java.util.ArrayList");
+    }
 
     public static final String JAVA_DEFAULT_PKG = "java.lang.";
 
@@ -125,30 +139,52 @@ public final class OOPSourceModelConstants {
     }
 
     /**
+     * @return the javaDefaultClasses
+     */
+    public static
+    Map<String, String> getJavaDefaultClasses() {
+        return JAVA_DEFAULT_CLASSES;
+    }
+
+    /**
      *
      * @author Muntazir Fadhel
      *
      */
     public enum AccessModifiers {
 
-        FINAL(),
-        ABSTRACT(),
-        INTERFACE(),
-        NATIVE(),
-        PRIVATE(),
-        PROTECTED(),
-        PUBLIC(),
-        STATIC(),
-        STRICTFP(),
-        SYNCHRONIZED(),
-        TRANSIENT(),
-        NONE(),
-        VOLATILE();
+        FINAL(""),
+        ABSTRACT(""),
+        INTERFACE(""),
+        NATIVE(""),
+        PRIVATE("-"),
+        PROTECTED("#"),
+        PUBLIC("+"),
+        STATIC(""),
+        STRICTFP(""),
+        SYNCHRONIZED(""),
+        TRANSIENT(""),
+        NONE("~"),
+        VOLATILE("");
+
+        private String                 umlClassDigramSymbol = null;
 
         /**
-         * constructor.
+         *
+         * @param uMLClassDigramSymbol symbol
          */
-        AccessModifiers() {
+        AccessModifiers(
+                final String uMLClassDigramSymbol) {
+            umlClassDigramSymbol = uMLClassDigramSymbol;
+        }
+
+        /**
+         *
+         * @return diagram symbol string.
+         */
+        public
+        String getUMLClassDigramSymbol() {
+            return umlClassDigramSymbol;
         }
     }
 
@@ -157,32 +193,36 @@ public final class OOPSourceModelConstants {
      * @author Muntazir Fadhel
      *
      */
-    public enum JavaComponentTypes {
+    public  enum JavaComponentTypes {
 
-        CLASS_COMPONENT(true, false),
-        INTERFACE_COMPONENT(true, false),
-        INTERFACE_CONSTANT_COMPONENT(false, false),
-        ENUM_COMPONENT(true, false),
-        ANNOTATION_COMPONENT(false, false),
-        METHOD_COMPONENT(false, true),
-        CONSTRUCTOR_COMPONENT(false, true),
-        ENUM_CONSTANT_COMPONENT(false, false),
-        FIELD_COMPONENT(false, false),
-        METHOD_PARAMETER_COMPONENT(false, false),
-        CONSTRUCTOR_PARAMETER_COMPONENT(false, false),
-        LOCAL_VARIABLE_COMPONENT(false, false);
+        CLASS_COMPONENT(true, false, false),
+        INTERFACE_COMPONENT(true, false, false),
+        INTERFACE_CONSTANT_COMPONENT(false, false, true),
+        ENUM_COMPONENT(true, false, false),
+        ANNOTATION_COMPONENT(false, false, false),
+        METHOD_COMPONENT(false, true, false),
+        CONSTRUCTOR_COMPONENT(false, true, false),
+        ENUM_CONSTANT_COMPONENT(false, false, true),
+        FIELD_COMPONENT(false, false, true),
+        METHOD_PARAMETER_COMPONENT(false, false, true),
+        CONSTRUCTOR_PARAMETER_COMPONENT(false, false, true),
+        LOCAL_VARIABLE_COMPONENT(false, false, true);
 
         private final boolean isBaseComponent;
         private final boolean isMethodComponent;
+        private final boolean isVariableComonent;
 
         /**
          * Constructor.
          * @param isBaseComponent true when component is base component.
          * @param isMethodComponent true when method is method component.
+         * @param isVariableComponent true when component is a variable type component.
          */
-        JavaComponentTypes(final boolean isBaseComponent, final boolean isMethodComponent) {
+        JavaComponentTypes(final boolean isBaseComponent, final boolean isMethodComponent,
+                final boolean isVariableComponent) {
             this.isBaseComponent = isBaseComponent;
             this.isMethodComponent = isMethodComponent;
+            isVariableComonent = isVariableComponent;
         }
 
         /**
@@ -199,6 +239,14 @@ public final class OOPSourceModelConstants {
          */
         public boolean isMethodComponent() {
             return isMethodComponent;
+        }
+
+        /**
+         *
+         * @return true when component is a variable type component.
+         */
+        public boolean isVariableComponent() {
+            return isVariableComonent;
         }
     }
 
@@ -220,51 +268,19 @@ public final class OOPSourceModelConstants {
     }
 
 
-    static final Map<AccessModifiers, String> JAVA_ACCESS_MODIFIER_MAP
+    private static final Map<AccessModifiers, String> JAVA_ACCESS_MODIFIER_MAP
     =
     new HashMap<AccessModifiers, String>();
 
-    static {
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.PRIVATE, "private");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.PROTECTED, "protected");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.PUBLIC, "public");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.VOLATILE, "volatile");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.TRANSIENT, "transient");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.SYNCHRONIZED, "synchronized");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.STRICTFP, "strictfp");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.STATIC, "static");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.NATIVE, "native");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.ABSTRACT, "abstract");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.INTERFACE, "interface");
-        JAVA_ACCESS_MODIFIER_MAP.put(AccessModifiers.FINAL, "final");
-
-    }
-
-    /**
-     * Map of all the possible java component types..
-     */
-    static final Map<JavaComponentTypes, String> JAVA_COMPONENT_TYPES  =  new HashMap<JavaComponentTypes, String>();
-    /**
-     * @return the javaDefaultPkg
-     */
-    public static
-    String getJavaDefaultPkg() {
-        return JAVA_DEFAULT_PKG;
-    }
-    /**
-     * @return the javaDefaultClasses
-     */
-    public static
-    Map<String, String> getJavaDefaultClasses() {
-        return JAVA_DEFAULT_CLASSES;
-    }
     /**
      * @return the javaAccessModifierMap
      */
+
     public static
     Map<AccessModifiers, String> getJavaAccessModifierMap() {
         return JAVA_ACCESS_MODIFIER_MAP;
     }
+
     /**
      * @return the javaComponentTypes
      */
@@ -272,19 +288,39 @@ public final class OOPSourceModelConstants {
     Map<JavaComponentTypes, String> getJavaComponentTypes() {
         return JAVA_COMPONENT_TYPES;
     }
-
     static {
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.INTERFACE_COMPONENT, "interface");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.ENUM_COMPONENT, "enum");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.ENUM_CONSTANT_COMPONENT, "enumConstant");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.INTERFACE_CONSTANT_COMPONENT, "interfaceConstant");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.ANNOTATION_COMPONENT, "annotation");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.METHOD_COMPONENT, "method");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.CONSTRUCTOR_COMPONENT, "constructor");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.CONSTRUCTOR_PARAMETER_COMPONENT, "constructorParam");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.FIELD_COMPONENT, "field");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.METHOD_PARAMETER_COMPONENT, "methodParam");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.LOCAL_VARIABLE_COMPONENT, "localVar");
-        JAVA_COMPONENT_TYPES.put(JavaComponentTypes.CLASS_COMPONENT, "class");
+        getJavaAccessModifierMap().put(AccessModifiers.PRIVATE, "private");
+        getJavaAccessModifierMap().put(AccessModifiers.PROTECTED, "protected");
+        getJavaAccessModifierMap().put(AccessModifiers.PUBLIC, "public");
+        getJavaAccessModifierMap().put(AccessModifiers.VOLATILE, "volatile");
+        getJavaAccessModifierMap().put(AccessModifiers.TRANSIENT, "transient");
+        getJavaAccessModifierMap().put(AccessModifiers.SYNCHRONIZED, "synchronized");
+        getJavaAccessModifierMap().put(AccessModifiers.STRICTFP, "strictfp");
+        getJavaAccessModifierMap().put(AccessModifiers.STATIC, "static");
+        getJavaAccessModifierMap().put(AccessModifiers.NATIVE, "native");
+        getJavaAccessModifierMap().put(AccessModifiers.ABSTRACT, "abstract");
+        getJavaAccessModifierMap().put(AccessModifiers.INTERFACE, "interface");
+        getJavaAccessModifierMap().put(AccessModifiers.FINAL, "final");
+
     }
+
+    /**
+     * Map of all the possible java component types..
+     */
+    private static final Map<JavaComponentTypes, String> JAVA_COMPONENT_TYPES  =  new HashMap<JavaComponentTypes, String>();
+    static {
+        getJavaComponentTypes().put(JavaComponentTypes.INTERFACE_COMPONENT, "interface");
+        getJavaComponentTypes().put(JavaComponentTypes.ENUM_COMPONENT, "enum");
+        getJavaComponentTypes().put(JavaComponentTypes.ENUM_CONSTANT_COMPONENT, "enumConstant");
+        getJavaComponentTypes().put(JavaComponentTypes.INTERFACE_CONSTANT_COMPONENT, "interfaceConstant");
+        getJavaComponentTypes().put(JavaComponentTypes.ANNOTATION_COMPONENT, "annotation");
+        getJavaComponentTypes().put(JavaComponentTypes.METHOD_COMPONENT, "method");
+        getJavaComponentTypes().put(JavaComponentTypes.CONSTRUCTOR_COMPONENT, "constructor");
+        getJavaComponentTypes().put(JavaComponentTypes.CONSTRUCTOR_PARAMETER_COMPONENT, "constructorParam");
+        getJavaComponentTypes().put(JavaComponentTypes.FIELD_COMPONENT, "field");
+        getJavaComponentTypes().put(JavaComponentTypes.METHOD_PARAMETER_COMPONENT, "methodParam");
+        getJavaComponentTypes().put(JavaComponentTypes.LOCAL_VARIABLE_COMPONENT, "localVar");
+        getJavaComponentTypes().put(JavaComponentTypes.CLASS_COMPONENT, "class");
+    }
+
 }
