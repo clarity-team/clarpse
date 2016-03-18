@@ -1,17 +1,21 @@
 package com.clarity.java;
 
-import java.io.Serializable;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.clarity.ClarityUtil;
+import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ParseService;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
+/**
+ * Basic tests to ensure components are being recognized and parsed.
+ *
+ * @author Muntazir Fadhel
+ */
 public class ComponentExistTest {
 
     private static String sampleJavaClassComponentName = "SampleJavaClass";
@@ -39,7 +43,7 @@ public class ComponentExistTest {
     @BeforeClass
     public static final void parseJavaSourceFile() throws Exception {
         final ParseRequestContent rawData = new ParseRequestContent();
-        rawData.setLanguage("java");
+        rawData.setLanguage(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", codeString));
         final ParseService parseService = new ParseService();
         generatedSourceModel = parseService.parseProject(rawData);
@@ -47,7 +51,7 @@ public class ComponentExistTest {
     }
 
     @Test
-    public final void testSampleJavaEnumClassMethodParamComponent() {
+    public final void testSampleJavaEnumClassMethodParamComponent() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructor + "."
@@ -55,28 +59,28 @@ public class ComponentExistTest {
     }
 
     @Test
-    public final void testSampleJavaEnumClassConstructorComponentExists() {
+    public final void testSampleJavaEnumClassConstructorComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructor));
     }
 
     @Test
-    public final void testSampleJavaEnumClassConstantComponentExists() {
+    public final void testSampleJavaEnumClassConstantComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstant));
     }
 
     @Test
-    public final void testSampleJavaEnumClassComponentExists() {
+    public final void testSampleJavaEnumClassComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent));
     }
 
     @Test
-    public final void testSampleJavaInterfaceMethodParamComponentExists() {
+    public final void testSampleJavaInterfaceMethodParamComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentName + "."
@@ -84,42 +88,42 @@ public class ComponentExistTest {
     }
 
     @Test
-    public final void testSampleJavaInterfaceMethodComponentExists() {
+    public final void testSampleJavaInterfaceMethodComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentName));
     }
 
     @Test
-    public final void testSampleJavaInterfaceComponentExists() {
+    public final void testSampleJavaInterfaceComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaInterfaceComponentName));
     }
 
     @Test
-    public final void testSampleJavaClassMethodParamComponentExists() {
+    public final void testSampleJavaClassMethodParamComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaMethodComponentName + "." + sampleJavaMethodParamComponentName));
     }
 
     @Test
-    public final void testSampleJavaClassMethodComponentExists() {
+    public final void testSampleJavaClassMethodComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaMethodComponentName));
     }
 
     @Test
-    public final void testSampleJavaClassFieldComponentExists() {
+    public final void testSampleJavaClassFieldComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaClassFieldComponentName));
     }
 
     @Test
-    public final void testSampleJavaClassComponentExists() {
+    public final void testSampleJavaClassComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName));
     }

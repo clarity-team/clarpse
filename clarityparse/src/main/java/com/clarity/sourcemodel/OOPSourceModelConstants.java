@@ -193,7 +193,7 @@ public final class OOPSourceModelConstants {
      * @author Muntazir Fadhel
      *
      */
-    public  enum JavaComponentTypes {
+    public enum ComponentTypes {
 
         CLASS_COMPONENT(true, false, false),
         INTERFACE_COMPONENT(true, false, false),
@@ -218,7 +218,7 @@ public final class OOPSourceModelConstants {
          * @param isMethodComponent true when method is method component.
          * @param isVariableComponent true when component is a variable type component.
          */
-        JavaComponentTypes(final boolean isBaseComponent, final boolean isMethodComponent,
+        ComponentTypes(final boolean isBaseComponent, final boolean isMethodComponent,
                 final boolean isVariableComponent) {
             this.isBaseComponent = isBaseComponent;
             this.isMethodComponent = isMethodComponent;
@@ -285,7 +285,7 @@ public final class OOPSourceModelConstants {
      * @return the javaComponentTypes
      */
     public static
-    Map<JavaComponentTypes, String> getJavaComponentTypes() {
+ Map<ComponentTypes, String> getJavaComponentTypes() {
         return JAVA_COMPONENT_TYPES;
     }
     static {
@@ -307,20 +307,20 @@ public final class OOPSourceModelConstants {
     /**
      * Map of all the possible java component types..
      */
-    private static final Map<JavaComponentTypes, String> JAVA_COMPONENT_TYPES  =  new HashMap<JavaComponentTypes, String>();
+    private static final Map<ComponentTypes, String> JAVA_COMPONENT_TYPES = new HashMap<ComponentTypes, String>();
     static {
-        getJavaComponentTypes().put(JavaComponentTypes.INTERFACE_COMPONENT, "interface");
-        getJavaComponentTypes().put(JavaComponentTypes.ENUM_COMPONENT, "enum");
-        getJavaComponentTypes().put(JavaComponentTypes.ENUM_CONSTANT_COMPONENT, "enumConstant");
-        getJavaComponentTypes().put(JavaComponentTypes.INTERFACE_CONSTANT_COMPONENT, "interfaceConstant");
-        getJavaComponentTypes().put(JavaComponentTypes.ANNOTATION_COMPONENT, "annotation");
-        getJavaComponentTypes().put(JavaComponentTypes.METHOD_COMPONENT, "method");
-        getJavaComponentTypes().put(JavaComponentTypes.CONSTRUCTOR_COMPONENT, "constructor");
-        getJavaComponentTypes().put(JavaComponentTypes.CONSTRUCTOR_PARAMETER_COMPONENT, "constructorParam");
-        getJavaComponentTypes().put(JavaComponentTypes.FIELD_COMPONENT, "field");
-        getJavaComponentTypes().put(JavaComponentTypes.METHOD_PARAMETER_COMPONENT, "methodParam");
-        getJavaComponentTypes().put(JavaComponentTypes.LOCAL_VARIABLE_COMPONENT, "localVar");
-        getJavaComponentTypes().put(JavaComponentTypes.CLASS_COMPONENT, "class");
+        getJavaComponentTypes().put(ComponentTypes.INTERFACE_COMPONENT, "interface");
+        getJavaComponentTypes().put(ComponentTypes.ENUM_COMPONENT, "enum");
+        getJavaComponentTypes().put(ComponentTypes.ENUM_CONSTANT_COMPONENT, "enumConstant");
+        getJavaComponentTypes().put(ComponentTypes.INTERFACE_CONSTANT_COMPONENT, "interfaceConstant");
+        getJavaComponentTypes().put(ComponentTypes.ANNOTATION_COMPONENT, "annotation");
+        getJavaComponentTypes().put(ComponentTypes.METHOD_COMPONENT, "method");
+        getJavaComponentTypes().put(ComponentTypes.CONSTRUCTOR_COMPONENT, "constructor");
+        getJavaComponentTypes().put(ComponentTypes.CONSTRUCTOR_PARAMETER_COMPONENT, "constructorParam");
+        getJavaComponentTypes().put(ComponentTypes.FIELD_COMPONENT, "field");
+        getJavaComponentTypes().put(ComponentTypes.METHOD_PARAMETER_COMPONENT, "methodParam");
+        getJavaComponentTypes().put(ComponentTypes.LOCAL_VARIABLE_COMPONENT, "localVar");
+        getJavaComponentTypes().put(ComponentTypes.CLASS_COMPONENT, "class");
     }
 
 }

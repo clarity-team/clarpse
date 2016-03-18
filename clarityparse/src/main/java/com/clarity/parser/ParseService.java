@@ -42,7 +42,7 @@ public class ParseService {
     public ParseService() {
     }
 
-    public OOPSourceCodeModel parseProject(ParseRequestContent rawContent) throws Exception {
+    public OOPSourceCodeModel parseProject(final ParseRequestContent rawContent) throws Exception {
 
         validateParseType(rawContent.getLanguage());
         // parse the files!
@@ -52,7 +52,7 @@ public class ParseService {
 
     /**
      * Determine if the given language is supported, throws an exception when
-     * language is not supported
+     * language is not supported.
      *
      * @param parseType
      *            project source language

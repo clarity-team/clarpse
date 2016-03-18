@@ -59,6 +59,7 @@ public class RawFile implements Serializable {
 
     public RawFile(final File file) throws FileNotFoundException {
 
+        @SuppressWarnings("resource")
         final Scanner scanner = new Scanner(file, "UTF-8");
         content = scanner.useDelimiter("\\A").next();
         name = file.getName();

@@ -5,12 +5,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.clarity.ClarityUtil;
+import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ParseService;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
+/**
+ * Tests to ensure external class type references of parsed components are
+ * accurate.
+ *
+ * @author Muntazir Fadhel
+ */
 public class ExternalTypeReferencesTest {
 
     private static String sampleJavaClassComponentName = "SampleJavaClass";
@@ -39,7 +46,7 @@ public class ExternalTypeReferencesTest {
     @BeforeClass
     public static final void parseJavaSourceFile() throws Exception {
         final ParseRequestContent rawData = new ParseRequestContent();
-        rawData.setLanguage("java");
+        rawData.setLanguage(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", codeString));
         final ParseService parseService = new ParseService();
         generatedSourceModel = parseService.parseProject(rawData);
