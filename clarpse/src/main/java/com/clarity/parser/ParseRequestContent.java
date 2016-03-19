@@ -17,6 +17,9 @@ public class ParseRequestContent implements Serializable {
 
     private String language;
 
+    public ParseRequestContent() {
+    }
+
     /**
      * @return the language
      */
