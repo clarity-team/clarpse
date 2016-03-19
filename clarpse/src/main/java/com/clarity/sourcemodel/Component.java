@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.clarity.ClarpseUtil;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentTypes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -253,6 +254,7 @@ public class Component implements Serializable {
     /**
      * Inserts a external class type reference.
      */
+    @JsonIgnore
     public final void insertTypeReference(final TypeReference ref) {
 
         boolean alreadyExists = false;
@@ -432,6 +434,7 @@ public class Component implements Serializable {
      *            list of all the components.
      * @return name of the current component's parent class.
      */
+    @JsonIgnore
     public Component getParentBaseComponent(final Map<String, Component> map) {
 
         String currParentClassName = getUniqueName();
@@ -451,6 +454,7 @@ public class Component implements Serializable {
      *            Component package name + containing hierarchical name.
      * @return parent component name
      */
+    @JsonIgnore
     public String getParentComponentUniqueName(final String componentFullName) {
 
         final int lastPeriod = componentFullName.lastIndexOf(".");
@@ -458,6 +462,7 @@ public class Component implements Serializable {
         return currParentClassName;
     }
 
+    @JsonIgnore
     public Component getParentMethodComponent(final Map<String, Component> components) {
 
         String currParentClassName = getUniqueName();
@@ -472,6 +477,7 @@ public class Component implements Serializable {
         return components.get(currParentClassName);
     }
 
+    @JsonIgnore
     public boolean isBaseComponent() {
         final ComponentTypes temp = (ComponentTypes) ClarpseUtil.getObjectFromStringObjectKeyValueMap(
                 componentType, OOPSourceModelConstants.getJavaComponentTypes());
@@ -482,6 +488,7 @@ public class Component implements Serializable {
         }
     }
 
+    @JsonIgnore
     public boolean isMethodComponent() {
         final ComponentTypes temp = (ComponentTypes) ClarpseUtil.getObjectFromStringObjectKeyValueMap(
                 componentType, OOPSourceModelConstants.getJavaComponentTypes());
@@ -492,6 +499,7 @@ public class Component implements Serializable {
         }
     }
 
+    @JsonIgnore
     public boolean isVariableComponent() {
         final ComponentTypes temp = (ComponentTypes) ClarpseUtil.getObjectFromStringObjectKeyValueMap(
                 componentType, OOPSourceModelConstants.getJavaComponentTypes());
@@ -502,6 +510,7 @@ public class Component implements Serializable {
         }
     }
 
+    @JsonIgnore
     public boolean isTestRelatedComponent() {
 
         return getAnnotations().toString().toLowerCase().contains("Test".toLowerCase());
@@ -512,6 +521,7 @@ public class Component implements Serializable {
      *            Component hierarchical name.
      * @return parent component name
      */
+    @JsonIgnore
     public String getParentComponentUniqueName() {
 
         final int lastPeriod = getUniqueName().lastIndexOf(".");
