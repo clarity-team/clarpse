@@ -41,8 +41,8 @@ public class OOPSourceCodeModel implements Serializable {
         getComponents().put(component.getUniqueName(), component);
     }
 
-    public boolean containsComponent(final String componentName) {
-        return components.containsKey(componentName);
+    public boolean containsComponent(final String componentName) throws Exception {
+        return getComponents().containsKey(componentName);
     }
 
     public Component getComponent(final String componentName) throws Exception {

@@ -50,6 +50,26 @@ public class Component implements Serializable {
         endLine = component.getEndLine();
     }
 
+    @JsonIgnore
+    public void Copy(Component component) {
+
+        modifiers = component.getModifiers();
+        annotations = component.getAnnotations();
+        code = component.getCode();
+        componentType = component.getComponentType();
+        declarationTypeSnippet = component.getDeclarationTypeSnippet();
+        exceptions = component.getExceptions();
+        externalClassTypeReferences = component.getExternalClassTypeReferences();
+        implementedClasses = component.getImplementedClasses();
+        imports = component.getImports();
+        componentName = component.getComponentName();
+        packageName = component.getPackageName();
+        superClasses = component.getSuperClasses();
+        value = component.getValue();
+        startLine = component.getStartLine();
+        endLine = component.getEndLine();
+    }
+
     /**
      * Default Constructor.
      */
@@ -533,5 +553,10 @@ public class Component implements Serializable {
         for (final TypeReference typeRef : externalClassTypeReferenceList) {
             insertTypeReference(typeRef);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return getUniqueName().hashCode();
     }
 }
