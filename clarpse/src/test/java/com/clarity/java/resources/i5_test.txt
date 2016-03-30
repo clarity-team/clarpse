@@ -1,0 +1,53 @@
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+
+public class CaptureOutputTest {
+    static CaptureOutput capture;
+
+    @BeforeClass
+    protected static void setUp() throws Exception {
+
+        capture = new CaptureOutput();
+    }
+
+    @Test
+    public final void testMyPrint() {
+        // Prepare to capture output
+        final PrintStream originalOut = System.out;
+        final OutputStream os = new ByteArrayOutputStream();
+        final PrintStream ps = new PrintStream(os);
+        System.setOut(ps);
+
+        // Perform tests
+        capture.myPrint("Hello, output!");
+        assertEquals("Hello, output!", os.toString());
+
+        // Restore normal operation
+        System.setOut(originalOut);
+    }
+
+    @Test(timeout=100) //Gives a timeout
+    public final void testMyPrintln() {
+        // Prepare to capture output
+        final PrintStream originalOut = System.out;
+        final OutputStream os = new ByteArrayOutputStream();
+        final PrintStream ps = new PrintStream(os);
+        System.setOut(ps);
+
+        // Perform tests
+        capture.myPrintln("Hello, output!");
+        assertEquals("Hello, output!\n", os.toString());
+
+        // Restore normal operation
+        System.setOut(originalOut);
+    }
+
+}
+

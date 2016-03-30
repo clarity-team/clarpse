@@ -51,7 +51,7 @@ public class Component implements Serializable {
     }
 
     @JsonIgnore
-    public void Copy(Component component) {
+    public void copy(final Component component) {
 
         modifiers = component.getModifiers();
         annotations = component.getAnnotations();
@@ -209,7 +209,11 @@ public class Component implements Serializable {
     }
 
     public String getUniqueName() {
-        return packageName + "." + componentName;
+        if (!packageName.isEmpty()) {
+            return packageName + "." + componentName;
+        } else {
+            return componentName;
+        }
     }
 
     /**

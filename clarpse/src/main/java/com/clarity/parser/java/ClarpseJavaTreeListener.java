@@ -148,8 +148,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         final String shortImportName = bits[(bits.length - 1)];
         currentImports.add(fullImportName);
         currentImportsMap.put(shortImportName, fullImportName);
-        if (currentPkg.isEmpty()) {
-            currentPkg = "default";
+        if (currentPkg == null || currentPkg.isEmpty()) {
+            currentPkg = "";
         }
     }
 

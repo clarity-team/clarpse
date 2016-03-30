@@ -70,14 +70,21 @@ public class JavaComponentTypeTest {
         sampleJavaEnumMethodParam = "enumMethodParam";
         sampleJavaEnumMethodParamType = OOPSourceModelConstants.ComponentTypes.CONSTRUCTOR_PARAMETER_COMPONENT;
         sampleJavaPackageName = "SampleJavaPackage";
-        codeString = "package " + sampleJavaPackageName + "; class " + sampleJavaClassComponentName + " {"
-                + "  private String " + sampleJavaClassFieldComponentName + ";" + "  private void "
-                + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ") { } "
-                + "  " + "interface " + sampleJavaInterfaceComponentName + " { " + "  public void "
-                + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName
-                + " );" + "  }" + "  public enum " + sampleJavaEnumComponent + " { " + "  "
-                + sampleJavaEnumClassConstant + "(\"\");" + "  " + sampleJavaEnumClassConstructor + "(final String "
-                + sampleJavaEnumMethodParam + ") {}" + "  }" + "  }";
+        codeString = "package "
+        + sampleJavaPackageName + "; "
+                + "class " + sampleJavaClassComponentName + " {"
+                + "  private String " + sampleJavaClassFieldComponentName + ";"
+                + "  private void "  + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ") { "
+                     + "} "
+           + "  " + "interface " + sampleJavaInterfaceComponentName + " { "
+                        + "  public void "
+                        + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName   + " );"
+                        + "  }"
+                + "  public enum " + sampleJavaEnumComponent + " { " + "  "
+                +        sampleJavaEnumClassConstant + "(\"\");" + "  "
+                        + "" + sampleJavaEnumClassConstructor + "(final String "  + sampleJavaEnumMethodParam + ") {}"
+                + "  }"
+        + "  }";
     }
 
     @BeforeClass
