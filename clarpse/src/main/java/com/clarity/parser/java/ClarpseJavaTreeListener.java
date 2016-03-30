@@ -30,7 +30,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
     private final Stack<Component> componentStack = new Stack<Component>();
     private final ArrayList<String> currentImports = new ArrayList<String>();
-    private String currentPkg;
+    private String currentPkg = "";
     private String currFileSourceCode;
     private final OOPSourceCodeModel srcModel;
     private int componentCompletionMultiplier = 1;
@@ -63,6 +63,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         for (int i = 0; i < componentCompletionMultiplier; i++) {
             if (!componentStack.isEmpty()) {
                 final Component completedCmp = componentStack.pop();
+                System.out.println(completedCmp.getUniqueName());
                 for (int j = componentStack.size() - 1; j >= 0; j--) {
                     final Component possibleParentComponent = componentStack.get(j);
                     if (possibleParentComponent.isBaseComponent() || componentStack.get(j).isMethodComponent()) {
@@ -148,7 +149,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         final String shortImportName = bits[(bits.length - 1)];
         currentImports.add(fullImportName);
         currentImportsMap.put(shortImportName, fullImportName);
-        if (currentPkg == null || currentPkg.isEmpty()) {
+        if (currentPkg.isEmpty()) {
             currentPkg = "";
         }
     }
