@@ -301,7 +301,7 @@ public class Component implements Serializable {
     }
 
     @JsonIgnore
-    public Component getParentComponent(final Map<String, Component> map) {
+    public Component getParentBaseComponent(final Map<String, Component> map) {
 
         String currParentClassName = getUniqueName();
         final int numberOfParentCmps = StringUtils.countMatches(getComponentName(), ".");
