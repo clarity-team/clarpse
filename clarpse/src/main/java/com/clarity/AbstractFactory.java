@@ -7,13 +7,6 @@ import com.clarity.parser.IClarityParser;
  */
 public abstract class AbstractFactory {
 
-    /**
-     * @param type
-     *            String representing type of parser to get.
-     * @return parser object
-     * @throws Exception
-     *             when factory cannot handle/process input.
-     */
     public abstract IClarityParser getParsingTool(String type) throws Exception;
 
 }

@@ -25,22 +25,29 @@ public class ExternalTypeReferencesTest {
     private static String sampleJavaClassFieldComponentName = "sampleJavaClassField";
     private static String sampleJavaClassFieldComponentRefsJSON = "[ {  \"type\" : \"java.lang.String\",  \"lines\" : [ 2 ]  } ]";
     private static String sampleJavaMethodComponentName = "sampleJavaMethod";
+    private static String sampleJavaMethodComponentKeyName = "void_sampleJavaMethod(java.lang.String)";
     private static String sampleJavaMethodComponentRefsJSON = "[ { \"type\" : \"java.lang.String\",  \"lines\" : [ 3 ]  } ]";
     private static String sampleJavaMethodParamComponentName = "sampleJavaMethodParam";
     private static String sampleJavaMethodParamComponentRefsJSON = "[ {\"type\" : \"java.lang.String\",\"lines\" : [ 3 ] } ]";
     private static String sampleJavaInterfaceComponentName = "SampleJavaInterface";
     private static String sampleJavaInterfaceComponentRefsJSON = "[ {\"type\" : \"java.lang.String\", \"lines\" : [ 5 ] } ]";
     private static String sampleJavaInterfaceMethodComponentName = "sampleJavaInterfaceMethod";
+    private static String sampleJavaInterfaceMethodComponentKeyName = "String_sampleJavaInterfaceMethod(java.lang.String)";
     private static String sampleJavaInterfaceMethodComponentRefsJSON = "[ {\"type\" : \"java.lang.String\",  \"lines\" : [ 5 ] } ]";
     private static String sampleJavaInterfaceMethodParamComponentName = "sampleJavaInterfaceMethodParamComponent";
     private static String sampleJavaInterfaceMethodParamComponentRefsJSON = "[ { \"type\" : \"java.lang.String\", \"lines\" : [ 5 ]} ]";
     private static String sampleJavaPackageName = "SampleJavaPackage";
-    private static String codeString = "package " + sampleJavaPackageName + "; class " + sampleJavaClassComponentName
-            + " { \n" + "  private String " + sampleJavaClassFieldComponentName + "; \n" + "  private void "
-            + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ") { } \n"
-            + "  " + "interface " + sampleJavaInterfaceComponentName + " { \n " + "  public void "
+    private static String codeString = "package " + sampleJavaPackageName + "; "
+            + "                         class " + sampleJavaClassComponentName + " { \n"
+            + "                               private String " + sampleJavaClassFieldComponentName + "; \n"
+            + "                                     private void "  + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ") {"
+            + "                                     } \n"
+            + "   " + "                       interface " + sampleJavaInterfaceComponentName + " { \n "
+            + "                                     public String "
             + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName
-            + " ); \n" + "  } }";
+            + " ); \n"
+            + "                               }"
+            + "                         }";
     private static OOPSourceCodeModel generatedSourceModel;
 
     @BeforeClass
@@ -56,7 +63,7 @@ public class ExternalTypeReferencesTest {
     public final void testSampleJavaInterfaceMethodParamComponentExternalTypeRefs() throws Exception {
         final Component temp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentName + "."
+                        + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentKeyName + "."
                         + sampleJavaInterfaceMethodParamComponentName);
         Assert.assertEquals(ClarpseUtil.fromJavaToJson(temp.getExternalClassTypeReferences()),
                 sampleJavaInterfaceMethodParamComponentRefsJSON.replace(" ", ""));
@@ -66,7 +73,7 @@ public class ExternalTypeReferencesTest {
     public final void testSampleJavaInterfaceMethodComponentExternalTypeRefs() throws Exception {
         final Component temp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentName);
+                        + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentKeyName);
         Assert.assertEquals(ClarpseUtil.fromJavaToJson(temp.getExternalClassTypeReferences()),
                 sampleJavaInterfaceMethodComponentRefsJSON.replace(" ", ""));
     }
@@ -84,7 +91,7 @@ public class ExternalTypeReferencesTest {
     public final void testSampleJavaMethodParamComponentExternalTypeRefs() throws Exception {
         final Component temp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaMethodComponentName + "." + sampleJavaMethodParamComponentName);
+                        + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponentName);
         Assert.assertEquals(ClarpseUtil.fromJavaToJson(temp.getExternalClassTypeReferences()),
                 sampleJavaMethodParamComponentRefsJSON.replace(" ", ""));
     }
@@ -93,7 +100,7 @@ public class ExternalTypeReferencesTest {
     public final void testSampleJavaMethodComponentExternalTypeRefs() throws Exception {
         final Component temp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaMethodComponentName);
+                        + sampleJavaMethodComponentKeyName);
         Assert.assertEquals(ClarpseUtil.fromJavaToJson(temp.getExternalClassTypeReferences()),
                 sampleJavaMethodComponentRefsJSON.replace(" ", ""));
     }

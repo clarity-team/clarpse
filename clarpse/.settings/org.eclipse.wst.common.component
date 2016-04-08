@@ -5,8 +5,9 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/.apt_generated"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/antlr4"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/target/generated-sources/antlr4"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
 		<property name="java-output-path" value="target/classes"/>
         <property name="context-root" value="Clarity"/>
 	</wb-module>

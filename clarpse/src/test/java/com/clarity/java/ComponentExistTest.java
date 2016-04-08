@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.clarity.ClarpseUtil;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ParseService;
@@ -19,24 +20,39 @@ public class ComponentExistTest {
 
     private static String sampleJavaClassComponentName = "SampleJavaClass";
     private static String sampleJavaClassFieldComponentName = "sampleJavaClassField";
-    private static String sampleJavaMethodComponentName = "sampleJavaMethod";
-    private static String sampleJavaMethodParamComponentName = "sampleJavaMethodParam";
-    private static String sampleJavaInterfaceComponentName = "SampleJavaInterface";
-    private static String sampleJavaInterfaceMethodComponentName = "sampleJavaInterfaceMethod";
     private static String sampleJavaInterfaceMethodParamComponentName = "sampleJavaInterfaceMethodParamComponent";
     private static String sampleJavaEnumComponent = "SampleJavaEnumClass";
     private static String sampleJavaEnumClassConstant = "SampleJavaEnumClassConstant";
-    private static String sampleJavaEnumClassConstructor = "sampleJavaEnumClass";
     private static String sampleJavaEnumMethodParam = "enumMethodParam";
     private static String sampleJavaPackageName = "SampleJavaPackage";
-    private static String codeString = "package " + sampleJavaPackageName + "; class " + sampleJavaClassComponentName
-            + " {" + "  private String " + sampleJavaClassFieldComponentName + ";" + "  private void "
-            + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ") { } " + "  "
-            + "interface " + sampleJavaInterfaceComponentName + " { " + "  public void "
-            + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName + " );"
-            + "  }" + "  public enum " + sampleJavaEnumComponent + " { " + "  " + sampleJavaEnumClassConstant
-            + "(\"\");" + "  " + sampleJavaEnumClassConstructor + "(final String " + sampleJavaEnumMethodParam + ") {}"
-            + "  }" + "  }";
+    private static String sampleJavaMethodParamComponentName = "sampleJavaMethodParam";
+    private static String sampleJavaInterfaceComponentName = "SampleJavaInterface";
+
+    private static String sampleJavaMethodComponentName = "sampleJavaMethod";
+    private static String sampleJavaMethodComponentKeyName = "void_sampleJavaMethod(java.lang.String)";
+
+    private static String sampleJavaInterfaceMethodComponentName = "sampleJavaInterfaceMethod";
+    private static String sampleJavaInterfaceMethodComponentKeyName = "void_sampleJavaInterfaceMethod(java.lang.String)";
+
+    private static String sampleJavaEnumClassConstructor = "sampleJavaEnumClass";
+    private static String sampleJavaEnumClassConstructurKey = "void_sampleJavaEnumClass(java.lang.String)";
+
+    private static String codeString = "package " + sampleJavaPackageName + ";"
+            + "                              class " + sampleJavaClassComponentName  + " {"
+            + "                                 private String " + sampleJavaClassFieldComponentName + ";"
+            + "                                 private void " + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName+ ") { "
+            + "                                     String cakes = localVar(" + sampleJavaMethodParamComponentName + ");"
+            + "                                 } "
+            + "                                 public void testMethod(String test) { } "
+            + "                                 interface " + sampleJavaInterfaceComponentName + " { "
+            + "                                     public void " + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName + " );"
+            + "                                 }"
+            + "                                 public enum " + sampleJavaEnumComponent + " { " + "  "
+            +                                       sampleJavaEnumClassConstant + "(\"\");" + "  "
+            +                                       sampleJavaEnumClassConstructor + "(final String " + sampleJavaEnumMethodParam + ") {}"
+            + "                                 }"
+            + "                              }";
+
     private static OOPSourceCodeModel generatedSourceModel;
 
     @BeforeClass
@@ -45,13 +61,14 @@ public class ComponentExistTest {
         rawData.insertFile(new RawFile("file1", codeString));
         final ParseService parseService = new ParseService();
         generatedSourceModel = parseService.parseProject(rawData);
+        System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel));
     }
 
     @Test
     public final void testSampleJavaEnumClassMethodParamComponent() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructor + "."
+                        + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructurKey + "."
                         + sampleJavaEnumMethodParam));
     }
 
@@ -59,7 +76,7 @@ public class ComponentExistTest {
     public final void testSampleJavaEnumClassConstructorComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructor));
+                        + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructurKey));
     }
 
     @Test
@@ -80,7 +97,7 @@ public class ComponentExistTest {
     public final void testSampleJavaInterfaceMethodParamComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentName + "."
+                        + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentKeyName + "."
                         + sampleJavaInterfaceMethodParamComponentName));
     }
 
@@ -88,7 +105,7 @@ public class ComponentExistTest {
     public final void testSampleJavaInterfaceMethodComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentName));
+                        + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentKeyName));
     }
 
     @Test
@@ -102,14 +119,15 @@ public class ComponentExistTest {
     public final void testSampleJavaClassMethodParamComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaMethodComponentName + "." + sampleJavaMethodParamComponentName));
+                        + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponentName));
     }
 
     @Test
     public final void testSampleJavaClassMethodComponentExists() throws Exception {
+
         Assert.assertTrue(generatedSourceModel.getComponents().containsKey(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
-                        + sampleJavaMethodComponentName));
+                        + sampleJavaMethodComponentKeyName));
     }
 
     @Test

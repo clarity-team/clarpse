@@ -28,17 +28,10 @@ public class TypeReference {
         type = ref.getExternalTypeName();
     }
 
-    /**
-     * @return the externalTypeName
-     */
     public String getExternalTypeName() {
         return type;
     }
 
-    /**
-     * @param externalTypeName
-     *            the externalTypeName to set
-     */
     public void setExternalTypeName(final String externalTypeName) {
         type = externalTypeName;
     }
@@ -49,17 +42,10 @@ public class TypeReference {
         }
     }
 
-    /**
-     * @return the referenceLineNums
-     */
     public ArrayList<Integer> getReferenceLineNums() {
         return lines;
     }
 
-    /**
-     * @param referenceLineNums
-     *            the referenceLineNum to set
-     */
     public void setReferenceLineNum(final ArrayList<Integer> referenceLineNums) {
         lines = referenceLineNums;
     }

@@ -24,8 +24,6 @@ public class ParseService {
      *            content needed to be parsed
      * @param parseType
      *            type of parse to be completed.
-     * @return TestSourceFile resource representing the input multipartfile code
-     *         base.
      * @throws Exception
      *             Thrown during the parsing process.
      */
@@ -36,9 +34,6 @@ public class ParseService {
         return parsingTool.extractParseResult(rawData);
     }
 
-    /**
-     *
-     */
     public ParseService() {
     }
 
@@ -53,11 +48,6 @@ public class ParseService {
     /**
      * Determine if the given language is supported, throws an exception when
      * language is not supported.
-     *
-     * @param parseType
-     *            project source language
-     * @exception IllegalArgumentException
-     *                when specified language is not supported
      */
     public void validateParseType(final String parseType) throws IllegalArgumentException {
 

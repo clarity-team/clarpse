@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import parser.java.JavaBaseListener;
 import parser.java.JavaParser;
 import parser.java.JavaParser.AnnotationTypeDeclarationContext;
+import parser.java.JavaParser.FormalParameterContext;
 
 import com.clarity.parser.AntlrUtil;
 import com.clarity.sourcemodel.Component;
@@ -277,8 +278,13 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component currMethodCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentTypes.METHOD_COMPONENT);
             currMethodCmp.setCode(AntlrUtil.getFormattedText(ctx));
-            currMethodCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
 
+            String returnType = "void";
+            if (ctx.type() != null) {
+                returnType = ctx.type().getText();
+            }
+            final String methodName = returnType + "_" + ctx.Identifier().getText();
+            currMethodCmp.setComponentName(generateComponentName(methodName));
             componentStack.push(currMethodCmp);
         }
     }
@@ -289,7 +295,12 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component currMethodCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentTypes.METHOD_COMPONENT);
 
-            currMethodCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+            String returnType = "void";
+            if (ctx.type() != null) {
+                returnType = ctx.type().getText();
+            }
+            final String methodName = returnType + "_" + ctx.Identifier().getText();
+            currMethodCmp.setComponentName(generateComponentName(methodName));
 
             componentStack.push(currMethodCmp);
         }
@@ -301,8 +312,11 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component currMethodCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentTypes.CONSTRUCTOR_COMPONENT);
             currMethodCmp.setCode(AntlrUtil.getFormattedText(ctx));
-            currMethodCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
 
+            final String returnType = "void";
+
+            final String methodName = returnType + "_" + ctx.Identifier().getText();
+            currMethodCmp.setComponentName(generateComponentName(methodName));
             componentStack.push(currMethodCmp);
         }
     }
@@ -366,6 +380,32 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void exitFormalParameter(final JavaParser.FormalParameterContext ctx) {
         if (!ignoreTreeWalk) {
             completeComponent();
+        }
+    }
+
+    @Override
+    public final void enterFormalParameterList(final JavaParser.FormalParameterListContext ctx) {
+        if (!ignoreTreeWalk) {
+            final Component currMethodCmp = componentStack.pop();
+            if (currMethodCmp.isMethodComponent()) {
+
+                String parameterTypeList = "(";
+                for (final FormalParameterContext fPContext : ctx.formalParameter()) {
+                    parameterTypeList += resolveType(fPContext.type().getText()) + ",";
+                }
+
+                if (ctx.lastFormalParameter() != null) {
+                    parameterTypeList += resolveType(ctx.lastFormalParameter().type().getText());
+                }
+
+                if (parameterTypeList.endsWith(",")) {
+                    parameterTypeList = (String) parameterTypeList.subSequence(0, parameterTypeList.length() - 1);
+                }
+
+                parameterTypeList += ")";
+                currMethodCmp.setComponentName(currMethodCmp.getComponentName() + parameterTypeList);
+            }
+            componentStack.push(currMethodCmp);
         }
     }
 
@@ -465,7 +505,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
             String type = "";
             for (final TerminalNode ciftx : ctx.Identifier()) {
-                type = type + ciftx.getText() + ".";
+                type += ciftx.getText() + ".";
             }
             type = type.substring(0, type.length() - 1);
             currCmp.insertTypeReference(new TypeReference(resolveType(type), ctx.getStart().getLine()));

@@ -26,12 +26,30 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(Include.NON_NULL)
 public class Component implements Serializable {
 
-    /**
-     * Clone a component.
-     *
-     * @param component
-     *            component to be cloned.
-     */
+    @JsonProperty("start")
+    private String startLine;
+    @JsonProperty("end")
+    private String endLine;
+    private static final long serialVersionUID = 1L;
+    private String value;
+    private String packageName;
+    private String comment;
+    private ArrayList<String> exceptions = new ArrayList<String>();
+    @JsonProperty("implements")
+    private ArrayList<String> implementedClasses = new ArrayList<String>();
+    private ArrayList<String> imports = new ArrayList<String>();
+    @JsonProperty("extends")
+    private ArrayList<String> superClasses = new ArrayList<String>();
+    private ArrayList<String> modifiers = new ArrayList<String>();
+    @JsonProperty("component")
+    private String componentType;
+    private ArrayList<Map.Entry<String, HashMap<String, String>>> annotations = new ArrayList<Map.Entry<String, HashMap<String, String>>>();
+    @JsonProperty("refs")
+    private ArrayList<TypeReference> externalClassTypeReferences = new ArrayList<TypeReference>();
+    private String componentName;
+    private String code;
+    private String declarationTypeSnippet;
+
     public Component(final Component component) {
         modifiers = component.getModifiers();
         annotations = component.getAnnotations();
@@ -70,90 +88,8 @@ public class Component implements Serializable {
         endLine = component.getEndLine();
     }
 
-    /**
-     * Default Constructor.
-     */
     public Component() {
-
     }
-
-    @JsonProperty("start")
-    private String startLine;
-
-    @JsonProperty("end")
-    private String endLine;
-
-    private static final long serialVersionUID = 1L;
-    /**
-     * If the component is invoked Using an array.
-     */
-
-    /**
-     * Value of the component.
-     */
-    private String value;
-    /**
-     * Component package componentName.
-     */
-    private String packageName;
-    /**
-     * Exceptions.
-     */
-
-    /**
-     * Component Java Doc Comment.
-     */
-    private String comment;
-
-    private ArrayList<String> exceptions = new ArrayList<String>();
-    /**
-     * list of classes the current component implements.
-     */
-    @JsonProperty("implements")
-    private ArrayList<String> implementedClasses = new ArrayList<String>();
-    /**
-     * Array list of imported resources for the class.
-     */
-    private ArrayList<String> imports = new ArrayList<String>();
-    /**
-     * Super classes.
-     */
-    @JsonProperty("extends")
-    private ArrayList<String> superClasses = new ArrayList<String>();
-    /**
-     * Component's access modifiers.
-     */
-    private ArrayList<String> modifiers = new ArrayList<String>();
-    /**
-     * Type of code piece the current component represents.
-     */
-    @JsonProperty("component")
-    private String componentType;
-    /**
-     * List of annotations for the current component.
-     */
-    private ArrayList<Map.Entry<String, HashMap<String, String>>> annotations = new ArrayList<Map.Entry<String, HashMap<String, String>>>();
-
-    /**
-     * references to other class components in the project.
-     */
-    @JsonProperty("refs")
-    private ArrayList<TypeReference> externalClassTypeReferences = new ArrayList<TypeReference>();
-    /**
-     * componentName of the current component.
-     */
-
-    private String componentName;
-    /**
-     * code of the current component.
-     */
-    private String code;
-    /*
-     * This is different from the type in the following way... eg) 'public
-     * ArrayList<String> tempList; type -> String declarationTypeSnippet ->
-     * ArrayList<String>
-     */
-    private String declarationTypeSnippet;
 
     @JsonProperty("children")
     private final ArrayList<String> childComponents = new ArrayList<String>();
@@ -162,48 +98,26 @@ public class Component implements Serializable {
         return childComponents;
     }
 
-    /**
-     * @param exception
-     *            insert exception for current component.
-     */
     public final void insertException(final String exception) {
         exceptions.add(exception);
     }
 
-    /**
-     * @param implemented
-     *            implemented class
-     */
     public final void addImplementedClass(final String implemented) {
         implementedClasses.add(implemented);
     }
 
-    /**
-     * @return the startLine
-     */
     public String getStartLine() {
         return startLine;
     }
 
-    /**
-     * @param startLine
-     *            the startLine to set
-     */
     public void setStartLine(final String startLine) {
         this.startLine = startLine;
     }
 
-    /**
-     * @return the endLine
-     */
     public String getEndLine() {
         return endLine;
     }
 
-    /**
-     * @param endLine
-     *            the endLine to set
-     */
     public void setEndLine(final String endLine) {
         this.endLine = endLine;
     }
@@ -216,68 +130,51 @@ public class Component implements Serializable {
         }
     }
 
-    /**
-     * Returns the short version name of the current component. eg) if component
-     * componentName = AClass.aMethod.classField, then the short version
-     * componentName = classField
-     *
-     * @return short version componentName of current component.
-     */
     @JsonInclude(Include.NON_NULL)
     public final String getName() {
 
-        final String[] bits = this.getComponentName().split(Pattern.quote("."));
-        return bits[bits.length - 1];
+        int methodParamBeginIndex = -1;
+        String hierarchy = componentName;
+
+        // Current component is a method component, handle slightly differently..
+        if (componentName.contains(")") && (componentName.lastIndexOf(".") < componentName.lastIndexOf(")"))) {
+            methodParamBeginIndex = componentName.indexOf("(");
+            hierarchy = componentName.substring(0, methodParamBeginIndex);
+        }
+
+        final String[] bits = hierarchy.split(Pattern.quote("."));
+
+        if (methodParamBeginIndex == -1) {
+            return bits[bits.length - 1];
+        } else {
+            return bits[bits.length - 1] + componentName.substring(methodParamBeginIndex);
+        }
     }
 
-    /**
-     * @param childComponentName
-     *            name of the child component of the current component
-     */
     public final void insertChildComponent(final String childComponentName) {
         childComponents.add(childComponentName);
     }
 
-    /**
-     * @param importStmt
-     *            import statement
-     */
     public final void addImports(final String importStmt) {
         imports.add(importStmt);
     }
 
-    /**
-     * @param superClass
-     *            super class
-     */
     public final void addSuperClass(final String superClass) {
         superClasses.add(superClass);
     }
 
-    /**
-     * @return the code for the class.
-     */
     public final String getCode() {
         return code;
     }
 
-    /**
-     * @return the declaration type fragment
-     */
     public final String getDeclarationTypeSnippet() {
         return declarationTypeSnippet;
     }
 
-    /**
-     * @return string representing external class type
-     */
     public final ArrayList<TypeReference> getExternalClassTypeReferences() {
         return externalClassTypeReferences;
     }
 
-    /**
-     * Inserts a external class type reference.
-     */
     @JsonIgnore
     public final void insertTypeReference(final TypeReference ref) {
 
@@ -301,85 +198,46 @@ public class Component implements Serializable {
         }
     }
 
-    /**
-     * @return implemented class
-     */
     public final ArrayList<String> getImplementedClasses() {
         return implementedClasses;
     }
 
-    /**
-     * @return import statements
-     */
     public final ArrayList<String> getImports() {
         return imports;
     }
 
-    /**
-     * @return componentName of the class.
-     */
     public final String getComponentName() {
         return componentName;
     }
 
-    /**
-     * @return super classes
-     */
     public final ArrayList<String> getSuperClasses() {
         return superClasses;
     }
-    /**
-     * @param componentCode
-     *            component code
-     */
+
     public final void setCode(final String componentCode) {
         code = componentCode;
     }
 
-    /**
-     * @param componentDeclarationTypeFragment
-     *            fragment to be set.
-     */
     public final void setDeclarationTypeSnippet(final String componentDeclarationTypeFragment) {
         declarationTypeSnippet = componentDeclarationTypeFragment;
     }
 
-    /**
-     * @param externalReferences
-     *            arraylist of external classes referenced.
-     */
     public final void setExternalTypeReferences(final ArrayList<TypeReference> externalReferences) {
         externalClassTypeReferences = externalReferences;
     }
 
-    /**
-     * @param implClasses
-     *            implemented classes
-     */
     public final void setImplementedClasses(final ArrayList<String> implClasses) {
         implementedClasses = implClasses;
     }
 
-    /**
-     * @param importStatements
-     *            import statements
-     */
     public final void setImports(final ArrayList<String> importStatements) {
         imports = importStatements;
     }
 
-    /**
-     * @param componentName
-     *            component Name
-     */
     public final void setComponentName(final String componentName) {
         this.componentName = componentName;
     }
 
-    /**
-     * @param superClass
-     *            super class
-     */
     public final void setSuperClasses(final ArrayList<String> superClass) {
         superClasses = superClass;
     }
@@ -434,32 +292,16 @@ public class Component implements Serializable {
         this.value = value;
     }
 
-    /**
-     * @return the comment
-     */
     public String getComment() {
         return comment;
     }
 
-    /**
-     * @param comment
-     *            the comment to set
-     */
     public void setComment(final String comment) {
         this.comment = comment;
     }
 
-    /**
-     * Returns the short version name of the current component's parent class.
-     * eg) if componentName = AClass.ANestedInterface.Amethod.variable1 then
-     * parentClassName = ANestedInterface
-     *
-     * @param map
-     *            list of all the components.
-     * @return name of the current component's parent class.
-     */
     @JsonIgnore
-    public Component getParentBaseComponent(final Map<String, Component> map) {
+    public Component getParentComponent(final Map<String, Component> map) {
 
         String currParentClassName = getUniqueName();
         final int numberOfParentCmps = StringUtils.countMatches(getComponentName(), ".");
@@ -473,12 +315,6 @@ public class Component implements Serializable {
         return map.get(currParentClassName);
     }
 
-    /**
-     * @param uniqueComponentName
-     *            Component package name + containing hierarchical name.
-     * @return parent component name
-     */
-    @JsonIgnore
     public String getParentComponentUniqueName(final String componentFullName) {
 
         final int lastPeriod = componentFullName.lastIndexOf(".");
@@ -537,14 +373,10 @@ public class Component implements Serializable {
     @JsonIgnore
     public boolean isTestRelatedComponent() {
 
-        return getAnnotations().toString().toLowerCase().contains("Test".toLowerCase());
+        return getAnnotations().toString().toLowerCase().contains("Test".toLowerCase())
+                || this.getName().endsWith("Test");
     }
 
-    /**
-     * @param componentName
-     *            Component hierarchical name.
-     * @return parent component name
-     */
     @JsonIgnore
     public String getParentComponentUniqueName() {
 
@@ -557,10 +389,5 @@ public class Component implements Serializable {
         for (final TypeReference typeRef : externalClassTypeReferenceList) {
             insertTypeReference(typeRef);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return getUniqueName().hashCode();
     }
 }

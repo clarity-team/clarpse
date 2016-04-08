@@ -25,14 +25,9 @@ public final class ClarpseUtil {
     /**
      * Gets a general object key from a given map using the given value.
      *
-     * @param value
-     *            value of the pair
-     * @param hashMap
-     *            Map to search in
-     * @return object key of the pair
      */
-    public static Object getObjectFromStringObjectKeyValueMap(final String value, final Map<?, ?> hashMap) {
-        final Iterator<?> it = hashMap.entrySet().iterator();
+    public static Object getObjectFromStringObjectKeyValueMap(final String value, final Map<?, ?> map) {
+        final Iterator<?> it = map.entrySet().iterator();
         while (it.hasNext()) {
             @SuppressWarnings("rawtypes")
             final Map.Entry pair = (Map.Entry) it.next();
