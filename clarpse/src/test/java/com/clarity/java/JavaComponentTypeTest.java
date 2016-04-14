@@ -55,14 +55,14 @@ public class JavaComponentTypeTest {
         sampleJavaClassFieldComponentName = "sampleJavaClassField";
         sampleJavaClassFieldComponentType = OOPSourceModelConstants.ComponentTypes.FIELD_COMPONENT;
         sampleJavaMethodComponentName = "sampleJavaMethod";
-        sampleJavaMethodComponentKeyName = "String_sampleJavaMethod(java.lang.String)";
+        sampleJavaMethodComponentKeyName = "String_sampleJavaMethod(String)";
         sampleJavaMethodComponentType = OOPSourceModelConstants.ComponentTypes.METHOD_COMPONENT;
         sampleJavaMethodParamComponentName = "sampleJavaMethodParam";
         sampleJavaMethodParamComponentNameType = OOPSourceModelConstants.ComponentTypes.METHOD_PARAMETER_COMPONENT;
         sampleJavaInterfaceComponentName = "SampleJavaInterface";
         sampleJavaInterfaceComponentType = OOPSourceModelConstants.ComponentTypes.INTERFACE_COMPONENT;
         sampleJavaInterfaceMethodComponentName = "sampleJavaInterfaceMethod";
-        sampleJavaInterfaceMethodComponentKeyName = "void_sampleJavaInterfaceMethod(java.lang.String)";
+        sampleJavaInterfaceMethodComponentKeyName = "void_sampleJavaInterfaceMethod(String)";
         sampleJavaInterfaceMethodComponentType = OOPSourceModelConstants.ComponentTypes.METHOD_COMPONENT;
         sampleJavaInterfaceMethodParamComponentName = "sampleJavaInterfaceMethodParamComponent";
         sampleJavaInterfaceMethodParamComponentType = OOPSourceModelConstants.ComponentTypes.METHOD_PARAMETER_COMPONENT;
@@ -71,7 +71,7 @@ public class JavaComponentTypeTest {
         sampleJavaEnumClassConstant = "SampleJavaEnumClassConstant";
         sampleJavaEnumClassConstantType = OOPSourceModelConstants.ComponentTypes.ENUM_CONSTANT_COMPONENT;
         sampleJavaEnumClassConstructor = "sampleJavaEnumClass";
-        sampleJavaEnumClassConstructorKey = "void_sampleJavaEnumClass(java.lang.String)";
+        sampleJavaEnumClassConstructorKey = "void_sampleJavaEnumClass(String)";
         sampleJavaEnumClassConstructorType = OOPSourceModelConstants.ComponentTypes.CONSTRUCTOR_COMPONENT;
         sampleJavaEnumMethodParam = "enumMethodParam";
         sampleJavaEnumMethodParamType = OOPSourceModelConstants.ComponentTypes.CONSTRUCTOR_PARAMETER_COMPONENT;

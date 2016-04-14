@@ -25,14 +25,14 @@ public class ExternalTypeReferencesTest {
     private static String sampleJavaClassFieldComponentName = "sampleJavaClassField";
     private static String sampleJavaClassFieldComponentRefsJSON = "[ {  \"type\" : \"java.lang.String\",  \"lines\" : [ 2 ]  } ]";
     private static String sampleJavaMethodComponentName = "sampleJavaMethod";
-    private static String sampleJavaMethodComponentKeyName = "void_sampleJavaMethod(java.lang.String)";
+    private static String sampleJavaMethodComponentKeyName = "void_sampleJavaMethod(String)";
     private static String sampleJavaMethodComponentRefsJSON = "[ { \"type\" : \"java.lang.String\",  \"lines\" : [ 3 ]  } ]";
     private static String sampleJavaMethodParamComponentName = "sampleJavaMethodParam";
     private static String sampleJavaMethodParamComponentRefsJSON = "[ {\"type\" : \"java.lang.String\",\"lines\" : [ 3 ] } ]";
     private static String sampleJavaInterfaceComponentName = "SampleJavaInterface";
     private static String sampleJavaInterfaceComponentRefsJSON = "[ {\"type\" : \"java.lang.String\", \"lines\" : [ 5 ] } ]";
     private static String sampleJavaInterfaceMethodComponentName = "sampleJavaInterfaceMethod";
-    private static String sampleJavaInterfaceMethodComponentKeyName = "String_sampleJavaInterfaceMethod(java.lang.String)";
+    private static String sampleJavaInterfaceMethodComponentKeyName = "String_sampleJavaInterfaceMethod(String)";
     private static String sampleJavaInterfaceMethodComponentRefsJSON = "[ {\"type\" : \"java.lang.String\",  \"lines\" : [ 5 ] } ]";
     private static String sampleJavaInterfaceMethodParamComponentName = "sampleJavaInterfaceMethodParamComponent";
     private static String sampleJavaInterfaceMethodParamComponentRefsJSON = "[ { \"type\" : \"java.lang.String\", \"lines\" : [ 5 ]} ]";

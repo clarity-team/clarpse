@@ -29,7 +29,8 @@ public class OOPSourceCodeModel implements Serializable {
     }
 
     public void insertComponent(final Component component) throws Exception {
-        getComponents().put(component.getUniqueName(), component);
+
+        components.put(component.getUniqueName(), component);
     }
 
     public boolean containsComponent(final String componentName) throws Exception {

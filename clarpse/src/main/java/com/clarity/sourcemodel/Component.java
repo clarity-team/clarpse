@@ -5,7 +5,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +32,7 @@ public class Component implements Serializable {
     private static final long serialVersionUID = 1L;
     private String value;
     private String packageName;
+    private String name;
     private String comment;
     private ArrayList<String> exceptions = new ArrayList<String>();
     @JsonProperty("implements")
@@ -106,6 +106,9 @@ public class Component implements Serializable {
         implementedClasses.add(implemented);
     }
 
+    /**
+     * Returns the line number corresponding to the signature of the component.
+     */
     public String getStartLine() {
         return startLine;
     }
@@ -133,22 +136,7 @@ public class Component implements Serializable {
     @JsonInclude(Include.NON_NULL)
     public final String getName() {
 
-        int methodParamBeginIndex = -1;
-        String hierarchy = componentName;
-
-        // Current component is a method component, handle slightly differently..
-        if (componentName.contains(")") && (componentName.lastIndexOf(".") < componentName.lastIndexOf(")"))) {
-            methodParamBeginIndex = componentName.indexOf("(");
-            hierarchy = componentName.substring(0, methodParamBeginIndex);
-        }
-
-        final String[] bits = hierarchy.split(Pattern.quote("."));
-
-        if (methodParamBeginIndex == -1) {
-            return bits[bits.length - 1];
-        } else {
-            return bits[bits.length - 1] + componentName.substring(methodParamBeginIndex);
-        }
+        return name;
     }
 
     public final void insertChildComponent(final String childComponentName) {
@@ -389,5 +377,20 @@ public class Component implements Serializable {
         for (final TypeReference typeRef : externalClassTypeReferenceList) {
             insertTypeReference(typeRef);
         }
+    }
+
+    @JsonIgnore
+    public boolean isMethodParamComponentType() {
+        final ComponentTypes temp = (ComponentTypes) ClarpseUtil.getObjectFromStringObjectKeyValueMap(componentType,
+                OOPSourceModelConstants.getJavaComponentTypes());
+        return temp == ComponentTypes.METHOD_PARAMETER_COMPONENT;
+    }
+
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(final String name) {
+        this.name = name;
     }
 }

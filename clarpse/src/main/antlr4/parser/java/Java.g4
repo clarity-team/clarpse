@@ -466,12 +466,13 @@ constantExpression
 
 expression
     :   primary
-    |   methodCall
+    |   expression '.' Identifier
     |   expression '.' 'this'
     |   expression '.' 'new' nonWildcardTypeArguments? innerCreator
     |   expression '.' 'super' superSuffix
     |   expression '.' explicitGenericInvocation
     |   expression '[' expression ']'
+    |   expression '(' expressionList? ')'
     |   'new' creator
     |   '(' type ')' expression
     |   expression ('++' | '--')
@@ -504,10 +505,6 @@ expression
         |   '%='
         )
         expression
-    ;
-
-methodCall
-    :  Identifier ('.' Identifier)* '(' methodParamExpressionsList ')' '.' methodCall
     ;
 
 

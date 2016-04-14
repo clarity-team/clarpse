@@ -266,7 +266,7 @@ public final class OOPSourceModelConstants {
 
         private final boolean isBaseComponent;
         private final boolean isMethodComponent;
-        private final boolean isVariableComonent;
+        private final boolean isVariableComponent;
 
         /**
          * Constructor.
@@ -275,34 +275,22 @@ public final class OOPSourceModelConstants {
          * @param isVariableComponent true when component is a variable type component.
          */
         ComponentTypes(final boolean isBaseComponent, final boolean isMethodComponent,
-                final boolean isVariableComponent) {
+ final boolean isVariableComponent) {
             this.isBaseComponent = isBaseComponent;
             this.isMethodComponent = isMethodComponent;
-            isVariableComonent = isVariableComponent;
+            this.isVariableComponent = isVariableComponent;
         }
 
-        /**
-         *
-         * @return true when component is a class/interface/enum/ etc..
-         */
         public boolean isBaseComponent() {
             return isBaseComponent;
         }
 
-        /**
-         *
-         * @return true when component is a method type component.
-         */
         public boolean isMethodComponent() {
             return isMethodComponent;
         }
 
-        /**
-         *
-         * @return true when component is a variable type component.
-         */
         public boolean isVariableComponent() {
-            return isVariableComonent;
+            return isVariableComponent;
         }
     }
 

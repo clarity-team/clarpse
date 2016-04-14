@@ -29,13 +29,13 @@ public class ComponentExistTest {
     private static String sampleJavaInterfaceComponentName = "SampleJavaInterface";
 
     private static String sampleJavaMethodComponentName = "sampleJavaMethod";
-    private static String sampleJavaMethodComponentKeyName = "void_sampleJavaMethod(java.lang.String)";
+    private static String sampleJavaMethodComponentKeyName = "void_sampleJavaMethod(String)";
 
     private static String sampleJavaInterfaceMethodComponentName = "sampleJavaInterfaceMethod";
-    private static String sampleJavaInterfaceMethodComponentKeyName = "void_sampleJavaInterfaceMethod(java.lang.String)";
+    private static String sampleJavaInterfaceMethodComponentKeyName = "void_sampleJavaInterfaceMethod(String)";
 
     private static String sampleJavaEnumClassConstructor = "sampleJavaEnumClass";
-    private static String sampleJavaEnumClassConstructurKey = "void_sampleJavaEnumClass(java.lang.String)";
+    private static String sampleJavaEnumClassConstructurKey = "void_sampleJavaEnumClass(String)";
 
     private static String codeString = "package " + sampleJavaPackageName + ";"
             + "                              class " + sampleJavaClassComponentName  + " {"

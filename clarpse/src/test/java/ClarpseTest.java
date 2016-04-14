@@ -5,6 +5,7 @@ import com.clarity.java.ComponentExistTest;
 import com.clarity.java.ComponentPackageNameTest;
 import com.clarity.java.ExternalTypeReferencesTest;
 import com.clarity.java.JavaComponentTypeTest;
+import com.clarity.java.LineNumberTest;
 
 /**
  * Clarpse's main test suite.
@@ -13,7 +14,8 @@ import com.clarity.java.JavaComponentTypeTest;
 @Suite.SuiteClasses({ComponentExistTest.class,
     ComponentPackageNameTest.class,
     ExternalTypeReferencesTest.class,
-        JavaComponentTypeTest.class
+        JavaComponentTypeTest.class,
+        LineNumberTest.class
 })
 public class ClarpseTest {
 

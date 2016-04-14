@@ -14,6 +14,7 @@ import parser.java.JavaBaseListener;
 import parser.java.JavaParser;
 import parser.java.JavaParser.AnnotationTypeDeclarationContext;
 import parser.java.JavaParser.FormalParameterContext;
+import parser.java.JavaParser.FormalParameterListContext;
 
 import com.clarity.parser.AntlrUtil;
 import com.clarity.sourcemodel.Component;
@@ -97,11 +98,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
      */
     private String generateComponentName(final String identifier) {
         String componentName = "";
+
         if (!componentStack.isEmpty()) {
-            for (final Component cmp : componentStack) {
-                componentName = componentName + cmp.getName() + ".";
-            }
-            componentName = componentName + identifier;
+            final Component completedCmp = componentStack.peek();
+            componentName = completedCmp.getComponentName() + "." + identifier;
         } else {
             componentName = identifier;
         }
@@ -173,6 +173,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component classCmp = createComponent(ctx, OOPSourceModelConstants.ComponentTypes.CLASS_COMPONENT);
             classCmp.setCode(currFileSourceCode);
             classCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+            classCmp.setName(ctx.Identifier().getText());
             classCmp.setImports(currentImports);
             if (ctx.type() != null) {
                 classCmp.addSuperClass(resolveType(ctx.type().getText()));
@@ -221,7 +222,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             enumCmp.setCode(currFileSourceCode);
             enumCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
             enumCmp.setImports(currentImports);
-
+            enumCmp.setName(ctx.Identifier().getText());
             componentStack.push(enumCmp);
         }
     }
@@ -238,6 +239,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component enumConstCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentTypes.ENUM_CONSTANT_COMPONENT);
+            enumConstCmp.setName(ctx.Identifier().getText());
             enumConstCmp.setCode(AntlrUtil.getFormattedText(ctx));
             enumConstCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
 
@@ -260,7 +262,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             interfaceCmp.setCode(AntlrUtil.getFormattedText(ctx));
             interfaceCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
             interfaceCmp.setImports(currentImports);
-
+            interfaceCmp.setName(ctx.Identifier().getText());
             componentStack.push(interfaceCmp);
         }
     }
@@ -278,15 +280,37 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component currMethodCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentTypes.METHOD_COMPONENT);
             currMethodCmp.setCode(AntlrUtil.getFormattedText(ctx));
-
-            String returnType = "void";
+            currMethodCmp.setName(ctx.Identifier().getText());
             if (ctx.type() != null) {
-                returnType = ctx.type().getText();
+                currMethodCmp.setValue(ctx.type().getText());
+            } else {
+                currMethodCmp.setValue("void");
             }
-            final String methodName = returnType + "_" + ctx.Identifier().getText();
-            currMethodCmp.setComponentName(generateComponentName(methodName));
+
+            String formalParametersString = "(";
+            if (ctx.formalParameters().formalParameterList() != null) {
+                formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
+            }
+            formalParametersString += ")";
+
+            final String methodSignature = currMethodCmp.getValue() + "_" + currMethodCmp.getName()
+                    + formalParametersString;
+            currMethodCmp.setComponentName(generateComponentName(methodSignature));
             componentStack.push(currMethodCmp);
         }
+    }
+
+    private String getFormalParameterTypesList(final FormalParameterListContext formalParameterList) {
+
+        String typesList = "";
+        for (final FormalParameterContext fpContext : formalParameterList.formalParameter()) {
+            typesList += fpContext.type().getText() + ",";
+        }
+
+        if (typesList.endsWith(",")) {
+            typesList = typesList.substring(0, typesList.length() - 1);
+        }
+        return typesList;
     }
 
     @Override
@@ -295,13 +319,26 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component currMethodCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentTypes.METHOD_COMPONENT);
 
-            String returnType = "void";
-            if (ctx.type() != null) {
-                returnType = ctx.type().getText();
-            }
-            final String methodName = returnType + "_" + ctx.Identifier().getText();
-            currMethodCmp.setComponentName(generateComponentName(methodName));
+            final String methodName = ctx.Identifier().getText();
+            currMethodCmp.setName(methodName);
 
+            if (ctx.type() != null) {
+                currMethodCmp.setValue(ctx.type().getText());
+            } else {
+                currMethodCmp.setValue("void");
+            }
+
+            String formalParametersString = "(";
+            if (ctx.formalParameters().formalParameterList() != null) {
+                formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
+            }
+            formalParametersString += ")";
+
+            final String methodSignature = currMethodCmp.getValue() + "_" + currMethodCmp.getName()
+                    + formalParametersString;
+
+
+            currMethodCmp.setComponentName(generateComponentName(methodSignature));
             componentStack.push(currMethodCmp);
         }
     }
@@ -311,12 +348,22 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component currMethodCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentTypes.CONSTRUCTOR_COMPONENT);
-            currMethodCmp.setCode(AntlrUtil.getFormattedText(ctx));
 
-            final String returnType = "void";
+            currMethodCmp.setValue("void");
 
-            final String methodName = returnType + "_" + ctx.Identifier().getText();
-            currMethodCmp.setComponentName(generateComponentName(methodName));
+            final String methodName = ctx.Identifier().getText();
+            currMethodCmp.setName(methodName);
+
+            String formalParametersString = "(";
+            if (ctx.formalParameters().formalParameterList() != null) {
+                formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
+            }
+            formalParametersString += ")";
+
+            final String methodSignature = currMethodCmp.getValue() + "_" + currMethodCmp.getName()
+                    + formalParametersString;
+
+            currMethodCmp.setComponentName(generateComponentName(methodSignature));
             componentStack.push(currMethodCmp);
         }
     }
@@ -380,32 +427,6 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void exitFormalParameter(final JavaParser.FormalParameterContext ctx) {
         if (!ignoreTreeWalk) {
             completeComponent();
-        }
-    }
-
-    @Override
-    public final void enterFormalParameterList(final JavaParser.FormalParameterListContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currMethodCmp = componentStack.pop();
-            if (currMethodCmp.isMethodComponent()) {
-
-                String parameterTypeList = "(";
-                for (final FormalParameterContext fPContext : ctx.formalParameter()) {
-                    parameterTypeList += resolveType(fPContext.type().getText()) + ",";
-                }
-
-                if (ctx.lastFormalParameter() != null) {
-                    parameterTypeList += resolveType(ctx.lastFormalParameter().type().getText());
-                }
-
-                if (parameterTypeList.endsWith(",")) {
-                    parameterTypeList = (String) parameterTypeList.subSequence(0, parameterTypeList.length() - 1);
-                }
-
-                parameterTypeList += ")";
-                currMethodCmp.setComponentName(currMethodCmp.getComponentName() + parameterTypeList);
-            }
-            componentStack.push(currMethodCmp);
         }
     }
 
@@ -563,10 +584,12 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component currCmp = componentStack.pop();
             if ((currCmp.getComponentName() == null) || (currCmp.getComponentName().isEmpty())) {
                 currCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+                currCmp.setName(ctx.Identifier().getText());
             } else {
                 final Component copyCmp = new Component(currCmp);
                 componentCompletionMultiplier += 1;
                 copyCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+                copyCmp.setName(ctx.Identifier().getText());
                 componentStack.push(copyCmp);
             }
             componentStack.push(currCmp);
