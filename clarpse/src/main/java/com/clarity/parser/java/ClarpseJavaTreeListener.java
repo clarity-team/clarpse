@@ -204,7 +204,12 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
                 return OOPSourceModelConstants.getJavaDefaultClasses().get(type);
             }
         }
-        return currentPkg + "." + type;
+
+        if (currentPkg.isEmpty()) {
+            return currentPkg + "." + type;
+        } else {
+            return type;
+        }
     }
 
     @Override
