@@ -1,5 +1,6 @@
 language: java
-script: cd clarpse
-        clean package assembly:single
+script: 
+         - cd clarpse
+         - clean package assembly:single
 after_success:
-  - coveralls
+         - coveralls
