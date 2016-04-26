@@ -1,6 +1,5 @@
 language: java
-before_install:
-	- cd clarpse
-script: mvn clean package assembly:single
+script: cd clarpse
+	clean package assembly:single
 after_success:
   - coveralls
