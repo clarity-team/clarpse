@@ -2,6 +2,10 @@
 
 [![Clarity View](http://clarity.mybluemix.net/badge)](http://clarity.mybluemix.net/github/clarity-team/clarpse)
 
+[![Build Status](https://travis-ci.org/clarity-team/clarpse.svg?branch=master)](https://travis-ci.org/clarity-team/clarpse)
+
+[![Build Status](https://travis-ci.org/clarity-team/clarpse.svg?branch=master)](https://travis-ci.org/clarity-team/clarpse)
+
 A lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a programming language into components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. To build the project with maven, run the goal "clean package assembly:single" to run the tests and produce the updated clarpse jar.
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
