@@ -71,7 +71,14 @@
 					</execution>
 				</executions>
 			</plugin>
-
+<plugin>
+    <groupId>org.eluder.coveralls</groupId>
+    <artifactId>coveralls-maven-plugin</artifactId>
+    <version>4.1.0</version>
+    <configuration>
+        <repoToken>AkNoP4tPKD7fEBdbkvkPaog4gSu8CoE2M</repoToken>
+    </configuration>
+</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
