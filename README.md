@@ -31,20 +31,20 @@ If you have any questions or are interested in adding new functionality, feel fr
     OOPSourceCodeModel generatedSourceCodeModel = parseService.parseProject(rawData);
     // get the main class component
     Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
-    mainclassComponent.getName(); // --> SampleClass
-    mainClassComponent.getComponentType(); // --> CLASS
-    mainClassComponent.getAnnotations(); // --> 
-    mainClassComponent.getModifiers(); // --> ["public"]
-    mainClassComponent.getChildren(); // --> ["foo.java.SampleClass.void_sampleMethod(String)"]
-    mainClassComponent.getStartLine(); // --> 1
+    mainclassComponent.getName();           // --> SampleClass
+    mainClassComponent.getComponentType();  // --> CLASS
+    mainClassComponent.getAnnotations();    // --> 
+    mainClassComponent.getModifiers();      // --> ["public"]
+    mainClassComponent.getChildren();       // --> ["foo.java.SampleClass.void_sampleMethod(String)"]
+    mainClassComponent.getStartLine();      // --> 1
     // get the inner method component
     methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
-    methodComponent.getName(); // --> SampleClass
-    methodComponent.getComponentType(); // --> CLASS
-    methodComponent.getAnnotations(); // --> ["SampleAnnotation=''"]
-    methodComponent.getModifiers(); // --> ["public"]
-    methodComponent.getChildren(); // --> ["com.foo.java.SampleClass.void_sampleMethod(String).sampleMethodParam"]
-    methodComponent.getStartLine(); // --> 5
+    methodComponent.getName();              // --> SampleClass
+    methodComponent.getComponentType();     // --> METHOD
+    methodComponent.getAnnotations();       // --> ["SampleAnnotation=''"]
+    methodComponent.getModifiers();         // --> ["public"]
+    methodComponent.getChildren();          // --> ["com.foo.java.SampleClass.void_sampleMethod(String).sampleMethodParam"]
+    methodComponent.getStartLine();         // --> 5
 ```
 
 The OOPSourceCodeModel class contains components from which key properties of the code base may be extracted. These components can be of the following type: Class, Inteface, Method, MethodParam, Enum, EnumConstant, Annotation, InterfaceConstant, LocalVar and Field (See OOPSourceCodeModelConstants.ComponentTypes). As expected, the format remains the same irregardless of the original input language specified. The JSON representation of the generatedSourceCodeModel for this example is provided below:
