@@ -51,5 +51,5 @@ The OOPSourceCodeModel class contains components from which key properties of th
 
 
 
-![Diagram: clarpse-master^clarpse^src^main^java^com^clarity^ClarpseUtil.java](http://clarityviews.ca/github/clarity-team/clarpse/diagram/clarpse-master^clarpse^src^main^java^com^clarity^ClarpseUtil.java/)
+<img src="http://clarityviews.ca/github/clarity-team/clarpse/diagram/clarpse-master^clarpse^src^main^java^com^clarity^ClarpseUtil.java/">
 
