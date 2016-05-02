@@ -50,4 +50,4 @@ If you have any questions or are interested in adding new functionality, feel fr
 The OOPSourceCodeModel class contains components from which key properties of the code base may be extracted. These components can be of the following type: Class, Inteface, Method, MethodParam, Enum, EnumConstant, Annotation, InterfaceConstant, LocalVar and Field (See OOPSourceCodeModelConstants.ComponentTypes). As expected, the format remains the same irregardless of the original input language specified. The JSON representation of the generatedSourceCodeModel for this example is provided below:
 
 
-![Diagram: clarpse-master^clarpse^src^main^java^com^clarity^ClarpseUtil.java](https://clarityviews.ca/github/clarity-team/clarpse/diagram/clarpse-master^clarpse^src^main^java^com^clarity^ClarpseUtil.java/)
+![Diagram: clarpse-master^clarpse^src^main^java^com^clarity^ClarpseUtil.java](http://clarityviews.ca/github/clarity-team/clarpse/diagram/clarpse-master^clarpse^src^main^java^com^clarity^ClarpseUtil.java/)
