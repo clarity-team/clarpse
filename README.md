@@ -30,7 +30,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     final ParseService = new ParseService();
     OOPSourceCodeModel generatedSourceCodeModel = parseService.parseProject(rawData);
     // get the main class component
-    Component mainClassComponent = generatedSourceCodeModel.get("foo.java.SampleClass");
+    Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
     mainclassComponent.getName(); // --> SampleClass
     mainClassComponent.getComponentType(); // --> CLASS
     mainClassComponent.getAnnotations(); // --> 
@@ -43,7 +43,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     methodComponent.getComponentType(); // --> CLASS
     methodComponent.getAnnotations(); // --> ["SampleAnnotation=''"]
     methodComponent.getModifiers(); // --> ["public"]
-    methodComponent.getChildren(); // --> ["foo.java.SampleClass.void_sampleMethod(String).sampleMethodParam"]
+    methodComponent.getChildren(); // --> ["com.foo.java.SampleClass.void_sampleMethod(String).sampleMethodParam"]
     methodComponent.getStartLine(); // --> 5
 ```
 
