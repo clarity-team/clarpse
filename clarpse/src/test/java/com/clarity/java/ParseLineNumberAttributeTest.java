@@ -17,7 +17,7 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  * @author Muntazir Fadhel
  *
  */
-public class LineNumberTest {
+public class ParseLineNumberAttributeTest {
 
     private static OOPSourceCodeModel generatedSourceModel;
 

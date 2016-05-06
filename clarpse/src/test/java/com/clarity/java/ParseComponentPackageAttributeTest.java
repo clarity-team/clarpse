@@ -20,7 +20,7 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  *
  * @author Muntazir Fadhel
  */
-public class ComponentPackageNameTest {
+public class ParseComponentPackageAttributeTest {
 
     private static String codeString = "package com.clarity.test;   class SampleJavaClass {  private String sampleClassField;  }";
     private static String pkgName = "com.clarity.test";

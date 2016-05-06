@@ -205,7 +205,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             }
         }
 
-        if (currentPkg.isEmpty()) {
+        if (!currentPkg.isEmpty()) {
             return currentPkg + "." + type;
         } else {
             return type;

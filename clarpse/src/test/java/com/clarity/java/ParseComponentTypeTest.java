@@ -18,7 +18,7 @@ import com.clarity.sourcemodel.OOPSourceModelConstants;
  *
  * @author Muntazir Fadhel
  */
-public class JavaComponentTypeTest {
+public class ParseComponentTypeTest {
 
     private static OOPSourceCodeModel generatedSourceModel;
     private static String sampleJavaClassComponentName;
