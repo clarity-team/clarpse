@@ -18,7 +18,7 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  *
  * @author Muntazir Fadhel
  */
-public class ExternalTypeReferencesTest {
+public class ParseExternalTypeReferencesAttributesTest {
 
     private static String sampleJavaClassComponentName = "SampleJavaClass";
     private static String sampleJavaClassComponentTypeRefsJSON = "[{ \"type\" : \"java.lang.String\",\"lines\" : [ 2, 3, 5 ]}]";

@@ -10,7 +10,7 @@ import java.util.Scanner;
  *
  * @author Muntazir Fadhel
  */
-public class RawFile implements Serializable {
+public class RawFile implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -6310632263943431174L;
     private String content;
@@ -51,5 +51,22 @@ public class RawFile implements Serializable {
 
     public final String getContent() {
         return content;
+    }
+
+    @Override
+    public final boolean equals(final Object obj) {
+
+        final RawFile rawFile = (RawFile) obj;
+        return getContent().equals(rawFile.getContent()) && getName().equals(rawFile.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getContent().hashCode() + getName().hashCode();
+    }
+
+    public RawFile copy() {
+        final RawFile rawFile = new RawFile(getName(), getContent());
+        return rawFile;
     }
 }
