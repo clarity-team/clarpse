@@ -1,6 +1,6 @@
 # Clarpse
 
-[![Clarity View](http://clarity.mybluemix.net/badge)](http://clarity.mybluemix.net/github/clarity-team/clarpse)
+[![Clarity Views Label](http://clarityviews.ca/badge)](http://clarityviews.ca/github/clarity-team/clarpse?projectName=clarpse)
 [![Build Status](https://travis-ci.org/clarity-team/clarpse.svg?branch=master)](https://travis-ci.org/clarity-team/clarpse)
 [![Coverage Status](https://coveralls.io/repos/github/clarity-team/clarpse/badge.svg?branch=master)](https://coveralls.io/github/clarity-team/clarpse?branch=master)
 
