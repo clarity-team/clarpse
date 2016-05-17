@@ -34,6 +34,7 @@ public class Component implements Serializable {
     private String packageName;
     private String name;
     private String comment;
+    private String sourceFilePath;
     private ArrayList<String> exceptions = new ArrayList<String>();
     @JsonProperty("implements")
     private ArrayList<String> implementedClasses = new ArrayList<String>();
@@ -66,6 +67,7 @@ public class Component implements Serializable {
         value = component.getValue();
         startLine = component.getStartLine();
         endLine = component.getEndLine();
+        sourceFilePath = component.getSourceFilePath();
     }
 
     @JsonIgnore
@@ -392,5 +394,13 @@ public class Component implements Serializable {
      */
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public String getSourceFilePath() {
+        return sourceFilePath;
+    }
+
+    public void setSourceFilePath(final String sourceFilePath) {
+        this.sourceFilePath = sourceFilePath;
     }
 }

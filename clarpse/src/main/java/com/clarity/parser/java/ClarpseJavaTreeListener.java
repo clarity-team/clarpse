@@ -38,18 +38,20 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     private int componentCompletionMultiplier = 1;
     private final Map<String, String> currentImportsMap = new HashMap<String, String>();
     private boolean ignoreTreeWalk = false;
+    private final String sourceFilePath;
     private static final String JAVA_BLOCK_COMMENT_BEGIN_SYMBOL = "/*";
     private static final String JAVA_BLOCK_COMMENT_END_SYMBOL = "*/";
 
     /**
-     * Constructor.
-     *
      * @param srcModel
      *            Source model to populate from the parsing of the given code
      *            base.
+     * @param sourceFilePath
+     *            The path of the source file being parsed.
      */
-    public ClarpseJavaTreeListener(final OOPSourceCodeModel srcModel) {
+    public ClarpseJavaTreeListener(final OOPSourceCodeModel srcModel, final String sourceFilePath) {
         this.srcModel = srcModel;
+        this.sourceFilePath = sourceFilePath;
     }
 
     /**
@@ -109,13 +111,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     /**
-     * Creates a new component.
-     *
-     * @param ctx
-     *            Rule context
-     * @param componentType
-     *            type of component
-     * @return the newly create component
+     * Creates a new component based on the given ParseRuleContext.
      */
     private Component createComponent(final ParserRuleContext ctx,
             final OOPSourceModelConstants.ComponentTypes componentType) {
@@ -127,6 +123,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
                 JAVA_BLOCK_COMMENT_BEGIN_SYMBOL, JAVA_BLOCK_COMMENT_END_SYMBOL));
         newCmp.setStartLine(String.valueOf(ctx.getStart().getLine()));
         newCmp.setEndLine(String.valueOf(ctx.getStop().getLine()));
+        newCmp.setSourceFilePath(sourceFilePath);
         return newCmp;
     }
 

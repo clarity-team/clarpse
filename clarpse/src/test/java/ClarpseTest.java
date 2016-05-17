@@ -18,7 +18,8 @@ import com.clarity.java.ParseLineNumberAttributeTest;
     ParseComponentTypeTest.class,
     ParseLineNumberAttributeTest.class,
  ParseExtendedAndImplementedAttributesTest.class,
- RawFileComparisonTest.class
+ RawFileComparisonTest.class,
+ ComponentSourceFilePathTest.class
 })
 public class ClarpseTest {
 
