@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.clarity.ClarpseUtil;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ParseService;
@@ -100,7 +99,6 @@ public class ParseComponentTypeTest {
         rawData.insertFile(new RawFile("file1", codeString));
         final ParseService parseService = new ParseService();
         generatedSourceModel = parseService.parseProject(rawData);
-        System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel, true));
     }
 
     @Test

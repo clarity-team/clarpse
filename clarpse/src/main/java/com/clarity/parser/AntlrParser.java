@@ -70,11 +70,11 @@ public class AntlrParser implements IClarityParser {
             final Object parser = cls.getConstructor(TokenStream.class).newInstance(tokens);
             final Method method = cls.getDeclaredMethod("compilationUnit");
             final ParseTree tree = (ParseTree) method.invoke(parser);
-
             final ParseTreeWalker walker = new ParseTreeWalker();
             final ParseTreeListener listener = (ParseTreeListener) Class
                     .forName(clarityListenerPkgLocation + "." + "Clarpse" + grammarName + "TreeListener")
-                    .getConstructor(OOPSourceCodeModel.class).newInstance(antlrParseResult);
+                    .getConstructor(OOPSourceCodeModel.class, String.class)
+                    .newInstance(antlrParseResult, file.getName());
             walker.walk(listener, tree);
         }
 
