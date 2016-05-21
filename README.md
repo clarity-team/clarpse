@@ -54,7 +54,7 @@ The following diagram represents the core workings of Clarpse. A Parser should i
 
    -  Submit an issue describing your proposed change to the repo in question.
     The repo owner will respond to your issue promptly.
-- Fork the desired repo, develop and test your code changes.
+   - Fork the desired repo, develop and test your code changes.
    - Run a local maven build using "clean package assembly:single" to ensure all tests pass and the jar is produced
    -  Submit a pull request.
 
