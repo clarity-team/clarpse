@@ -33,7 +33,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     mainClassComponent.getSourceFilePath(); // --> "foo.java"
     // get the inner method component
     methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
-    methodComponent.getName();              // --> SampleClass
+    methodComponent.getName();              // --> sampleMethod
     methodComponent.getComponentType();     // --> METHOD
     methodComponent.getAnnotations();       // --> ["SampleAnnotation=''"]
     methodComponent.getModifiers();         // --> ["public"]
