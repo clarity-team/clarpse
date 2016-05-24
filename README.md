@@ -24,7 +24,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     OOPSourceCodeModel generatedSourceCodeModel = parseService.parseProject(rawData);
     // get the main class component
     Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
-    mainclassComponent.getName();           // --> SampleClass
+    mainclassComponent.getName();           // --> "SampleClass"
     mainClassComponent.getComponentType();  // --> CLASS
     mainClassComponent.getAnnotations();    // --> 
     mainClassComponent.getModifiers();      // --> ["public"]
@@ -33,7 +33,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     mainClassComponent.getSourceFilePath(); // --> "foo.java"
     // get the inner method component
     methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
-    methodComponent.getName();              // --> sampleMethod
+    methodComponent.getName();              // --> "sampleMethod"
     methodComponent.getComponentType();     // --> METHOD
     methodComponent.getAnnotations();       // --> ["SampleAnnotation=''"]
     methodComponent.getModifiers();         // --> ["public"]
