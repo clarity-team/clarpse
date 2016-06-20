@@ -19,7 +19,7 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  *
  * @author Muntazir Fadhel
  */
-public class AntlrParser implements IClarityParser {
+public class AntlrParser implements ClarpseParser {
 
     /**
      * The package in which the ANTLR generated files are located in.

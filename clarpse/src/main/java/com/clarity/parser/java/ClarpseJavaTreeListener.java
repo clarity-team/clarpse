@@ -1,5 +1,11 @@
 package com.clarity.parser.java;
 
+import invocation.AnnotationInvocation;
+import invocation.ThrownException;
+import invocation.TypeDeclaration;
+import invocation.TypeExtension;
+import invocation.TypeImpementation;
+
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +26,6 @@ import com.clarity.parser.AntlrUtil;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
-import com.clarity.sourcemodel.TypeReference;
 
 /**
  * As the parse tree is developed by Antlr, we add listener methods to capture
@@ -70,7 +75,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
                 System.out.println(completedCmp.getUniqueName());
                 for (int j = componentStack.size() - 1; j >= 0; j--) {
                     final Component possibleParentComponent = componentStack.get(j);
-                    if (possibleParentComponent.isBaseComponent() || componentStack.get(j).isMethodComponent()) {
+                    if (possibleParentComponent.getComponentType().isBaseComponent()
+                            || componentStack.get(j).getComponentType().isMethodComponent()) {
                         // Step 1)
                         possibleParentComponent.insertTypeReferences(completedCmp.getExternalClassTypeReferences());
                         // Step 2)
@@ -114,11 +120,11 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
      * Creates a new component based on the given ParseRuleContext.
      */
     private Component createComponent(final ParserRuleContext ctx,
-            final OOPSourceModelConstants.ComponentTypes componentType) {
+            final OOPSourceModelConstants.ComponentType componentType) {
         final Component newCmp = new Component();
         newCmp.setCode(AntlrUtil.getFormattedText(ctx));
         newCmp.setPackageName(currentPkg);
-        newCmp.setComponentType(OOPSourceModelConstants.getJavaComponentTypes().get(componentType));
+        newCmp.setComponentType(componentType);
         newCmp.setComment(AntlrUtil.getContextMultiLineComment(ctx, currFileSourceCode,
                 JAVA_BLOCK_COMMENT_BEGIN_SYMBOL, JAVA_BLOCK_COMMENT_END_SYMBOL));
         newCmp.setStartLine(String.valueOf(ctx.getStart().getLine()));
@@ -167,15 +173,13 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterClassDeclaration(final JavaParser.ClassDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
-            final Component classCmp = createComponent(ctx, OOPSourceModelConstants.ComponentTypes.CLASS_COMPONENT);
+            final Component classCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
             classCmp.setCode(currFileSourceCode);
             classCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
             classCmp.setName(ctx.Identifier().getText());
             classCmp.setImports(currentImports);
             if (ctx.type() != null) {
-                classCmp.addSuperClass(resolveType(ctx.type().getText()));
-                classCmp.insertTypeReference(new TypeReference(resolveType(ctx.type().getText()), ctx.getStart()
-                        .getLine()));
+                classCmp.insertTypeReference(new TypeExtension(ctx.type().getText(), ctx.getStart().getLine()));
             }
             componentStack.push(classCmp);
         }
@@ -220,7 +224,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterEnumDeclaration(final JavaParser.EnumDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
-            final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentTypes.ENUM_COMPONENT);
+            final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM_COMPONENT);
             enumCmp.setCode(currFileSourceCode);
             enumCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
             enumCmp.setImports(currentImports);
@@ -240,7 +244,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterEnumConstant(final JavaParser.EnumConstantContext ctx) {
         if (!ignoreTreeWalk) {
             final Component enumConstCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentTypes.ENUM_CONSTANT_COMPONENT);
+                    OOPSourceModelConstants.ComponentType.ENUM_CONSTANT_COMPONENT);
             enumConstCmp.setName(ctx.Identifier().getText());
             enumConstCmp.setCode(AntlrUtil.getFormattedText(ctx));
             enumConstCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
@@ -260,7 +264,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterInterfaceDeclaration(final JavaParser.InterfaceDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
             final Component interfaceCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentTypes.INTERFACE_COMPONENT);
+                    OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT);
             interfaceCmp.setCode(AntlrUtil.getFormattedText(ctx));
             interfaceCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
             interfaceCmp.setImports(currentImports);
@@ -280,11 +284,11 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterMethodDeclaration(final JavaParser.MethodDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
             final Component currMethodCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentTypes.METHOD_COMPONENT);
+                    OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
             currMethodCmp.setCode(AntlrUtil.getFormattedText(ctx));
             currMethodCmp.setName(ctx.Identifier().getText());
             if (ctx.type() != null) {
-                currMethodCmp.setValue(ctx.type().getText());
+                currMethodCmp.setValue(resolveType(ctx.type().getText()));
             } else {
                 currMethodCmp.setValue("void");
             }
@@ -306,7 +310,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
         String typesList = "";
         for (final FormalParameterContext fpContext : formalParameterList.formalParameter()) {
-            typesList += fpContext.type().getText() + ",";
+            typesList += resolveType(fpContext.type().getText()) + ",";
         }
 
         if (typesList.endsWith(",")) {
@@ -319,7 +323,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterInterfaceMethodDeclaration(final JavaParser.InterfaceMethodDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
             final Component currMethodCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentTypes.METHOD_COMPONENT);
+                    OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
 
             final String methodName = ctx.Identifier().getText();
             currMethodCmp.setName(methodName);
@@ -349,7 +353,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterConstructorDeclaration(final JavaParser.ConstructorDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
             final Component currMethodCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentTypes.CONSTRUCTOR_COMPONENT);
+                    OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT);
 
             currMethodCmp.setValue("void");
 
@@ -397,8 +401,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component currMethodCmp = componentStack.pop();
             for (final JavaParser.QualifiedNameContext qctx : ctx.qualifiedName()) {
-                currMethodCmp.insertException(resolveType(qctx.getText()));
-                currMethodCmp.insertTypeReference(new TypeReference(resolveType(qctx.getText()), ctx.getStart()
+                currMethodCmp.insertTypeReference(new ThrownException(resolveType(qctx.getText()), ctx
+                        .getStart()
                         .getLine()));
             }
             componentStack.push(currMethodCmp);
@@ -411,14 +415,14 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component currMethodCmp = componentStack.peek();
             if (currMethodCmp.getComponentType().equals(
                     OOPSourceModelConstants.getJavaComponentTypes().get(
-                            OOPSourceModelConstants.ComponentTypes.CONSTRUCTOR_COMPONENT))) {
+                            OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT))) {
                 final Component cmp = createComponent(ctx,
-                        OOPSourceModelConstants.ComponentTypes.CONSTRUCTOR_PARAMETER_COMPONENT);
+                        OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
                 cmp.setCode(AntlrUtil.getFormattedText(ctx));
                 componentStack.push(cmp);
             } else {
                 final Component cmp = createComponent(ctx,
-                        OOPSourceModelConstants.ComponentTypes.METHOD_PARAMETER_COMPONENT);
+                        OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
                 cmp.setCode(AntlrUtil.getFormattedText(ctx));
                 componentStack.push(cmp);
             }
@@ -436,7 +440,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterLocalVariableDeclaration(final JavaParser.LocalVariableDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
             final Component cmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentTypes.LOCAL_VARIABLE_COMPONENT);
+                    OOPSourceModelConstants.ComponentType.LOCAL_VARIABLE_COMPONENT);
             cmp.setCode(AntlrUtil.getFormattedText(ctx));
             componentStack.push(cmp);
         }
@@ -455,13 +459,13 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component currCmp = componentStack.peek();
             if (currCmp.getComponentType().equals(
                     OOPSourceModelConstants.getJavaComponentTypes().get(
-                            OOPSourceModelConstants.ComponentTypes.INTERFACE_COMPONENT))) {
+                            OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT))) {
                 final Component cmp = createComponent(ctx,
-                        OOPSourceModelConstants.ComponentTypes.INTERFACE_CONSTANT_COMPONENT);
+                        OOPSourceModelConstants.ComponentType.INTERFACE_CONSTANT_COMPONENT);
                 cmp.setCode(AntlrUtil.getFormattedText(ctx));
                 componentStack.push(cmp);
             } else {
-                final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentTypes.FIELD_COMPONENT);
+                final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.FIELD_COMPONENT);
                 cmp.setCode(AntlrUtil.getFormattedText(ctx));
                 componentStack.push(cmp);
             }
@@ -480,8 +484,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component currCmp = componentStack.pop();
             for (final JavaParser.TypeContext tempType : ctx.type()) {
-                currCmp.addImplementedClass(resolveType(tempType.getText()));
-                currCmp.insertTypeReference(new TypeReference(resolveType(tempType.getText()), ctx.getStart()
+                currCmp.insertTypeReference(new TypeImpementation(resolveType(tempType.getText()), ctx
+                        .getStart()
                         .getLine()));
             }
             componentStack.push(currCmp);
@@ -514,8 +518,9 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             if (ctx.elementValue() != null) {
                 elementValuePairs.put(ctx.elementValue().getText(), "");
             }
-            currCmp.insertAnnotation(new SimpleEntry<String, HashMap<String, String>>(ctx.annotationName().getText(),
-                    elementValuePairs));
+            currCmp.insertTypeReference(new AnnotationInvocation(resolveType(ctx.annotationName().getText()), ctx.start
+                    .getLine(), new SimpleEntry<String, HashMap<String, String>>(ctx.annotationName().getText(),
+                            elementValuePairs)));
 
             componentStack.push(currCmp);
         }
@@ -531,7 +536,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
                 type += ciftx.getText() + ".";
             }
             type = type.substring(0, type.length() - 1);
-            currCmp.insertTypeReference(new TypeReference(resolveType(type), ctx.getStart().getLine()));
+            currCmp.insertTypeReference(new TypeDeclaration(resolveType(type), ctx.getStart().getLine()));
             componentStack.push(currCmp);
         }
     }
@@ -540,7 +545,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterType(final JavaParser.TypeContext ctx) {
         if (!ignoreTreeWalk) {
             final Component currCmp = componentStack.pop();
-            if ((currCmp.getDeclarationTypeSnippet() == null) && (!currCmp.isBaseComponent())) {
+            if ((currCmp.getDeclarationTypeSnippet() == null) && (!currCmp.getComponentType().isBaseComponent())) {
                 currCmp.setDeclarationTypeSnippet(ctx.getText());
             }
             componentStack.push(currCmp);
@@ -552,7 +557,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component currCmp = componentStack.pop();
 
-            currCmp.insertTypeReference(new TypeReference(resolveType(ctx.getText()), ctx.getStart().getLine()));
+            currCmp.insertTypeReference(new TypeDeclaration(resolveType(ctx.getText()), ctx.getStart()
+                    .getLine()));
 
             componentStack.push(currCmp);
         }
@@ -572,10 +578,13 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterPrimary(final JavaParser.PrimaryContext ctx) {
         if (!ignoreTreeWalk) {
+            // System.out.println(AntlrUtil.getFormattedText(ctx));
             final Component currCmp = componentStack.pop();
-            if (ctx.Identifier() != null) {
-                currCmp.insertTypeReference(new TypeReference(resolveType(ctx.getText()), ctx.getStart().getLine()));
-            }
+            // if (ctx.Identifier() != null) {
+            // currCmp.insertTypeReference(new
+            // TypeReference(resolveType(ctx.getText()),
+            // ctx.getStart().getLine()));
+            // }
             componentStack.push(currCmp);
         }
     }
@@ -611,5 +620,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterCompilationUnit(final JavaParser.CompilationUnitContext ctx) {
         currFileSourceCode = AntlrUtil.getFormattedText(ctx);
+    }
+
+    @Override
+    public final void enterMethodInvocation(final JavaParser.MethodInvocationContext ctx) {
+        System.out.println("Found method call: " + AntlrUtil.getFormattedText(ctx));
     }
 }
