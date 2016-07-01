@@ -612,6 +612,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterVariableInitializer(final JavaParser.VariableInitializerContext ctx) {
         if (!ignoreTreeWalk) {
+            System.out.println(ctx.getText());
             final Component currCmp = componentStack.pop();
             currCmp.setValue(ctx.getText());
 
@@ -622,6 +623,11 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterCompilationUnit(final JavaParser.CompilationUnitContext ctx) {
         currFileSourceCode = AntlrUtil.getFormattedText(ctx);
+    }
+
+    @Override
+    public final void enterExpression(final JavaParser.ExpressionContext ctx) {
+        System.out.println(ctx.getText());
     }
 
     @Override

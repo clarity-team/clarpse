@@ -209,6 +209,7 @@ variableDeclaratorId
 
 variableInitializer
     :   arrayInitializer
+    |   methodInvocation
     |   expression
     ;
 
@@ -298,6 +299,7 @@ formalParameter
 
 methodBody
     :   block
+    |   ';'
     ;
 
 constructorBody
@@ -391,6 +393,7 @@ blockStatement
     :   localVariableDeclarationStatement
     |   statement
     |   typeDeclaration
+    |   expressionStatement
     ;
 
 localVariableDeclarationStatement
@@ -781,7 +784,14 @@ constantExpression
 
 expressionName: Identifier;
 
-typeName: Identifier;
+typeName: Identifier
+        | packageOrTypeName '.' Identifier
+        ;
+
+packageOrTypeName
+    :   Identifier
+    |   packageOrTypeName '.' Identifier
+    ;
 
 methodName: Identifier ;
 
