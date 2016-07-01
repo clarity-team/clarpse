@@ -12,7 +12,6 @@ import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ParseService;
 import com.clarity.parser.RawFile;
-import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
@@ -24,7 +23,7 @@ public class ParseComponentInvocationsTest {
 
     private static String code = "package com; \n public class ClassA extends ClassD implements InterfaceC { "
             + "public classA() { "
-            + " String s = String.test();"
+ + " String s = String.test();"
             + " } "
             + "public String localMethod() { "
             + " return \"lol\"; "
@@ -62,13 +61,5 @@ public class ParseComponentInvocationsTest {
         System.out.println(generatedSourceModel.getComponents());
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(TypeExtension.class)
                 .size() == 1);
-    }
-
-    @Test
-    public void MethodComponentInvocationTest() throws Exception {
-
-        final Component cm = generatedSourceModel.getComponent("com.ClassA.void_classA()");
-        System.out.println("");
-
     }
 }
