@@ -8,6 +8,8 @@ import com.clarity.FactoryProducer;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
+ * Entry point into Clarpse.
+ *
  * @author Muntazir Fadhel
  */
 public class ParseService {
@@ -19,22 +21,11 @@ public class ParseService {
         PARSE_TYPE_MAP.put("java", "java");
     }
 
-    /**
-     * @param rawData
-     *            content needed to be parsed
-     * @param parseType
-     *            type of parse to be completed.
-     * @throws Exception
-     *             Thrown during the parsing process.
-     */
     private OOPSourceCodeModel parseRawData(final ParseRequestContent rawData, final String parseType)
             throws Exception {
         final AbstractFactory parserFactory = new FactoryProducer().getFactory(FactoryProducer.PARSE_KEYWORD);
-        final IClarityParser parsingTool = parserFactory.getParsingTool(parseType);
+        final ClarpseParser parsingTool = parserFactory.getParsingTool(parseType);
         return parsingTool.extractParseResult(rawData);
-    }
-
-    public ParseService() {
     }
 
     public OOPSourceCodeModel parseProject(final ParseRequestContent rawContent) throws Exception {
@@ -45,10 +36,6 @@ public class ParseService {
         return srcModel;
     }
 
-    /**
-     * Determine if the given language is supported, throws an exception when
-     * language is not supported.
-     */
     public void validateParseType(final String parseType) throws IllegalArgumentException {
 
         if (!PARSE_TYPE_MAP.containsKey(parseType)) {

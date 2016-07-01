@@ -8,7 +8,7 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  *
  * @author Muntazir Fadhel
  */
-public interface IClarityParser {
+public interface ClarpseParser {
 
     /**
      * @return Source Model generated from parsing the project.

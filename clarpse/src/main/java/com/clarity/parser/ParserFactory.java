@@ -11,7 +11,7 @@ import com.clarity.AbstractFactory;
 public class ParserFactory extends AbstractFactory {
 
     @Override
-    public final com.clarity.parser.IClarityParser getParsingTool(final String parseType) throws Exception {
+    public final com.clarity.parser.ClarpseParser getParsingTool(final String parseType) throws Exception {
         switch (parseType.toLowerCase()) {
 
         case "java":
