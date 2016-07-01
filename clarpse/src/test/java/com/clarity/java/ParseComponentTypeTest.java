@@ -27,6 +27,9 @@ public class ParseComponentTypeTest {
     private static String sampleJavaMethodComponentName;
     private static String sampleJavaMethodComponentKeyName;
     private static OOPSourceModelConstants.ComponentType sampleJavaMethodComponentType;
+    private static String sampleJavaConstructorComponentName;
+    private static String sampleJavaConstructorComponentKeyName;
+    private static OOPSourceModelConstants.ComponentType sampleJavaConstructorComponentType;
     private static String sampleJavaMethodParamComponentName;
     private static OOPSourceModelConstants.ComponentType sampleJavaMethodParamComponentNameType;
     private static String sampleJavaInterfaceComponentName;
@@ -56,6 +59,9 @@ public class ParseComponentTypeTest {
         sampleJavaMethodComponentName = "sampleJavaMethod";
         sampleJavaMethodComponentKeyName = "java.lang.String_sampleJavaMethod(java.lang.String)";
         sampleJavaMethodComponentType = OOPSourceModelConstants.ComponentType.METHOD_COMPONENT;
+        sampleJavaConstructorComponentName = "sampleJavaClass";
+        sampleJavaConstructorComponentKeyName = "void_sampleJavaClass()";
+        sampleJavaConstructorComponentType = OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT;
         sampleJavaMethodParamComponentName = "sampleJavaMethodParam";
         sampleJavaMethodParamComponentNameType = OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT;
         sampleJavaInterfaceComponentName = "SampleJavaInterface";
@@ -82,13 +88,14 @@ public class ParseComponentTypeTest {
                 + "  private String "
                 + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ") { "
                 + "} "
+                + "  public " + sampleJavaConstructorComponentName + " () { " + "} "
                 + "  " + "interface " + sampleJavaInterfaceComponentName + " { "
                 + "  public void "
                 + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName   + " );"
                 + "  }"
-                + "  public enum " + sampleJavaEnumComponent + " { " + "  "
-                +        sampleJavaEnumClassConstant + "(\"\");" + "  "
-                + "" + sampleJavaEnumClassConstructor + "(final String "  + sampleJavaEnumMethodParam + ") {}"
+                + "  public enum " + sampleJavaEnumComponent + " { " 
+                +        sampleJavaEnumClassConstant + "(\"\");"
+                +     sampleJavaEnumClassConstructor + "(final String "  + sampleJavaEnumMethodParam + ") {}"
                 + "  }"
                 + "  }";
     }
@@ -108,6 +115,15 @@ public class ParseComponentTypeTest {
                         + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponentName);
         Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaMethodParamComponentNameType.toString()));
     }
+
+    @Test
+    public final void testSampleJavaClassConstructorComponentType() throws Exception {
+        final Component tmp = generatedSourceModel.getComponents().get(
+                String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+                        + sampleJavaConstructorComponentKeyName);
+        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaConstructorComponentType.toString()));
+    }
+
 
     @Test
     public final void testSampleJavaClassMethodComponentType() throws Exception {
@@ -198,4 +214,5 @@ public class ParseComponentTypeTest {
                 .equals(
                         sampleJavaEnumMethodParamType.toString()));
     }
+
 }

@@ -82,8 +82,8 @@ regularModifier
 
 classDeclaration
     :   modifier* 'class' Identifier typeParameters?
-        ('extends' type)?
-        ('implements' typeList)?
+        ('extends' extendsType)?
+        ('implements' implementsTypeList)?
         classBody
     ;
 
@@ -122,6 +122,10 @@ interfaceDeclaration
 
 typeList
     :   type (',' type)*
+    ;
+
+implementsTypeList
+    :   implementsType (',' implementsType)*
     ;
 
 classBody
@@ -217,6 +221,31 @@ type
     |   primitiveType ('[' ']')*
     ;
 
+extendsType
+    :   Identifier
+    ;
+    
+implementsType
+    :   implementsClassOrInterfaceType ('[' ']')*
+    |   implementsPrimitiveType ('[' ']')*
+    ;
+
+    
+implementsClassOrInterfaceType
+    :   Identifier implementsTypeArguments? ('.' Identifier implementsTypeArguments? )*
+    ;
+
+implementsPrimitiveType
+    :   'boolean'
+    |   'char'
+    |   'byte'
+    |   'short'
+    |   'int'
+    |   'long'
+    |   'float'
+    |   'double'
+    ;
+       
 classOrInterfaceType
     :   Identifier typeArguments? ('.' Identifier typeArguments? )*
     ;
@@ -236,9 +265,18 @@ typeArguments
     :   '<' typeArgument (',' typeArgument)* '>'
     ;
 
+implementsTypeArguments
+    :   '<' implementsTypeArgument (',' implementsTypeArgument)* '>'
+    ;
+    
 typeArgument
     :   type
     |   '?' (('extends' | 'super') type)?
+    ;
+ 
+implementsTypeArgument
+    :   implementsType
+    |   '?' (('extends' | 'super') implementsType)?
     ;
 
 qualifiedNameList

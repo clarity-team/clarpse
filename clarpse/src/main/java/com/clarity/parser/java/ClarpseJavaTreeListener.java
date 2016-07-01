@@ -21,11 +21,13 @@ import parser.java.JavaParser;
 import parser.java.JavaParser.AnnotationTypeDeclarationContext;
 import parser.java.JavaParser.FormalParameterContext;
 import parser.java.JavaParser.FormalParameterListContext;
+import parser.java.JavaParser.ImplementsTypeContext;
 
 import com.clarity.parser.AntlrUtil;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 /**
  * As the parse tree is developed by Antlr, we add listener methods to capture
@@ -178,8 +180,9 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             classCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
             classCmp.setName(ctx.Identifier().getText());
             classCmp.setImports(currentImports);
-            if (ctx.type() != null) {
-                classCmp.insertTypeReference(new TypeExtension(ctx.type().getText(), ctx.getStart().getLine()));
+            if (ctx.extendsType() != null) {
+                classCmp.insertTypeReference(new TypeExtension(resolveType(ctx.extendsType().getText()), ctx.getStart()
+                        .getLine()));
             }
             componentStack.push(classCmp);
         }
@@ -413,9 +416,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterFormalParameter(final JavaParser.FormalParameterContext ctx) {
         if (!ignoreTreeWalk) {
             final Component currMethodCmp = componentStack.peek();
-            if (currMethodCmp.getComponentType().equals(
-                    OOPSourceModelConstants.getJavaComponentTypes().get(
-                            OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT))) {
+
+            if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
                 final Component cmp = createComponent(ctx,
                         OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
                 cmp.setCode(AntlrUtil.getFormattedText(ctx));
@@ -480,10 +482,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterTypeList(final JavaParser.TypeListContext ctx) {
+    public final void enterImplementsTypeList(final JavaParser.ImplementsTypeListContext ctx) {
         if (!ignoreTreeWalk) {
             final Component currCmp = componentStack.pop();
-            for (final JavaParser.TypeContext tempType : ctx.type()) {
+            for (final ImplementsTypeContext tempType : ctx.implementsType()) {
                 currCmp.insertTypeReference(new TypeImpementation(resolveType(tempType.getText()), ctx
                         .getStart()
                         .getLine()));
@@ -624,6 +626,12 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
     @Override
     public final void enterMethodInvocation(final JavaParser.MethodInvocationContext ctx) {
-        System.out.println("Found method call: " + AntlrUtil.getFormattedText(ctx));
+
+
+
+        // local method call..
+        if (ctx.methodName() != null) {
+            System.out.println("s");
+        }
     }
 }

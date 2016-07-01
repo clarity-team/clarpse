@@ -4,6 +4,7 @@ import invocation.ComponentInvocation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -245,7 +246,17 @@ public final class Component implements Serializable {
         }
     }
 
-    public ComponentInvocation componentInvocations (<? extends ComponentInvocation>)
+    public List<ComponentInvocation> componentInvocations(final Class<? extends ComponentInvocation> type) {
+
+        final List<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
+
+        for (final ComponentInvocation compInvocation : componentInvocations) {
+            if (type.isAssignableFrom(compInvocation.getClass())) {
+                invocations.add(compInvocation);
+            }
+        }
+        return invocations;
+    }
 
     public void setName(final String name) {
         this.name = name;

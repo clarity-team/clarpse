@@ -73,7 +73,8 @@ public class ComponentSourceFilePathTest {
 
     @Test
     public void testAbstractClassBMethodBComponentHasCorrectSourceFilePath() throws Exception {
-        final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestB.String_methodB()");
+        final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE
+                + ".TestB.java.lang.String_methodB()");
         assertTrue(component.getSourceFilePath().equals(SOURCEFILE1NAME));
     }
 
@@ -97,7 +98,8 @@ public class ComponentSourceFilePathTest {
 
     @Test
     public void testClassCAbstractClassDMethodDComponentHasCorrectSourceFilePath() throws Exception {
-        final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC.TestD.String_methodD()");
+        final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE
+                + ".TestC.TestD.java.lang.String_methodD()");
         assertTrue(component.getSourceFilePath().equals(SOURCEFILE2NAME));
     }
 }
