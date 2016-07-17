@@ -1,14 +1,10 @@
 package com.clarity.parser.java;
 
-import invocation.AnnotationInvocation;
-import invocation.ThrownException;
-import invocation.TypeDeclaration;
-import invocation.TypeExtension;
-import invocation.TypeImpementation;
-
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -22,7 +18,19 @@ import parser.java.JavaParser.AnnotationTypeDeclarationContext;
 import parser.java.JavaParser.FormalParameterContext;
 import parser.java.JavaParser.FormalParameterListContext;
 import parser.java.JavaParser.ImplementsTypeContext;
+import parser.java.JavaParser.MethodInvocationContext;
 
+import com.clarity.invocation.AnnotationInvocation;
+import com.clarity.invocation.ComponentInvocation;
+import com.clarity.invocation.ThrownException;
+import com.clarity.invocation.TypeDeclaration;
+import com.clarity.invocation.TypeExtension;
+import com.clarity.invocation.TypeImpementation;
+import com.clarity.invocation.sources.BindedInvocationSource;
+import com.clarity.invocation.sources.InvocationSource;
+import com.clarity.invocation.sources.InvocationSourceChain;
+import com.clarity.invocation.sources.MethodInvocationSourceChain;
+import com.clarity.invocation.sources.MethodInvocationSourceImpl;
 import com.clarity.parser.AntlrUtil;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
@@ -30,8 +38,9 @@ import com.clarity.sourcemodel.OOPSourceModelConstants;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 /**
- * As the parse tree is developed by Antlr, we add listener methods to capture
- * important information during this process and populate our Source Code Model.
+ * As the parse tree is developed by Antlr, we add listener methods to
+ * procedurally capture important information during this process and populate
+ * our Source Code Model.
  *
  * @author Muntazir Fadhel
  */
@@ -48,7 +57,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     private final String sourceFilePath;
     private static final String JAVA_BLOCK_COMMENT_BEGIN_SYMBOL = "/*";
     private static final String JAVA_BLOCK_COMMENT_END_SYMBOL = "*/";
-
+    // key = required component name, value = blocked invocation source
+    private volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources;
     /**
      * @param srcModel
      *            Source model to populate from the parsing of the given code
@@ -56,42 +66,27 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
      * @param sourceFilePath
      *            The path of the source file being parsed.
      */
-    public ClarpseJavaTreeListener(final OOPSourceCodeModel srcModel, final String sourceFilePath) {
+    public ClarpseJavaTreeListener(final OOPSourceCodeModel srcModel, final String sourceFilePath,
+            Map<String, List<InvocationSourceChain>> blockedInvocationSources) {
         this.srcModel = srcModel;
         this.sourceFilePath = sourceFilePath;
+        this.blockedInvocationSources = blockedInvocationSources;
     }
 
-    /**
-     * Cleanup tasks to do before completing and removing the component from the
-     * stack:
-     * 1) Update all parent component's external class references to
-     * include those of the current component
-     * 2) Update immediate parent
-     * component's child components to include the current component towards the
-     * current component as their child component.
-     */
     private void completeComponent() {
         for (int i = 0; i < componentCompletionMultiplier; i++) {
             if (!componentStack.isEmpty()) {
                 final Component completedCmp = componentStack.pop();
-                System.out.println(completedCmp.getUniqueName());
-                for (int j = componentStack.size() - 1; j >= 0; j--) {
-                    final Component possibleParentComponent = componentStack.get(j);
-                    if (possibleParentComponent.getComponentType().isBaseComponent()
-                            || componentStack.get(j).getComponentType().isMethodComponent()) {
-                        // Step 1)
-                        possibleParentComponent.insertTypeReferences(completedCmp.getExternalClassTypeReferences());
-                        // Step 2)
-                        if (j == (componentStack.size() - componentCompletionMultiplier)) {
-                            possibleParentComponent.insertChildComponent(completedCmp.getUniqueName());
-                        }
+                srcModel.insertComponent(completedCmp);
+                final List<InvocationSourceChain> blockedSources = blockedInvocationSources
+                        .get(completedCmp
+                                .getUniqueName());
+                if (blockedSources != null) {
+                    final List<InvocationSourceChain> blockedSourcesCopy = new ArrayList<InvocationSourceChain>(
+                            blockedSources);
+                    for (final InvocationSourceChain src : blockedSourcesCopy) {
+                        src.process();
                     }
-                }
-                try {
-                    srcModel.insertComponent(completedCmp);
-                } catch (final Exception e) {
-                    System.out.println("Could not add component to source model! " + completedCmp.getUniqueName());
-                    e.printStackTrace();
                 }
             }
         }
@@ -101,10 +96,6 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     /**
      * Generates appropriate name for the component. Uses the current stack of
      * parents components as prefixes to the name.
-     *
-     * @param identifier
-     *            short hand name of the component
-     * @return full name of the component
      */
     private String generateComponentName(final String identifier) {
         String componentName = "";
@@ -124,7 +115,6 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     private Component createComponent(final ParserRuleContext ctx,
             final OOPSourceModelConstants.ComponentType componentType) {
         final Component newCmp = new Component();
-        newCmp.setCode(AntlrUtil.getFormattedText(ctx));
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
         newCmp.setComment(AntlrUtil.getContextMultiLineComment(ctx, currFileSourceCode,
@@ -175,16 +165,19 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterClassDeclaration(final JavaParser.ClassDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
-            final Component classCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
-            classCmp.setCode(currFileSourceCode);
-            classCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-            classCmp.setName(ctx.Identifier().getText());
-            classCmp.setImports(currentImports);
-            if (ctx.extendsType() != null) {
-                classCmp.insertTypeReference(new TypeExtension(resolveType(ctx.extendsType().getText()), ctx.getStart()
-                        .getLine()));
+            if (ctx.Identifier() != null) {
+                final Component classCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
+                classCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+                classCmp.setName(ctx.Identifier().getText());
+                classCmp.setImports(currentImports);
+                pointParentsToChild(classCmp);
+                if (ctx.extendsType() != null) {
+                    classCmp.insertComponentInvocation(new TypeExtension(resolveType(ctx.extendsType().getText()), ctx
+                            .getStart()
+                            .getLine()));
+                }
+                componentStack.push(classCmp);
             }
-            componentStack.push(classCmp);
         }
     }
 
@@ -219,7 +212,6 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void exitClassDeclaration(final JavaParser.ClassDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
-
             completeComponent();
         }
     }
@@ -228,10 +220,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterEnumDeclaration(final JavaParser.EnumDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
             final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM_COMPONENT);
-            enumCmp.setCode(currFileSourceCode);
             enumCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
             enumCmp.setImports(currentImports);
             enumCmp.setName(ctx.Identifier().getText());
+            pointParentsToChild(enumCmp);
             componentStack.push(enumCmp);
         }
     }
@@ -249,9 +241,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component enumConstCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentType.ENUM_CONSTANT_COMPONENT);
             enumConstCmp.setName(ctx.Identifier().getText());
-            enumConstCmp.setCode(AntlrUtil.getFormattedText(ctx));
             enumConstCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-
+            pointParentsToChild(enumConstCmp);
             componentStack.push(enumConstCmp);
         }
     }
@@ -268,9 +259,9 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component interfaceCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT);
-            interfaceCmp.setCode(AntlrUtil.getFormattedText(ctx));
             interfaceCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
             interfaceCmp.setImports(currentImports);
+            pointParentsToChild(interfaceCmp);
             interfaceCmp.setName(ctx.Identifier().getText());
             componentStack.push(interfaceCmp);
         }
@@ -288,7 +279,6 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component currMethodCmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
-            currMethodCmp.setCode(AntlrUtil.getFormattedText(ctx));
             currMethodCmp.setName(ctx.Identifier().getText());
             if (ctx.type() != null) {
                 currMethodCmp.setValue(resolveType(ctx.type().getText()));
@@ -302,9 +292,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             }
             formalParametersString += ")";
 
-            final String methodSignature = currMethodCmp.getValue() + "_" + currMethodCmp.getName()
+            final String methodSignature = currMethodCmp.getName()
                     + formalParametersString;
             currMethodCmp.setComponentName(generateComponentName(methodSignature));
+            pointParentsToChild(currMethodCmp);
             componentStack.push(currMethodCmp);
         }
     }
@@ -315,7 +306,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         for (final FormalParameterContext fpContext : formalParameterList.formalParameter()) {
             typesList += resolveType(fpContext.type().getText()) + ",";
         }
-
+        if (formalParameterList.lastFormalParameter() != null) {
+            final String lFp = resolveType(formalParameterList.lastFormalParameter().type().getText());
+            typesList += lFp;
+        }
         if (typesList.endsWith(",")) {
             typesList = typesList.substring(0, typesList.length() - 1);
         }
@@ -343,11 +337,11 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             }
             formalParametersString += ")";
 
-            final String methodSignature = currMethodCmp.getValue() + "_" + currMethodCmp.getName()
-                    + formalParametersString;
+            final String methodSignature = currMethodCmp.getName() + formalParametersString;
 
 
             currMethodCmp.setComponentName(generateComponentName(methodSignature));
+            pointParentsToChild(currMethodCmp);
             componentStack.push(currMethodCmp);
         }
     }
@@ -369,10 +363,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             }
             formalParametersString += ")";
 
-            final String methodSignature = currMethodCmp.getValue() + "_" + currMethodCmp.getName()
-                    + formalParametersString;
+            final String methodSignature = currMethodCmp.getName() + formalParametersString;
 
             currMethodCmp.setComponentName(generateComponentName(methodSignature));
+            pointParentsToChild(currMethodCmp);
             componentStack.push(currMethodCmp);
         }
     }
@@ -404,7 +398,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component currMethodCmp = componentStack.pop();
             for (final JavaParser.QualifiedNameContext qctx : ctx.qualifiedName()) {
-                currMethodCmp.insertTypeReference(new ThrownException(resolveType(qctx.getText()), ctx
+                currMethodCmp.insertComponentInvocation(new ThrownException(resolveType(qctx.getText()), ctx
                         .getStart()
                         .getLine()));
             }
@@ -420,12 +414,26 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
                 final Component cmp = createComponent(ctx,
                         OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
-                cmp.setCode(AntlrUtil.getFormattedText(ctx));
                 componentStack.push(cmp);
             } else {
                 final Component cmp = createComponent(ctx,
                         OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
-                cmp.setCode(AntlrUtil.getFormattedText(ctx));
+                componentStack.push(cmp);
+            }
+        }
+    }
+
+    @Override
+    public final void enterLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
+        if (!ignoreTreeWalk) {
+            final Component currMethodCmp = componentStack.peek();
+            if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
+                final Component cmp = createComponent(ctx,
+                        OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
+                componentStack.push(cmp);
+            } else {
+                final Component cmp = createComponent(ctx,
+                        OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
                 componentStack.push(cmp);
             }
         }
@@ -439,11 +447,17 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
+    public final void exitLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
+        if (!ignoreTreeWalk) {
+            completeComponent();
+        }
+    }
+
+    @Override
     public final void enterLocalVariableDeclaration(final JavaParser.LocalVariableDeclarationContext ctx) {
         if (!ignoreTreeWalk) {
             final Component cmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentType.LOCAL_VARIABLE_COMPONENT);
-            cmp.setCode(AntlrUtil.getFormattedText(ctx));
             componentStack.push(cmp);
         }
     }
@@ -464,11 +478,9 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
                             OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT))) {
                 final Component cmp = createComponent(ctx,
                         OOPSourceModelConstants.ComponentType.INTERFACE_CONSTANT_COMPONENT);
-                cmp.setCode(AntlrUtil.getFormattedText(ctx));
                 componentStack.push(cmp);
             } else {
                 final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.FIELD_COMPONENT);
-                cmp.setCode(AntlrUtil.getFormattedText(ctx));
                 componentStack.push(cmp);
             }
         }
@@ -486,7 +498,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component currCmp = componentStack.pop();
             for (final ImplementsTypeContext tempType : ctx.implementsType()) {
-                currCmp.insertTypeReference(new TypeImpementation(resolveType(tempType.getText()), ctx
+                currCmp.insertComponentInvocation(new TypeImpementation(resolveType(tempType.getText()), ctx
                         .getStart()
                         .getLine()));
             }
@@ -498,9 +510,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterTypeParameters(final JavaParser.TypeParametersContext ctx) {
         if (!ignoreTreeWalk) {
             final Component currCmp = componentStack.pop();
-
             currCmp.setDeclarationTypeSnippet(AntlrUtil.getFormattedText(ctx));
-
             componentStack.push(currCmp);
         }
     }
@@ -509,22 +519,31 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterAnnotation(final JavaParser.AnnotationContext ctx) {
         if (!ignoreTreeWalk) {
 
-            final Component currCmp = componentStack.pop();
-
-            final HashMap<String, String> elementValuePairs = new HashMap<String, String>();
-            if (ctx.elementValuePairs() != null) {
-                for (final JavaParser.ElementValuePairContext evctx : ctx.elementValuePairs().elementValuePair()) {
-                    elementValuePairs.put(evctx.Identifier().getText(), evctx.elementValue().getText());
+            if (!componentStack.isEmpty()) {
+                final Component currCmp = componentStack.pop();
+                String typeName = "";
+                final HashMap<String, String> elementValuePairs = new HashMap<String, String>();
+                if (ctx.normalAnnotation() != null && ctx.normalAnnotation().elementValuePairList() != null) {
+                    typeName = resolveType(ctx.normalAnnotation().typeName().getText());
+                    for (final JavaParser.ElementValuePairContext evctx : ctx.normalAnnotation().elementValuePairList()
+                            .elementValuePair()) {
+                        elementValuePairs.put(evctx.Identifier().getText(), evctx.elementValue().getText());
+                    }
+                } else if (ctx.markerAnnotation() != null) {
+                    typeName = resolveType(ctx.markerAnnotation().typeName().getText());
+                    elementValuePairs.put(resolveType(ctx.markerAnnotation().typeName().getText()), "");
+                } else if (ctx.singleElementAnnotation() != null) {
+                    typeName = resolveType(ctx.singleElementAnnotation().typeName().getText());
+                    elementValuePairs.put("", ctx
+                            .singleElementAnnotation().elementValue().getText());
                 }
-            }
-            if (ctx.elementValue() != null) {
-                elementValuePairs.put(ctx.elementValue().getText(), "");
-            }
-            currCmp.insertTypeReference(new AnnotationInvocation(resolveType(ctx.annotationName().getText()), ctx.start
-                    .getLine(), new SimpleEntry<String, HashMap<String, String>>(ctx.annotationName().getText(),
-                            elementValuePairs)));
+                currCmp.insertComponentInvocation(new AnnotationInvocation(typeName,
+                        ctx.start
+                        .getLine(), new SimpleEntry<String, HashMap<String, String>>(typeName,
+                                elementValuePairs)));
 
-            componentStack.push(currCmp);
+                componentStack.push(currCmp);
+            }
         }
     }
 
@@ -538,7 +557,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
                 type += ciftx.getText() + ".";
             }
             type = type.substring(0, type.length() - 1);
-            currCmp.insertTypeReference(new TypeDeclaration(resolveType(type), ctx.getStart().getLine()));
+            currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(type), ctx.getStart().getLine()));
             componentStack.push(currCmp);
         }
     }
@@ -559,7 +578,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (!ignoreTreeWalk) {
             final Component currCmp = componentStack.pop();
 
-            currCmp.insertTypeReference(new TypeDeclaration(resolveType(ctx.getText()), ctx.getStart()
+            currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(ctx.getText()), ctx.getStart()
                     .getLine()));
 
             componentStack.push(currCmp);
@@ -570,40 +589,28 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterRegularModifier(final JavaParser.RegularModifierContext ctx) {
         if (!ignoreTreeWalk) {
             final Component currCmp = componentStack.pop();
-
             currCmp.insertAccessModifier(ctx.getText());
-
-            componentStack.push(currCmp);
-        }
-    }
-
-    @Override
-    public final void enterPrimary(final JavaParser.PrimaryContext ctx) {
-        if (!ignoreTreeWalk) {
-            // System.out.println(AntlrUtil.getFormattedText(ctx));
-            final Component currCmp = componentStack.pop();
-            // if (ctx.Identifier() != null) {
-            // currCmp.insertTypeReference(new
-            // TypeReference(resolveType(ctx.getText()),
-            // ctx.getStart().getLine()));
-            // }
             componentStack.push(currCmp);
         }
     }
 
     @Override
     public final void enterVariableDeclaratorId(final JavaParser.VariableDeclaratorIdContext ctx) {
-        if (!ignoreTreeWalk) {
+        if (!ignoreTreeWalk && ctx.Identifier() != null) {
             final Component currCmp = componentStack.pop();
-            if ((currCmp.getComponentName() == null) || (currCmp.getComponentName().isEmpty())) {
-                currCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-                currCmp.setName(ctx.Identifier().getText());
-            } else {
-                final Component copyCmp = new Component(currCmp);
-                componentCompletionMultiplier += 1;
-                copyCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-                copyCmp.setName(ctx.Identifier().getText());
-                componentStack.push(copyCmp);
+            if (currCmp.getComponentType().isVariableComponent()) {
+                if ((currCmp.getComponentName() == null) || (currCmp.getComponentName().isEmpty())) {
+                    currCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+                    pointParentsToChild(currCmp);
+                    currCmp.setName(ctx.Identifier().getText());
+                } else if (ctx.Identifier() != null) {
+                    final Component copyCmp = new Component(currCmp);
+                    componentCompletionMultiplier += 1;
+                    copyCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+                    copyCmp.setName(ctx.Identifier().getText());
+                    pointParentsToChild(copyCmp);
+                    componentStack.push(copyCmp);
+                }
             }
             componentStack.push(currCmp);
         }
@@ -612,10 +619,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterVariableInitializer(final JavaParser.VariableInitializerContext ctx) {
         if (!ignoreTreeWalk) {
-            System.out.println(ctx.getText());
             final Component currCmp = componentStack.pop();
             currCmp.setValue(ctx.getText());
-
             componentStack.push(currCmp);
         }
     }
@@ -625,19 +630,118 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         currFileSourceCode = AntlrUtil.getFormattedText(ctx);
     }
 
-    @Override
-    public final void enterExpression(final JavaParser.ExpressionContext ctx) {
-        System.out.println(ctx.getText());
+
+    private String retrieveContainingClassName(MethodInvocationContext ctx) {
+
+        String containingClassName = "";
+
+        // local method call..
+        if (ctx.localMethodName() != null) {
+            final List<ComponentType> baseTypes = new ArrayList<ComponentType>();
+            baseTypes.add(ComponentType.CLASS_COMPONENT);
+            baseTypes.add(ComponentType.INTERFACE_COMPONENT);
+            baseTypes.add(ComponentType.ENUM_COMPONENT);
+            containingClassName = newestStackComponent(baseTypes).getUniqueName();
+        }
+
+        // variable or static method call..
+        if (ctx.typeName() != null) {
+            final Component variableComponent = findLocalSourceFileComponent(ctx.typeName().getText());
+            if (variableComponent != null && variableComponent.getName() != null) {
+                final List<ComponentInvocation> typeInstantiations = variableComponent
+                        .componentInvocations(TypeDeclaration.class);
+                if (!typeInstantiations.isEmpty()) {
+                    containingClassName = typeInstantiations.get(0).invokedComponent();
+                }
+            } else {
+                final String text = ctx.typeName().getText();
+                if (text.contains(".")) {
+                    containingClassName = text;
+                } else {
+                    containingClassName = resolveType(text);
+                }
+            }
+        }
+        return containingClassName;
     }
 
     @Override
-    public final void enterMethodInvocation(final JavaParser.MethodInvocationContext ctx) {
+    public final void enterMethodInvocations(final JavaParser.MethodInvocationsContext ctx) {
 
 
+        if (!componentStack.isEmpty()) {
+            final Component currCmp = componentStack.peek();
+            final List<InvocationSource> methodSources = new ArrayList<InvocationSource>();
 
-        // local method call..
-        if (ctx.methodName() != null) {
-            System.out.println("s");
+            for (final MethodInvocationContext methodCtx : ctx.methodInvocation()) {
+
+                methodSources.add(new BindedInvocationSource(new MethodInvocationSourceImpl(
+                        retrieveContainingClassName(methodCtx), extractMethodCall(methodCtx), methodCtx
+                        .getStart()
+                        .getLine(), getArgumentsSize(methodCtx)), currCmp));
+            }
+
+            final MethodInvocationSourceChain methodChain = new MethodInvocationSourceChain(methodSources);
+            methodChain.process();
         }
+
+    }
+
+    private String extractMethodCall(MethodInvocationContext ctx) {
+
+        if (ctx.localMethodName() != null) {
+            return ctx.localMethodName().getText();
+        } else {
+            if (ctx.Identifier() != null) {
+                return ctx.Identifier().getText();
+            }
+        }
+        return "";
+    }
+
+    private Component newestStackComponent(List<ComponentType> possibleTypes) {
+
+        Component newestComponent = new Component();
+
+        final Iterator<Component> iter = componentStack.iterator();
+        while (iter.hasNext()) {
+            final Component next = iter.next();
+            for (final ComponentType cmpType : possibleTypes) {
+                if (next.getComponentType() == cmpType) {
+                    newestComponent = next;
+                }
+            }
+        }
+        return newestComponent;
+    }
+
+    private Component findLocalSourceFileComponent(String componentShortName) {
+
+        for (int i = componentStack.size() - 1; i >= 0; i--) {
+            for (final String childCmpName : componentStack.get(i).children()) {
+                if (childCmpName.endsWith("." + componentShortName)) {
+                    return srcModel.getComponent(childCmpName);
+                }
+            }
+        }
+        return new Component();
+    }
+
+    private void pointParentsToChild(Component childCmp) {
+
+        final String parentName = childCmp.getParentComponentUniqueName();
+        for (int i = componentStack.size() - 1; i >= 0; i--) {
+            if (componentStack.get(i).getUniqueName().equals(parentName)) {
+                componentStack.get(i).insertChildComponent(childCmp.getUniqueName());
+            }
+        }
+    }
+
+    private int getArgumentsSize(MethodInvocationContext ctx) {
+        int invocationArguments = 0;
+        if (ctx.argumentList() != null) {
+            invocationArguments = ctx.argumentList().argument().size();
+        }
+        return invocationArguments;
     }
 }

@@ -1,17 +1,21 @@
 package com.clarity.parser;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import parser.java.JavaLexer;
+import parser.java.JavaParser;
+
+import com.clarity.invocation.sources.InvocationSourceChain;
+import com.clarity.parser.java.ClarpseJavaTreeListener;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
@@ -29,6 +33,19 @@ public class AntlrParser implements ClarpseParser {
     private final String grammarName;
 
     private final String clarityListenerPkgLocation;
+
+    private static OOPSourceCodeModel srcModel;
+
+    public static OOPSourceCodeModel getSrcModel() {
+        return srcModel;
+    }
+
+    public static Map<String, List<InvocationSourceChain>> getBlockedInvocationSources() {
+        return blockedInvocationSources;
+    }
+
+    private static volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources = new HashMap<String, List<InvocationSourceChain>>();
+
 
     private static final String PARSE_RESULT_OBJECT_TYPE = "com.clarity.sourcemodel.OOPSourceCodeModel";
 
@@ -57,27 +74,35 @@ public class AntlrParser implements ClarpseParser {
     @Override
     public final OOPSourceCodeModel extractParseResult(final ParseRequestContent rawData) throws Exception {
 
-        final OOPSourceCodeModel antlrParseResult = (OOPSourceCodeModel) Class.forName(PARSE_RESULT_OBJECT_TYPE)
-                .getConstructor().newInstance();
+        srcModel = new OOPSourceCodeModel();
+
+        ANTLRInputStream stream = new ANTLRInputStream();
+        final JavaLexer lexer = new JavaLexer(stream);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        final JavaParser parser = new JavaParser(tokens);
+        parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+        parser.setErrorHandler(new BailErrorStrategy());
 
         final List<RawFile> files = rawData.getFiles();
         for (final RawFile file : files) {
 
-            final Lexer lexer = (Lexer) Class.forName(antlrClassesPackageLocation + "." + grammarName + "Lexer")
-                    .getConstructor(CharStream.class).newInstance(new ANTLRInputStream(file.getContent()));
-            final CommonTokenStream tokens = new CommonTokenStream(lexer);
-            final Class<?> cls = Class.forName(antlrClassesPackageLocation + "." + grammarName + "Parser");
-            final Object parser = cls.getConstructor(TokenStream.class).newInstance(tokens);
-            final Method method = cls.getDeclaredMethod("compilationUnit");
-            final ParseTree tree = (ParseTree) method.invoke(parser);
-            final ParseTreeWalker walker = new ParseTreeWalker();
-            final ParseTreeListener listener = (ParseTreeListener) Class
-                    .forName(clarityListenerPkgLocation + "." + "Clarpse" + grammarName + "TreeListener")
-                    .getConstructor(OOPSourceCodeModel.class, String.class)
-                    .newInstance(antlrParseResult, file.getName());
-            walker.walk(listener, tree);
-        }
+            stream = new ANTLRInputStream(file.getContent());
+            lexer.setInputStream(stream);
+            tokens = new CommonTokenStream(lexer);
+            parser.setTokenStream(tokens);
 
-        return antlrParseResult;
+            ParseTree tree;
+            try {
+                tree = parser.compilationUnit();
+            } catch (final Exception e) {
+                System.out.println("Failed file: " + file.getName());
+                System.out.println(e.getCause());
+                continue;
+            }
+            final ClarpseJavaTreeListener listener = new ClarpseJavaTreeListener(srcModel, file.getName(),
+                    blockedInvocationSources);
+            ParseTreeWalker.DEFAULT.walk(listener, tree);
+        }
+        return srcModel;
     }
 }

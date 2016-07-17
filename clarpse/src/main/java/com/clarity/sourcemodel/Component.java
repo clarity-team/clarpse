@@ -1,14 +1,10 @@
 package com.clarity.sourcemodel;
 
-import invocation.ComponentInvocation;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 /**
@@ -34,20 +30,18 @@ public final class Component implements Serializable {
     private ComponentType componentType;
     private ArrayList<ComponentInvocation> componentInvocations = new ArrayList<ComponentInvocation>();
     private String componentName;
-    private String code;
     private final ArrayList<String> children = new ArrayList<String>();
     private String declarationTypeSnippet;
 
     public Component(final Component component) {
         modifiers = component.getModifiers();
-        code = component.getCode();
         componentType = component.getComponentType();
         declarationTypeSnippet = component.getDeclarationTypeSnippet();
         componentInvocations = component.getExternalClassTypeReferences();
         imports = component.getImports();
         componentName = component.getComponentName();
         packageName = component.getPackageName();
-        value = component.getValue();
+        value = component.value();
         start = component.getStartLine();
         end = component.getEndLine();
         sourceFilePath = component.getSourceFilePath();
@@ -56,22 +50,7 @@ public final class Component implements Serializable {
     public Component() {
     }
 
-    public void copy(final Component component) {
-
-        modifiers = component.getModifiers();
-        code = component.getCode();
-        componentType = component.getComponentType();
-        declarationTypeSnippet = component.getDeclarationTypeSnippet();
-        componentInvocations = component.getExternalClassTypeReferences();
-        imports = component.getImports();
-        componentName = component.getComponentName();
-        packageName = component.getPackageName();
-        value = component.getValue();
-        start = component.getStartLine();
-        end = component.getEndLine();
-    }
-
-    public ArrayList<String> getChildComponents() {
+    public ArrayList<String> children() {
         return children;
     }
 
@@ -92,7 +71,7 @@ public final class Component implements Serializable {
     }
 
     public String getUniqueName() {
-        if (!packageName.isEmpty()) {
+        if (packageName != null && !packageName.isEmpty()) {
             return packageName + "." + componentName;
         } else {
             return componentName;
@@ -105,15 +84,13 @@ public final class Component implements Serializable {
     }
 
     public void insertChildComponent(final String childComponentName) {
-        children.add(childComponentName);
+        if (!children.contains(childComponentName)) {
+            children.add(childComponentName);
+        }
     }
 
     public void addImports(final String importStmt) {
         imports.add(importStmt);
-    }
-
-    public String getCode() {
-        return code;
     }
 
     public String getDeclarationTypeSnippet() {
@@ -124,7 +101,7 @@ public final class Component implements Serializable {
         return componentInvocations;
     }
 
-    public void insertTypeReference(final ComponentInvocation ref) {
+    public void insertComponentInvocation(final ComponentInvocation ref) {
         componentInvocations.add(ref);
     }
 
@@ -134,10 +111,6 @@ public final class Component implements Serializable {
 
     public String getComponentName() {
         return componentName;
-    }
-
-    public void setCode(final String componentCode) {
-        code = componentCode;
     }
 
     public void setDeclarationTypeSnippet(final String componentDeclarationTypeFragment) {
@@ -182,7 +155,7 @@ public final class Component implements Serializable {
         this.packageName = packageName;
     }
 
-    public String getValue() {
+    public String value() {
         return value;
     }
 
@@ -198,51 +171,29 @@ public final class Component implements Serializable {
         this.comment = comment;
     }
 
-    public Component getParentBaseComponent(final Map<String, Component> map) {
-
-        String currParentClassName = getUniqueName();
-        final int numberOfParentCmps = StringUtils.countMatches(getComponentName(), ".");
-        for (int i = numberOfParentCmps; i > 0; i--) {
-            currParentClassName = getParentComponentUniqueName(currParentClassName);
-            if (map.containsKey(currParentClassName)
-                    && map.get(currParentClassName).getComponentType().isBaseComponent()) {
-                break;
-            }
-        }
-        return map.get(currParentClassName);
-    }
-
-    public String getParentComponentUniqueName(final String componentFullName) {
-
-        final int lastPeriod = componentFullName.lastIndexOf(".");
-        final String currParentClassName = getUniqueName().substring(0, lastPeriod);
-        return currParentClassName;
-    }
-
-    public Component getParentMethodComponent(final Map<String, Component> components) {
-
-        String currParentClassName = getUniqueName();
-        final int numberOfParentCmps = StringUtils.countMatches(getComponentName(), ".");
-        for (int i = numberOfParentCmps; i > 0; i--) {
-            currParentClassName = getParentComponentUniqueName(currParentClassName);
-            if (components.containsKey(currParentClassName)
-                    && components.get(currParentClassName).getComponentType().isMethodComponent()) {
-                break;
-            }
-        }
-        return components.get(currParentClassName);
-    }
-
     public String getParentComponentUniqueName() {
 
-        final int lastPeriod = getUniqueName().lastIndexOf(".");
-        final String currParentClassName = getUniqueName().substring(0, lastPeriod);
-        return currParentClassName;
+        if (!componentType.isMethodComponent()) {
+            if (getUniqueName().contains(".")) {
+                final int lastPeriod = getUniqueName().lastIndexOf(".");
+                final String currParentClassName = getUniqueName().substring(0, lastPeriod);
+                return currParentClassName;
+            } else {
+                throw new IllegalArgumentException("Cannot get parent of component: " + getUniqueName());
+            }
+        } else {
+            final int lastOpeningBracket = getUniqueName().lastIndexOf("(");
+            final String methodComponentUniqueNameMinusParamters = getUniqueName().substring(0,
+                    lastOpeningBracket);
+            final int lastPeriod = methodComponentUniqueNameMinusParamters.lastIndexOf(".");
+            final String currParentClassName = methodComponentUniqueNameMinusParamters.substring(0, lastPeriod);
+            return currParentClassName;
+        }
     }
 
-    public void insertTypeReferences(final ArrayList<ComponentInvocation> externalClassTypeReferenceList) {
+    public void insertComponentInvocations(final ArrayList<ComponentInvocation> externalClassTypeReferenceList) {
         for (final ComponentInvocation typeRef : externalClassTypeReferenceList) {
-            insertTypeReference(typeRef);
+            insertComponentInvocation(typeRef);
         }
     }
 

@@ -64,13 +64,13 @@ public class ParseLineNumberAttributeTest {
 
     @Test
     public void testCorrectStartLineNoForMethodComponent() throws Exception {
-        final Component methodCmp = generatedSourceModel.getComponent("x.foo.void_fooMethod()");
+        final Component methodCmp = generatedSourceModel.getComponent("x.foo.fooMethod()");
         Assert.assertTrue(methodCmp.getStartLine().equals(MethodComponentBeginLine));
     }
 
     @Test
     public void testCorrectEndLineNoForMethodComponent() throws Exception {
-        final Component methodCmp = generatedSourceModel.getComponent("x.foo.void_fooMethod()");
+        final Component methodCmp = generatedSourceModel.getComponent("x.foo.fooMethod()");
         Assert.assertTrue(methodCmp.getEndLine().equals(MethodComponentEndLine));
     }
 }

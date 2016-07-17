@@ -103,6 +103,7 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("Runnable", JAVA_DEFAULT_PKG + "Runnable");
         JAVA_DEFAULT_CLASSES.put("UncaughtExceptionHandler", JAVA_DEFAULT_PKG + "UncaughtExceptionHandler");
         JAVA_DEFAULT_CLASSES.put("Boolean", JAVA_DEFAULT_PKG + "Boolean");
+        JAVA_DEFAULT_CLASSES.put("boolean", JAVA_DEFAULT_PKG + "Boolean");
         JAVA_DEFAULT_CLASSES.put("Byte", JAVA_DEFAULT_PKG + "Byte");
         JAVA_DEFAULT_CLASSES.put("Character", JAVA_DEFAULT_PKG + "Character");
         JAVA_DEFAULT_CLASSES.put("Subset", JAVA_DEFAULT_PKG + "Character.Subset");
@@ -112,6 +113,11 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("ClassValue", JAVA_DEFAULT_PKG + "ClassValue");
         JAVA_DEFAULT_CLASSES.put("Compiler", JAVA_DEFAULT_PKG + "Compiler");
         JAVA_DEFAULT_CLASSES.put("Double", JAVA_DEFAULT_PKG + "Double");
+        JAVA_DEFAULT_CLASSES.put("double", JAVA_DEFAULT_PKG + "Double");
+        JAVA_DEFAULT_CLASSES.put("float", JAVA_DEFAULT_PKG + "Float");
+        JAVA_DEFAULT_CLASSES.put("int", JAVA_DEFAULT_PKG + "Integer");
+        JAVA_DEFAULT_CLASSES.put("long", JAVA_DEFAULT_PKG + "Long");
+        JAVA_DEFAULT_CLASSES.put("byte", JAVA_DEFAULT_PKG + "Byte");
         JAVA_DEFAULT_CLASSES.put("Enum", JAVA_DEFAULT_PKG + "Enum");
         JAVA_DEFAULT_CLASSES.put("Float", JAVA_DEFAULT_PKG + "Float");
         JAVA_DEFAULT_CLASSES.put("InheritableThreadLocal", JAVA_DEFAULT_PKG + "InheritableThreadLocal");
@@ -275,7 +281,7 @@ public final class OOPSourceModelConstants {
          * @param isVariableComponent true when component is a variable type component.
          */
         ComponentType(final boolean isBaseComponent, final boolean isMethodComponent,
- final boolean isVariableComponent) {
+                final boolean isVariableComponent) {
             this.isBaseComponent = isBaseComponent;
             this.isMethodComponent = isMethodComponent;
             this.isVariableComponent = isVariableComponent;

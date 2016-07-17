@@ -1,4 +1,4 @@
-package invocation;
+package com.clarity.invocation;
 
 public class TypeDeclaration extends ComponentInvocation {
 

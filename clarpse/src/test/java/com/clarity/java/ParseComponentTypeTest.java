@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.clarity.ClarpseUtil;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ParseService;
@@ -32,6 +33,8 @@ public class ParseComponentTypeTest {
     private static OOPSourceModelConstants.ComponentType sampleJavaConstructorComponentType;
     private static String sampleJavaMethodParamComponentName;
     private static OOPSourceModelConstants.ComponentType sampleJavaMethodParamComponentNameType;
+    private static String sampleJavaMethodParamComponent2Name;
+    private static OOPSourceModelConstants.ComponentType sampleJavaMethodParamComponent2NameType;
     private static String sampleJavaInterfaceComponentName;
     private static OOPSourceModelConstants.ComponentType sampleJavaInterfaceComponentType;
     private static String sampleJavaInterfaceMethodComponentName;
@@ -57,17 +60,19 @@ public class ParseComponentTypeTest {
         sampleJavaClassFieldComponentName = "sampleJavaClassField";
         sampleJavaClassFieldComponentType = OOPSourceModelConstants.ComponentType.FIELD_COMPONENT;
         sampleJavaMethodComponentName = "sampleJavaMethod";
-        sampleJavaMethodComponentKeyName = "java.lang.String_sampleJavaMethod(java.lang.String)";
+        sampleJavaMethodComponentKeyName = "sampleJavaMethod(java.lang.String,java.lang.Object)";
         sampleJavaMethodComponentType = OOPSourceModelConstants.ComponentType.METHOD_COMPONENT;
         sampleJavaConstructorComponentName = "sampleJavaClass";
-        sampleJavaConstructorComponentKeyName = "void_sampleJavaClass()";
+        sampleJavaConstructorComponentKeyName = "sampleJavaClass()";
         sampleJavaConstructorComponentType = OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT;
         sampleJavaMethodParamComponentName = "sampleJavaMethodParam";
         sampleJavaMethodParamComponentNameType = OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT;
+        sampleJavaMethodParamComponent2Name = "sampleJavaMethodParam2";
+        sampleJavaMethodParamComponent2NameType = OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT;
         sampleJavaInterfaceComponentName = "SampleJavaInterface";
         sampleJavaInterfaceComponentType = OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT;
         sampleJavaInterfaceMethodComponentName = "sampleJavaInterfaceMethod";
-        sampleJavaInterfaceMethodComponentKeyName = "void_sampleJavaInterfaceMethod(java.lang.String)";
+        sampleJavaInterfaceMethodComponentKeyName = "sampleJavaInterfaceMethod(java.lang.String)";
         sampleJavaInterfaceMethodComponentType = OOPSourceModelConstants.ComponentType.METHOD_COMPONENT;
         sampleJavaInterfaceMethodParamComponentName = "sampleJavaInterfaceMethodParamComponent";
         sampleJavaInterfaceMethodParamComponentType = OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT;
@@ -76,7 +81,7 @@ public class ParseComponentTypeTest {
         sampleJavaEnumClassConstant = "SampleJavaEnumClassConstant";
         sampleJavaEnumClassConstantType = OOPSourceModelConstants.ComponentType.ENUM_CONSTANT_COMPONENT;
         sampleJavaEnumClassConstructor = "sampleJavaEnumClass";
-        sampleJavaEnumClassConstructorKey = "void_sampleJavaEnumClass(java.lang.String)";
+        sampleJavaEnumClassConstructorKey = "sampleJavaEnumClass(java.lang.String)";
         sampleJavaEnumClassConstructorType = OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT;
         sampleJavaEnumMethodParam = "enumMethodParam";
         sampleJavaEnumMethodParamType = OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT;
@@ -85,15 +90,14 @@ public class ParseComponentTypeTest {
                 + sampleJavaPackageName + "; "
                 + "class " + sampleJavaClassComponentName + " {"
                 + "  private String " + sampleJavaClassFieldComponentName + ";"
-                + "  private String "
-                + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ") { "
-                + "} "
+                + "  private String " + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ", Object..." + sampleJavaMethodParamComponent2Name + ") { "
+                + "  } "
                 + "  public " + sampleJavaConstructorComponentName + " () { " + "} "
                 + "  " + "interface " + sampleJavaInterfaceComponentName + " { "
                 + "  public void "
                 + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName   + " );"
                 + "  }"
-                + "  public enum " + sampleJavaEnumComponent + " { " 
+                + "  public enum " + sampleJavaEnumComponent + " { "
                 +        sampleJavaEnumClassConstant + "(\"\");"
                 +     sampleJavaEnumClassConstructor + "(final String "  + sampleJavaEnumMethodParam + ") {}"
                 + "  }"
@@ -106,6 +110,7 @@ public class ParseComponentTypeTest {
         rawData.insertFile(new RawFile("file1", codeString));
         final ParseService parseService = new ParseService();
         generatedSourceModel = parseService.parseProject(rawData);
+        System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel));
     }
 
     @Test
@@ -114,6 +119,14 @@ public class ParseComponentTypeTest {
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponentName);
         Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaMethodParamComponentNameType.toString()));
+    }
+
+    @Test
+    public final void testSampleJavaClassMethodParam2ComponentType() throws Exception {
+        final Component tmp = generatedSourceModel.getComponents().get(
+                String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+                        + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponent2Name);
+        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaMethodParamComponent2NameType.toString()));
     }
 
     @Test
