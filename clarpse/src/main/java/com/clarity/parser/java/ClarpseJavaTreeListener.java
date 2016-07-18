@@ -14,7 +14,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import parser.java.JavaBaseListener;
 import parser.java.JavaParser;
-import parser.java.JavaParser.AnnotationTypeDeclarationContext;
 import parser.java.JavaParser.FormalParameterContext;
 import parser.java.JavaParser.FormalParameterListContext;
 import parser.java.JavaParser.ImplementsTypeContext;
@@ -53,7 +52,6 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     private final OOPSourceCodeModel srcModel;
     private int componentCompletionMultiplier = 1;
     private final Map<String, String> currentImportsMap = new HashMap<String, String>();
-    private boolean ignoreTreeWalk = false;
     private final String sourceFilePath;
     private static final String JAVA_BLOCK_COMMENT_BEGIN_SYMBOL = "/*";
     private static final String JAVA_BLOCK_COMMENT_END_SYMBOL = "*/";
@@ -78,9 +76,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             if (!componentStack.isEmpty()) {
                 final Component completedCmp = componentStack.pop();
                 srcModel.insertComponent(completedCmp);
-                final List<InvocationSourceChain> blockedSources = blockedInvocationSources
-                        .get(completedCmp
-                                .getUniqueName());
+                final List<InvocationSourceChain> blockedSources = blockedInvocationSources.get(completedCmp
+                        .getUniqueName());
                 if (blockedSources != null) {
                     final List<InvocationSourceChain> blockedSourcesCopy = new ArrayList<InvocationSourceChain>(
                             blockedSources);
@@ -151,36 +148,21 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterAnnotationTypeDeclaration(final AnnotationTypeDeclarationContext ctx) {
-
-        ignoreTreeWalk = true;
-    }
-
-    @Override
-    public final void exitAnnotationTypeDeclaration(final AnnotationTypeDeclarationContext ctx) {
-
-        ignoreTreeWalk = false;
-    }
-
-    @Override
     public final void enterClassDeclaration(final JavaParser.ClassDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            if (ctx.Identifier() != null) {
-                final Component classCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
-                classCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-                classCmp.setName(ctx.Identifier().getText());
-                classCmp.setImports(currentImports);
-                pointParentsToChild(classCmp);
-                if (ctx.extendsType() != null) {
-                    classCmp.insertComponentInvocation(new TypeExtension(resolveType(ctx.extendsType().getText()), ctx
-                            .getStart()
-                            .getLine()));
-                }
-                componentStack.push(classCmp);
+
+        if (ctx.Identifier() != null) {
+            final Component classCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
+            classCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+            classCmp.setName(ctx.Identifier().getText());
+            classCmp.setImports(currentImports);
+            pointParentsToChild(classCmp);
+            if (ctx.extendsType() != null) {
+                classCmp.insertComponentInvocation(new TypeExtension(resolveType(ctx.extendsType().getText()), ctx
+                        .getStart().getLine()));
             }
+            componentStack.push(classCmp);
         }
     }
-
     /**
      * Returns corresponding import statement based on given type.
      *
@@ -190,18 +172,16 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
      */
     private String resolveType(final String type) {
 
-        if (!ignoreTreeWalk) {
-            if (currentImportsMap.containsKey(type)) {
-                return currentImportsMap.get(type);
-            }
-            if (type.contains(".")) {
-                return type;
-            }
-            if (OOPSourceModelConstants.getJavaDefaultClasses().containsKey(type)) {
-                return OOPSourceModelConstants.getJavaDefaultClasses().get(type);
-            }
-        }
 
+        if (currentImportsMap.containsKey(type)) {
+            return currentImportsMap.get(type);
+        }
+        if (type.contains(".")) {
+            return type;
+        }
+        if (OOPSourceModelConstants.getJavaDefaultClasses().containsKey(type)) {
+            return OOPSourceModelConstants.getJavaDefaultClasses().get(type);
+        }
         if (!currentPkg.isEmpty()) {
             return currentPkg + "." + type;
         } else {
@@ -211,94 +191,85 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
     @Override
     public final void exitClassDeclaration(final JavaParser.ClassDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
+
+        completeComponent();
     }
 
     @Override
     public final void enterEnumDeclaration(final JavaParser.EnumDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM_COMPONENT);
-            enumCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-            enumCmp.setImports(currentImports);
-            enumCmp.setName(ctx.Identifier().getText());
-            pointParentsToChild(enumCmp);
-            componentStack.push(enumCmp);
-        }
+
+        final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM_COMPONENT);
+        enumCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+        enumCmp.setImports(currentImports);
+        enumCmp.setName(ctx.Identifier().getText());
+        pointParentsToChild(enumCmp);
+        componentStack.push(enumCmp);
     }
 
     @Override
     public final void exitEnumDeclaration(final JavaParser.EnumDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
+
+        completeComponent();
     }
 
     @Override
     public final void enterEnumConstant(final JavaParser.EnumConstantContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component enumConstCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.ENUM_CONSTANT_COMPONENT);
-            enumConstCmp.setName(ctx.Identifier().getText());
-            enumConstCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-            pointParentsToChild(enumConstCmp);
-            componentStack.push(enumConstCmp);
-        }
+
+        final Component enumConstCmp = createComponent(ctx,
+                OOPSourceModelConstants.ComponentType.ENUM_CONSTANT_COMPONENT);
+        enumConstCmp.setName(ctx.Identifier().getText());
+        enumConstCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+        pointParentsToChild(enumConstCmp);
+        componentStack.push(enumConstCmp);
     }
 
     @Override
     public final void exitEnumConstant(final JavaParser.EnumConstantContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
+
+        completeComponent();
     }
 
     @Override
     public final void enterInterfaceDeclaration(final JavaParser.InterfaceDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component interfaceCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT);
-            interfaceCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-            interfaceCmp.setImports(currentImports);
-            pointParentsToChild(interfaceCmp);
-            interfaceCmp.setName(ctx.Identifier().getText());
-            componentStack.push(interfaceCmp);
-        }
+
+        final Component interfaceCmp = createComponent(ctx,
+                OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT);
+        interfaceCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+        interfaceCmp.setImports(currentImports);
+        pointParentsToChild(interfaceCmp);
+        interfaceCmp.setName(ctx.Identifier().getText());
+        componentStack.push(interfaceCmp);
     }
 
     @Override
     public final void exitInterfaceDeclaration(final JavaParser.InterfaceDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
+
+        completeComponent();
     }
 
     @Override
     public final void enterMethodDeclaration(final JavaParser.MethodDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currMethodCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
-            currMethodCmp.setName(ctx.Identifier().getText());
-            if (ctx.type() != null) {
-                currMethodCmp.setValue(resolveType(ctx.type().getText()));
-            } else {
-                currMethodCmp.setValue("void");
-            }
 
-            String formalParametersString = "(";
-            if (ctx.formalParameters().formalParameterList() != null) {
-                formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
-            }
-            formalParametersString += ")";
-
-            final String methodSignature = currMethodCmp.getName()
-                    + formalParametersString;
-            currMethodCmp.setComponentName(generateComponentName(methodSignature));
-            pointParentsToChild(currMethodCmp);
-            componentStack.push(currMethodCmp);
+        final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
+        currMethodCmp.setName(ctx.Identifier().getText());
+        if (ctx.type() != null) {
+            currMethodCmp.setValue(resolveType(ctx.type().getText()));
+        } else {
+            currMethodCmp.setValue("void");
         }
+
+        String formalParametersString = "(";
+        if (ctx.formalParameters().formalParameterList() != null) {
+            formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
+        }
+        formalParametersString += ")";
+
+        final String methodSignature = currMethodCmp.getName() + formalParametersString;
+        currMethodCmp.setComponentName(generateComponentName(methodSignature));
+        pointParentsToChild(currMethodCmp);
+        componentStack.push(currMethodCmp);
     }
+
 
     private String getFormalParameterTypesList(final FormalParameterListContext formalParameterList) {
 
@@ -318,285 +289,258 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
     @Override
     public final void enterInterfaceMethodDeclaration(final JavaParser.InterfaceMethodDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currMethodCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
 
-            final String methodName = ctx.Identifier().getText();
-            currMethodCmp.setName(methodName);
+        final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
 
-            if (ctx.type() != null) {
-                currMethodCmp.setValue(ctx.type().getText());
-            } else {
-                currMethodCmp.setValue("void");
-            }
+        final String methodName = ctx.Identifier().getText();
+        currMethodCmp.setName(methodName);
 
-            String formalParametersString = "(";
-            if (ctx.formalParameters().formalParameterList() != null) {
-                formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
-            }
-            formalParametersString += ")";
-
-            final String methodSignature = currMethodCmp.getName() + formalParametersString;
-
-
-            currMethodCmp.setComponentName(generateComponentName(methodSignature));
-            pointParentsToChild(currMethodCmp);
-            componentStack.push(currMethodCmp);
+        if (ctx.type() != null) {
+            currMethodCmp.setValue(ctx.type().getText());
+        } else {
+            currMethodCmp.setValue("void");
         }
+
+        String formalParametersString = "(";
+        if (ctx.formalParameters().formalParameterList() != null) {
+            formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
+        }
+        formalParametersString += ")";
+
+        final String methodSignature = currMethodCmp.getName() + formalParametersString;
+
+        currMethodCmp.setComponentName(generateComponentName(methodSignature));
+        pointParentsToChild(currMethodCmp);
+        componentStack.push(currMethodCmp);
     }
+
 
     @Override
     public final void enterConstructorDeclaration(final JavaParser.ConstructorDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currMethodCmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT);
 
-            currMethodCmp.setValue("void");
+        final Component currMethodCmp = createComponent(ctx,
+                OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT);
 
-            final String methodName = ctx.Identifier().getText();
-            currMethodCmp.setName(methodName);
+        currMethodCmp.setValue("void");
 
-            String formalParametersString = "(";
-            if (ctx.formalParameters().formalParameterList() != null) {
-                formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
-            }
-            formalParametersString += ")";
+        final String methodName = ctx.Identifier().getText();
+        currMethodCmp.setName(methodName);
 
-            final String methodSignature = currMethodCmp.getName() + formalParametersString;
-
-            currMethodCmp.setComponentName(generateComponentName(methodSignature));
-            pointParentsToChild(currMethodCmp);
-            componentStack.push(currMethodCmp);
+        String formalParametersString = "(";
+        if (ctx.formalParameters().formalParameterList() != null) {
+            formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
         }
+        formalParametersString += ")";
+
+        final String methodSignature = currMethodCmp.getName() + formalParametersString;
+
+        currMethodCmp.setComponentName(generateComponentName(methodSignature));
+        pointParentsToChild(currMethodCmp);
+        componentStack.push(currMethodCmp);
     }
+
+
 
     @Override
     public final void exitMethodDeclaration(final JavaParser.MethodDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-
-            completeComponent();
-        }
+        completeComponent();
     }
 
     @Override
     public final void exitInterfaceMethodDeclaration(final JavaParser.InterfaceMethodDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
+
+        completeComponent();
     }
 
     @Override
     public final void exitConstructorDeclaration(final JavaParser.ConstructorDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
+        completeComponent();
     }
 
     @Override
     public final void enterQualifiedNameList(final JavaParser.QualifiedNameListContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currMethodCmp = componentStack.pop();
-            for (final JavaParser.QualifiedNameContext qctx : ctx.qualifiedName()) {
-                currMethodCmp.insertComponentInvocation(new ThrownException(resolveType(qctx.getText()), ctx
-                        .getStart()
-                        .getLine()));
-            }
-            componentStack.push(currMethodCmp);
+
+        final Component currMethodCmp = componentStack.pop();
+        for (final JavaParser.QualifiedNameContext qctx : ctx.qualifiedName()) {
+            currMethodCmp.insertComponentInvocation(new ThrownException(resolveType(qctx.getText()), ctx.getStart()
+                    .getLine()));
         }
+        componentStack.push(currMethodCmp);
     }
 
     @Override
     public final void enterFormalParameter(final JavaParser.FormalParameterContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currMethodCmp = componentStack.peek();
 
-            if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
-                final Component cmp = createComponent(ctx,
-                        OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
-                componentStack.push(cmp);
-            } else {
-                final Component cmp = createComponent(ctx,
-                        OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
-                componentStack.push(cmp);
-            }
-        }
-    }
+        final Component currMethodCmp = componentStack.peek();
 
-    @Override
-    public final void enterLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currMethodCmp = componentStack.peek();
-            if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
-                final Component cmp = createComponent(ctx,
-                        OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
-                componentStack.push(cmp);
-            } else {
-                final Component cmp = createComponent(ctx,
-                        OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
-                componentStack.push(cmp);
-            }
-        }
-    }
-
-    @Override
-    public final void exitFormalParameter(final JavaParser.FormalParameterContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
-    }
-
-    @Override
-    public final void exitLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
-    }
-
-    @Override
-    public final void enterLocalVariableDeclaration(final JavaParser.LocalVariableDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
+        if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
             final Component cmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.LOCAL_VARIABLE_COMPONENT);
+                    OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
+            componentStack.push(cmp);
+        } else {
+            final Component cmp = createComponent(ctx,
+                    OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
             componentStack.push(cmp);
         }
     }
 
     @Override
-    public final void exitLocalVariableDeclaration(final JavaParser.LocalVariableDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
+    public final void enterLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
+
+        final Component currMethodCmp = componentStack.peek();
+        if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
+            final Component cmp = createComponent(ctx,
+                    OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
+            componentStack.push(cmp);
+        } else {
+            final Component cmp = createComponent(ctx,
+                    OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
+            componentStack.push(cmp);
         }
+    }
+
+    @Override
+    public final void exitFormalParameter(final JavaParser.FormalParameterContext ctx) {
+
+        completeComponent();
+    }
+
+    @Override
+    public final void exitLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
+        completeComponent();
+    }
+
+    @Override
+    public final void enterLocalVariableDeclaration(final JavaParser.LocalVariableDeclarationContext ctx) {
+
+        final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.LOCAL_VARIABLE_COMPONENT);
+        componentStack.push(cmp);
+
+    }
+
+    @Override
+    public final void exitLocalVariableDeclaration(final JavaParser.LocalVariableDeclarationContext ctx) {
+        completeComponent();
     }
 
     @Override
     public final void enterFieldDeclaration(final JavaParser.FieldDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currCmp = componentStack.peek();
-            if (currCmp.getComponentType().equals(
-                    OOPSourceModelConstants.getJavaComponentTypes().get(
-                            OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT))) {
-                final Component cmp = createComponent(ctx,
-                        OOPSourceModelConstants.ComponentType.INTERFACE_CONSTANT_COMPONENT);
-                componentStack.push(cmp);
-            } else {
-                final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.FIELD_COMPONENT);
-                componentStack.push(cmp);
-            }
+
+        final Component currCmp = componentStack.peek();
+        if (currCmp.getComponentType().equals(
+                OOPSourceModelConstants.getJavaComponentTypes().get(
+                        OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT))) {
+            final Component cmp = createComponent(ctx,
+                    OOPSourceModelConstants.ComponentType.INTERFACE_CONSTANT_COMPONENT);
+            componentStack.push(cmp);
+        } else {
+            final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.FIELD_COMPONENT);
+            componentStack.push(cmp);
         }
+
     }
 
     @Override
     public final void exitFieldDeclaration(final JavaParser.FieldDeclarationContext ctx) {
-        if (!ignoreTreeWalk) {
-            completeComponent();
-        }
+        completeComponent();
     }
 
     @Override
     public final void enterImplementsTypeList(final JavaParser.ImplementsTypeListContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currCmp = componentStack.pop();
-            for (final ImplementsTypeContext tempType : ctx.implementsType()) {
-                currCmp.insertComponentInvocation(new TypeImpementation(resolveType(tempType.getText()), ctx
-                        .getStart()
-                        .getLine()));
-            }
-            componentStack.push(currCmp);
+
+        final Component currCmp = componentStack.pop();
+        for (final ImplementsTypeContext tempType : ctx.implementsType()) {
+            currCmp.insertComponentInvocation(new TypeImpementation(resolveType(tempType.getText()), ctx.getStart()
+                    .getLine()));
         }
+        componentStack.push(currCmp);
+
     }
 
     @Override
     public final void enterTypeParameters(final JavaParser.TypeParametersContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currCmp = componentStack.pop();
-            currCmp.setDeclarationTypeSnippet(AntlrUtil.getFormattedText(ctx));
-            componentStack.push(currCmp);
-        }
+
+        final Component currCmp = componentStack.pop();
+        currCmp.setDeclarationTypeSnippet(AntlrUtil.getFormattedText(ctx));
+        componentStack.push(currCmp);
+
     }
 
     @Override
     public final void enterAnnotation(final JavaParser.AnnotationContext ctx) {
-        if (!ignoreTreeWalk) {
 
-            if (!componentStack.isEmpty()) {
-                final Component currCmp = componentStack.pop();
-                String typeName = "";
-                final HashMap<String, String> elementValuePairs = new HashMap<String, String>();
-                if (ctx.normalAnnotation() != null && ctx.normalAnnotation().elementValuePairList() != null) {
-                    typeName = resolveType(ctx.normalAnnotation().typeName().getText());
-                    for (final JavaParser.ElementValuePairContext evctx : ctx.normalAnnotation().elementValuePairList()
-                            .elementValuePair()) {
-                        elementValuePairs.put(evctx.Identifier().getText(), evctx.elementValue().getText());
-                    }
-                } else if (ctx.markerAnnotation() != null) {
-                    typeName = resolveType(ctx.markerAnnotation().typeName().getText());
-                    elementValuePairs.put(resolveType(ctx.markerAnnotation().typeName().getText()), "");
-                } else if (ctx.singleElementAnnotation() != null) {
-                    typeName = resolveType(ctx.singleElementAnnotation().typeName().getText());
-                    elementValuePairs.put("", ctx
-                            .singleElementAnnotation().elementValue().getText());
+        if (!componentStack.isEmpty()) {
+            final Component currCmp = componentStack.pop();
+            String typeName = "";
+            final HashMap<String, String> elementValuePairs = new HashMap<String, String>();
+            if (ctx.normalAnnotation() != null && ctx.normalAnnotation().elementValuePairList() != null) {
+                typeName = resolveType(ctx.normalAnnotation().typeName().getText());
+                for (final JavaParser.ElementValuePairContext evctx : ctx.normalAnnotation().elementValuePairList()
+                        .elementValuePair()) {
+                    elementValuePairs.put(evctx.Identifier().getText(), evctx.elementValue().getText());
                 }
-                currCmp.insertComponentInvocation(new AnnotationInvocation(typeName,
-                        ctx.start
-                        .getLine(), new SimpleEntry<String, HashMap<String, String>>(typeName,
-                                elementValuePairs)));
-
-                componentStack.push(currCmp);
+            } else if (ctx.markerAnnotation() != null) {
+                typeName = resolveType(ctx.markerAnnotation().typeName().getText());
+                elementValuePairs.put(resolveType(ctx.markerAnnotation().typeName().getText()), "");
+            } else if (ctx.singleElementAnnotation() != null) {
+                typeName = resolveType(ctx.singleElementAnnotation().typeName().getText());
+                elementValuePairs.put("", ctx.singleElementAnnotation().elementValue().getText());
             }
+            currCmp.insertComponentInvocation(new AnnotationInvocation(typeName, ctx.start.getLine(),
+                    new SimpleEntry<String, HashMap<String, String>>(typeName, elementValuePairs)));
+
+            componentStack.push(currCmp);
         }
+
     }
 
     @Override
     public final void enterClassOrInterfaceType(final JavaParser.ClassOrInterfaceTypeContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currCmp = componentStack.pop();
 
-            String type = "";
-            for (final TerminalNode ciftx : ctx.Identifier()) {
-                type += ciftx.getText() + ".";
-            }
-            type = type.substring(0, type.length() - 1);
-            currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(type), ctx.getStart().getLine()));
-            componentStack.push(currCmp);
+        final Component currCmp = componentStack.pop();
+
+        String type = "";
+        for (final TerminalNode ciftx : ctx.Identifier()) {
+            type += ciftx.getText() + ".";
         }
+        type = type.substring(0, type.length() - 1);
+        currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(type), ctx.getStart().getLine()));
+        componentStack.push(currCmp);
+
     }
 
     @Override
     public final void enterType(final JavaParser.TypeContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currCmp = componentStack.pop();
-            if ((currCmp.getDeclarationTypeSnippet() == null) && (!currCmp.getComponentType().isBaseComponent())) {
-                currCmp.setDeclarationTypeSnippet(ctx.getText());
-            }
-            componentStack.push(currCmp);
+
+        final Component currCmp = componentStack.pop();
+        if ((currCmp.getDeclarationTypeSnippet() == null) && (!currCmp.getComponentType().isBaseComponent())) {
+            currCmp.setDeclarationTypeSnippet(ctx.getText());
         }
+        componentStack.push(currCmp);
     }
 
     @Override
     public final void enterPrimitiveType(final JavaParser.PrimitiveTypeContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currCmp = componentStack.pop();
 
-            currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(ctx.getText()), ctx.getStart()
-                    .getLine()));
+        final Component currCmp = componentStack.pop();
 
-            componentStack.push(currCmp);
-        }
+        currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(ctx.getText()), ctx.getStart().getLine()));
+
+        componentStack.push(currCmp);
     }
+
 
     @Override
     public final void enterRegularModifier(final JavaParser.RegularModifierContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currCmp = componentStack.pop();
-            currCmp.insertAccessModifier(ctx.getText());
-            componentStack.push(currCmp);
-        }
+
+        final Component currCmp = componentStack.pop();
+        currCmp.insertAccessModifier(ctx.getText());
+        componentStack.push(currCmp);
     }
 
     @Override
     public final void enterVariableDeclaratorId(final JavaParser.VariableDeclaratorIdContext ctx) {
-        if (!ignoreTreeWalk && ctx.Identifier() != null) {
+        if (ctx.Identifier() != null) {
             final Component currCmp = componentStack.pop();
             if (currCmp.getComponentType().isVariableComponent()) {
                 if ((currCmp.getComponentName() == null) || (currCmp.getComponentName().isEmpty())) {
@@ -618,18 +562,16 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
     @Override
     public final void enterVariableInitializer(final JavaParser.VariableInitializerContext ctx) {
-        if (!ignoreTreeWalk) {
-            final Component currCmp = componentStack.pop();
-            currCmp.setValue(ctx.getText());
-            componentStack.push(currCmp);
-        }
+
+        final Component currCmp = componentStack.pop();
+        currCmp.setValue(ctx.getText());
+        componentStack.push(currCmp);
     }
 
     @Override
     public final void enterCompilationUnit(final JavaParser.CompilationUnitContext ctx) {
         currFileSourceCode = AntlrUtil.getFormattedText(ctx);
     }
-
 
     private String retrieveContainingClassName(MethodInvocationContext ctx) {
 
@@ -668,7 +610,6 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterMethodInvocations(final JavaParser.MethodInvocationsContext ctx) {
 
-
         if (!componentStack.isEmpty()) {
             final Component currCmp = componentStack.peek();
             final List<InvocationSource> methodSources = new ArrayList<InvocationSource>();
@@ -676,15 +617,13 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             for (final MethodInvocationContext methodCtx : ctx.methodInvocation()) {
 
                 methodSources.add(new BindedInvocationSource(new MethodInvocationSourceImpl(
-                        retrieveContainingClassName(methodCtx), extractMethodCall(methodCtx), methodCtx
-                        .getStart()
+                        retrieveContainingClassName(methodCtx), extractMethodCall(methodCtx), methodCtx.getStart()
                         .getLine(), getArgumentsSize(methodCtx)), currCmp));
             }
 
             final MethodInvocationSourceChain methodChain = new MethodInvocationSourceChain(methodSources);
             methodChain.process();
         }
-
     }
 
     private String extractMethodCall(MethodInvocationContext ctx) {

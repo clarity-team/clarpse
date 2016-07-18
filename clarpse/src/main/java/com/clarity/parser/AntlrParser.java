@@ -1,12 +1,21 @@
 package com.clarity.parser;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -76,33 +85,70 @@ public class AntlrParser implements ClarpseParser {
 
         srcModel = new OOPSourceCodeModel();
 
-        ANTLRInputStream stream = new ANTLRInputStream();
-        final JavaLexer lexer = new JavaLexer(stream);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        final JavaParser parser = new JavaParser(tokens);
-        parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-        parser.setErrorHandler(new BailErrorStrategy());
-
+        final ANTLRInputStream stream;
         final List<RawFile> files = rawData.getFiles();
-        for (final RawFile file : files) {
+        final Lexer lexer = (Lexer) Class.forName(antlrClassesPackageLocation + "." + grammarName + "Lexer")
+                .getConstructor(CharStream.class).newInstance(new ANTLRInputStream());
+        final CommonTokenStream tokens = new CommonTokenStream(lexer);
+        final Class<?> cls = Class.forName(antlrClassesPackageLocation + "." + grammarName + "Parser");
+        final Object parser = cls.getConstructor(TokenStream.class).newInstance(tokens);
+        ((org.antlr.v4.runtime.Parser) parser).getInterpreter().setPredictionMode(PredictionMode.SLL);
+        ((Parser) parser).setErrorHandler(new BailErrorStrategy());
+        final Method method = cls.getDeclaredMethod("compilationUnit");
 
-            stream = new ANTLRInputStream(file.getContent());
-            lexer.setInputStream(stream);
-            tokens = new CommonTokenStream(lexer);
-            parser.setTokenStream(tokens);
 
-            ParseTree tree;
-            try {
-                tree = parser.compilationUnit();
-            } catch (final Exception e) {
-                System.out.println("Failed file: " + file.getName());
-                System.out.println(e.getCause());
-                continue;
+        final ExecutorService executor = Executors.newFixedThreadPool(15);
+        final int numFilesPerThread = 100;
+        final List<List<RawFile>> fileLists = chopped(files, numFilesPerThread);
+        for (final List<RawFile> listFiles : fileLists) {
+
+            final Thread t = (new Thread() {
+                @Override
+                public void run() {
+
+                    for (final RawFile file : listFiles) {
+
+                        stream = new ANTLRInputStream(file.getContent());
+                        lexer.setInputStream(stream);
+                        tokens = new CommonTokenStream(lexer);
+                        ((Parser) parser).setTokenStream(tokens);
+
+                        ParseTree tree;
+                        try {
+                            tree = (ParseTree) method.invoke(parser);
+                        } catch (final Exception e) {
+                            System.out.println("Failed file: " + file.getName());
+                            System.out.println(e.getCause());
+                            continue;
+                        }
+                        final ClarpseJavaTreeListener listener = new ClarpseJavaTreeListener(srcModel, file.getName(),
+                                blockedInvocationSources);
+                        ParseTreeWalker.DEFAULT.walk(listener, tree);
+                    }
+                }
+            });
             }
-            final ClarpseJavaTreeListener listener = new ClarpseJavaTreeListener(srcModel, file.getName(),
-                    blockedInvocationSources);
-            ParseTreeWalker.DEFAULT.walk(listener, tree);
+            return srcModel;
         }
-        return srcModel;
+
+
+        /**
+         * chops a list into non-view sublists of length L.
+         *
+         * @param list
+         *            list to chop up
+         * @param l
+         *            length of sub lists
+         * @param <T>
+         *            generic
+         * @return List containing sublists
+         */
+        public static <T> List<List<T>> chopped(final List<T> list, final int l) {
+            final ArrayList<List<T>> parts = new ArrayList<List<T>>();
+            final int n = list.size();
+            for (int i = 0; i < n; i += l) {
+                parts.add(new ArrayList<T>(list.subList(i, Math.min(n, i + l))));
+            }
+            return parts;
+        }
     }
-}
