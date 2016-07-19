@@ -17,9 +17,9 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  *
  * @author Muntazir Fadhel
  */
-public class ParseLocalMethodInvocationsTest {
+public class SimpleMethodInvocationsTest {
 
-    private static String codeFile1 = "package com;" + "import java.util.list; import foo.customObjA; "
+    private static String codeFile1 = "package com;" + "import java.util.List; import foo.customObjA; "
             + "public class ClassA { "
             + "  private String fieldVar;"
             + "  public String topMethod(String s, int t) { "

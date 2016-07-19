@@ -47,11 +47,11 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
     private final Stack<Component> componentStack = new Stack<Component>();
     private final ArrayList<String> currentImports = new ArrayList<String>();
-    private String currentPkg = "";
+    private static String currentPkg = "";
     private String currFileSourceCode;
     private final OOPSourceCodeModel srcModel;
     private int componentCompletionMultiplier = 1;
-    private final Map<String, String> currentImportsMap = new HashMap<String, String>();
+    private final static Map<String, String> currentImportsMap = new HashMap<String, String>();
     private final String sourceFilePath;
     private static final String JAVA_BLOCK_COMMENT_BEGIN_SYMBOL = "/*";
     private static final String JAVA_BLOCK_COMMENT_END_SYMBOL = "*/";
@@ -77,7 +77,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
                 final Component completedCmp = componentStack.pop();
                 srcModel.insertComponent(completedCmp);
                 final List<InvocationSourceChain> blockedSources = blockedInvocationSources.get(completedCmp
-                        .getUniqueName());
+                        .uniqueName());
                 if (blockedSources != null) {
                     final List<InvocationSourceChain> blockedSourcesCopy = new ArrayList<InvocationSourceChain>(
                             blockedSources);
@@ -99,7 +99,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
         if (!componentStack.isEmpty()) {
             final Component completedCmp = componentStack.peek();
-            componentName = completedCmp.getComponentName() + "." + identifier;
+            componentName = completedCmp.componentName() + "." + identifier;
         } else {
             componentName = identifier;
         }
@@ -132,7 +132,6 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             .println("Clarity Java Listener found new package declaration while component stack not empty! component stack size is: "
                     + componentStack.size());
         }
-        componentStack.clear();
     }
 
     @Override
@@ -170,7 +169,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
      *            type to resolve
      * @return full name of the given type
      */
-    private String resolveType(final String type) {
+    private static String resolveType(final String type) {
 
 
         if (currentImportsMap.containsKey(type)) {
@@ -264,7 +263,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         }
         formalParametersString += ")";
 
-        final String methodSignature = currMethodCmp.getName() + formalParametersString;
+        final String methodSignature = currMethodCmp.name() + formalParametersString;
         currMethodCmp.setComponentName(generateComponentName(methodSignature));
         pointParentsToChild(currMethodCmp);
         componentStack.push(currMethodCmp);
@@ -307,7 +306,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         }
         formalParametersString += ")";
 
-        final String methodSignature = currMethodCmp.getName() + formalParametersString;
+        final String methodSignature = currMethodCmp.name() + formalParametersString;
 
         currMethodCmp.setComponentName(generateComponentName(methodSignature));
         pointParentsToChild(currMethodCmp);
@@ -332,7 +331,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         }
         formalParametersString += ")";
 
-        final String methodSignature = currMethodCmp.getName() + formalParametersString;
+        final String methodSignature = currMethodCmp.name() + formalParametersString;
 
         currMethodCmp.setComponentName(generateComponentName(methodSignature));
         pointParentsToChild(currMethodCmp);
@@ -373,7 +372,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
         final Component currMethodCmp = componentStack.peek();
 
-        if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
+        if (currMethodCmp.componentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
             final Component cmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
             componentStack.push(cmp);
@@ -388,7 +387,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
 
         final Component currMethodCmp = componentStack.peek();
-        if (currMethodCmp.getComponentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
+        if (currMethodCmp.componentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
             final Component cmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
             componentStack.push(cmp);
@@ -427,7 +426,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterFieldDeclaration(final JavaParser.FieldDeclarationContext ctx) {
 
         final Component currCmp = componentStack.peek();
-        if (currCmp.getComponentType().equals(
+        if (currCmp.componentType().equals(
                 OOPSourceModelConstants.getJavaComponentTypes().get(
                         OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT))) {
             final Component cmp = createComponent(ctx,
@@ -469,29 +468,33 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterAnnotation(final JavaParser.AnnotationContext ctx) {
 
-        if (!componentStack.isEmpty()) {
-            final Component currCmp = componentStack.pop();
-            String typeName = "";
-            final HashMap<String, String> elementValuePairs = new HashMap<String, String>();
-            if (ctx.normalAnnotation() != null && ctx.normalAnnotation().elementValuePairList() != null) {
-                typeName = resolveType(ctx.normalAnnotation().typeName().getText());
-                for (final JavaParser.ElementValuePairContext evctx : ctx.normalAnnotation().elementValuePairList()
-                        .elementValuePair()) {
-                    elementValuePairs.put(evctx.Identifier().getText(), evctx.elementValue().getText());
-                }
-            } else if (ctx.markerAnnotation() != null) {
-                typeName = resolveType(ctx.markerAnnotation().typeName().getText());
-                elementValuePairs.put(resolveType(ctx.markerAnnotation().typeName().getText()), "");
-            } else if (ctx.singleElementAnnotation() != null) {
-                typeName = resolveType(ctx.singleElementAnnotation().typeName().getText());
-                elementValuePairs.put("", ctx.singleElementAnnotation().elementValue().getText());
+        final Component currCmp = componentStack.pop();
+        String typeName = "";
+        final HashMap<String, String> elementValuePairs = new HashMap<String, String>();
+        if (ctx.normalAnnotation() != null && ctx.normalAnnotation().elementValuePairList() != null) {
+            typeName = resolveAnnotationType(ctx.normalAnnotation().typeName().getText());
+            for (final JavaParser.ElementValuePairContext evctx : ctx.normalAnnotation().elementValuePairList()
+                    .elementValuePair()) {
+                elementValuePairs.put(evctx.Identifier().getText(), evctx.elementValue().getText());
             }
-            currCmp.insertComponentInvocation(new AnnotationInvocation(typeName, ctx.start.getLine(),
-                    new SimpleEntry<String, HashMap<String, String>>(typeName, elementValuePairs)));
-
-            componentStack.push(currCmp);
+        } else if (ctx.markerAnnotation() != null) {
+            typeName = resolveAnnotationType(ctx.markerAnnotation().typeName().getText());
+        } else if (ctx.singleElementAnnotation() != null) {
+            typeName = resolveAnnotationType(ctx.singleElementAnnotation().typeName().getText());
+            elementValuePairs.put("", ctx.singleElementAnnotation().elementValue().getText());
         }
+        currCmp.insertComponentInvocation(new AnnotationInvocation(typeName, ctx.start.getLine(),
+                new SimpleEntry<String, HashMap<String, String>>(typeName, elementValuePairs)));
 
+        componentStack.push(currCmp);
+    }
+
+    private static String resolveAnnotationType(String annotationType) {
+        if (OOPSourceModelConstants.getJavaPredefinedAnnotations().containsKey(annotationType)) {
+            return annotationType;
+        } else {
+            return resolveType(annotationType);
+        }
     }
 
     @Override
@@ -513,7 +516,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterType(final JavaParser.TypeContext ctx) {
 
         final Component currCmp = componentStack.pop();
-        if ((currCmp.getDeclarationTypeSnippet() == null) && (!currCmp.getComponentType().isBaseComponent())) {
+        if ((currCmp.declarationTypeSnippet() == null) && (!currCmp.componentType().isBaseComponent())) {
             currCmp.setDeclarationTypeSnippet(ctx.getText());
         }
         componentStack.push(currCmp);
@@ -542,8 +545,8 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     public final void enterVariableDeclaratorId(final JavaParser.VariableDeclaratorIdContext ctx) {
         if (ctx.Identifier() != null) {
             final Component currCmp = componentStack.pop();
-            if (currCmp.getComponentType().isVariableComponent()) {
-                if ((currCmp.getComponentName() == null) || (currCmp.getComponentName().isEmpty())) {
+            if (currCmp.componentType().isVariableComponent()) {
+                if ((currCmp.componentName() == null) || (currCmp.componentName().isEmpty())) {
                     currCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
                     pointParentsToChild(currCmp);
                     currCmp.setName(ctx.Identifier().getText());
@@ -571,6 +574,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     @Override
     public final void enterCompilationUnit(final JavaParser.CompilationUnitContext ctx) {
         currFileSourceCode = AntlrUtil.getFormattedText(ctx);
+        componentStack.clear();
     }
 
     private String retrieveContainingClassName(MethodInvocationContext ctx) {
@@ -583,13 +587,13 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             baseTypes.add(ComponentType.CLASS_COMPONENT);
             baseTypes.add(ComponentType.INTERFACE_COMPONENT);
             baseTypes.add(ComponentType.ENUM_COMPONENT);
-            containingClassName = newestStackComponent(baseTypes).getUniqueName();
+            containingClassName = newestStackComponent(baseTypes).uniqueName();
         }
 
         // variable or static method call..
         if (ctx.typeName() != null) {
             final Component variableComponent = findLocalSourceFileComponent(ctx.typeName().getText());
-            if (variableComponent != null && variableComponent.getName() != null) {
+            if (variableComponent != null && variableComponent.name() != null) {
                 final List<ComponentInvocation> typeInstantiations = variableComponent
                         .componentInvocations(TypeDeclaration.class);
                 if (!typeInstantiations.isEmpty()) {
@@ -646,7 +650,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         while (iter.hasNext()) {
             final Component next = iter.next();
             for (final ComponentType cmpType : possibleTypes) {
-                if (next.getComponentType() == cmpType) {
+                if (next.componentType() == cmpType) {
                     newestComponent = next;
                 }
             }
@@ -668,10 +672,12 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
     private void pointParentsToChild(Component childCmp) {
 
-        final String parentName = childCmp.getParentComponentUniqueName();
-        for (int i = componentStack.size() - 1; i >= 0; i--) {
-            if (componentStack.get(i).getUniqueName().equals(parentName)) {
-                componentStack.get(i).insertChildComponent(childCmp.getUniqueName());
+        if (!componentStack.isEmpty()) {
+            final String parentName = childCmp.parentUniqueName();
+            for (int i = componentStack.size() - 1; i >= 0; i--) {
+                if (componentStack.get(i).uniqueName().equals(parentName)) {
+                    componentStack.get(i).insertChildComponent(childCmp.uniqueName());
+                }
             }
         }
     }

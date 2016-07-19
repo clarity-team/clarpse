@@ -13,11 +13,11 @@ import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
- * Ensure component invocation data of a given class is accurate.
+ * Ensure component chained method invocation data of a given class is accurate.
  *
  * @author Muntazir Fadhel
  */
-public class ParseMethodInvocationsTest {
+public class ComplexMethodInvocationsTest {
 
     private static String codeFile1 = "package com;" + "import com.test.AbstractClassA; import com.fvt.AbstractClassE;"
             + "public class ClassA extends ClassB { "
@@ -60,9 +60,7 @@ public class ParseMethodInvocationsTest {
 
     private static String codeFile5 = "package com.fvt; "
             + "public abstract class AbstractClassE extends NonExistentClass{ "
-            + "  public boolean abstractMethod() { "
-            + "     return true;"
-            + "  } "
+            + "  abstract boolean abstractMethod();"
             + "}";
 
     private static OOPSourceCodeModel generatedSourceModel;

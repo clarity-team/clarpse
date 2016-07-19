@@ -1,25 +1,26 @@
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.clarity.java.AnnotationInvocationTest;
+import com.clarity.java.ComplexMethodInvocationsTest;
 import com.clarity.java.ComponentExistTest;
-import com.clarity.java.ParseComponentPackageAttributeTest;
-import com.clarity.java.ParseComponentTypeTest;
-import com.clarity.java.ParseLocalMethodInvocationsTest;
-import com.clarity.java.ParseLineNumberAttributeTest;
-import com.clarity.java.ParseMethodInvocationsTest;
+import com.clarity.java.PackageAttributeTest;
+import com.clarity.java.ComponentTypeTest;
+import com.clarity.java.LineNumberAttributeTest;
+import com.clarity.java.SimpleMethodInvocationsTest;
 
 /**
  * Clarpse's main test suite.
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ComponentExistTest.class,
-    ParseComponentPackageAttributeTest.class,
-    ParseComponentTypeTest.class,
-    ParseLineNumberAttributeTest.class,
-    ParseLocalMethodInvocationsTest.class,
+ PackageAttributeTest.class,
+    ComponentTypeTest.class,
+    LineNumberAttributeTest.class,
+    SimpleMethodInvocationsTest.class,
     RawFileComparisonTest.class,
     ComponentSourceFilePathTest.class,
-    ParseMethodInvocationsTest.class
+ ComplexMethodInvocationsTest.class, AnnotationInvocationTest.class
 })
 public class ClarpseTest {
 

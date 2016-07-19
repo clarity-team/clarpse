@@ -18,7 +18,7 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  *
  * @author Muntazir Fadhel
  */
-public class ParseTypeImplementationExtensionTest {
+public class TypeImplementationTest {
 
     private static String code = "package com; \n public class ClassA extends ClassD implements InterfaceC { }";
     private static OOPSourceCodeModel generatedSourceModel;

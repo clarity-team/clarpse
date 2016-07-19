@@ -4,6 +4,12 @@ import java.util.List;
 
 import com.clarity.invocation.ComponentInvocation;
 
+/**
+ * Chain of invocation sources that depend on one another. Each invocation
+ * source depends on the one before it to complete before it can process.
+ *
+ * @author Muntazir Fadhel
+ */
 public abstract class InvocationSourceChain {
 
     private final List<InvocationSource> invocationSources;

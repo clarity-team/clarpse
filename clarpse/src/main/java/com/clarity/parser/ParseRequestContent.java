@@ -27,11 +27,11 @@ public class ParseRequestContent implements Serializable {
     }
 
     public void setLanguage(final Lang language) {
-        this.language = language.getValue();
+        this.language = language.value();
     }
 
     public ParseRequestContent(final Lang language) {
-        this.language = language.getValue();
+        this.language = language.value();
     }
 
     public final void insertFile(final RawFile file) {

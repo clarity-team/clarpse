@@ -2,11 +2,6 @@ package com.clarity;
 
 import java.util.TreeMap;
 
-/**
- * Factory Producer for our various factories.
- *
- * @author Muntazir Fadhel
- */
 public final class FactoryProducer {
 
     public static final String PARSE_KEYWORD = "parser";

@@ -17,17 +17,11 @@ public enum Lang {
         fileExt = extension;
     }
 
-    /**
-     * @return the value
-     */
-    public String getValue() {
+    public String value() {
         return value;
     }
 
-    /**
-     * @return the fileExt
-     */
-    public String getFileExt() {
+    public String fileExt() {
         return fileExt;
     }
 }

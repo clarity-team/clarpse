@@ -85,6 +85,32 @@ public final class OOPSourceModelConstants {
         JAVA_COLLECTIONS.put("java.util.WeakHashMap", "java.util.WeakHashMap");
     }
 
+
+    static final Map<String, String> JAVA_ANNOTATIONS
+    =
+ new HashMap<String, String>();
+
+    /**
+     * @return the javaCollections
+     */
+    public static Map<String, String> getJavaPredefinedAnnotations() {
+        return JAVA_ANNOTATIONS;
+    }
+
+    static {
+
+        JAVA_ANNOTATIONS.put("Override", "Override");
+        JAVA_ANNOTATIONS.put("Deprecated", "Deprecated");
+        JAVA_ANNOTATIONS.put("SuppressWarnings", "SuppressWarnings");
+        JAVA_ANNOTATIONS.put("SafeVarargs", "SafeVarargs");
+        JAVA_ANNOTATIONS.put("FunctionalInterface", "FunctionalInterface");
+        JAVA_ANNOTATIONS.put("Retention", "Retention");
+        JAVA_ANNOTATIONS.put("Documented", "Documented");
+        JAVA_ANNOTATIONS.put("Target", "Target");
+        JAVA_ANNOTATIONS.put("Inherited", "Inherited");
+        JAVA_ANNOTATIONS.put("Repeatable", "Repeatable");
+
+    }
     public static final String JAVA_DEFAULT_PKG = "java.lang.";
 
     static final Map<String, String> JAVA_DEFAULT_CLASSES
@@ -200,19 +226,11 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("VirtualMachineError", JAVA_DEFAULT_PKG + "VirtualMachineError");
     }
 
-    /**
-     * @return the javaDefaultClasses
-     */
     public static
     Map<String, String> getJavaDefaultClasses() {
         return JAVA_DEFAULT_CLASSES;
     }
 
-    /**
-     *
-     * @author Muntazir Fadhel
-     *
-     */
     public enum AccessModifiers {
 
         FINAL(""),
@@ -231,19 +249,11 @@ public final class OOPSourceModelConstants {
 
         private String                 umlClassDigramSymbol = null;
 
-        /**
-         *
-         * @param uMLClassDigramSymbol symbol
-         */
         AccessModifiers(
                 final String uMLClassDigramSymbol) {
             umlClassDigramSymbol = uMLClassDigramSymbol;
         }
 
-        /**
-         *
-         * @return diagram symbol string.
-         */
         public
         String getUMLClassDigramSymbol() {
             return umlClassDigramSymbol;
@@ -300,31 +310,9 @@ public final class OOPSourceModelConstants {
         }
     }
 
-    /**
-     *
-     * @author Muntazir Fadhel
-     *
-     */
-    public enum InvocationSiteProperty {
-
-        /**
-         *
-         */
-        FIELD,
-        LOCAL,
-        NONE,
-        METHOD_PARAMETER,
-        CONSTRUCTOR_PARAMETER;
-    }
-
-
     private static final Map<AccessModifiers, String> JAVA_ACCESS_MODIFIER_MAP
     =
     new HashMap<AccessModifiers, String>();
-
-    /**
-     * @return the javaAccessModifierMap
-     */
 
     public static
     Map<AccessModifiers, String> getJavaAccessModifierMap() {

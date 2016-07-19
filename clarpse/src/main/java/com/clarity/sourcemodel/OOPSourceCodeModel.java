@@ -1,11 +1,11 @@
 package com.clarity.sourcemodel;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A language independent representation of a project that reveals its
+ * A language independent representation of a codebase that reveals its
  * structural buildup.
  *
  * @author Muntazir Fadhel
@@ -16,7 +16,7 @@ public class OOPSourceCodeModel implements Serializable {
 
     public OOPSourceCodeModel() { }
 
-    private final Map<String, Component> components = new ConcurrentHashMap<String, Component>();
+    private final Map<String, Component> components = new HashMap<String, Component>();
 
     public Map<String, Component> getComponents() {
         return components;
@@ -30,7 +30,7 @@ public class OOPSourceCodeModel implements Serializable {
 
     public void insertComponent(final Component component) {
 
-        components.put(component.getUniqueName(), component);
+        components.put(component.uniqueName(), component);
     }
 
     public boolean containsComponent(final String componentName) {

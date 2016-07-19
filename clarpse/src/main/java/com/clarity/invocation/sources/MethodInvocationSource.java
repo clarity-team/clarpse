@@ -1,7 +1,10 @@
 package com.clarity.invocation.sources;
 
-
-
+/**
+ * Used to created Method Invocation Objects.
+ *
+ * @author Muntazir Fadhel
+ */
 public abstract class MethodInvocationSource implements InvocationSource {
 
     private final int numParams;

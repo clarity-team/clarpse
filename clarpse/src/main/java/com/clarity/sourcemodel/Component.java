@@ -24,27 +24,27 @@ public final class Component implements Serializable {
     private String packageName;
     private String name;
     private String comment;
-    private String sourceFilePath;
+    private String sourceFile;
     private ArrayList<String> imports = new ArrayList<String>();
     private ArrayList<String> modifiers = new ArrayList<String>();
-    private ComponentType componentType;
-    private ArrayList<ComponentInvocation> componentInvocations = new ArrayList<ComponentInvocation>();
+    private ComponentType type;
+    private ArrayList<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
     private String componentName;
     private final ArrayList<String> children = new ArrayList<String>();
     private String declarationTypeSnippet;
 
     public Component(final Component component) {
-        modifiers = component.getModifiers();
-        componentType = component.getComponentType();
-        declarationTypeSnippet = component.getDeclarationTypeSnippet();
-        componentInvocations = component.getExternalClassTypeReferences();
-        imports = component.getImports();
-        componentName = component.getComponentName();
-        packageName = component.getPackageName();
+        modifiers = component.modifiers();
+        type = component.componentType();
+        declarationTypeSnippet = component.declarationTypeSnippet();
+        invocations = component.invocations();
+        imports = component.imports();
+        componentName = component.componentName();
+        packageName = component.packageName();
         value = component.value();
-        start = component.getStartLine();
-        end = component.getEndLine();
-        sourceFilePath = component.getSourceFilePath();
+        start = component.startLine();
+        end = component.endLine();
+        sourceFile = component.sourceFile();
     }
 
     public Component() {
@@ -54,7 +54,7 @@ public final class Component implements Serializable {
         return children;
     }
 
-    public String getStartLine() {
+    public String startLine() {
         return start;
     }
 
@@ -62,7 +62,7 @@ public final class Component implements Serializable {
         start = startLine;
     }
 
-    public String getEndLine() {
+    public String endLine() {
         return end;
     }
 
@@ -70,7 +70,7 @@ public final class Component implements Serializable {
         end = endLine;
     }
 
-    public String getUniqueName() {
+    public String uniqueName() {
         if (packageName != null && !packageName.isEmpty()) {
             return packageName + "." + componentName;
         } else {
@@ -78,7 +78,7 @@ public final class Component implements Serializable {
         }
     }
 
-    public String getName() {
+    public String name() {
 
         return name;
     }
@@ -93,23 +93,23 @@ public final class Component implements Serializable {
         imports.add(importStmt);
     }
 
-    public String getDeclarationTypeSnippet() {
+    public String declarationTypeSnippet() {
         return declarationTypeSnippet;
     }
 
-    public ArrayList<ComponentInvocation> getExternalClassTypeReferences() {
-        return componentInvocations;
+    public ArrayList<ComponentInvocation> invocations() {
+        return invocations;
     }
 
     public void insertComponentInvocation(final ComponentInvocation ref) {
-        componentInvocations.add(ref);
+        invocations.add(ref);
     }
 
-    public ArrayList<String> getImports() {
+    public ArrayList<String> imports() {
         return imports;
     }
 
-    public String getComponentName() {
+    public String componentName() {
         return componentName;
     }
 
@@ -118,7 +118,7 @@ public final class Component implements Serializable {
     }
 
     public void setExternalTypeReferences(final ArrayList<ComponentInvocation> externalReferences) {
-        componentInvocations = externalReferences;
+        invocations = externalReferences;
     }
 
     public void setImports(final ArrayList<String> importStatements) {
@@ -129,7 +129,7 @@ public final class Component implements Serializable {
         this.componentName = componentName;
     }
 
-    public ArrayList<String> getModifiers() {
+    public ArrayList<String> modifiers() {
         return modifiers;
     }
 
@@ -139,15 +139,15 @@ public final class Component implements Serializable {
         }
     }
 
-    public ComponentType getComponentType() {
-        return componentType;
+    public ComponentType componentType() {
+        return type;
     }
 
     public void setComponentType(final ComponentType componentType) {
-        this.componentType = componentType;
+        type = componentType;
     }
 
-    public String getPackageName() {
+    public String packageName() {
         return packageName;
     }
 
@@ -163,7 +163,7 @@ public final class Component implements Serializable {
         this.value = value;
     }
 
-    public String getComment() {
+    public String comment() {
         return comment;
     }
 
@@ -171,19 +171,19 @@ public final class Component implements Serializable {
         this.comment = comment;
     }
 
-    public String getParentComponentUniqueName() {
+    public String parentUniqueName() {
 
-        if (!componentType.isMethodComponent()) {
-            if (getUniqueName().contains(".")) {
-                final int lastPeriod = getUniqueName().lastIndexOf(".");
-                final String currParentClassName = getUniqueName().substring(0, lastPeriod);
+        if (!type.isMethodComponent()) {
+            if (uniqueName().contains(".")) {
+                final int lastPeriod = uniqueName().lastIndexOf(".");
+                final String currParentClassName = uniqueName().substring(0, lastPeriod);
                 return currParentClassName;
             } else {
-                throw new IllegalArgumentException("Cannot get parent of component: " + getUniqueName());
+                throw new IllegalArgumentException("Cannot get parent of component: " + uniqueName());
             }
         } else {
-            final int lastOpeningBracket = getUniqueName().lastIndexOf("(");
-            final String methodComponentUniqueNameMinusParamters = getUniqueName().substring(0,
+            final int lastOpeningBracket = uniqueName().lastIndexOf("(");
+            final String methodComponentUniqueNameMinusParamters = uniqueName().substring(0,
                     lastOpeningBracket);
             final int lastPeriod = methodComponentUniqueNameMinusParamters.lastIndexOf(".");
             final String currParentClassName = methodComponentUniqueNameMinusParamters.substring(0, lastPeriod);
@@ -198,26 +198,24 @@ public final class Component implements Serializable {
     }
 
     public List<ComponentInvocation> componentInvocations(final Class<? extends ComponentInvocation> type) {
-
-        final List<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
-
-        for (final ComponentInvocation compInvocation : componentInvocations) {
+        final List<ComponentInvocation> tmpInvocations = new ArrayList<ComponentInvocation>();
+        for (final ComponentInvocation compInvocation : invocations) {
             if (type.isAssignableFrom(compInvocation.getClass())) {
-                invocations.add(compInvocation);
+                tmpInvocations.add(compInvocation);
             }
         }
-        return invocations;
+        return tmpInvocations;
     }
 
     public void setName(final String name) {
         this.name = name;
     }
 
-    public String getSourceFilePath() {
-        return sourceFilePath;
+    public String sourceFile() {
+        return sourceFile;
     }
 
     public void setSourceFilePath(final String sourceFilePath) {
-        this.sourceFilePath = sourceFilePath;
+        sourceFile = sourceFilePath;
     }
 }

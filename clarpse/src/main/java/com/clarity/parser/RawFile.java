@@ -25,15 +25,11 @@ public class RawFile implements Serializable, Cloneable {
         name = fileName;
     }
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
-    public void setName(final String name) {
+    public void name(final String name) {
         this.name = name;
     }
 
-    public void setContent(final String content) {
+    public void content(final String content) {
         this.content = content;
     }
 
@@ -45,11 +41,11 @@ public class RawFile implements Serializable, Cloneable {
         name = file.getName();
     }
 
-    public final String getName() {
+    public final String name() {
         return name;
     }
 
-    public final String getContent() {
+    public final String content() {
         return content;
     }
 
@@ -57,16 +53,16 @@ public class RawFile implements Serializable, Cloneable {
     public final boolean equals(final Object obj) {
 
         final RawFile rawFile = (RawFile) obj;
-        return getContent().equals(rawFile.getContent()) && getName().equals(rawFile.getName());
+        return content().equals(rawFile.content()) && name().equals(rawFile.name());
     }
 
     @Override
     public int hashCode() {
-        return getContent().hashCode() + getName().hashCode();
+        return content().hashCode() + name().hashCode();
     }
 
     public RawFile copy() {
-        final RawFile rawFile = new RawFile(getName(), getContent());
+        final RawFile rawFile = new RawFile(name(), content());
         return rawFile;
     }
 }

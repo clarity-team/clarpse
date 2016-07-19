@@ -7,6 +7,11 @@ import com.clarity.invocation.ComponentInvocation;
 import com.clarity.parser.AntlrParser;
 import com.clarity.sourcemodel.Component;
 
+/**
+ * Chain of dependent method source invocations.
+ *
+ * @author Muntazir Fadhel
+ */
 public final class MethodInvocationSourceChain extends InvocationSourceChain {
 
     public MethodInvocationSourceChain(List<InvocationSource> invocationSources) {

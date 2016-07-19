@@ -18,7 +18,7 @@ import com.clarity.sourcemodel.OOPSourceModelConstants;
  *
  * @author Muntazir Fadhel
  */
-public class ParseComponentTypeTest {
+public class ComponentTypeTest {
 
     private static OOPSourceCodeModel generatedSourceModel;
     private static String sampleJavaClassComponentName;
@@ -101,7 +101,7 @@ public class ParseComponentTypeTest {
                 +        sampleJavaEnumClassConstant + "(\"\");"
                 +     sampleJavaEnumClassConstructor + "(final String "  + sampleJavaEnumMethodParam + ") {}"
                 + "  }"
-                + "  }";
+                + "}";
     }
 
     @BeforeClass
@@ -118,7 +118,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponentName);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaMethodParamComponentNameType.toString()));
+        Assert.assertTrue(tmp.componentType().toString().equals(sampleJavaMethodParamComponentNameType.toString()));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponent2Name);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaMethodParamComponent2NameType.toString()));
+        Assert.assertTrue(tmp.componentType().toString().equals(sampleJavaMethodParamComponent2NameType.toString()));
     }
 
     @Test
@@ -134,7 +134,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaConstructorComponentKeyName);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaConstructorComponentType.toString()));
+        Assert.assertTrue(tmp.componentType().toString().equals(sampleJavaConstructorComponentType.toString()));
     }
 
 
@@ -143,7 +143,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaMethodComponentKeyName);
-        Assert.assertTrue(tmp.getComponentType().toString()
+        Assert.assertTrue(tmp.componentType().toString()
                 .equals(
                         sampleJavaMethodComponentType.toString()));
     }
@@ -153,7 +153,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaClassFieldComponentName);
-        Assert.assertTrue(tmp.getComponentType().toString()
+        Assert.assertTrue(tmp.componentType().toString()
                 .equals(
                         sampleJavaClassFieldComponentType.toString()));
     }
@@ -162,7 +162,7 @@ public class ParseComponentTypeTest {
     public final void testSampleJavaClassComponentType() throws Exception {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaClassComponentType.toString()));
+        Assert.assertTrue(tmp.componentType().toString().equals(sampleJavaClassComponentType.toString()));
     }
 
     @Test
@@ -171,7 +171,7 @@ public class ParseComponentTypeTest {
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentKeyName + "."
                         + sampleJavaInterfaceMethodParamComponentName);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(
+        Assert.assertTrue(tmp.componentType().toString().equals(
 
                 sampleJavaInterfaceMethodParamComponentType.toString()));
     }
@@ -181,7 +181,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentKeyName);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(
+        Assert.assertTrue(tmp.componentType().toString().equals(
                 sampleJavaInterfaceMethodComponentType.toString()));
     }
 
@@ -190,7 +190,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaInterfaceComponentName);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaInterfaceComponentType.toString()));
+        Assert.assertTrue(tmp.componentType().toString().equals(sampleJavaInterfaceComponentType.toString()));
     }
 
     @Test
@@ -198,7 +198,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaEnumComponentType.toString()));
+        Assert.assertTrue(tmp.componentType().toString().equals(sampleJavaEnumComponentType.toString()));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstant);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaEnumClassConstantType.toString()));
+        Assert.assertTrue(tmp.componentType().toString().equals(sampleJavaEnumClassConstantType.toString()));
     }
 
     @Test
@@ -214,7 +214,7 @@ public class ParseComponentTypeTest {
         final Component tmp = generatedSourceModel.getComponents().get(
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructorKey);
-        Assert.assertTrue(tmp.getComponentType().toString().equals(sampleJavaEnumClassConstructorType.toString()));
+        Assert.assertTrue(tmp.componentType().toString().equals(sampleJavaEnumClassConstructorType.toString()));
     }
 
     @Test
@@ -223,7 +223,7 @@ public class ParseComponentTypeTest {
                 String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructorKey + "."
                         + sampleJavaEnumMethodParam);
-        Assert.assertTrue(tmp.getComponentType().toString()
+        Assert.assertTrue(tmp.componentType().toString()
                 .equals(
                         sampleJavaEnumMethodParamType.toString()));
     }

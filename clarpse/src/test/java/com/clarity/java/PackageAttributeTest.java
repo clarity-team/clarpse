@@ -1,9 +1,5 @@
 package com.clarity.java;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,10 +16,10 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  *
  * @author Muntazir Fadhel
  */
-public class ParseComponentPackageAttributeTest {
-
-    private static String codeString = "package com.clarity.test;   class SampleJavaClass {  private String sampleClassField;  }";
+public class PackageAttributeTest {
     private static String pkgName = "com.clarity.test";
+    private static String codeString = "package " + pkgName + ";   class SampleJavaClass {  private String sampleClassField;  }";
+
     private static OOPSourceCodeModel generatedSourceModel;
 
     @BeforeClass
@@ -35,19 +31,14 @@ public class ParseComponentPackageAttributeTest {
     }
 
     @Test
-    public final void testAccuratePackageNames() throws Exception {
-        boolean isCorrectPckgName = true;
-        final LinkedHashMap<?, ?> tempComponentList = new LinkedHashMap<Object, Object>(
-                generatedSourceModel.getComponents());
-        final Iterator<?> it = tempComponentList.entrySet().iterator();
-        while (it.hasNext()) {
-            final Entry<?, ?> pair = (Entry<?, ?>) it.next();
-            final Component tempComponent = (Component) pair.getValue();
-            if (!tempComponent.getPackageName().contains(pkgName)) {
-                isCorrectPckgName = false;
-            }
-            it.remove();
-        }
-        Assert.assertTrue(isCorrectPckgName);
+    public final void testClassAccuratePackageNames() throws Exception {
+        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass");
+        Assert.assertTrue(cmp.packageName().equals(pkgName));
+    }
+
+    @Test
+    public final void testFieldVarAccuratePackageNames() throws Exception {
+        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.sampleClassField");
+        Assert.assertTrue(cmp.packageName().equals(pkgName));
     }
 }
