@@ -21,38 +21,86 @@ import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
  */
 public class TypeImplementationTest {
 
-    private static String code = "package com; \n public class ClassA extends ClassD implements InterfaceC { }";
-    private static OOPSourceCodeModel generatedSourceModel;
+	@Test
+	public void testAccurateImplementedTypes() throws Exception {
 
-    @BeforeClass
-    public static void setup() throws Exception {
+		String code = "package com; \n public class ClassA implements ClassD { }";
+		OOPSourceCodeModel generatedSourceModel;
+		final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+		rawData.insertFile(new RawFile("file1", code));
+		final ClarpseProject parseService = new ClarpseProject(rawData);
+		generatedSourceModel = parseService.result();
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.IMPLEMENTATION)
+				.get(0).invokedComponent().equals("com.ClassD"));
+	}
+	
+	@Test
+	public void testAccurateMultipleImplementedTypes() throws Exception {
 
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
-        rawData.insertFile(new RawFile("file1", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
-        generatedSourceModel = parseService.result();
-        System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel));
-    }
+		String code = "package com; \n public class ClassA implements ClassD, ClassE { }";
+		OOPSourceCodeModel generatedSourceModel;
+		final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+		rawData.insertFile(new RawFile("file1", code));
+		final ClarpseProject parseService = new ClarpseProject(rawData);
+		generatedSourceModel = parseService.result();
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.IMPLEMENTATION)
+				.get(0).invokedComponent().equals("com.ClassD"));
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.IMPLEMENTATION)
+				.get(0).invokedComponent().equals("com.ClassE"));
+	}
 
-    @Test
-    public void typeImplementationTest() throws Exception {
+	@Test
+	public void testAccurateImplementedTypesSize() throws Exception {
 
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.IMPLEMENTATION)
-                .get(0).invokedComponent()
-                .equals("com.InterfaceC"));
+		String code = "package com; \n public class ClassA extends ClassD { }";
+		OOPSourceCodeModel generatedSourceModel;
+		final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+		rawData.insertFile(new RawFile("file1", code));
+		final ClarpseProject parseService = new ClarpseProject(rawData);
+		generatedSourceModel = parseService.result();
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.IMPLEMENTATION)
+				.size() == 1);
+	}
+	
+	@Test
+	public void testAccurateMultipleImplementedTypesSize() throws Exception {
 
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.IMPLEMENTATION)
-                .size() == 1);
-    }
+		String code = "package com; \n public class ClassA extends ClassD, ClassE { }";
+		OOPSourceCodeModel generatedSourceModel;
+		final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+		rawData.insertFile(new RawFile("file1", code));
+		final ClarpseProject parseService = new ClarpseProject(rawData);
+		generatedSourceModel = parseService.result();
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.IMPLEMENTATION)
+				.size() == 2);
+	}
 
-    @Test
-    public void typeExtensionTest() throws Exception {
+	@Test
+	public void testAccurateImplementedTypesForNestedClass() throws Exception {
 
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.EXTENSION)
-                .get(0).invokedComponent().equals("com.ClassD"));
+		String code = "package com; \n public class ClassA { public class ClassB implements ClassD{} }";
+		OOPSourceCodeModel generatedSourceModel;
+		final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+		rawData.insertFile(new RawFile("file1", code));
+		final ClarpseProject parseService = new ClarpseProject(rawData);
+		generatedSourceModel = parseService.result();
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations(ComponentInvocations.IMPLEMENTATION)
+				.get(0).invokedComponent().equals("com.ClassD"));
 
-        System.out.println(generatedSourceModel.getComponents());
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.EXTENSION)
-                .size() == 1);
-    }
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.IMPLEMENTATION)
+				.size() == 1);
+	}
+	
+	@Test
+	public void testAccurateExtendedTypesSizeForNestedClass() throws Exception {
+
+		String code = "package com; \n public class ClassA { public class ClassB implements ClassD{} }";
+		OOPSourceCodeModel generatedSourceModel;
+		final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+		rawData.insertFile(new RawFile("file1", code));
+		final ClarpseProject parseService = new ClarpseProject(rawData);
+		generatedSourceModel = parseService.result();
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations(ComponentInvocations.IMPLEMENTATION)
+				.size() == 1);
+	}
 }

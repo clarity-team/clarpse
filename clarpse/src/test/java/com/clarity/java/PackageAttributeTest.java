@@ -17,28 +17,40 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  * @author Muntazir Fadhel
  */
 public class PackageAttributeTest {
-    private static String pkgName = "com.clarity.test";
-    private static String codeString = "package " + pkgName + ";   class SampleJavaClass {  private String sampleClassField;  }";
 
-    private static OOPSourceCodeModel generatedSourceModel;
-
-    @BeforeClass
-    public static final void parseJavaSourceFile() throws Exception {
+    @Test
+    public final void testClassAccuratePackageName() throws Exception {
+         String pkgName = "com.clarity.test";
+         String codeString = "package " + pkgName + ";   class SampleJavaClass {  private String sampleClassField;  }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        generatedSourceModel = parseService.result();
-    }
-
-    @Test
-    public final void testClassAccuratePackageNames() throws Exception {
+       OOPSourceCodeModel generatedSourceModel = parseService.result();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass");
         Assert.assertTrue(cmp.packageName().equals(pkgName));
     }
 
     @Test
-    public final void testFieldVarAccuratePackageNames() throws Exception {
+    public final void testFieldVarAccuratePackageName() throws Exception {
+         String pkgName = "com.clarity.test";
+        String codeString = "package " + pkgName + ";   class SampleJavaClass {  private String sampleClassField;  }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        rawData.insertFile(new RawFile("file1", codeString));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        OOPSourceCodeModel generatedSourceModel = parseService.result();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.sampleClassField");
+        Assert.assertTrue(cmp.packageName().equals(pkgName));
+    }
+    
+    @Test
+    public final void testMethodAccuratePackageName() throws Exception {
+         String pkgName = "com.clarity.test";
+        String codeString = "package " + pkgName + ";   class SampleJavaClass {  private String method(){}  }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        rawData.insertFile(new RawFile("file1", codeString));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.method()");
         Assert.assertTrue(cmp.packageName().equals(pkgName));
     }
 }

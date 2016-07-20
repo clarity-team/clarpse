@@ -31,26 +31,11 @@ public class AntlrParser implements ClarpseParser {
      * The package in which the ANTLR generated files are located in.
      */
     private final String antlrClassesPackageLocation;
-
     private final String grammarName;
-
     private final String clarityListenerPkgLocation;
-
     private static OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-
     private static volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources = new HashMap<String, List<InvocationSourceChain>>();
 
-    /**
-     * @param parserGrammarName
-     *            name of the antlr grammer file
-     * @param parserAntlrClassesPackageLocation
-     *            type of parseResult Object to be populated by the anltr parser
-     * @param clarityListenerPackageLocation
-     *            the package location of the ParseTree Listener to use for the
-     *            parser
-     * @throws Exception
-     *             Exception
-     */
     public AntlrParser(final String parserGrammarName, final String parserAntlrClassesPackageLocation, final String clarityListenerPackageLocation) throws Exception {
 
         grammarName = parserGrammarName;
@@ -58,13 +43,8 @@ public class AntlrParser implements ClarpseParser {
         clarityListenerPkgLocation = clarityListenerPackageLocation;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.zir0.clarity.parser.AbstractClarityParser#extractSourceModel ()
-     */
     @Override
     public final OOPSourceCodeModel extractParseResult(final ParseRequestContent rawData) throws Exception {
-
 
         final List<RawFile> files = rawData.getFiles();
         for (final RawFile file : files) {

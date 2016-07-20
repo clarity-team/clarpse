@@ -86,22 +86,20 @@ public class ComponentTypeTest {
         sampleJavaEnumMethodParam = "enumMethodParam";
         sampleJavaEnumMethodParamType = OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT;
         sampleJavaPackageName = "SampleJavaPackage";
-        codeString = "package "
-                + sampleJavaPackageName + "; "
-                + "class " + sampleJavaClassComponentName + " {"
-                + "  private String " + sampleJavaClassFieldComponentName + ";"
-                + "  private String " + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ", Object..." + sampleJavaMethodParamComponent2Name + ") { "
-                + "  } "
-                + "  public " + sampleJavaConstructorComponentName + " () { " + "} "
-                + "  " + "interface " + sampleJavaInterfaceComponentName + " { "
-                + "  public void "
-                + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName   + " );"
-                + "  }"
-                + "  public enum " + sampleJavaEnumComponent + " { "
-                +        sampleJavaEnumClassConstant + "(\"\");"
-                +     sampleJavaEnumClassConstructor + "(final String "  + sampleJavaEnumMethodParam + ") {}"
-                + "  }"
-                + "}";
+        codeString = "package " + sampleJavaPackageName + "; "
+                	+ "class " + sampleJavaClassComponentName + " {"
+                	+ "  private String " + sampleJavaClassFieldComponentName + ";"
+                	+ "  private String " + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName + ", Object..." + sampleJavaMethodParamComponent2Name + ") { "
+                	+ "  } "
+                	+ "  public " + sampleJavaConstructorComponentName + " () { " + "} "
+                    + "  interface " + sampleJavaInterfaceComponentName + " { "
+                	+ "  	public void " +   sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName   + " );"
+                	+ "  }"
+                	+ "  public enum " + sampleJavaEnumComponent + " { "
+                	+        sampleJavaEnumClassConstant + "(\"\");"
+                	+     sampleJavaEnumClassConstructor + "(final String "  + sampleJavaEnumMethodParam + ") {}"
+                	+ "  }"
+                	+ "}";
     }
 
     @BeforeClass

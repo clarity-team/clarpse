@@ -30,6 +30,9 @@ public final class Component implements Serializable {
     private ArrayList<String> modifiers = new ArrayList<String>();
     private ComponentType type;
     private ArrayList<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
+    /**
+     * Formed by taking all parents components
+     */
     private String componentName;
     private final ArrayList<String> children = new ArrayList<String>();
     private String declarationTypeSnippet;

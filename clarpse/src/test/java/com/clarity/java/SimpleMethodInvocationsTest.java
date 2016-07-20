@@ -54,7 +54,6 @@ public class SimpleMethodInvocationsTest {
         rawData.insertFile(new RawFile("file1", codeFile1));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel));
     }
 
     @Test

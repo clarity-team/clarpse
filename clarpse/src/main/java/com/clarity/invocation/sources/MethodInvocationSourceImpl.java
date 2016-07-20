@@ -46,7 +46,7 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
             }
         }
         // don't support method overloading with equal number of params yet,
-        // therefore only result size must be 1
+        // therefore result size must be 1
         if (methodComponentMatches.isEmpty() || methodComponentMatches.size() > 1) {
             return new EmptyInvocation("", 0);
         } else {

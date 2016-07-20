@@ -4,7 +4,7 @@ import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.Component;
 
 /**
- * Binds the create component invocation to a component.
+ * Binds the created component invocation to a component.
  *
  * @author Muntazir Fadhel
  */
