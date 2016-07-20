@@ -24,7 +24,7 @@ import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.ThrownException;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
-import com.clarity.invocation.TypeImpementation;
+import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.sources.BindedInvocationSource;
 import com.clarity.invocation.sources.InvocationSource;
 import com.clarity.invocation.sources.InvocationSourceChain;
@@ -34,6 +34,7 @@ import com.clarity.parser.AntlrUtil;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 /**
@@ -449,7 +450,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
         final Component currCmp = componentStack.pop();
         for (final ImplementsTypeContext tempType : ctx.implementsType()) {
-            currCmp.insertComponentInvocation(new TypeImpementation(resolveType(tempType.getText()), ctx.getStart()
+            currCmp.insertComponentInvocation(new TypeImplementation(resolveType(tempType.getText()), ctx.getStart()
                     .getLine()));
         }
         componentStack.push(currCmp);
@@ -595,7 +596,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             final Component variableComponent = findLocalSourceFileComponent(ctx.typeName().getText());
             if (variableComponent != null && variableComponent.name() != null) {
                 final List<ComponentInvocation> typeInstantiations = variableComponent
-                        .componentInvocations(TypeDeclaration.class);
+                        .componentInvocations(ComponentInvocations.DECLARATION);
                 if (!typeInstantiations.isEmpty()) {
                     containingClassName = typeInstantiations.get(0).invokedComponent();
                 }

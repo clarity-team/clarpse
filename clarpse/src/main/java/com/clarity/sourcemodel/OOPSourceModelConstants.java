@@ -3,6 +3,16 @@ package com.clarity.sourcemodel;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.clarity.invocation.AnnotationInvocation;
+import com.clarity.invocation.ComponentInvocation;
+import com.clarity.invocation.MethodInvocation;
+import com.clarity.invocation.ThrownException;
+import com.clarity.invocation.TypeDeclaration;
+import com.clarity.invocation.TypeExtension;
+import com.clarity.invocation.TypeImplementation;
+import com.clarity.invocation.TypeInstantiation;
+import com.clarity.java.TypeImplementationTest;
+
 /**
  * Constants related to source code model entities.
  * @author Muntazir Fadhel
@@ -260,6 +270,29 @@ public final class OOPSourceModelConstants {
         }
     }
 
+
+    public enum ComponentInvocations {
+
+    	ANNOTATION(AnnotationInvocation.class),
+    	METHOD(MethodInvocation.class),
+    	EXCEPTION(ThrownException.class),
+    	DECLARATION(TypeDeclaration.class),
+    	INSTANTIATION(TypeInstantiation.class),
+    	EXTENSION(TypeExtension.class),
+    	IMPLEMENTATION(TypeImplementation.class);
+
+    	public Class<? extends ComponentInvocation> getMatchingClass() {
+    		return matchingClass;
+    	}
+    	private Class<? extends ComponentInvocation> matchingClass = null;
+
+        ComponentInvocations (
+                final Class<? extends ComponentInvocation> matchingClass) {
+            this.matchingClass = matchingClass;
+        }
+    }
+
+    
     /**
      * Enum constants representing types of component found in java code source model.
      * @author Muntazir Fadhel

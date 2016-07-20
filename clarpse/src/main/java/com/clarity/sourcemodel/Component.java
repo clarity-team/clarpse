@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.clarity.invocation.ComponentInvocation;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 /**
@@ -197,10 +198,10 @@ public final class Component implements Serializable {
         }
     }
 
-    public List<ComponentInvocation> componentInvocations(final Class<? extends ComponentInvocation> type) {
+    public List<ComponentInvocation> componentInvocations(final ComponentInvocations type) {
         final List<ComponentInvocation> tmpInvocations = new ArrayList<ComponentInvocation>();
         for (final ComponentInvocation compInvocation : invocations) {
-            if (type.isAssignableFrom(compInvocation.getClass())) {
+            if (type.getMatchingClass().isAssignableFrom(compInvocation.getClass())) {
                 tmpInvocations.add(compInvocation);
             }
         }

@@ -227,5 +227,4 @@ public class ComponentTypeTest {
                 .equals(
                         sampleJavaEnumMethodParamType.toString()));
     }
-
 }

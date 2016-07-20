@@ -77,7 +77,6 @@ public class AntlrParser implements ClarpseParser {
                 final Object parser = cls.getConstructor(TokenStream.class).newInstance(tokens);
                 ((Parser) parser).setErrorHandler(new BailErrorStrategy());
                 ((Parser) parser).getInterpreter().setPredictionMode(PredictionMode.SLL);
-                // ((Parser) parser).getInterpreter().
                 final Method method = cls.getDeclaredMethod("compilationUnit");
                 final ParseTree tree = (ParseTree) method.invoke(parser);
                 final ParseTreeWalker walker = new ParseTreeWalker();

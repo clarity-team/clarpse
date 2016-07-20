@@ -50,7 +50,7 @@ packageDeclaration
     ;
 
 importDeclaration
-    :   'import' 'static'? qualifiedName ('.' '*')? ';'
+    :   'import' 'static'? qualifiedName ('.' '*')? ';' 
     ;
 
 typeDeclaration
@@ -1135,6 +1135,7 @@ assignment
 
 leftHandSide
     :   expressionName
+    |   typeName
     |   fieldAccess
     |   arrayAccess
     ;

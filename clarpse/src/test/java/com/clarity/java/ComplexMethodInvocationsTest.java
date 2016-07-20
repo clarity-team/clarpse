@@ -11,6 +11,7 @@ import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ParseService;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
 /**
  * Ensure component chained method invocation data of a given class is accurate.
@@ -85,7 +86,7 @@ public class ComplexMethodInvocationsTest {
     public void testClassATopMethodInvokesCustomObjAFooMethodA() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod().bool")
-                .componentInvocations(MethodInvocation.class).get(0).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
                 .equals("com.CustomObjA.fooMethodA(java.lang.String,java.lang.Integer)"));
     }
 
@@ -93,7 +94,7 @@ public class ComplexMethodInvocationsTest {
     public void testClassATopMethodBoolVarInvokesCustomObjBFooMethodB() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod().bool")
-                .componentInvocations(MethodInvocation.class).get(1).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(1).invokedComponent()
                 .equals("com.CustomObjB.fooMethodB()"));
     }
 
@@ -101,7 +102,7 @@ public class ComplexMethodInvocationsTest {
     public void testClassATopMethodBoolVarInvokesAbstractClassAAethod() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod().bool")
-                .componentInvocations(MethodInvocation.class).get(2).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(2).invokedComponent()
                 .equals("com.test.AbstractClassA.aMethod(java.lang.String)"));
     }
 
@@ -109,7 +110,7 @@ public class ComplexMethodInvocationsTest {
     public void testClassATopMethodBoolVarInvokesAbstractClassEAbstractMethod() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod().bool")
-                .componentInvocations(MethodInvocation.class).get(3).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(3).invokedComponent()
                 .equals("com.fvt.AbstractClassE.abstractMethod()"));
     }
 
@@ -117,7 +118,7 @@ public class ComplexMethodInvocationsTest {
     public void testClassATopMethodInvokesCustomObjAStaticMethod() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod()")
-                .componentInvocations(MethodInvocation.class).get(0).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
                 .equals("com.CustomObjA.staticMethod()"));
     }
 
@@ -125,7 +126,7 @@ public class ComplexMethodInvocationsTest {
     public void testClassATopMethodInvokesCustomObjASecondStaticMethod() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod()")
-                .componentInvocations(MethodInvocation.class).get(1).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(1).invokedComponent()
                 .equals("com.CustomObjA.secondStaticMethod()"));
     }
 

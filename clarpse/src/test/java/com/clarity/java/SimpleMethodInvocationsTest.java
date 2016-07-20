@@ -11,6 +11,7 @@ import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ParseService;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
 /**
  * Ensure component invocation data of a given class is accurate.
@@ -60,19 +61,19 @@ public class SimpleMethodInvocationsTest {
     public void testInvokeMethodWithMethodCallParameter() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.noParamsMethod()")
-                .componentInvocations(MethodInvocation.class).get(0).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
                 .equals("com.ClassA.bottomMethod(java.lang.String,java.lang.Integer)"));
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.noParamsMethod()")
-                .componentInvocations(MethodInvocation.class).get(1).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(1).invokedComponent()
                 .equals("com.ClassA.topMethod(java.lang.String,java.lang.Integer)"));
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.noParamsMethod()")
-                .componentInvocations(MethodInvocation.class).get(2).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(2).invokedComponent()
                 .equals("com.ClassA.topMethod(java.lang.String,java.lang.Integer)"));
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.noParamsMethod()")
-                .componentInvocations(MethodInvocation.class).get(3).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(3).invokedComponent()
                 .equals("com.ClassA.middleMethod(java.lang.String,java.lang.Integer)"));
     }
 
@@ -82,7 +83,7 @@ public class SimpleMethodInvocationsTest {
 
         Assert.assertTrue(generatedSourceModel
                 .getComponent("com.ClassA.topMethod(java.lang.String,java.lang.Integer)")
-                .componentInvocations(MethodInvocation.class)
+                .componentInvocations(ComponentInvocations.METHOD)
                 .get(0).invokedComponent()
                 .equals("com.ClassA.bottomMethod(java.lang.String,java.lang.Integer)"));
     }
@@ -91,7 +92,7 @@ public class SimpleMethodInvocationsTest {
     public void testTopMethodInvokesNoParamsMethod() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod(java.lang.String,java.lang.Integer)")
-                .componentInvocations(MethodInvocation.class).get(1).invokedComponent().equals("com.ClassA.noParamsMethod()"));
+                .componentInvocations(ComponentInvocations.METHOD).get(1).invokedComponent().equals("com.ClassA.noParamsMethod()"));
     }
 
     @Test
@@ -99,7 +100,7 @@ public class SimpleMethodInvocationsTest {
 
         Assert.assertTrue(generatedSourceModel
                 .getComponent("com.ClassA.middleMethod(java.lang.String,java.lang.Integer).x")
-                .componentInvocations(MethodInvocation.class).get(0).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
                 .equals("com.ClassA.topMethod(java.lang.String,java.lang.Integer)"));
     }
 
@@ -108,7 +109,7 @@ public class SimpleMethodInvocationsTest {
 
         Assert.assertTrue(generatedSourceModel
                 .getComponent("com.ClassA.bottomMethod(java.lang.String,java.lang.Integer)")
-                .componentInvocations(MethodInvocation.class).get(0).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
                 .equals("com.ClassA.middleMethod(java.lang.String,java.lang.Integer)"));
     }
 
@@ -117,7 +118,7 @@ public class SimpleMethodInvocationsTest {
 
         Assert.assertTrue(generatedSourceModel
                 .getComponent("com.ClassA.noParamsMethod().y")
-                .componentInvocations(MethodInvocation.class).get(0).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
                 .equals("com.ClassA.topMethod(java.lang.String,java.lang.Integer)"));
     }
 
@@ -125,7 +126,7 @@ public class SimpleMethodInvocationsTest {
     public void testFieldVarInvokesTopMethod() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.noParamsMethod().y")
-                .componentInvocations(MethodInvocation.class).get(0).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
                 .equals("com.ClassA.topMethod(java.lang.String,java.lang.Integer)"));
     }
 

@@ -9,6 +9,7 @@ import com.clarity.invocation.MethodInvocation;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.parser.AntlrParser;
 import com.clarity.sourcemodel.Component;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 public class MethodInvocationSourceImpl extends MethodInvocationSource {
@@ -29,7 +30,7 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
             // get the method components that match the current invocation
             // source
             methodComponentMatches = getMethodComponentMatches(cmp, methodName(), numParams());
-            extendedTypes = cmp.componentInvocations(TypeExtension.class);
+            extendedTypes = cmp.componentInvocations(ComponentInvocations.EXTENSION);
             // continue looping through parent classes untill a match is found
             while (methodComponentMatches.isEmpty() && !extendedTypes.isEmpty()) {
                 setContainingClassComponentName(extendedTypes.get(0).invokedComponent());
@@ -37,7 +38,7 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
                 cmp = AntlrParser.getSrcModel().getComponent(containingClassComponentName());
                 if (cmp != null) {
                     methodComponentMatches = getMethodComponentMatches(cmp, methodName(), numParams());
-                    extendedTypes = cmp.componentInvocations(TypeExtension.class);
+                    extendedTypes = cmp.componentInvocations(ComponentInvocations.EXTENSION);
                 } else {
                     // no more super classes left, exit
                     extendedTypes.clear();
