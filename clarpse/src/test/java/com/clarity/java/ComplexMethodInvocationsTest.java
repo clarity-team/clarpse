@@ -8,7 +8,7 @@ import com.clarity.ClarpseUtil;
 import com.clarity.invocation.MethodInvocation;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.ParseService;
+import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
@@ -76,8 +76,8 @@ public class ComplexMethodInvocationsTest {
         rawData.insertFile(new RawFile("file1", codeFile1));
         rawData.insertFile(new RawFile("file3", codeFile3));
         rawData.insertFile(new RawFile("file5", codeFile5));
-        final ParseService parseService = new ParseService();
-        generatedSourceModel = parseService.parseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        generatedSourceModel = parseService.result();
         System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel));
     }
 

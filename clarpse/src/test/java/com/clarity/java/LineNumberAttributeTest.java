@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.ParseService;
+import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
@@ -46,8 +46,8 @@ public class LineNumberAttributeTest {
     public static void setUp() throws Exception {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", codeString));
-        final ParseService parseService = new ParseService();
-        generatedSourceModel = parseService.parseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        generatedSourceModel = parseService.result();
     }
 
     @Test

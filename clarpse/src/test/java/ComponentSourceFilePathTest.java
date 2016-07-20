@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.ParseService;
+import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
@@ -49,8 +49,8 @@ public class ComponentSourceFilePathTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(rawFile1);
         rawData.insertFile(rawFile2);
-        final ParseService parseService = new ParseService();
-        sourceCodeModel = parseService.parseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        sourceCodeModel = parseService.result();
     }
 
     @Test
