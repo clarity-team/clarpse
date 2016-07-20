@@ -21,19 +21,33 @@ public final class Component implements Serializable {
 
     private String start;
     private String end;
+    /**
+     * Value of the component if applicable.
+     */
     private String value;
     private String packageName;
+    /**
+     * Short name.
+     */
     private String name;
     private String comment;
+    /**
+     * Source file path from which the component was derived.
+     */
     private String sourceFile;
     private ArrayList<String> imports = new ArrayList<String>();
     private ArrayList<String> modifiers = new ArrayList<String>();
     private ComponentType type;
     private ArrayList<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
     /**
-     * Formed by taking all parents components
+     * Formed by chaining parent components' names separated by a period.
+     * 
+     * Eg) ClassA -> MethodB -> varC = "ClassA.MethodB.varC"
      */
     private String componentName;
+    /**
+     * List of all child components.
+     */
     private final ArrayList<String> children = new ArrayList<String>();
     private String declarationTypeSnippet;
 
