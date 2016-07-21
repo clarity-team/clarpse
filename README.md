@@ -19,10 +19,7 @@ A source unit of the code that can represent a class, method, interface, field v
 ##### Component Invocation
 An invocation of an external component found in a source file, possibly through type declaration, instantiation, extension, implementation, method invocations and so forth.
 
-
 ### Getting Started
-
-#### Basic Usage
 ```java
    // Create a new ParseRequestContent Object representing a codebase
    final String code =                       " package com.foo;  "
