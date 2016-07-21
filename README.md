@@ -43,26 +43,25 @@ An invocation of an external component found in a source file, possibly through 
     // get the main class component
     Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
     mainclassComponent.name();           // --> "SampleClass"
-    mainClassComponent.type();  // --> CLASS
-    mainClassComponent.annotations();    // --> 
+    mainClassComponent.type();           // --> CLASS
+    mainClassComponent.annotations();    // --> SampleAnnotation
+    mainClassComponent.comment();        // --> "Sample Doc Comment"
     mainClassComponent.modifiers();      // --> ["public"]
     mainClassComponent.children();       // --> ["foo.java.SampleClass.void_sampleMethod(String)"]
-    mainClassComponent.start(); --> 1
-    mainClassComponent.sourceFile(); // --> "foo.java"
+    mainClassComponent.start();          // --> 1
+    mainClassComponent.sourceFile();     // --> "foo.java"
     mainClassComponent.componentInvocations(ComponentInvocations.EXTENSION).get(0); // --> "com.foo.AbstractClass"
     // get the inner method component
     methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
     methodComponent.name();              // --> "sampleMethod"
-    methodComponent.type();     // --> METHOD
+    methodComponent.type();              // --> METHOD
     methodComponent.annotations();       // --> ["SampleAnnotation=''"]
     methodComponent.modifiers();         // --> ["public"]
     methodComponent.children();          // --> ["com.foo.java.SampleClass.void_sampleMethod(String).sampleMethodParam"]
-    methodComponent.start();         // --> 5
-    methodComponent.sourceFile(); // --> "foo.java"
+    methodComponent.start();             // --> 5
+    methodComponent.sourceFile();        // --> "foo.java"
     methodComponent.componentInvocations(ComponentInvocations.METHOD).get(0); // --> "com.foo.SampleClassB.fooMethod()"
 ```
-#### Component Invocation Retrieval
-
 ### Architecture
 
 The Component class is the heart of clarpse and represents any given construct of a source file (eg: Class, Interface, Method, Field, etc..). Furthermore, the OOPSourceCodeModel class represents a collection of such Components to represent a typical codebase. One can interact with these components in a OOPSourceCodeModel object in an object oriented manner to retrieve key information about the source code. The main challenge for Clarpse exists in parsing a given source file from any programming language and populating the polyglot OOPSourceCodeModel object. The benefit in this tool lies in the fact that this Object can be operated on in the same manner regarding of the original programming language used, check out [Clarity Views](http://clarityviews.ca) to see Clarpse in action.
