@@ -4,16 +4,16 @@
 [![Build Status](https://travis-ci.org/Zir0-93/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
 [![Coverage Status](https://coveralls.io/repos/github/clarity-team/clarpse/badge.svg?branch=master)](https://coveralls.io/github/clarity-team/clarpse?branch=master)
 
-Clarpse is a lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a programming language into components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. To build the project with maven, run the goal "clean package assembly:single". Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable jar.
+Clarpse is a lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. To build the project with maven, run the goal "clean package assembly:single". Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable jar.
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
 ### Terminology
 | Term                 | Definition                                                                                                                                                                  |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Component            | A source unit of the code that can represent a class, method, interface, field variable, local variable, enum, etc ..                                                       |
+| Component            | A language independant source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
 |  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
-| Component Invocation | An invocation of an external component found in a source file,possibly,through type declaration, instantiation, extension, implementation, method invocations and so forth. |
+| Component Invocation | An invocation of an external component found in a source file, typically through type declaration, instantiation, extension, implementation, method invocations and so forth. |
 
 ### Getting Started
 ```java
