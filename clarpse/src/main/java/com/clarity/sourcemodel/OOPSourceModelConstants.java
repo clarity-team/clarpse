@@ -14,7 +14,7 @@ import com.clarity.invocation.TypeInstantiation;
 
 /**
  * Constants related to source code model entities.
- * 
+ *
  * @author Muntazir Fadhel
  *
  */
@@ -26,7 +26,7 @@ public final class OOPSourceModelConstants {
     private OOPSourceModelConstants() {
     };
 
-    static final Map<String, String> JAVA_COLLECTIONS =  new HashMap<String, String>();
+    static final Map<String, String> JAVA_COLLECTIONS = new HashMap<String, String>();
 
     /**
      * @return the javaCollections
@@ -254,7 +254,7 @@ public final class OOPSourceModelConstants {
 
         ANNOTATION(AnnotationInvocation.class), METHOD(MethodInvocation.class), EXCEPTION(ThrownException.class), DECLARATION(
                 TypeDeclaration.class), INSTANTIATION(TypeInstantiation.class), EXTENSION(TypeExtension.class), IMPLEMENTATION(
-                TypeImplementation.class);
+                        TypeImplementation.class);
 
         public Class<? extends ComponentInvocation> getMatchingClass() {
             return matchingClass;
@@ -270,7 +270,7 @@ public final class OOPSourceModelConstants {
     /**
      * Enum constants representing types of component found in java code source
      * model.
-     * 
+     *
      * @author Muntazir Fadhel
      *
      */
@@ -278,9 +278,9 @@ public final class OOPSourceModelConstants {
 
         CLASS_COMPONENT(true, false, false), INTERFACE_COMPONENT(true, false, false), INTERFACE_CONSTANT_COMPONENT(false, false,
                 true), ENUM_COMPONENT(true, false, false), ANNOTATION_COMPONENT(false, false, false), METHOD_COMPONENT(false,
-                true, false), CONSTRUCTOR_COMPONENT(false, true, false), ENUM_CONSTANT_COMPONENT(false, false, true), FIELD_COMPONENT(
-                false, false, true), METHOD_PARAMETER_COMPONENT(false, false, true), CONSTRUCTOR_PARAMETER_COMPONENT(false,
-                false, true), LOCAL_VARIABLE_COMPONENT(false, false, true);
+                        true, false), CONSTRUCTOR_COMPONENT(false, true, false), ENUM_CONSTANT_COMPONENT(false, false, true), FIELD_COMPONENT(
+                                false, false, true), METHOD_PARAMETER_COMPONENT(false, false, true), CONSTRUCTOR_PARAMETER_COMPONENT(false,
+                                        false, true), LOCAL_VARIABLE_COMPONENT(false, false, true);
 
         private final boolean isBaseComponent;
         private final boolean isMethodComponent;
@@ -288,7 +288,7 @@ public final class OOPSourceModelConstants {
 
         /**
          * Constructor.
-         * 
+         *
          * @param isBaseComponent
          *            true when component is base component.
          * @param isMethodComponent
