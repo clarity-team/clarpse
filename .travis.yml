@@ -3,4 +3,4 @@ script:
          - cd clarpse
          - mvn clean package assembly:single
 after_success:
-         - coveralls 
+  - bash <(curl -s https://codecov.io/bash)
