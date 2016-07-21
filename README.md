@@ -40,7 +40,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     mainClassComponent.annotations();    // --> SampleAnnotation
     mainClassComponent.comment();        // --> "Sample Doc Comment"
     mainClassComponent.modifiers();      // --> ["public"]
-    mainClassComponent.children();       // --> ["foo.java.SampleClass.void_sampleMethod(String)"]
+    mainClassComponent.children();       // --> ["foo.java.SampleClass.void_sampleMethod(java.lang.String)"]
     mainClassComponent.start();          // --> 1
     mainClassComponent.sourceFile();     // --> "foo.java"
     mainClassComponent.componentInvocations(ComponentInvocations.EXTENSION).get(0); // --> "com.foo.AbstractClass"
@@ -50,7 +50,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     methodComponent.type();              // --> METHOD
     methodComponent.annotations();       // --> ["SampleAnnotation=''"]
     methodComponent.modifiers();         // --> ["public"]
-    methodComponent.children();          // --> ["com.foo.java.SampleClass.void_sampleMethod(String).sampleMethodParam"]
+    methodComponent.children();          // --> ["com.foo.java.SampleClass.void_sampleMethod(java.lang.String).sampleMethodParam"]
     methodComponent.start();             // --> 5
     methodComponent.sourceFile();        // --> "foo.java"
     methodComponent.componentInvocations(ComponentInvocations.METHOD).get(0); // --> "com.foo.SampleClassB.fooMethod()"
