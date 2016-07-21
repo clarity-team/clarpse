@@ -2,10 +2,11 @@ package com.clarity.invocation.sources;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.clarity.invocation.ComponentInvocation;
-import com.clarity.parser.AntlrParser;
 import com.clarity.sourcemodel.Component;
+import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
  * Chain of dependent method source invocations.
@@ -14,29 +15,33 @@ import com.clarity.sourcemodel.Component;
  */
 public final class MethodInvocationSourceChain extends InvocationSourceChain {
 
-    public MethodInvocationSourceChain(List<InvocationSource> invocationSources) {
+    private final OOPSourceCodeModel srcModel;
+    private final Map<String, List<InvocationSourceChain>> blockedInvocations;
+
+    public MethodInvocationSourceChain(List<InvocationSource> invocationSources, OOPSourceCodeModel srcModel,
+            Map<String, List<InvocationSourceChain>> blockedInvocationSources) {
         super(invocationSources);
+        blockedInvocations = blockedInvocationSources;
+        this.srcModel = srcModel;
     }
 
     @Override
     void prepareInvocationSource(InvocationSource invocationSource) {
 
         final String requiredComponentName = invocationSource.componentInvocationClassName();
-        List<InvocationSourceChain> blockedSources = AntlrParser.getBlockedInvocationSources().get(
-                requiredComponentName);
+        List<InvocationSourceChain> blockedSources = blockedInvocations.get(requiredComponentName);
         if (blockedSources == null) {
             blockedSources = new ArrayList<InvocationSourceChain>();
         }
         blockedSources.add(this);
-        AntlrParser.getBlockedInvocationSources().put(requiredComponentName, blockedSources);
+        blockedInvocations.put(requiredComponentName, blockedSources);
     }
 
     @Override
     void updateDependantInvocationSource(ComponentInvocation createdInvocation, InvocationSource dependantSource) {
 
-        final Component methodCmp = AntlrParser.getSrcModel().getComponent(createdInvocation.invokedComponent());
+        final Component methodCmp = srcModel.getComponent(createdInvocation.invokedComponent());
         final String containingClassCmpName = methodCmp.value();
         dependantSource.update(containingClassCmpName);
     }
-
 }

@@ -41,7 +41,7 @@ public final class Component implements Serializable {
     private ArrayList<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
     /**
      * Formed by chaining parent components' names separated by a period.
-     * 
+     *
      * Eg) ClassA -> MethodB -> varC = "ClassA.MethodB.varC"
      */
     private String componentName;
@@ -201,8 +201,7 @@ public final class Component implements Serializable {
             }
         } else {
             final int lastOpeningBracket = uniqueName().lastIndexOf("(");
-            final String methodComponentUniqueNameMinusParamters = uniqueName().substring(0,
-                    lastOpeningBracket);
+            final String methodComponentUniqueNameMinusParamters = uniqueName().substring(0, lastOpeningBracket);
             final int lastPeriod = methodComponentUniqueNameMinusParamters.lastIndexOf(".");
             final String currParentClassName = methodComponentUniqueNameMinusParamters.substring(0, lastPeriod);
             return currParentClassName;

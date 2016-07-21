@@ -19,30 +19,35 @@ public class ClarpseProject {
         PARSE_TYPE_MAP.put("java", "java");
     }
 
-    private ParseRequestContent rawData;
-    
+    private final ParseRequestContent rawData;
+
     public ClarpseProject(ParseRequestContent rawData) {
-    	this.rawData = rawData;
+        this.rawData = rawData;
     }
+
     private OOPSourceCodeModel parseRawData(final ParseRequestContent rawData)
             throws Exception {
-        final AbstractFactory parserFactory = new FactoryProducer().getFactory(FactoryProducer.PARSE_KEYWORD);
-        final ClarpseParser parsingTool = parserFactory.getParsingTool(rawData.getLanguage());
+        final AbstractFactory parserFactory = new FactoryProducer()
+                .getFactory(FactoryProducer.PARSE_KEYWORD);
+        final ClarpseParser parsingTool = parserFactory.getParsingTool(rawData
+                .getLanguage());
         return parsingTool.extractParseResult(rawData);
     }
 
     public OOPSourceCodeModel result() throws Exception {
 
-        validateParseType(this.rawData.getLanguage());
+        validateParseType(rawData.getLanguage());
         // parse the files!
-        final OOPSourceCodeModel srcModel = parseRawData(this.rawData);
+        final OOPSourceCodeModel srcModel = parseRawData(rawData);
         return srcModel;
     }
 
-    private void validateParseType(final String parseType) throws IllegalArgumentException {
+    private void validateParseType(final String parseType)
+            throws IllegalArgumentException {
 
         if (!PARSE_TYPE_MAP.containsKey(parseType)) {
-            throw new IllegalArgumentException("The specified source language is not supported!");
+            throw new IllegalArgumentException(
+                    "The specified source language is not supported!");
         }
     }
 }

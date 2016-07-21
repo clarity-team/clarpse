@@ -1,12 +1,8 @@
 package com.clarity.java;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.clarity.ClarpseUtil;
-import com.clarity.invocation.TypeExtension;
-import com.clarity.invocation.TypeImplementation;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.ClarpseProject;
@@ -59,7 +55,7 @@ public class TypeExtensionTest {
 		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations(ComponentInvocations.EXTENSION)
 				.get(0).invokedComponent().equals("com.ClassD"));
 
-		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.EXTENSION)
+		Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations(ComponentInvocations.EXTENSION)
 				.size() == 1);
 	}
 	

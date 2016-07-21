@@ -11,10 +11,10 @@ import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.TypeInstantiation;
-import com.clarity.java.TypeImplementationTest;
 
 /**
  * Constants related to source code model entities.
+ * 
  * @author Muntazir Fadhel
  *
  */
@@ -23,19 +23,18 @@ public final class OOPSourceModelConstants {
     /**
      * private constructor.
      */
-    private OOPSourceModelConstants() { };
+    private OOPSourceModelConstants() {
+    };
 
-    static final Map<String, String> JAVA_COLLECTIONS
-    =
-    new HashMap<String, String>();
+    static final Map<String, String> JAVA_COLLECTIONS =  new HashMap<String, String>();
 
     /**
      * @return the javaCollections
      */
-    public static
-    Map<String, String> getJavaCollections() {
+    public static Map<String, String> getJavaCollections() {
         return JAVA_COLLECTIONS;
     }
+
     static {
         JAVA_COLLECTIONS.put("java.util.ArrayList", "java.util.ArrayList");
         JAVA_COLLECTIONS.put("java.util.ArrayList", "java.util.Set");
@@ -95,10 +94,7 @@ public final class OOPSourceModelConstants {
         JAVA_COLLECTIONS.put("java.util.WeakHashMap", "java.util.WeakHashMap");
     }
 
-
-    static final Map<String, String> JAVA_ANNOTATIONS
-    =
- new HashMap<String, String>();
+    static final Map<String, String> JAVA_ANNOTATIONS = new HashMap<String, String>();
 
     /**
      * @return the javaCollections
@@ -123,9 +119,7 @@ public final class OOPSourceModelConstants {
     }
     public static final String JAVA_DEFAULT_PKG = "java.lang.";
 
-    static final Map<String, String> JAVA_DEFAULT_CLASSES
-    =
-    new HashMap<String, String>();
+    static final Map<String, String> JAVA_DEFAULT_CLASSES = new HashMap<String, String>();
     static {
         JAVA_DEFAULT_CLASSES.put("Appendable", JAVA_DEFAULT_PKG + "Appendable");
         JAVA_DEFAULT_CLASSES.put("AutoCloseable", JAVA_DEFAULT_PKG + "AutoCloseable");
@@ -189,7 +183,7 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("ClassCastException", JAVA_DEFAULT_PKG + "ClassCastException");
         JAVA_DEFAULT_CLASSES.put("ClassNotFoundException", JAVA_DEFAULT_PKG + "ClassNotFoundException");
         JAVA_DEFAULT_CLASSES.put("CloneNotSupportedException", JAVA_DEFAULT_PKG + "CloneNotSupportedException");
-        JAVA_DEFAULT_CLASSES.put("EnumConstantNotPresentException", JAVA_DEFAULT_PKG +  "EnumConstantNotPresentException  ");
+        JAVA_DEFAULT_CLASSES.put("EnumConstantNotPresentException", JAVA_DEFAULT_PKG + "EnumConstantNotPresentException  ");
         JAVA_DEFAULT_CLASSES.put("Exception", JAVA_DEFAULT_PKG + "Exception");
         JAVA_DEFAULT_CLASSES.put("IllegalAccessException", JAVA_DEFAULT_PKG + "IllegalAccessException");
         JAVA_DEFAULT_CLASSES.put("IllegalArgumentException", JAVA_DEFAULT_PKG + "IllegalArgumentException");
@@ -236,82 +230,57 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("VirtualMachineError", JAVA_DEFAULT_PKG + "VirtualMachineError");
     }
 
-    public static
-    Map<String, String> getJavaDefaultClasses() {
+    public static Map<String, String> getJavaDefaultClasses() {
         return JAVA_DEFAULT_CLASSES;
     }
 
     public enum AccessModifiers {
 
-        FINAL(""),
-        ABSTRACT(""),
-        INTERFACE(""),
-        NATIVE(""),
-        PRIVATE("-"),
-        PROTECTED("#"),
-        PUBLIC("+"),
-        STATIC(""),
-        STRICTFP(""),
-        SYNCHRONIZED(""),
-        TRANSIENT(""),
-        NONE("~"),
-        VOLATILE("");
+        FINAL(""), ABSTRACT(""), INTERFACE(""), NATIVE(""), PRIVATE("-"), PROTECTED("#"), PUBLIC("+"), STATIC(""), STRICTFP(""), SYNCHRONIZED(
+                ""), TRANSIENT(""), NONE("~"), VOLATILE("");
 
-        private String                 umlClassDigramSymbol = null;
+        private String umlClassDigramSymbol = null;
 
-        AccessModifiers(
-                final String uMLClassDigramSymbol) {
+        AccessModifiers(final String uMLClassDigramSymbol) {
             umlClassDigramSymbol = uMLClassDigramSymbol;
         }
 
-        public
-        String getUMLClassDigramSymbol() {
+        public String getUMLClassDigramSymbol() {
             return umlClassDigramSymbol;
         }
     }
 
-
     public enum ComponentInvocations {
 
-    	ANNOTATION(AnnotationInvocation.class),
-    	METHOD(MethodInvocation.class),
-    	EXCEPTION(ThrownException.class),
-    	DECLARATION(TypeDeclaration.class),
-    	INSTANTIATION(TypeInstantiation.class),
-    	EXTENSION(TypeExtension.class),
-    	IMPLEMENTATION(TypeImplementation.class);
+        ANNOTATION(AnnotationInvocation.class), METHOD(MethodInvocation.class), EXCEPTION(ThrownException.class), DECLARATION(
+                TypeDeclaration.class), INSTANTIATION(TypeInstantiation.class), EXTENSION(TypeExtension.class), IMPLEMENTATION(
+                TypeImplementation.class);
 
-    	public Class<? extends ComponentInvocation> getMatchingClass() {
-    		return matchingClass;
-    	}
-    	private Class<? extends ComponentInvocation> matchingClass = null;
+        public Class<? extends ComponentInvocation> getMatchingClass() {
+            return matchingClass;
+        }
 
-        ComponentInvocations (
-                final Class<? extends ComponentInvocation> matchingClass) {
+        private Class<? extends ComponentInvocation> matchingClass = null;
+
+        ComponentInvocations(final Class<? extends ComponentInvocation> matchingClass) {
             this.matchingClass = matchingClass;
         }
     }
 
-    
     /**
-     * Enum constants representing types of component found in java code source model.
+     * Enum constants representing types of component found in java code source
+     * model.
+     * 
      * @author Muntazir Fadhel
      *
      */
     public enum ComponentType {
 
-        CLASS_COMPONENT(true, false, false),
-        INTERFACE_COMPONENT(true, false, false),
-        INTERFACE_CONSTANT_COMPONENT(false, false, true),
-        ENUM_COMPONENT(true, false, false),
-        ANNOTATION_COMPONENT(false, false, false),
-        METHOD_COMPONENT(false, true, false),
-        CONSTRUCTOR_COMPONENT(false, true, false),
-        ENUM_CONSTANT_COMPONENT(false, false, true),
-        FIELD_COMPONENT(false, false, true),
-        METHOD_PARAMETER_COMPONENT(false, false, true),
-        CONSTRUCTOR_PARAMETER_COMPONENT(false, false, true),
-        LOCAL_VARIABLE_COMPONENT(false, false, true);
+        CLASS_COMPONENT(true, false, false), INTERFACE_COMPONENT(true, false, false), INTERFACE_CONSTANT_COMPONENT(false, false,
+                true), ENUM_COMPONENT(true, false, false), ANNOTATION_COMPONENT(false, false, false), METHOD_COMPONENT(false,
+                true, false), CONSTRUCTOR_COMPONENT(false, true, false), ENUM_CONSTANT_COMPONENT(false, false, true), FIELD_COMPONENT(
+                false, false, true), METHOD_PARAMETER_COMPONENT(false, false, true), CONSTRUCTOR_PARAMETER_COMPONENT(false,
+                false, true), LOCAL_VARIABLE_COMPONENT(false, false, true);
 
         private final boolean isBaseComponent;
         private final boolean isMethodComponent;
@@ -319,12 +288,15 @@ public final class OOPSourceModelConstants {
 
         /**
          * Constructor.
-         * @param isBaseComponent true when component is base component.
-         * @param isMethodComponent true when method is method component.
-         * @param isVariableComponent true when component is a variable type component.
+         * 
+         * @param isBaseComponent
+         *            true when component is base component.
+         * @param isMethodComponent
+         *            true when method is method component.
+         * @param isVariableComponent
+         *            true when component is a variable type component.
          */
-        ComponentType(final boolean isBaseComponent, final boolean isMethodComponent,
-                final boolean isVariableComponent) {
+        ComponentType(final boolean isBaseComponent, final boolean isMethodComponent, final boolean isVariableComponent) {
             this.isBaseComponent = isBaseComponent;
             this.isMethodComponent = isMethodComponent;
             this.isVariableComponent = isVariableComponent;
@@ -343,22 +315,19 @@ public final class OOPSourceModelConstants {
         }
     }
 
-    private static final Map<AccessModifiers, String> JAVA_ACCESS_MODIFIER_MAP
-    =
-    new HashMap<AccessModifiers, String>();
+    private static final Map<AccessModifiers, String> JAVA_ACCESS_MODIFIER_MAP = new HashMap<AccessModifiers, String>();
 
-    public static
-    Map<AccessModifiers, String> getJavaAccessModifierMap() {
+    public static Map<AccessModifiers, String> getJavaAccessModifierMap() {
         return JAVA_ACCESS_MODIFIER_MAP;
     }
 
     /**
      * @return the javaComponentTypes
      */
-    public static
-    Map<ComponentType, String> getJavaComponentTypes() {
+    public static Map<ComponentType, String> getJavaComponentTypes() {
         return JAVA_COMPONENT_TYPES;
     }
+
     static {
         getJavaAccessModifierMap().put(AccessModifiers.PRIVATE, "private");
         getJavaAccessModifierMap().put(AccessModifiers.PROTECTED, "protected");

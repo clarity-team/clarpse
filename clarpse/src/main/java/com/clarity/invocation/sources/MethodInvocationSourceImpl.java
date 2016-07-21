@@ -2,20 +2,24 @@ package com.clarity.invocation.sources;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.EmptyInvocation;
 import com.clarity.invocation.MethodInvocation;
-import com.clarity.invocation.TypeExtension;
-import com.clarity.parser.AntlrParser;
 import com.clarity.sourcemodel.Component;
+import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 public class MethodInvocationSourceImpl extends MethodInvocationSource {
 
-    public MethodInvocationSourceImpl(String containingClassName, String methodName, int lineNum, int numParams) {
+    private final OOPSourceCodeModel srcModel;
+
+    public MethodInvocationSourceImpl(String containingClassName, String methodName, int lineNum, int numParams,
+            OOPSourceCodeModel srcModel, Map<String, List<InvocationSourceChain>> blockedInvocationSources) {
         super(containingClassName, methodName, lineNum, numParams);
+        this.srcModel = srcModel;
     }
 
     @Override
@@ -23,7 +27,7 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
 
         // check the current containing class for a method matching the current
         // invocation source
-        Component cmp = AntlrParser.getSrcModel().getComponent(containingClassComponentName());
+        Component cmp = srcModel.getComponent(containingClassComponentName());
         List<Component> methodComponentMatches = new ArrayList<Component>();
         List<ComponentInvocation> extendedTypes;
         if (cmp != null) {
@@ -35,7 +39,7 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
             while (methodComponentMatches.isEmpty() && !extendedTypes.isEmpty()) {
                 setContainingClassComponentName(extendedTypes.get(0).invokedComponent());
                 // check for method in super class if available right now
-                cmp = AntlrParser.getSrcModel().getComponent(containingClassComponentName());
+                cmp = srcModel.getComponent(containingClassComponentName());
                 if (cmp != null) {
                     methodComponentMatches = getMethodComponentMatches(cmp, methodName(), numParams());
                     extendedTypes = cmp.componentInvocations(ComponentInvocations.EXTENSION);
@@ -62,14 +66,14 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
 
         final List<Component> componentMatches = new ArrayList<Component>();
         for (final String child : containingClassCmp.children()) {
-            final Component methodCmp = AntlrParser.getSrcModel().getComponent(child);
+            final Component methodCmp = srcModel.getComponent(child);
             if (methodCmp.componentType() == ComponentType.CONSTRUCTOR_COMPONENT
                     || methodCmp.componentType() == ComponentType.METHOD_COMPONENT) {
                 if (methodCmp.name().equals(methodName)) {
                     // figure out the number of parameters for this method..
                     int methodParams = 0;
                     for (final String methodChildCmp : methodCmp.children()) {
-                        if (AntlrParser.getSrcModel().getComponent(methodChildCmp).componentType() == ComponentType.METHOD_PARAMETER_COMPONENT) {
+                        if (srcModel.getComponent(methodChildCmp).componentType() == ComponentType.METHOD_PARAMETER_COMPONENT) {
                             methodParams++;
                         }
                     }
@@ -85,8 +89,8 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
 
     @Override
     public String toString() {
-        return ("containingClassName: " + containingClassComponentName() + ", methodName: " + methodName()
-                + ", lineNumber: " + lineNum() + ", numParams: " + numParams());
+        return ("containingClassName: " + containingClassComponentName() + ", methodName: " + methodName() + ", lineNumber: "
+                + lineNum() + ", numParams: " + numParams());
     }
 
     @Override

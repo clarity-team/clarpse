@@ -124,7 +124,7 @@ public class AnnotationInvocationTest {
     @Test
     public void testMethodAnnotationRegisteredInvokedComponent() throws Exception {
 
-        final String code = "import org.springframework..RequestMapping;"
+        final String code = "import org.springframework.RequestMapping;"
                 + "import org.springframework.RequestMethod;"
                 + " class test { "
                 + "     @RequestMapping(value = \"value1\", method = RequestMethod.GET) method(){}"

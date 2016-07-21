@@ -48,14 +48,14 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
     private final Stack<Component> componentStack = new Stack<Component>();
     private final ArrayList<String> currentImports = new ArrayList<String>();
-    private static String currentPkg = "";
+    private String currentPkg = "";
     private String currFileSourceCode;
     private final OOPSourceCodeModel srcModel;
     private int componentCompletionMultiplier = 1;
-    private final static Map<String, String> currentImportsMap = new HashMap<String, String>();
+    private final Map<String, String> currentImportsMap = new HashMap<String, String>();
     private final String sourceFilePath;
-    private static final String JAVA_BLOCK_COMMENT_BEGIN_SYMBOL = "/*";
-    private static final String JAVA_BLOCK_COMMENT_END_SYMBOL = "*/";
+    private final String javaCommentBeginSymbol = "/*";
+    private  final String javaCommentEndSymbol = "*/";
     // key = required component name, value = blocked invocation source
     private volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources;
     /**
@@ -116,7 +116,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
         newCmp.setComment(AntlrUtil.getContextMultiLineComment(ctx, currFileSourceCode,
-                JAVA_BLOCK_COMMENT_BEGIN_SYMBOL, JAVA_BLOCK_COMMENT_END_SYMBOL));
+                javaCommentBeginSymbol, javaCommentEndSymbol));
         newCmp.setStartLine(String.valueOf(ctx.getStart().getLine()));
         newCmp.setEndLine(String.valueOf(ctx.getStop().getLine()));
         newCmp.setSourceFilePath(sourceFilePath);
@@ -170,7 +170,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
      *            type to resolve
      * @return full name of the given type
      */
-    private static String resolveType(final String type) {
+    private String resolveType(final String type) {
 
 
         if (currentImportsMap.containsKey(type)) {
@@ -296,7 +296,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         currMethodCmp.setName(methodName);
 
         if (ctx.type() != null) {
-            currMethodCmp.setValue(ctx.type().getText());
+            currMethodCmp.setValue(resolveType(ctx.type().getText()));
         } else {
             currMethodCmp.setValue("void");
         }
@@ -490,7 +490,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         componentStack.push(currCmp);
     }
 
-    private static String resolveAnnotationType(String annotationType) {
+    private String resolveAnnotationType(String annotationType) {
         if (OOPSourceModelConstants.getJavaPredefinedAnnotations().containsKey(annotationType)) {
             return annotationType;
         } else {
@@ -623,10 +623,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
                 methodSources.add(new BindedInvocationSource(new MethodInvocationSourceImpl(
                         retrieveContainingClassName(methodCtx), extractMethodCall(methodCtx), methodCtx.getStart()
-                        .getLine(), getArgumentsSize(methodCtx)), currCmp));
+                        .getLine(), getArgumentsSize(methodCtx), srcModel, blockedInvocationSources), currCmp));
             }
 
-            final MethodInvocationSourceChain methodChain = new MethodInvocationSourceChain(methodSources);
+            final MethodInvocationSourceChain methodChain = new MethodInvocationSourceChain(methodSources, srcModel, blockedInvocationSources);
             methodChain.process();
         }
     }

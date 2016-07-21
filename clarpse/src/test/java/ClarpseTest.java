@@ -2,12 +2,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.clarity.java.AnnotationInvocationTest;
+import com.clarity.java.ChildComponentsTest;
 import com.clarity.java.ComplexMethodInvocationsTest;
 import com.clarity.java.ComponentExistTest;
 import com.clarity.java.PackageAttributeTest;
 import com.clarity.java.ComponentTypeTest;
 import com.clarity.java.LineNumberAttributeTest;
 import com.clarity.java.SimpleMethodInvocationsTest;
+import com.clarity.java.TypeDeclarationTest;
+import com.clarity.java.TypeExtensionTest;
+import com.clarity.java.TypeImplementationTest;
 
 /**
  * Clarpse's main test suite.
@@ -20,7 +24,12 @@ import com.clarity.java.SimpleMethodInvocationsTest;
     SimpleMethodInvocationsTest.class,
     RawFileComparisonTest.class,
     ComponentSourceFilePathTest.class,
- ComplexMethodInvocationsTest.class, AnnotationInvocationTest.class
+ ComplexMethodInvocationsTest.class, 
+ AnnotationInvocationTest.class,
+ TypeExtensionTest.class,
+ TypeImplementationTest.class,
+ TypeDeclarationTest.class,
+ ChildComponentsTest.class
 })
 public class ClarpseTest {
 
