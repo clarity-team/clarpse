@@ -24,12 +24,13 @@ An invocation of an external component found in a source file, possibly through 
 
 #### Basic Usage
 ```java
-        // Create a new ParseRequestContent Object representing a codebase
-        final String code =                       " package com.foo;  "
-                                               +  " public class SampleClass {                                                 "
+   // Create a new ParseRequestContent Object representing a codebase
+   final String code =                       " package com.foo;  "
+                                               +  " public class SampleClass extends AnInterface {                                                 "
                                                +  "     /** Sample Doc Comment */                                              "
                                                +  "     @SampleAnnotation                                                      "
-                                               +  "     public void sampleMethod(String sampleMethodParam) throws AnException {"
+                                               +  "     public void sampleMethod(String sampleMethodParam) throws AnException {"   
+                                               +  "     SampleClassB.fooMethod();
                                                +  "     }                                                                      "
                                                +  " }                                                                          ";";
     final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
@@ -39,7 +40,6 @@ An invocation of an external component found in a source file, possibly through 
     // get the parsed result.
     OOPSourceCodeModel generatedSourceModel = parseService.result();
     // extract data from the OOPSourceCodeModel's components
-    
     // get the main class component
     Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
     mainclassComponent.name();           // --> "SampleClass"
@@ -49,6 +49,7 @@ An invocation of an external component found in a source file, possibly through 
     mainClassComponent.children();       // --> ["foo.java.SampleClass.void_sampleMethod(String)"]
     mainClassComponent.start(); --> 1
     mainClassComponent.sourceFile(); // --> "foo.java"
+    mainClassComponent.componentInvocations(ComponentInvocations.EXTENSION).get(0); // --> "com.foo.AnInterface"
     // get the inner method component
     methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
     methodComponent.name();              // --> "sampleMethod"
@@ -58,6 +59,7 @@ An invocation of an external component found in a source file, possibly through 
     methodComponent.children();          // --> ["com.foo.java.SampleClass.void_sampleMethod(String).sampleMethodParam"]
     methodComponent.start();         // --> 5
     methodComponent.sourceFile(); // --> "foo.java"
+    methodComponent.componentInvocations(ComponentInvocations.METHOD).get(0); // --> "com.foo.SampleClassB.fooMethod()"
 ```
 #### Component Invocation Retrieval
 
