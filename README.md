@@ -4,18 +4,26 @@
 [![Build Status](https://travis-ci.org/Zir0-93/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
 [![codecov](https://codecov.io/gh/Zir0-93/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/Zir0-93/clarpse)
 
-Clarpse is a lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. To build the project with maven, run the goal "clean package assembly:single". Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable jar.
+Clarpse is a lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable release.
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
-### Terminology
+# Features
+
+ - Light weight
+ - Performant
+ - Easy to use
+ - Clean API built on top of AST
+ - Support of comments
+
+# Terminology
 | Term                 | Definition                                                                                                                                                                  |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Component            | A language independant source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
 |  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
 | Component Invocation | An invocation of an external component found in a source file, typically through type declaration, instantiation, extension, implementation, method invocations and so forth. |
 
-### Getting Started
+# Getting Started
 ```java
    // Create a new ParseRequestContent Object representing a codebase
    final String code =                       " package com.foo;  "
@@ -55,7 +63,7 @@ If you have any questions or are interested in adding new functionality, feel fr
     methodComponent.sourceFile();        // --> "foo.java"
     methodComponent.componentInvocations(ComponentInvocations.METHOD).get(0); // --> "com.foo.SampleClassB.fooMethod()"
 ```
-### Architecture
+# Design
 
 The Component class is the heart of clarpse and represents any given construct of a source file (eg: Class, Interface, Method, Field, etc..). Furthermore, the OOPSourceCodeModel class represents a collection of such Components to represent a typical codebase. One can interact with these components in a OOPSourceCodeModel object in an object oriented manner to retrieve key information about the source code. The main challenge for Clarpse exists in parsing a given source file from any programming language and populating the polyglot OOPSourceCodeModel object. The benefit in this tool lies in the fact that this Object can be operated on in the same manner regarding of the original programming language used, check out [Clarity Views](http://clarityviews.ca) to see Clarpse in action.
 
@@ -63,7 +71,12 @@ The following diagram represents the core workings of Clarpse. A Parser should i
 
 ![Clarity Views Diagram](http://clarityviews.ca/embed/clarity-team/clarpse/master/diagram/clarpse-master/clarpse/src/main/java/com/clarity/parser/AntlrParser.java?projectName=clarpse)
 
-###Contributing A Patch
+# Compile Sources
+If you have checkout the project from GitHub you can build the project with maven using:
+
+    mvn clean package assembly:single
+
+# Contributing A Patch
 
    -  Submit an issue describing your proposed change to the repo in question.
     The repo owner will respond to your issue promptly.
