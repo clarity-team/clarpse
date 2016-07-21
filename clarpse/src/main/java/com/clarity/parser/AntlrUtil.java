@@ -32,9 +32,6 @@ public final class AntlrUtil {
         }
     }
 
-    /**
-     *
-     */
     private AntlrUtil() {
 
     }

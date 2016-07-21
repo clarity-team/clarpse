@@ -1,13 +1,13 @@
 package com.clarity.java;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.ParseService;
+import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
@@ -17,7 +17,7 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  * @author Muntazir Fadhel
  *
  */
-public class ParseLineNumberAttributeTest {
+public class LineNumberAttributeTest {
 
     private static OOPSourceCodeModel generatedSourceModel;
 
@@ -46,31 +46,31 @@ public class ParseLineNumberAttributeTest {
     public static void setUp() throws Exception {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", codeString));
-        final ParseService parseService = new ParseService();
-        generatedSourceModel = parseService.parseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        generatedSourceModel = parseService.result();
     }
 
     @Test
     public void testCorrectStartLineNoForClassComponent() throws Exception {
         final Component classCmp = generatedSourceModel.getComponent("x.foo");
-        Assert.assertTrue(classCmp.getStartLine().equals(ClassComponentBeginLine));
+        assertTrue(classCmp.startLine().equals(ClassComponentBeginLine));
     }
 
     @Test
     public void testCorrectEndLineNoForClassComponent() throws Exception {
         final Component classCmp = generatedSourceModel.getComponent("x.foo");
-        Assert.assertTrue(classCmp.getEndLine().equals(ClassComponentEndLine));
+        assertTrue(classCmp.endLine().equals(ClassComponentEndLine));
     }
 
     @Test
     public void testCorrectStartLineNoForMethodComponent() throws Exception {
-        final Component methodCmp = generatedSourceModel.getComponent("x.foo.void_fooMethod()");
-        Assert.assertTrue(methodCmp.getStartLine().equals(MethodComponentBeginLine));
+        final Component methodCmp = generatedSourceModel.getComponent("x.foo.fooMethod()");
+        assertTrue(methodCmp.startLine().equals(MethodComponentBeginLine));
     }
 
     @Test
     public void testCorrectEndLineNoForMethodComponent() throws Exception {
-        final Component methodCmp = generatedSourceModel.getComponent("x.foo.void_fooMethod()");
-        Assert.assertTrue(methodCmp.getEndLine().equals(MethodComponentEndLine));
+        final Component methodCmp = generatedSourceModel.getComponent("x.foo.fooMethod()");
+        assertTrue(methodCmp.endLine().equals(MethodComponentEndLine));
     }
 }

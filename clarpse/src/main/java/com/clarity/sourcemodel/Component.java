@@ -1,14 +1,11 @@
 package com.clarity.sourcemodel;
 
-import invocation.ComponentInvocation;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.clarity.invocation.ComponentInvocation;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 /**
@@ -24,58 +21,58 @@ public final class Component implements Serializable {
 
     private String start;
     private String end;
+    /**
+     * Value of the component if applicable.
+     */
     private String value;
     private String packageName;
+    /**
+     * Short name.
+     */
     private String name;
     private String comment;
-    private String sourceFilePath;
+    /**
+     * Source file path from which the component was derived.
+     */
+    private String sourceFile;
     private ArrayList<String> imports = new ArrayList<String>();
     private ArrayList<String> modifiers = new ArrayList<String>();
-    private ComponentType componentType;
-    private ArrayList<ComponentInvocation> componentInvocations = new ArrayList<ComponentInvocation>();
+    private ComponentType type;
+    private ArrayList<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
+    /**
+     * Formed by chaining parent components' names separated by a period.
+     *
+     * Eg) ClassA -> MethodB -> varC = "ClassA.MethodB.varC"
+     */
     private String componentName;
-    private String code;
+    /**
+     * List of all child components.
+     */
     private final ArrayList<String> children = new ArrayList<String>();
     private String declarationTypeSnippet;
 
     public Component(final Component component) {
-        modifiers = component.getModifiers();
-        code = component.getCode();
-        componentType = component.getComponentType();
-        declarationTypeSnippet = component.getDeclarationTypeSnippet();
-        componentInvocations = component.getExternalClassTypeReferences();
-        imports = component.getImports();
-        componentName = component.getComponentName();
-        packageName = component.getPackageName();
-        value = component.getValue();
-        start = component.getStartLine();
-        end = component.getEndLine();
-        sourceFilePath = component.getSourceFilePath();
+        modifiers = component.modifiers();
+        type = component.componentType();
+        declarationTypeSnippet = component.declarationTypeSnippet();
+        invocations = component.invocations();
+        imports = component.imports();
+        componentName = component.componentName();
+        packageName = component.packageName();
+        value = component.value();
+        start = component.startLine();
+        end = component.endLine();
+        sourceFile = component.sourceFile();
     }
 
     public Component() {
     }
 
-    public void copy(final Component component) {
-
-        modifiers = component.getModifiers();
-        code = component.getCode();
-        componentType = component.getComponentType();
-        declarationTypeSnippet = component.getDeclarationTypeSnippet();
-        componentInvocations = component.getExternalClassTypeReferences();
-        imports = component.getImports();
-        componentName = component.getComponentName();
-        packageName = component.getPackageName();
-        value = component.getValue();
-        start = component.getStartLine();
-        end = component.getEndLine();
-    }
-
-    public ArrayList<String> getChildComponents() {
+    public ArrayList<String> children() {
         return children;
     }
 
-    public String getStartLine() {
+    public String startLine() {
         return start;
     }
 
@@ -83,7 +80,7 @@ public final class Component implements Serializable {
         start = startLine;
     }
 
-    public String getEndLine() {
+    public String endLine() {
         return end;
     }
 
@@ -91,53 +88,47 @@ public final class Component implements Serializable {
         end = endLine;
     }
 
-    public String getUniqueName() {
-        if (!packageName.isEmpty()) {
+    public String uniqueName() {
+        if (packageName != null && !packageName.isEmpty()) {
             return packageName + "." + componentName;
         } else {
             return componentName;
         }
     }
 
-    public String getName() {
+    public String name() {
 
         return name;
     }
 
     public void insertChildComponent(final String childComponentName) {
-        children.add(childComponentName);
+        if (!children.contains(childComponentName)) {
+            children.add(childComponentName);
+        }
     }
 
     public void addImports(final String importStmt) {
         imports.add(importStmt);
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getDeclarationTypeSnippet() {
+    public String declarationTypeSnippet() {
         return declarationTypeSnippet;
     }
 
-    public ArrayList<ComponentInvocation> getExternalClassTypeReferences() {
-        return componentInvocations;
+    public ArrayList<ComponentInvocation> invocations() {
+        return invocations;
     }
 
-    public void insertTypeReference(final ComponentInvocation ref) {
-        componentInvocations.add(ref);
+    public void insertComponentInvocation(final ComponentInvocation ref) {
+        invocations.add(ref);
     }
 
-    public ArrayList<String> getImports() {
+    public ArrayList<String> imports() {
         return imports;
     }
 
-    public String getComponentName() {
+    public String componentName() {
         return componentName;
-    }
-
-    public void setCode(final String componentCode) {
-        code = componentCode;
     }
 
     public void setDeclarationTypeSnippet(final String componentDeclarationTypeFragment) {
@@ -145,7 +136,7 @@ public final class Component implements Serializable {
     }
 
     public void setExternalTypeReferences(final ArrayList<ComponentInvocation> externalReferences) {
-        componentInvocations = externalReferences;
+        invocations = externalReferences;
     }
 
     public void setImports(final ArrayList<String> importStatements) {
@@ -156,7 +147,7 @@ public final class Component implements Serializable {
         this.componentName = componentName;
     }
 
-    public ArrayList<String> getModifiers() {
+    public ArrayList<String> modifiers() {
         return modifiers;
     }
 
@@ -166,15 +157,15 @@ public final class Component implements Serializable {
         }
     }
 
-    public ComponentType getComponentType() {
-        return componentType;
+    public ComponentType componentType() {
+        return type;
     }
 
     public void setComponentType(final ComponentType componentType) {
-        this.componentType = componentType;
+        type = componentType;
     }
 
-    public String getPackageName() {
+    public String packageName() {
         return packageName;
     }
 
@@ -182,7 +173,7 @@ public final class Component implements Serializable {
         this.packageName = packageName;
     }
 
-    public String getValue() {
+    public String value() {
         return value;
     }
 
@@ -190,7 +181,7 @@ public final class Component implements Serializable {
         this.value = value;
     }
 
-    public String getComment() {
+    public String comment() {
         return comment;
     }
 
@@ -198,75 +189,50 @@ public final class Component implements Serializable {
         this.comment = comment;
     }
 
-    public Component getParentBaseComponent(final Map<String, Component> map) {
+    public String parentUniqueName() {
 
-        String currParentClassName = getUniqueName();
-        final int numberOfParentCmps = StringUtils.countMatches(getComponentName(), ".");
-        for (int i = numberOfParentCmps; i > 0; i--) {
-            currParentClassName = getParentComponentUniqueName(currParentClassName);
-            if (map.containsKey(currParentClassName)
-                    && map.get(currParentClassName).getComponentType().isBaseComponent()) {
-                break;
+        if (!type.isMethodComponent()) {
+            if (uniqueName().contains(".")) {
+                final int lastPeriod = uniqueName().lastIndexOf(".");
+                final String currParentClassName = uniqueName().substring(0, lastPeriod);
+                return currParentClassName;
+            } else {
+                throw new IllegalArgumentException("Cannot get parent of component: " + uniqueName());
             }
+        } else {
+            final int lastOpeningBracket = uniqueName().lastIndexOf("(");
+            final String methodComponentUniqueNameMinusParamters = uniqueName().substring(0, lastOpeningBracket);
+            final int lastPeriod = methodComponentUniqueNameMinusParamters.lastIndexOf(".");
+            final String currParentClassName = methodComponentUniqueNameMinusParamters.substring(0, lastPeriod);
+            return currParentClassName;
         }
-        return map.get(currParentClassName);
     }
 
-    public String getParentComponentUniqueName(final String componentFullName) {
-
-        final int lastPeriod = componentFullName.lastIndexOf(".");
-        final String currParentClassName = getUniqueName().substring(0, lastPeriod);
-        return currParentClassName;
-    }
-
-    public Component getParentMethodComponent(final Map<String, Component> components) {
-
-        String currParentClassName = getUniqueName();
-        final int numberOfParentCmps = StringUtils.countMatches(getComponentName(), ".");
-        for (int i = numberOfParentCmps; i > 0; i--) {
-            currParentClassName = getParentComponentUniqueName(currParentClassName);
-            if (components.containsKey(currParentClassName)
-                    && components.get(currParentClassName).getComponentType().isMethodComponent()) {
-                break;
-            }
-        }
-        return components.get(currParentClassName);
-    }
-
-    public String getParentComponentUniqueName() {
-
-        final int lastPeriod = getUniqueName().lastIndexOf(".");
-        final String currParentClassName = getUniqueName().substring(0, lastPeriod);
-        return currParentClassName;
-    }
-
-    public void insertTypeReferences(final ArrayList<ComponentInvocation> externalClassTypeReferenceList) {
+    public void insertComponentInvocations(final ArrayList<ComponentInvocation> externalClassTypeReferenceList) {
         for (final ComponentInvocation typeRef : externalClassTypeReferenceList) {
-            insertTypeReference(typeRef);
+            insertComponentInvocation(typeRef);
         }
     }
 
-    public List<ComponentInvocation> componentInvocations(final Class<? extends ComponentInvocation> type) {
-
-        final List<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
-
-        for (final ComponentInvocation compInvocation : componentInvocations) {
-            if (type.isAssignableFrom(compInvocation.getClass())) {
-                invocations.add(compInvocation);
+    public List<ComponentInvocation> componentInvocations(final ComponentInvocations type) {
+        final List<ComponentInvocation> tmpInvocations = new ArrayList<ComponentInvocation>();
+        for (final ComponentInvocation compInvocation : invocations) {
+            if (type.getMatchingClass().isAssignableFrom(compInvocation.getClass())) {
+                tmpInvocations.add(compInvocation);
             }
         }
-        return invocations;
+        return tmpInvocations;
     }
 
     public void setName(final String name) {
         this.name = name;
     }
 
-    public String getSourceFilePath() {
-        return sourceFilePath;
+    public String sourceFile() {
+        return sourceFile;
     }
 
     public void setSourceFilePath(final String sourceFilePath) {
-        this.sourceFilePath = sourceFilePath;
+        sourceFile = sourceFilePath;
     }
 }

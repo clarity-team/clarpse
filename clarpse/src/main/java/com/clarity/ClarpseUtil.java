@@ -24,7 +24,6 @@ public final class ClarpseUtil {
 
     /**
      * Gets a general object key from a given map using the given value.
-     *
      */
     public static Object getObjectFromStringObjectKeyValueMap(final String value, final Map<?, ?> map) {
         final Iterator<?> it = map.entrySet().iterator();

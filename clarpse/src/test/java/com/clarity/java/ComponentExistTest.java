@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.clarity.ClarpseUtil;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.ParseService;
+import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
@@ -29,13 +29,13 @@ public class ComponentExistTest {
     private static String sampleJavaInterfaceComponentName = "SampleJavaInterface";
 
     private static String sampleJavaMethodComponentName = "sampleJavaMethod";
-    private static String sampleJavaMethodComponentKeyName = "void_sampleJavaMethod(java.lang.String)";
+    private static String sampleJavaMethodComponentKeyName = "sampleJavaMethod(java.lang.String)";
 
     private static String sampleJavaInterfaceMethodComponentName = "sampleJavaInterfaceMethod";
-    private static String sampleJavaInterfaceMethodComponentKeyName = "void_sampleJavaInterfaceMethod(java.lang.String)";
+    private static String sampleJavaInterfaceMethodComponentKeyName = "sampleJavaInterfaceMethod(java.lang.String)";
 
     private static String sampleJavaEnumClassConstructor = "sampleJavaEnumClass";
-    private static String sampleJavaEnumClassConstructurKey = "void_sampleJavaEnumClass(java.lang.String)";
+    private static String sampleJavaEnumClassConstructurKey = "sampleJavaEnumClass(java.lang.String)";
 
     private static String codeString = "package " + sampleJavaPackageName + ";"
             + "                              class " + sampleJavaClassComponentName  + " {"
@@ -59,8 +59,8 @@ public class ComponentExistTest {
     public static final void parseJavaSourceFile() throws Exception {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", codeString));
-        final ParseService parseService = new ParseService();
-        generatedSourceModel = parseService.parseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        generatedSourceModel = parseService.result();
         System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel));
     }
 

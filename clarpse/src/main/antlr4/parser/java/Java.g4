@@ -50,7 +50,7 @@ packageDeclaration
     ;
 
 importDeclaration
-    :   'import' 'static'? qualifiedName ('.' '*')? ';'
+    :   'import' 'static'? qualifiedName ('.' '*')? ';' 
     ;
 
 typeDeclaration
@@ -209,8 +209,9 @@ variableDeclaratorId
 
 variableInitializer
     :   arrayInitializer
-    |   methodInvocation
+    |   methodInvocations
     |   expression
+    |   classInstanceCreationExpression_lfno_primary
     ;
 
 arrayInitializer
@@ -322,27 +323,46 @@ literal
 // ANNOTATIONS
 
 annotation
-    :   '@' annotationName ( '(' ( elementValuePairs | elementValue )? ')' )?
+    :   normalAnnotation
+    |   markerAnnotation
+    |   singleElementAnnotation
     ;
 
-annotationName : qualifiedName ;
+normalAnnotation
+    :   '@' typeName '(' elementValuePairList? ')'
+    ;
 
-elementValuePairs
+elementValuePairList
     :   elementValuePair (',' elementValuePair)*
     ;
 
 elementValuePair
-    :   Identifier '=' elementValue
+    :   Identifier '='  elementValue ?
+    ;
+    
+annotationName : qualifiedName ;
+
+markerAnnotation
+    :   '@' typeName
     ;
 
+singleElementAnnotation
+    :   '@' typeName '('  elementValue  ')'
+;
 elementValue
-    :   expression
-    |   annotation
+    :   typeName
+    |   conditionalExpression
     |   elementValueArrayInitializer
+    |   annotation
+    |   literal
     ;
 
 elementValueArrayInitializer
-    :   '{' (elementValue (',' elementValue)*)? (',')? '}'
+    :   '{' elementValueList? ','? '}'
+    ;
+
+elementValueList
+    :   elementValue (',' elementValue)*
     ;
 
 annotationTypeDeclaration
@@ -458,7 +478,7 @@ statementExpression
     |   preDecrementExpression
     |   postIncrementExpression
     |   postDecrementExpression
-    |   methodInvocation
+    |   methodInvocations
     |   classInstanceCreationExpression
     ;
 
@@ -793,7 +813,7 @@ packageOrTypeName
     |   packageOrTypeName '.' Identifier
     ;
 
-methodName: Identifier ;
+localMethodName: Identifier ;
 
 
 
@@ -1006,8 +1026,13 @@ arrayAccess_lfno_primary
         )*
     ;
 
+methodInvocations
+    : methodInvocation ('.' methodInvocation)*
+    ;
+    
 methodInvocation
-    :   methodName '(' argumentList? ')'
+    :   ('this' '.')? localMethodName '(' argumentList? ')'
+    |   ('super'|'this') '(' argumentList? ')'
     |   typeName '.' typeArguments? Identifier '(' argumentList? ')'
     |   expressionName '.' typeArguments? Identifier '(' argumentList? ')'
     |   primary '.' typeArguments? Identifier '(' argumentList? ')'
@@ -1020,7 +1045,7 @@ methodInvocation_lf_primary
     ;
 
 methodInvocation_lfno_primary
-    :   methodName '(' argumentList? ')'
+    :   localMethodName '(' argumentList? ')'
     |   typeName '.' typeArguments? Identifier '(' argumentList? ')'
     |   expressionName '.' typeArguments? Identifier '(' argumentList? ')'
     |   'super' '.' typeArguments? Identifier '(' argumentList? ')'
@@ -1028,9 +1053,14 @@ methodInvocation_lfno_primary
     ;
 
 argumentList
-    :   expression (',' expression)*
+    : argument (',' argument)* 
     ;
 
+argument
+    :   literal
+    |   methodInvocations
+    |   expression
+    ;
 methodReference
     :   expressionName '::' typeArguments? Identifier
     |   referenceType '::' typeArguments? Identifier
@@ -1072,6 +1102,7 @@ dimExpr
 expression
     :   lambdaExpression
     |   assignmentExpression
+    |   typeName
     ;
 
 lambdaExpression
@@ -1104,6 +1135,7 @@ assignment
 
 leftHandSide
     :   expressionName
+    |   typeName
     |   fieldAccess
     |   arrayAccess
     ;

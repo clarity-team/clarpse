@@ -1,4 +1,4 @@
-package invocation;
+package com.clarity.invocation;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -21,4 +21,8 @@ public class AnnotationInvocation extends ComponentInvocation {
         annotations.add(annotation);
     }
 
+    @Override
+    public boolean empty() {
+        return (super.empty() && annotations.isEmpty());
+    }
 }

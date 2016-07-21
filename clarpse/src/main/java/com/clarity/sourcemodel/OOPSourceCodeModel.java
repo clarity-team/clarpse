@@ -1,11 +1,11 @@
 package com.clarity.sourcemodel;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A language independent representation of a project that reveals its
+ * A language independent representation of a codebase that reveals its
  * structural buildup.
  *
  * @author Muntazir Fadhel
@@ -16,32 +16,32 @@ public class OOPSourceCodeModel implements Serializable {
 
     public OOPSourceCodeModel() { }
 
-    private final Map<String, Component> components = new ConcurrentHashMap<String, Component>();
+    private final Map<String, Component> components = new HashMap<String, Component>();
 
-    public Map<String, Component> getComponents() throws Exception {
+    public Map<String, Component> getComponents() {
         return components;
     }
 
     public
-    void merge(final OOPSourceCodeModel sourceModel) throws Exception {
+    void merge(final OOPSourceCodeModel sourceModel) {
 
         insertComponents(sourceModel.getComponents());
     }
 
-    public void insertComponent(final Component component) throws Exception {
+    public void insertComponent(final Component component) {
 
-        components.put(component.getUniqueName(), component);
+        components.put(component.uniqueName(), component);
     }
 
-    public boolean containsComponent(final String componentName) throws Exception {
+    public boolean containsComponent(final String componentName) {
         return getComponents().containsKey(componentName);
     }
 
-    public Component getComponent(final String componentName) throws Exception {
-        return this.getComponents().get(componentName);
+    public Component getComponent(final String componentName) {
+        return this.getComponents().get(componentName.replaceAll("\\s+", ""));
     }
 
-    public void insertComponents(final Map<String, Component> newCmps) throws Exception {
+    public void insertComponents(final Map<String, Component> newCmps) {
 
         for (final Map.Entry<String, Component> entry : newCmps.entrySet()) {
             insertComponent(entry.getValue());
