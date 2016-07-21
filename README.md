@@ -2,7 +2,7 @@
 
 [![Clarity Views Label](http://clarityviews.ca/badge)](http://clarityviews.ca/github/clarity-team/clarpse?projectName=clarpse)
 [![Build Status](https://travis-ci.org/Zir0-93/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
-[![Coverage Status](https://coveralls.io/repos/github/clarity-team/clarpse/badge.svg?branch=master)](https://coveralls.io/github/clarity-team/clarpse?branch=master)
+[![codecov](https://codecov.io/gh/Zir0-93/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/Zir0-93/clarpse)
 
 Clarpse is a lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. To build the project with maven, run the goal "clean package assembly:single". Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable jar.
 
