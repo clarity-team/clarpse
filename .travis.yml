@@ -3,4 +3,4 @@ script:
          - cd clarpse
          - mvn clean package assembly:single
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t 875c7fe0-4af8-40f8-a735-73dbd6ae22c9
+         - bash <(curl -s https://codecov.io/bash)
