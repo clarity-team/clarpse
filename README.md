@@ -9,9 +9,9 @@ Clarpse is a lightweight polyglot source code analysis tool built using ANTLRv4.
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
 ### Terminology
-
-| Component            | A source unit of the code that can represent a class, method, interface, field variable, local variable, enum, etc ..                                                       |
+| Term                 | Definition                                                                                                                                                                  |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Component            | A source unit of the code that can represent a class, method, interface, field variable, local variable, enum, etc ..                                                       |
 |  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
 | Component Invocation | An invocation of an external component found in a source file,possibly,through type declaration, instantiation, extension, implementation, method invocations and so forth. |
 
