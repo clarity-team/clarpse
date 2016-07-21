@@ -18,6 +18,9 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import com.clarity.invocation.sources.InvocationSourceChain;
+import com.clarity.parser.ClarpseParser;
+import com.clarity.parser.ParseRequestContent;
+import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
@@ -34,8 +37,7 @@ public class AntlrParser implements ClarpseParser {
     private final String grammarName;
     private final String clarityListenerPkgLocation;
 
-    public AntlrParser(final String parserGrammarName,
-            final String parserAntlrClassesPackageLocation,
+    public AntlrParser(final String parserGrammarName, final String parserAntlrClassesPackageLocation,
             final String clarityListenerPackageLocation) throws Exception {
 
         grammarName = parserGrammarName;
@@ -44,8 +46,7 @@ public class AntlrParser implements ClarpseParser {
     }
 
     @Override
-    public final OOPSourceCodeModel extractParseResult(
-            final ParseRequestContent rawData) throws Exception {
+    public final OOPSourceCodeModel extractParseResult(final ParseRequestContent rawData) throws Exception {
 
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
         final Map<String, List<InvocationSourceChain>> blockedInvocationSources = new HashMap<String, List<InvocationSourceChain>>();
@@ -54,31 +55,20 @@ public class AntlrParser implements ClarpseParser {
         for (final RawFile file : files) {
 
             try {
-                final Lexer lexer = (Lexer) Class
-                        .forName(
-                                antlrClassesPackageLocation + "." + grammarName
-                                        + "Lexer")
-                        .getConstructor(CharStream.class)
-                        .newInstance(new ANTLRInputStream(file.content()));
+                final Lexer lexer = (Lexer) Class.forName(antlrClassesPackageLocation + "." + grammarName + "Lexer")
+                        .getConstructor(CharStream.class).newInstance(new ANTLRInputStream(file.content()));
                 final CommonTokenStream tokens = new CommonTokenStream(lexer);
-                final Class<?> cls = Class.forName(antlrClassesPackageLocation
-                        + "." + grammarName + "Parser");
-                final Object parser = cls.getConstructor(TokenStream.class)
-                        .newInstance(tokens);
+                final Class<?> cls = Class.forName(antlrClassesPackageLocation + "." + grammarName + "Parser");
+                final Object parser = cls.getConstructor(TokenStream.class).newInstance(tokens);
                 ((Parser) parser).setErrorHandler(new BailErrorStrategy());
-                ((Parser) parser).getInterpreter().setPredictionMode(
-                        PredictionMode.SLL);
+                ((Parser) parser).getInterpreter().setPredictionMode(PredictionMode.SLL);
                 final Method method = cls.getDeclaredMethod("compilationUnit");
                 final ParseTree tree = (ParseTree) method.invoke(parser);
                 final ParseTreeWalker walker = new ParseTreeWalker();
                 final ParseTreeListener listener = (ParseTreeListener) Class
-                        .forName(
-                                clarityListenerPkgLocation + "." + "Clarpse"
-                                        + grammarName + "TreeListener")
-                        .getConstructor(OOPSourceCodeModel.class, String.class,
-                                Map.class)
-                        .newInstance(srcModel, file.name(),
-                                blockedInvocationSources);
+                        .forName(clarityListenerPkgLocation + "." + "Clarpse" + grammarName + "TreeListener")
+                        .getConstructor(OOPSourceCodeModel.class, String.class, Map.class)
+                        .newInstance(srcModel, file.name(), blockedInvocationSources);
                 walker.walk(listener, tree);
             } catch (final Exception e) {
                 continue;
