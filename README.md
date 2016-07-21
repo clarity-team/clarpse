@@ -29,9 +29,9 @@ If you have any questions or are interested in adding new functionality, feel fr
     final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
     // insert a sample source file
     rawData.insertFile(new RawFile("file2", code));
-    final ClarpseProject parseService = new ClarpseProject(rawData);
+    final ClarpseProject project = new ClarpseProject(rawData);
     // get the parsed result.
-    OOPSourceCodeModel generatedSourceModel = parseService.result();
+    OOPSourceCodeModel generatedSourceModel = project.result();
     // extract data from the OOPSourceCodeModel's components
     // get the main class component
     Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
