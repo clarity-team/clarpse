@@ -26,7 +26,7 @@ An invocation of an external component found in a source file, possibly through 
 ```java
    // Create a new ParseRequestContent Object representing a codebase
    final String code =                       " package com.foo;  "
-                                               +  " public class SampleClass extends AnInterface {                                                 "
+                                               +  " public class SampleClass extends AbstractClass {                                                 "
                                                +  "     /** Sample Doc Comment */                                              "
                                                +  "     @SampleAnnotation                                                      "
                                                +  "     public void sampleMethod(String sampleMethodParam) throws AnException {"   
@@ -49,7 +49,7 @@ An invocation of an external component found in a source file, possibly through 
     mainClassComponent.children();       // --> ["foo.java.SampleClass.void_sampleMethod(String)"]
     mainClassComponent.start(); --> 1
     mainClassComponent.sourceFile(); // --> "foo.java"
-    mainClassComponent.componentInvocations(ComponentInvocations.EXTENSION).get(0); // --> "com.foo.AnInterface"
+    mainClassComponent.componentInvocations(ComponentInvocations.EXTENSION).get(0); // --> "com.foo.AbstractClass"
     // get the inner method component
     methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
     methodComponent.name();              // --> "sampleMethod"
