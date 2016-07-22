@@ -24,6 +24,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 | Component Invocation | An invocation of an external component found in a source file, typically through type declaration, instantiation, extension, implementation, method invocations and so forth. |
 
 # Getting Started
+An excellent way to get started is to look at Clarpe's unit tests.
 ```java
    // Create a new ParseRequestContent Object representing a codebase
    final String code =                       " package com.foo;  "
