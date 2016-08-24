@@ -1,7 +1,11 @@
 package com.clarity.parser;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.Scanner;
 
@@ -46,7 +50,11 @@ public class RawFile implements Serializable, Cloneable {
     }
 
     public final String content() {
-        return content;
+    	return content;
+    }
+
+    public final InputStream stream() {
+    	return new ByteArrayInputStream(content().getBytes());
     }
 
     @Override

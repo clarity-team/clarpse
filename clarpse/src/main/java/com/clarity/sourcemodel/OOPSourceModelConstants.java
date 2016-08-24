@@ -356,9 +356,7 @@ public final class OOPSourceModelConstants {
         getJavaComponentTypes().put(ComponentType.ANNOTATION_COMPONENT, "annotation");
         getJavaComponentTypes().put(ComponentType.METHOD_COMPONENT, "method");
         getJavaComponentTypes().put(ComponentType.CONSTRUCTOR_COMPONENT, "constructor");
-        getJavaComponentTypes().put(ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT, "constructorParam");
         getJavaComponentTypes().put(ComponentType.FIELD_COMPONENT, "field");
-        getJavaComponentTypes().put(ComponentType.METHOD_PARAMETER_COMPONENT, "methodParam");
         getJavaComponentTypes().put(ComponentType.LOCAL_VARIABLE_COMPONENT, "localVar");
         getJavaComponentTypes().put(ComponentType.CLASS_COMPONENT, "class");
     }

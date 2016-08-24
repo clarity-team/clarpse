@@ -12,23 +12,19 @@
 		<java-version>1.7</java-version>
 	</properties>
 
-	<dependencies>
-		<!-- Antlr -->
-
+	<dependencies>		
 		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr4-runtime</artifactId>
-			<version>${antlr4.version}</version>
-		</dependency>
-		<dependency>
-
 			<!-- APACHE COMMONS -->
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
 
-
+		<dependency>
+    <groupId>com.github.javaparser</groupId>
+    <artifactId>javaparser-core</artifactId>
+    <version>2.5.1</version>
+</dependency>
 		<!-- JSON -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -70,23 +66,6 @@
 						<phase>test</phase>
 						<goals>
 							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.antlr</groupId>
-				<artifactId>antlr4-maven-plugin</artifactId>
-				<version> ${antlr4.plugin.version}</version>
-				<configuration>
-					<arguments>
-						<argument>-visitor</argument>
-					</arguments>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>antlr4</goal>
 						</goals>
 					</execution>
 				</executions>

@@ -1,5 +1,7 @@
-package com.clarity.parser.java;
+package listener;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,42 +11,56 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import parser.java.JavaBaseListener;
-import parser.java.JavaParser;
-import parser.java.JavaParser.FormalParameterContext;
-import parser.java.JavaParser.FormalParameterListContext;
-import parser.java.JavaParser.ImplementsTypeContext;
-import parser.java.JavaParser.MethodInvocationContext;
-
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.ThrownException;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
+import com.clarity.invocation.TypeReferenceInvocation;
 import com.clarity.invocation.sources.BindedInvocationSource;
 import com.clarity.invocation.sources.InvocationSource;
 import com.clarity.invocation.sources.InvocationSourceChain;
 import com.clarity.invocation.sources.MethodInvocationSourceChain;
 import com.clarity.invocation.sources.MethodInvocationSourceImpl;
-import com.clarity.parser.AntlrUtil;
+import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
+import com.clarity.sourcemodel.OOPSourceModelConstants.AccessModifiers;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.TypeParameter;
+import com.github.javaparser.ast.body.AnnotationDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.EnumConstantDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.ModifierSet;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 /**
- * As the parse tree is developed by Antlr, we add listener methods to
+ * As the parse tree is developed by JavaParser, we add listener methods to
  * procedurally capture important information during this process and populate
  * our Source Code Model.
  *
  * @author Muntazir Fadhel
  */
-public class ClarpseJavaTreeListener extends JavaBaseListener {
+public class JavaTreeListener extends VoidVisitorAdapter{
 
     private final Stack<Component> componentStack = new Stack<Component>();
     private final ArrayList<String> currentImports = new ArrayList<String>();
@@ -53,7 +69,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     private final OOPSourceCodeModel srcModel;
     private int componentCompletionMultiplier = 1;
     private final Map<String, String> currentImportsMap = new HashMap<String, String>();
-    private final String sourceFilePath;
+    private final RawFile file;
     private final String javaCommentBeginSymbol = "/*";
     private  final String javaCommentEndSymbol = "*/";
     // key = required component name, value = blocked invocation source
@@ -62,16 +78,29 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
      * @param srcModel
      *            Source model to populate from the parsing of the given code
      *            base.
-     * @param sourceFilePath
+     * @param file
      *            The path of the source file being parsed.
      */
-    public ClarpseJavaTreeListener(final OOPSourceCodeModel srcModel, final String sourceFilePath,
+    public JavaTreeListener(final OOPSourceCodeModel srcModel, final RawFile file,
             Map<String, List<InvocationSourceChain>> blockedInvocationSources) {
         this.srcModel = srcModel;
-        this.sourceFilePath = sourceFilePath;
+        this.file = file;
         this.blockedInvocationSources = blockedInvocationSources;
     }
 
+    public OOPSourceCodeModel result () throws Exception {
+    	 FileInputStream in = new FileInputStream("test.java");
+
+         CompilationUnit cu;
+         try {
+             // parse the file
+             cu = com.github.javaparser.JavaParser.parse(file.stream());
+         } finally {
+             in.close();
+         }
+         return this.srcModel;
+    }
+    
     private void completeComponent() {
         for (int i = 0; i < componentCompletionMultiplier; i++) {
             if (!componentStack.isEmpty()) {
@@ -110,22 +139,20 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     /**
      * Creates a new component based on the given ParseRuleContext.
      */
-    private Component createComponent(final ParserRuleContext ctx,
-            final OOPSourceModelConstants.ComponentType componentType) {
+    private Component createComponent(String comment, int startLine, int endLine, ComponentType componentType) {
         final Component newCmp = new Component();
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
-        newCmp.setComment(AntlrUtil.getContextMultiLineComment(ctx, currFileSourceCode,
-                javaCommentBeginSymbol, javaCommentEndSymbol));
-        newCmp.setStartLine(String.valueOf(ctx.getStart().getLine()));
-        newCmp.setEndLine(String.valueOf(ctx.getStop().getLine()));
-        newCmp.setSourceFilePath(sourceFilePath);
+        newCmp.setComment(comment);
+        newCmp.setStartLine(String.valueOf(startLine));
+        newCmp.setEndLine(String.valueOf(endLine));
+        newCmp.setSourceFilePath(file.name());
         return newCmp;
     }
 
     @Override
-    public final void enterPackageDeclaration(final JavaParser.PackageDeclarationContext ctx) {
-        currentPkg = ctx.qualifiedName().getText();
+    public final void visit(PackageDeclaration ctx, Object arg) {
+        currentPkg = ctx.getPackageName();
         componentCompletionMultiplier = 1;
         currentImports.clear();
         if (!componentStack.isEmpty()) {
@@ -133,11 +160,12 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
             .println("Clarity Java Listener found new package declaration while component stack not empty! component stack size is: "
                     + componentStack.size());
         }
+        super.visit(ctx, arg);
     }
 
     @Override
-    public final void enterImportDeclaration(final JavaParser.ImportDeclarationContext ctx) {
-        final String fullImportName = ctx.qualifiedName().getText();
+    public final void visit(ImportDeclaration ctx, Object arg) {
+        final String fullImportName = ctx.toStringWithoutComments();
         final String[] bits = fullImportName.split(Pattern.quote("."));
         final String shortImportName = bits[(bits.length - 1)];
         currentImports.add(fullImportName);
@@ -145,33 +173,71 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         if (currentPkg.isEmpty()) {
             currentPkg = "";
         }
+        super.visit(ctx, arg);
     }
 
     @Override
-    public final void enterClassDeclaration(final JavaParser.ClassDeclarationContext ctx) {
+    public final void visit(ClassOrInterfaceDeclaration ctx, Object arg) {
+    	
+    	final Component cmp;
+    	if (ctx.isInterface()) {
+    		cmp = createComponent(ctx.getJavaDoc().getContent(), ctx.getBegin().line, ctx.getEnd().line, OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT);
+    	} else {
+    		cmp = createComponent(ctx.getJavaDoc().getContent(), ctx.getBegin().line, ctx.getEnd().line, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
+    	}
 
-        if (ctx.Identifier() != null) {
-            final Component classCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
-            classCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-            classCmp.setName(ctx.Identifier().getText());
-            classCmp.setImports(currentImports);
-            pointParentsToChild(classCmp);
-            if (ctx.extendsType() != null) {
-                classCmp.insertComponentInvocation(new TypeExtension(resolveType(ctx.extendsType().getText()), ctx
-                        .getStart().getLine()));
-            }
-            componentStack.push(classCmp);
-        }
+    	cmp.setComponentName(generateComponentName(ctx.getName()));
+    	cmp.setName(ctx.getName());
+    	cmp.setImports(currentImports);
+    	pointParentsToGivenChild(cmp);
+
+    	if (ctx.getExtends() != null) {
+    		for (ClassOrInterfaceType outerType : ctx.getExtends()) {
+    			for (Type type : outerType.getTypeArgs()) {
+    			cmp.insertComponentInvocation(new TypeExtension(resolveType(type.toStringWithoutComments()), ctx.getBegin().line));
+    			}
+    		}
+    	}
+    	
+    	if (ctx.getImplements() != null) {
+    		for (ClassOrInterfaceType outerType : ctx.getImplements()) {
+    			for (Type type : outerType.getTypeArgs()) {
+    			cmp.insertComponentInvocation(new TypeImplementation(resolveType(type.toStringWithoutComments()), ctx.getBegin().line));
+    			}
+    		}
+    	}
+    	
+    	if (ctx.getAnnotations() != null) {
+    		for (AnnotationExpr expr : ctx.getAnnotations()) {
+    			expr.getName();
+    			expr.get
+    		}
+    	}
+    	super.visit(ctx, arg);
+    	componentStack.push(cmp);
     }
+    
+    @Override
+    public final void visit(TypeParameter ctx, Object arg) {
+    	Component currComponent = componentStack.pop();
+    	if (ctx.getTypeBound() != null) {
+    		for (ClassOrInterfaceType type : ctx.getTypeBound()) {
+    			for (Type innerType : type.getTypeArgs()) {
+    	    	currComponent.insertComponentInvocation(new TypeReferenceInvocation(resolveType(innerType.toStringWithoutComments()), type.getBegin().line));
+    			}
+    		}
+    	}
+    	componentStack.push(currComponent);
+    }
+    
     /**
-     * Returns corresponding import statement based on given type.
+     * Returns the extend type name of the given type.
      *
      * @param type
      *            type to resolve
      * @return full name of the given type
      */
     private String resolveType(final String type) {
-
 
         if (currentImportsMap.containsKey(type)) {
             return currentImportsMap.get(type);
@@ -190,96 +256,75 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void exitClassDeclaration(final JavaParser.ClassDeclarationContext ctx) {
+    public final void visit(EnumDeclaration ctx, Object arg) {
 
-        completeComponent();
-    }
-
-    @Override
-    public final void enterEnumDeclaration(final JavaParser.EnumDeclarationContext ctx) {
-
-        final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM_COMPONENT);
-        enumCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
+        final Component enumCmp = createComponent(ctx.getJavaDoc().getContent(), ctx.getBegin().line, ctx.getEnd().line, OOPSourceModelConstants.ComponentType.ENUM_COMPONENT);
+        enumCmp.setComponentName(generateComponentName(ctx.getName()));
         enumCmp.setImports(currentImports);
-        enumCmp.setName(ctx.Identifier().getText());
-        pointParentsToChild(enumCmp);
+        enumCmp.setName(ctx.getName());
+        pointParentsToGivenChild(enumCmp);
+        super.visit(ctx, arg);
         componentStack.push(enumCmp);
     }
 
     @Override
-    public final void exitEnumDeclaration(final JavaParser.EnumDeclarationContext ctx) {
+    public final void visit(final EnumConstantDeclaration ctx, Object arg) {
 
-        completeComponent();
-    }
-
-    @Override
-    public final void enterEnumConstant(final JavaParser.EnumConstantContext ctx) {
-
-        final Component enumConstCmp = createComponent(ctx,
+        final Component enumConstCmp = createComponent(ctx.getJavaDoc().getContent(), ctx.getBegin().line, ctx.getEnd().line,
                 OOPSourceModelConstants.ComponentType.ENUM_CONSTANT_COMPONENT);
-        enumConstCmp.setName(ctx.Identifier().getText());
-        enumConstCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-        pointParentsToChild(enumConstCmp);
+        enumConstCmp.setName(ctx.getName());
+        enumConstCmp.setComponentName(generateComponentName(ctx.getName()));
+        pointParentsToGivenChild(enumConstCmp);
         componentStack.push(enumConstCmp);
-    }
-
-    @Override
-    public final void exitEnumConstant(final JavaParser.EnumConstantContext ctx) {
-
+        super.visit(ctx, arg);
         completeComponent();
     }
 
     @Override
-    public final void enterInterfaceDeclaration(final JavaParser.InterfaceDeclarationContext ctx) {
+    public final void visit(final MethodDeclaration ctx, Object arg) {
 
-        final Component interfaceCmp = createComponent(ctx,
-                OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT);
-        interfaceCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-        interfaceCmp.setImports(currentImports);
-        pointParentsToChild(interfaceCmp);
-        interfaceCmp.setName(ctx.Identifier().getText());
-        componentStack.push(interfaceCmp);
-    }
-
-    @Override
-    public final void exitInterfaceDeclaration(final JavaParser.InterfaceDeclarationContext ctx) {
-
-        completeComponent();
-    }
-
-    @Override
-    public final void enterMethodDeclaration(final JavaParser.MethodDeclarationContext ctx) {
-
-        final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
-        currMethodCmp.setName(ctx.Identifier().getText());
-        if (ctx.type() != null) {
-            currMethodCmp.setValue(resolveType(ctx.type().getText()));
+        final Component currMethodCmp = createComponent(ctx.getJavaDoc().getContent(), ctx.getBegin().line, ctx.getEnd().line, OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
+        currMethodCmp.setName(ctx.getName());
+        if (ctx.getType().toString() != null && !ctx.getType().toString().equals("void")) {
+            currMethodCmp.setValue(resolveType(ctx.getType().toString()));
         } else {
             currMethodCmp.setValue("void");
         }
-
+        
         String formalParametersString = "(";
-        if (ctx.formalParameters().formalParameterList() != null) {
-            formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
+        if (ctx.getParameters() != null) {
+            formalParametersString += getFormalParameterTypesList(ctx.getParameters());
         }
         formalParametersString += ")";
 
+        if (ctx.getParameters() != null) {
+            formalParametersString += getFormalParameterTypesList(ctx.getParameters());
+            for (Parameter param : ctx.getParameters()) {
+            	Component methodParamCmp = new Component();
+            	methodParamCmp.setName(param.getName());
+            	methodParamCmp.setComment(param.getComment().getContent());
+            	methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
+            	methodParamCmp.insertComponentInvocation(new TypeDeclaration(resolveType(param.getType().toStringWithoutComments()), param.getBegin().line));
+            }
+        }
+        
+        for (ReferenceType stmt : ctx.getThrows()) {
+        	currMethodCmp.insertComponentInvocation(new ThrownException(resolveType(stmt.getType().toStringWithoutComments()), stmt.getBegin().line));
+        }
         final String methodSignature = currMethodCmp.name() + formalParametersString;
         currMethodCmp.setComponentName(generateComponentName(methodSignature));
-        pointParentsToChild(currMethodCmp);
+        pointParentsToGivenChild(currMethodCmp);
         componentStack.push(currMethodCmp);
+        super.visit(ctx, arg);
+        completeComponent();
     }
 
 
-    private String getFormalParameterTypesList(final FormalParameterListContext formalParameterList) {
+    private String getFormalParameterTypesList(final List<Parameter> formalParameterList) {
 
         String typesList = "";
-        for (final FormalParameterContext fpContext : formalParameterList.formalParameter()) {
-            typesList += resolveType(fpContext.type().getText()) + ",";
-        }
-        if (formalParameterList.lastFormalParameter() != null) {
-            final String lFp = resolveType(formalParameterList.lastFormalParameter().type().getText());
-            typesList += lFp;
+        for (final Parameter fpContext : formalParameterList) {
+            typesList += resolveType(fpContext.getType().toString()) + ",";
         }
         if (typesList.endsWith(",")) {
             typesList = typesList.substring(0, typesList.length() - 1);
@@ -288,193 +333,111 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterInterfaceMethodDeclaration(final JavaParser.InterfaceMethodDeclarationContext ctx) {
+    public final void visit(final ConstructorDeclaration ctx, Object arg) {
 
-        final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
-
-        final String methodName = ctx.Identifier().getText();
-        currMethodCmp.setName(methodName);
-
-        if (ctx.type() != null) {
-            currMethodCmp.setValue(resolveType(ctx.type().getText()));
-        } else {
-            currMethodCmp.setValue("void");
-        }
-
-        String formalParametersString = "(";
-        if (ctx.formalParameters().formalParameterList() != null) {
-            formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
-        }
-        formalParametersString += ")";
-
-        final String methodSignature = currMethodCmp.name() + formalParametersString;
-
-        currMethodCmp.setComponentName(generateComponentName(methodSignature));
-        pointParentsToChild(currMethodCmp);
-        componentStack.push(currMethodCmp);
-    }
-
-
-    @Override
-    public final void enterConstructorDeclaration(final JavaParser.ConstructorDeclarationContext ctx) {
-
-        final Component currMethodCmp = createComponent(ctx,
+        final Component currMethodCmp = createComponent(ctx.getJavaDoc().getContent(), ctx.getBegin().line, ctx.getEnd().line,
                 OOPSourceModelConstants.ComponentType.CONSTRUCTOR_COMPONENT);
 
         currMethodCmp.setValue("void");
 
-        final String methodName = ctx.Identifier().getText();
+        final String methodName = ctx.getName();
         currMethodCmp.setName(methodName);
-
+ 
         String formalParametersString = "(";
-        if (ctx.formalParameters().formalParameterList() != null) {
-            formalParametersString += getFormalParameterTypesList(ctx.formalParameters().formalParameterList());
+        
+        if (ctx.getParameters() != null) {
+            formalParametersString += getFormalParameterTypesList(ctx.getParameters());
+            for (Parameter param : ctx.getParameters()) {
+            	Component methodParamCmp = new Component();
+            	methodParamCmp.setName(param.getName());
+            	methodParamCmp.setComment(param.getComment().getContent());
+            	methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
+            	methodParamCmp.insertComponentInvocation(new TypeDeclaration(resolveType(param.getType().toStringWithoutComments()), param.getBegin().line));
+            }
         }
+        
         formalParametersString += ")";
 
+        for (ReferenceType stmt : ctx.getThrows()) {
+        	currMethodCmp.insertComponentInvocation(new ThrownException(resolveType(stmt.getType().toStringWithoutComments()), stmt.getBegin().line));
+        }
+        
         final String methodSignature = currMethodCmp.name() + formalParametersString;
-
         currMethodCmp.setComponentName(generateComponentName(methodSignature));
-        pointParentsToChild(currMethodCmp);
+        pointParentsToGivenChild(currMethodCmp);
         componentStack.push(currMethodCmp);
-    }
-
-
-
-    @Override
-    public final void exitMethodDeclaration(final JavaParser.MethodDeclarationContext ctx) {
+        super.visit(ctx, arg);
         completeComponent();
     }
-
+    
+   private List<String> resolveJavaParserModifiers(int modifiers) {
+	   List<String> modifierList = new ArrayList<String>();
+	   
+	   if (ModifierSet.isAbstract(modifiers)) {
+		   modifierList.add(AccessModifiers.ABSTRACT.toString());
+	   }
+	   if (ModifierSet.isFinal(modifiers)) {
+		   modifierList.add(AccessModifiers.FINAL.toString());
+	   }
+	   if (ModifierSet.isPrivate(modifiers)) {
+		   modifierList.add(AccessModifiers.PRIVATE.toString());
+	   }
+	   if (ModifierSet.isNative(modifiers)) {
+		   modifierList.add(AccessModifiers.NATIVE.toString());
+	   }
+	   if (ModifierSet.isProtected(modifiers)) {
+		   modifierList.add(AccessModifiers.PROTECTED.toString());
+	   }
+	   if (ModifierSet.isPublic(modifiers)) {
+		   modifierList.add(AccessModifiers.PUBLIC.toString());
+	   }
+	   if (ModifierSet.isStatic(modifiers)) {
+		   modifierList.add(AccessModifiers.STATIC.toString());
+	   }
+	   if (ModifierSet.isStrictfp(modifiers)) {
+		   modifierList.add(AccessModifiers.STRICTFP.toString());
+	   }
+	   if (ModifierSet.isSynchronized(modifiers)) {
+		   modifierList.add(AccessModifiers.SYNCHRONIZED.toString());
+	   }
+	   return modifierList;	   
+   }
     @Override
-    public final void exitInterfaceMethodDeclaration(final JavaParser.InterfaceMethodDeclarationContext ctx) {
+    public final void visit(VariableDeclarationExpr ctx, Object arg) {
 
-        completeComponent();
-    }
-
-    @Override
-    public final void exitConstructorDeclaration(final JavaParser.ConstructorDeclarationContext ctx) {
-        completeComponent();
-    }
-
-    @Override
-    public final void enterQualifiedNameList(final JavaParser.QualifiedNameListContext ctx) {
-
-        final Component currMethodCmp = componentStack.pop();
-        for (final JavaParser.QualifiedNameContext qctx : ctx.qualifiedName()) {
-            currMethodCmp.insertComponentInvocation(new ThrownException(resolveType(qctx.getText()), ctx.getStart()
-                    .getLine()));
-        }
-        componentStack.push(currMethodCmp);
-    }
-
-    @Override
-    public final void enterFormalParameter(final JavaParser.FormalParameterContext ctx) {
-
-        final Component currMethodCmp = componentStack.peek();
-
-        if (currMethodCmp.componentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
-            final Component cmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
-            componentStack.push(cmp);
-        } else {
-            final Component cmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
-            componentStack.push(cmp);
-        }
-    }
-
-    @Override
-    public final void enterLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
-
-        final Component currMethodCmp = componentStack.peek();
-        if (currMethodCmp.componentType().toString().equals(ComponentType.CONSTRUCTOR_COMPONENT.toString())) {
-            final Component cmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
-            componentStack.push(cmp);
-        } else {
-            final Component cmp = createComponent(ctx,
-                    OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
-            componentStack.push(cmp);
-        }
-    }
-
-    @Override
-    public final void exitFormalParameter(final JavaParser.FormalParameterContext ctx) {
-
-        completeComponent();
-    }
-
-    @Override
-    public final void exitLastFormalParameter(final JavaParser.LastFormalParameterContext ctx) {
-        completeComponent();
-    }
-
-    @Override
-    public final void enterLocalVariableDeclaration(final JavaParser.LocalVariableDeclarationContext ctx) {
-
-        final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.LOCAL_VARIABLE_COMPONENT);
+        final Component cmp = createComponent(ctx.getComment().getContent(), ctx.getBegin().line, ctx.getEnd().line, OOPSourceModelConstants.ComponentType.LOCAL_VARIABLE_COMPONENT);
         componentStack.push(cmp);
-
-    }
-
-    @Override
-    public final void exitLocalVariableDeclaration(final JavaParser.LocalVariableDeclarationContext ctx) {
+        super.visit(ctx, arg);
         completeComponent();
     }
-
+    
     @Override
-    public final void enterFieldDeclaration(final JavaParser.FieldDeclarationContext ctx) {
+    public final void visit(FieldDeclaration ctx, Object arg) {
 
         final Component currCmp = componentStack.peek();
         if (currCmp.componentType().equals(
                 OOPSourceModelConstants.getJavaComponentTypes().get(
                         OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT))) {
-            final Component cmp = createComponent(ctx,
+            final Component cmp = createComponent(ctx.getJavaDoc().getContent(), ctx.getBegin().line, ctx.getEnd().line,
                     OOPSourceModelConstants.ComponentType.INTERFACE_CONSTANT_COMPONENT);
             componentStack.push(cmp);
         } else {
-            final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.FIELD_COMPONENT);
+            final Component cmp = createComponent(ctx.getJavaDoc().getContent(), ctx.getBegin().line, ctx.getEnd().line, OOPSourceModelConstants.ComponentType.FIELD_COMPONENT);
             componentStack.push(cmp);
         }
-
-    }
-
-    @Override
-    public final void exitFieldDeclaration(final JavaParser.FieldDeclarationContext ctx) {
+        super.visit(ctx, arg);
         completeComponent();
     }
 
     @Override
-    public final void enterImplementsTypeList(final JavaParser.ImplementsTypeListContext ctx) {
-
-        final Component currCmp = componentStack.pop();
-        for (final ImplementsTypeContext tempType : ctx.implementsType()) {
-            currCmp.insertComponentInvocation(new TypeImplementation(resolveType(tempType.getText()), ctx.getStart()
-                    .getLine()));
-        }
-        componentStack.push(currCmp);
-
-    }
-
-    @Override
-    public final void enterTypeParameters(final JavaParser.TypeParametersContext ctx) {
-
-        final Component currCmp = componentStack.pop();
-        currCmp.setDeclarationTypeSnippet(AntlrUtil.getFormattedText(ctx));
-        componentStack.push(currCmp);
-
-    }
-
-    @Override
-    public final void enterAnnotation(final JavaParser.AnnotationContext ctx) {
+    public final void visit(MarkerAnnotationExpr ctx, Object arg) {
 
         final Component currCmp = componentStack.pop();
         String typeName = "";
         final HashMap<String, String> elementValuePairs = new HashMap<String, String>();
-        if (ctx.normalAnnotation() != null && ctx.normalAnnotation().elementValuePairList() != null) {
+        if (ctx.get) {
             typeName = resolveAnnotationType(ctx.normalAnnotation().typeName().getText());
-            for (final JavaParser.ElementValuePairContext evctx : ctx.normalAnnotation().elementValuePairList()
+            for (final ClarpseJavaParser.ElementValuePairContext evctx : ctx.normalAnnotation().elementValuePairList()
                     .elementValuePair()) {
                 elementValuePairs.put(evctx.Identifier().getText(), evctx.elementValue().getText());
             }
@@ -499,7 +462,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterClassOrInterfaceType(final JavaParser.ClassOrInterfaceTypeContext ctx) {
+    public final void enterClassOrInterfaceType(final ClarpseJavaParser.ClassOrInterfaceTypeContext ctx) {
 
         final Component currCmp = componentStack.pop();
 
@@ -514,7 +477,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterType(final JavaParser.TypeContext ctx) {
+    public final void enterType(final ClarpseJavaParser.TypeContext ctx) {
 
         final Component currCmp = componentStack.pop();
         if ((currCmp.declarationTypeSnippet() == null) && (!currCmp.componentType().isBaseComponent())) {
@@ -524,7 +487,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterPrimitiveType(final JavaParser.PrimitiveTypeContext ctx) {
+    public final void enterPrimitiveType(final ClarpseJavaParser.PrimitiveTypeContext ctx) {
 
         final Component currCmp = componentStack.pop();
 
@@ -535,7 +498,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
 
 
     @Override
-    public final void enterRegularModifier(final JavaParser.RegularModifierContext ctx) {
+    public final void enterRegularModifier(final ClarpseJavaParser.RegularModifierContext ctx) {
 
         final Component currCmp = componentStack.pop();
         currCmp.insertAccessModifier(ctx.getText());
@@ -543,20 +506,20 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterVariableDeclaratorId(final JavaParser.VariableDeclaratorIdContext ctx) {
+    public final void enterVariableDeclaratorId(final ClarpseJavaParser.VariableDeclaratorIdContext ctx) {
         if (ctx.Identifier() != null) {
             final Component currCmp = componentStack.pop();
             if (currCmp.componentType().isVariableComponent()) {
                 if ((currCmp.componentName() == null) || (currCmp.componentName().isEmpty())) {
                     currCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
-                    pointParentsToChild(currCmp);
+                    pointParentsToGivenChild(currCmp);
                     currCmp.setName(ctx.Identifier().getText());
                 } else if (ctx.Identifier() != null) {
                     final Component copyCmp = new Component(currCmp);
                     componentCompletionMultiplier += 1;
                     copyCmp.setComponentName(generateComponentName(ctx.Identifier().getText()));
                     copyCmp.setName(ctx.Identifier().getText());
-                    pointParentsToChild(copyCmp);
+                    pointParentsToGivenChild(copyCmp);
                     componentStack.push(copyCmp);
                 }
             }
@@ -565,7 +528,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterVariableInitializer(final JavaParser.VariableInitializerContext ctx) {
+    public final void enterVariableInitializer(final ClarpseJavaParser.VariableInitializerContext ctx) {
 
         final Component currCmp = componentStack.pop();
         currCmp.setValue(ctx.getText());
@@ -573,7 +536,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterCompilationUnit(final JavaParser.CompilationUnitContext ctx) {
+    public final void enterCompilationUnit(final ClarpseJavaParser.CompilationUnitContext ctx) {
         currFileSourceCode = AntlrUtil.getFormattedText(ctx);
         componentStack.clear();
     }
@@ -613,7 +576,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
     }
 
     @Override
-    public final void enterMethodInvocations(final JavaParser.MethodInvocationsContext ctx) {
+    public final void enterMethodInvocations(final ClarpseJavaParser.MethodInvocationsContext ctx) {
 
         if (!componentStack.isEmpty()) {
             final Component currCmp = componentStack.peek();
@@ -671,7 +634,7 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         return new Component();
     }
 
-    private void pointParentsToChild(Component childCmp) {
+    private void pointParentsToGivenChild(Component childCmp) {
 
         if (!componentStack.isEmpty()) {
             final String parentName = childCmp.parentUniqueName();
@@ -683,10 +646,10 @@ public class ClarpseJavaTreeListener extends JavaBaseListener {
         }
     }
 
-    private int getArgumentsSize(MethodInvocationContext ctx) {
+    private int getArgumentsSize(MethodCallExpr ctx) {
         int invocationArguments = 0;
-        if (ctx.argumentList() != null) {
-            invocationArguments = ctx.argumentList().argument().size();
+        if (ctx.getArgs() != null) {
+            invocationArguments = ctx.getArgs().size();
         }
         return invocationArguments;
     }

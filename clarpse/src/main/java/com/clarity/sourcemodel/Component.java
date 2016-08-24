@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.clarity.invocation.ComponentInvocation;
+import com.clarity.sourcemodel.OOPSourceModelConstants.AccessModifiers;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
@@ -35,8 +36,8 @@ public final class Component implements Serializable {
      * Source file path from which the component was derived.
      */
     private String sourceFile;
-    private ArrayList<String> imports = new ArrayList<String>();
-    private ArrayList<String> modifiers = new ArrayList<String>();
+    private List<String> imports = new ArrayList<String>();
+    private List<String> modifiers = new ArrayList<String>();
     private ComponentType type;
     private ArrayList<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
     /**
@@ -123,7 +124,7 @@ public final class Component implements Serializable {
         invocations.add(ref);
     }
 
-    public ArrayList<String> imports() {
+    public List<String> imports() {
         return imports;
     }
 
@@ -147,7 +148,7 @@ public final class Component implements Serializable {
         this.componentName = componentName;
     }
 
-    public ArrayList<String> modifiers() {
+    public List<String> modifiers() {
         return modifiers;
     }
 
@@ -235,4 +236,10 @@ public final class Component implements Serializable {
     public void setSourceFilePath(final String sourceFilePath) {
         sourceFile = sourceFilePath;
     }
+
+	public void setAccessModifiers(
+			List<String> list) {
+		this.modifiers = list;
+		
+	}
 }
