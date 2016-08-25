@@ -20,7 +20,7 @@ public class TypeExtensionTest {
 	@Test
 	public void testAccurateExtendedTypes() throws Exception {
 
-		String code = "package com; \n public class ClassA extends ClassD { }";
+		String code = "package com; \n public class ClassA extends ClassD<?> { }";
 		OOPSourceCodeModel generatedSourceModel;
 		final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
 		rawData.insertFile(new RawFile("file1", code));

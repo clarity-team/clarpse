@@ -12,11 +12,18 @@ public abstract class MethodInvocationSource implements InvocationSource {
     private final String methodName;
     private final int lineNum;
 
-    public MethodInvocationSource(String containingClassName, String methodName, int lineNum,
-            int numParams) {
+    public MethodInvocationSource(String containingClassName,
+            String methodName, int lineNum, int numParams) {
         this.numParams = numParams;
         this.lineNum = lineNum;
         containingClassComponentName = containingClassName;
+        this.methodName = methodName;
+    }
+
+    public MethodInvocationSource(String methodName, int lineNum, int numParams) {
+        this.numParams = numParams;
+        this.lineNum = lineNum;
+        containingClassComponentName = "";
         this.methodName = methodName;
     }
 

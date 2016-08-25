@@ -1,26 +1,34 @@
 package listener;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.regex.Pattern;
+import java.nio.charset.StandardCharsets;
 
 import com.clarity.invocation.AnnotationInvocation;
+import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.ThrownException;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.TypeReferenceInvocation;
+import com.clarity.invocation.sources.BindedInvocationSource;
+import com.clarity.invocation.sources.InvocationSource;
 import com.clarity.invocation.sources.InvocationSourceChain;
+import com.clarity.invocation.sources.MethodInvocationSourceChain;
+import com.clarity.invocation.sources.MethodInvocationSourceImpl;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
 import com.clarity.sourcemodel.OOPSourceModelConstants.AccessModifiers;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -37,8 +45,10 @@ import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
@@ -55,7 +65,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
  *
  * @author Muntazir Fadhel
  */
-public class JavaTreeListener extends VoidVisitorAdapter{
+public class JavaTreeListener extends VoidVisitorAdapter {
 
     private final Stack<Component> componentStack = new Stack<Component>();
     private final ArrayList<String> currentImports = new ArrayList<String>();
@@ -65,6 +75,7 @@ public class JavaTreeListener extends VoidVisitorAdapter{
     private final RawFile file;
     // key = required component name, value = blocked invocation source
     private volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources;
+
     /**
      * @param srcModel
      *            Source model to populate from the parsing of the given code
@@ -72,36 +83,37 @@ public class JavaTreeListener extends VoidVisitorAdapter{
      * @param file
      *            The path of the source file being parsed.
      */
-    public JavaTreeListener(final OOPSourceCodeModel srcModel, final RawFile file,
+    public JavaTreeListener(final OOPSourceCodeModel srcModel,
+            final RawFile file,
             Map<String, List<InvocationSourceChain>> blockedInvocationSources) {
         this.srcModel = srcModel;
         this.file = file;
         this.blockedInvocationSources = blockedInvocationSources;
     }
 
-    public OOPSourceCodeModel result() throws Exception {
+    public void populateModel() throws IOException {
 
         CompilationUnit cu;
         ByteArrayInputStream in = null;
         try {
-            in = new ByteArrayInputStream(file.content().getBytes("UTF_8"));
+            in = new ByteArrayInputStream(file.content().getBytes(
+                    StandardCharsets.UTF_8));
             // parse the file
-            cu = com.github.javaparser.JavaParser.parse(in, "UTF_8");
+            cu = com.github.javaparser.JavaParser.parse(in);
             visit(cu, null);
         } catch (final Exception e) {
             e.printStackTrace();
         } finally {
             in.close();
         }
-        return srcModel;
     }
 
     private void completeComponent() {
         if (!componentStack.isEmpty()) {
             final Component completedCmp = componentStack.pop();
             srcModel.insertComponent(completedCmp);
-            final List<InvocationSourceChain> blockedSources = blockedInvocationSources.get(completedCmp
-                    .uniqueName());
+            final List<InvocationSourceChain> blockedSources = blockedInvocationSources
+                    .get(completedCmp.uniqueName());
             if (blockedSources != null) {
                 final List<InvocationSourceChain> blockedSourcesCopy = new ArrayList<InvocationSourceChain>(
                         blockedSources);
@@ -150,17 +162,18 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         currentImports.clear();
         if (!componentStack.isEmpty()) {
             System.out
-            .println("Clarity Java Listener found new package declaration while component stack not empty! component stack size is: "
-                    + componentStack.size());
+                    .println("Clarity Java Listener found new package declaration while component stack not empty! component stack size is: "
+                            + componentStack.size());
         }
         super.visit(ctx, arg);
     }
 
     @Override
     public final void visit(ImportDeclaration ctx, Object arg) {
-        final String fullImportName = ctx.toStringWithoutComments();
-        final String[] bits = fullImportName.split(Pattern.quote("."));
-        final String shortImportName = bits[(bits.length - 1)];
+        final String fullImportName = ctx.getName().toString().trim()
+                .replaceAll(";", "");
+        final String shortImportName = ctx.getName().getName().toString()
+                .trim().replaceAll(";", "");
         currentImports.add(fullImportName);
         currentImportsMap.put(shortImportName, fullImportName);
         if (currentPkg.isEmpty()) {
@@ -174,9 +187,11 @@ public class JavaTreeListener extends VoidVisitorAdapter{
 
         final Component cmp;
         if (ctx.isInterface()) {
-            cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT);
+            cmp = createComponent(ctx,
+                    OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT);
         } else {
-            cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
+            cmp = createComponent(ctx,
+                    OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
         }
 
         cmp.setComponentName(generateComponentName(ctx.getName()));
@@ -186,17 +201,15 @@ public class JavaTreeListener extends VoidVisitorAdapter{
 
         if (ctx.getExtends() != null) {
             for (final ClassOrInterfaceType outerType : ctx.getExtends()) {
-                for (final Type type : outerType.getTypeArgs()) {
-                    cmp.insertComponentInvocation(new TypeExtension(resolveType(type.toStringWithoutComments()), ctx.getBegin().line));
-                }
+                cmp.insertComponentInvocation(new TypeExtension(
+                        resolveType(outerType.getName()), ctx.getBegin().line));
             }
         }
 
         if (ctx.getImplements() != null) {
             for (final ClassOrInterfaceType outerType : ctx.getImplements()) {
-                for (final Type type : outerType.getTypeArgs()) {
-                    cmp.insertComponentInvocation(new TypeImplementation(resolveType(type.toStringWithoutComments()), ctx.getBegin().line));
-                }
+                cmp.insertComponentInvocation(new TypeImplementation(
+                        resolveType(outerType.getName()), ctx.getBegin().line));
             }
         }
 
@@ -215,7 +228,11 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         if (ctx.getTypeBound() != null) {
             for (final ClassOrInterfaceType type : ctx.getTypeBound()) {
                 for (final Type innerType : type.getTypeArgs()) {
-                    currComponent.insertComponentInvocation(new TypeReferenceInvocation(resolveType(innerType.toStringWithoutComments()), type.getBegin().line));
+                    currComponent
+                            .insertComponentInvocation(new TypeReferenceInvocation(
+                                    resolveType(innerType
+                                            .toStringWithoutComments()), type
+                                            .getBegin().line));
                 }
             }
         }
@@ -250,7 +267,8 @@ public class JavaTreeListener extends VoidVisitorAdapter{
     @Override
     public final void visit(EnumDeclaration ctx, Object arg) {
 
-        final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM_COMPONENT);
+        final Component enumCmp = createComponent(ctx,
+                OOPSourceModelConstants.ComponentType.ENUM_COMPONENT);
         enumCmp.setComponentName(generateComponentName(ctx.getName()));
         enumCmp.setImports(currentImports);
         enumCmp.setName(ctx.getName());
@@ -282,9 +300,11 @@ public class JavaTreeListener extends VoidVisitorAdapter{
     @Override
     public final void visit(final MethodDeclaration ctx, Object arg) {
 
-        final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
+        final Component currMethodCmp = createComponent(ctx,
+                OOPSourceModelConstants.ComponentType.METHOD_COMPONENT);
         currMethodCmp.setName(ctx.getName());
-        if (ctx.getType().toString() != null && !ctx.getType().toString().equals("void")) {
+        if (ctx.getType().toString() != null
+                && !ctx.getType().toString().equals("void")) {
             currMethodCmp.setValue(resolveType(ctx.getType().toString()));
         } else {
             currMethodCmp.setValue("void");
@@ -292,7 +312,8 @@ public class JavaTreeListener extends VoidVisitorAdapter{
 
         String formalParametersString = "(";
         if (ctx.getParameters() != null) {
-            formalParametersString += getFormalParameterTypesList(ctx.getParameters());
+            formalParametersString += getFormalParameterTypesList(ctx
+                    .getParameters());
         }
         formalParametersString += ")";
 
@@ -301,24 +322,32 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         }
 
         for (final ReferenceType stmt : ctx.getThrows()) {
-            currMethodCmp.insertComponentInvocation(new ThrownException(resolveType(stmt.getType()
-                    .toStringWithoutComments()), stmt.getBegin().line));
+            currMethodCmp.insertComponentInvocation(new ThrownException(
+                    resolveType(stmt.getType().toStringWithoutComments()), stmt
+                            .getBegin().line));
         }
-        final String methodSignature = currMethodCmp.name() + formalParametersString;
+        final String methodSignature = currMethodCmp.name()
+                + formalParametersString;
         currMethodCmp.setComponentName(generateComponentName(methodSignature));
         pointParentsToGivenChild(currMethodCmp);
         componentStack.push(currMethodCmp);
         if (ctx.getParameters() != null) {
             for (final Parameter param : ctx.getParameters()) {
-                final Component methodParamCmp = createComponent(param,
+                final Component methodParamCmp = createComponent(
+                        param,
                         OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
                 methodParamCmp.setName(param.getName());
                 for (final AnnotationExpr annot : param.getAnnotations()) {
                     populateAnnotation(methodParamCmp, annot);
                 }
-                methodParamCmp.setComponentName(generateComponentName(param.getName()));
-                methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
-                methodParamCmp.insertComponentInvocation(new TypeDeclaration(resolveType(param.getType().toStringWithoutComments()), param.getBegin().line));
+                methodParamCmp.setComponentName(generateComponentName(param
+                        .getName()));
+                methodParamCmp
+                        .setAccessModifiers(resolveJavaParserModifiers(param
+                                .getModifiers()));
+                methodParamCmp.insertComponentInvocation(new TypeDeclaration(
+                        resolveType(param.getType().toStringWithoutComments()),
+                        param.getBegin().line));
                 methodParamCmp.uniqueName();
                 pointParentsToGivenChild(methodParamCmp);
                 componentStack.push(methodParamCmp);
@@ -330,8 +359,8 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         completeComponent();
     }
 
-
-    private String getFormalParameterTypesList(final List<Parameter> formalParameterList) {
+    private String getFormalParameterTypesList(
+            final List<Parameter> formalParameterList) {
 
         String typesList = "";
         for (final Parameter fpContext : formalParameterList) {
@@ -356,7 +385,8 @@ public class JavaTreeListener extends VoidVisitorAdapter{
 
         String formalParametersString = "(";
         if (ctx.getParameters() != null) {
-            formalParametersString += getFormalParameterTypesList(ctx.getParameters());
+            formalParametersString += getFormalParameterTypesList(ctx
+                    .getParameters());
         }
         formalParametersString += ")";
 
@@ -365,25 +395,33 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         }
 
         for (final ReferenceType stmt : ctx.getThrows()) {
-            currMethodCmp.insertComponentInvocation(new ThrownException(resolveType(stmt.getType()
-                    .toStringWithoutComments()), stmt.getBegin().line));
+            currMethodCmp.insertComponentInvocation(new ThrownException(
+                    resolveType(stmt.getType().toStringWithoutComments()), stmt
+                            .getBegin().line));
         }
 
-        final String methodSignature = currMethodCmp.name() + formalParametersString;
+        final String methodSignature = currMethodCmp.name()
+                + formalParametersString;
         currMethodCmp.setComponentName(generateComponentName(methodSignature));
         pointParentsToGivenChild(currMethodCmp);
         componentStack.push(currMethodCmp);
         if (ctx.getParameters() != null) {
             for (final Parameter param : ctx.getParameters()) {
-                final Component methodParamCmp = createComponent(param,
+                final Component methodParamCmp = createComponent(
+                        param,
                         OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
                 methodParamCmp.setName(param.getName());
                 for (final AnnotationExpr annot : param.getAnnotations()) {
                     populateAnnotation(methodParamCmp, annot);
                 }
-                methodParamCmp.setComponentName(generateComponentName(param.getName()));
-                methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
-                methodParamCmp.insertComponentInvocation(new TypeDeclaration(resolveType(param.getType().toStringWithoutComments()), param.getBegin().line));
+                methodParamCmp.setComponentName(generateComponentName(param
+                        .getName()));
+                methodParamCmp
+                        .setAccessModifiers(resolveJavaParserModifiers(param
+                                .getModifiers()));
+                methodParamCmp.insertComponentInvocation(new TypeDeclaration(
+                        resolveType(param.getType().toStringWithoutComments()),
+                        param.getBegin().line));
                 pointParentsToGivenChild(methodParamCmp);
                 componentStack.push(methodParamCmp);
                 completeComponent();
@@ -430,18 +468,19 @@ public class JavaTreeListener extends VoidVisitorAdapter{
     @Override
     public final void visit(VariableDeclarationExpr ctx, Object arg) {
 
-        final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.LOCAL_VARIABLE_COMPONENT);
+        final Component cmp = createComponent(ctx,
+                OOPSourceModelConstants.ComponentType.LOCAL_VARIABLE_COMPONENT);
         for (final AnnotationExpr annot : ctx.getAnnotations()) {
             populateAnnotation(cmp, annot);
         }
         cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
-        pointParentsToGivenChild(cmp);
         cmp.setValue(ctx.getType().toStringWithoutComments());
         final List<Component> vars = new ArrayList<Component>();
         for (final VariableDeclarator copy : ctx.getVars()) {
             final Component tmp = new Component(cmp);
             tmp.setName(copy.getId().getName());
             tmp.setComponentName(generateComponentName(copy.getId().getName()));
+            pointParentsToGivenChild(tmp);
             vars.add(tmp);
         }
 
@@ -461,10 +500,13 @@ public class JavaTreeListener extends VoidVisitorAdapter{
 
         final Component currCmp = componentStack.peek();
         final Component cmp;
-        if (currCmp.componentType().equals(
-                OOPSourceModelConstants.getJavaComponentTypes().get(
-                        OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT))) {
-            cmp = createComponent(ctx,
+        if (currCmp
+                .componentType()
+                .equals(OOPSourceModelConstants
+                        .getJavaComponentTypes()
+                        .get(OOPSourceModelConstants.ComponentType.INTERFACE_COMPONENT))) {
+            cmp = createComponent(
+                    ctx,
                     OOPSourceModelConstants.ComponentType.INTERFACE_CONSTANT_COMPONENT);
         } else {
             cmp = createComponent(ctx,
@@ -475,11 +517,17 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         }
         cmp.setValue(ctx.getType().toStringWithoutComments());
         cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
+        final List<Component> vars = new ArrayList<Component>();
         for (final VariableDeclarator copy : ctx.getVariables()) {
-            cmp.setName(copy.getId().getName());
-            cmp.setComponentName(generateComponentName(copy.getId().getName()));
-            pointParentsToGivenChild(cmp);
-            componentStack.push(cmp);
+            final Component tmp = new Component(cmp);
+            tmp.setName(copy.getId().getName());
+            tmp.setComponentName(generateComponentName(copy.getId().getName()));
+            pointParentsToGivenChild(tmp);
+            vars.add(tmp);
+        }
+
+        for (final Component tmpCmp : vars) {
+            componentStack.push(tmpCmp);
         }
         super.visit(ctx, arg);
 
@@ -497,7 +545,8 @@ public class JavaTreeListener extends VoidVisitorAdapter{
                 final NormalAnnotationExpr expr = (NormalAnnotationExpr) annotation;
                 typeName = resolveAnnotationType(expr.getName().getName());
                 for (final MemberValuePair evctx : expr.getPairs()) {
-                    elementValuePairs.put(evctx.getName(), evctx.getValue().toStringWithoutComments());
+                    elementValuePairs.put(evctx.getName(), evctx.getValue()
+                            .toStringWithoutComments());
                 }
             } else if (annotation instanceof MarkerAnnotationExpr) {
                 final MarkerAnnotationExpr expr = (MarkerAnnotationExpr) annotation;
@@ -505,17 +554,19 @@ public class JavaTreeListener extends VoidVisitorAdapter{
             } else if (annotation instanceof SingleMemberAnnotationExpr) {
                 final SingleMemberAnnotationExpr expr = (SingleMemberAnnotationExpr) annotation;
                 typeName = resolveAnnotationType(expr.getName().getName());
-                elementValuePairs.put("", expr.getMemberValue().toStringWithoutComments());
+                elementValuePairs.put("", expr.getMemberValue()
+                        .toStringWithoutComments());
             }
-            cmp.insertComponentInvocation(new AnnotationInvocation(typeName, annotation.getBegin().line,
-                    new SimpleEntry<String, HashMap<String, String>>(typeName, elementValuePairs)));
-
-            componentStack.push(cmp);
+            cmp.insertComponentInvocation(new AnnotationInvocation(typeName,
+                    annotation.getBegin().line,
+                    new SimpleEntry<String, HashMap<String, String>>(typeName,
+                            elementValuePairs)));
         }
     }
 
     private String resolveAnnotationType(String annotationType) {
-        if (OOPSourceModelConstants.getJavaPredefinedAnnotations().containsKey(annotationType)) {
+        if (OOPSourceModelConstants.getJavaPredefinedAnnotations().containsKey(
+                annotationType)) {
             return annotationType;
         } else {
             return resolveType(annotationType);
@@ -525,48 +576,87 @@ public class JavaTreeListener extends VoidVisitorAdapter{
     @Override
     public final void visit(ClassOrInterfaceType ctx, Object arg) {
 
-        final Component currCmp = componentStack.pop();
-        currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(ctx.getName()), ctx.getBegin().line));
-        componentStack.push(currCmp);
-
+        if (!componentStack.isEmpty()) {
+            final Component currCmp = componentStack.pop();
+            currCmp.insertComponentInvocation(new TypeDeclaration(
+                    resolveType(ctx.getName()), ctx.getBegin().line));
+            componentStack.push(currCmp);
+        }
     }
 
     @Override
     public final void visit(PrimitiveType ctx, Object arg) {
-
-        final Component currCmp = componentStack.pop();
-        currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(ctx.toString()), ctx.getBegin().line));
-        componentStack.push(currCmp);
+        if (!componentStack.isEmpty()) {
+            final Component currCmp = componentStack.pop();
+            currCmp.insertComponentInvocation(new TypeDeclaration(
+                    resolveType(ctx.toString()), ctx.getBegin().line));
+            componentStack.push(currCmp);
+        }
     }
 
-    /**  private String retrieveContainingClassName(MethodCallExpr ctx) {
+    @Override
+    public final void visit(MethodCallExpr ctx, Object arg) {
+        if (!componentStack.isEmpty()) {
+            final Component currCmp = componentStack.peek();
+            final List<InvocationSource> methodSources = new ArrayList<InvocationSource>();
+
+            while (ctx.getScope() != null
+                    && ctx.getScope() instanceof MethodCallExpr) {
+
+                methodSources.add(0, new BindedInvocationSource(
+                        new MethodInvocationSourceImpl("", ctx.getNameExpr()
+                                .getName(), ctx.getBegin().line, ctx.getArgs()
+                                .size(), srcModel, blockedInvocationSources),
+                        currCmp));
+                ctx = (MethodCallExpr) ctx.getScope();
+            }
+
+            methodSources.add(
+                    0,
+                    new BindedInvocationSource(new MethodInvocationSourceImpl(
+                            retrieveContainingClassName(ctx.getScope(), ctx
+                                    .getNameExpr().getName()), ctx
+                                    .getNameExpr().getName(),
+                            ctx.getBegin().line, ctx.getArgs().size(),
+                            srcModel, blockedInvocationSources), currCmp));
+            final MethodInvocationSourceChain methodChain = new MethodInvocationSourceChain(
+                    methodSources, srcModel, blockedInvocationSources);
+            methodChain.process();
+        }
+        super.visit(ctx, arg);
+    }
+
+    private String retrieveContainingClassName(Expression expression,
+            String methodName) {
 
         String containingClassName = "";
 
-        final String name = ctx.getNameExpr().getName();
-
         // local method call..
-        if (!name.contains(".") || name.contains("this.")) {
+        if (expression == null
+                || expression.toStringWithoutComments().equals("this")) {
             final List<ComponentType> baseTypes = new ArrayList<ComponentType>();
             baseTypes.add(ComponentType.CLASS_COMPONENT);
             baseTypes.add(ComponentType.INTERFACE_COMPONENT);
             baseTypes.add(ComponentType.ENUM_COMPONENT);
             containingClassName = newestStackComponent(baseTypes).uniqueName();
-        } else if (name.contains("super(")) {
+        } else if (methodName.equals("super")) {
             final List<ComponentType> baseTypes = new ArrayList<ComponentType>();
             baseTypes.add(ComponentType.CLASS_COMPONENT);
             baseTypes.add(ComponentType.INTERFACE_COMPONENT);
             baseTypes.add(ComponentType.ENUM_COMPONENT);
-            containingClassName = newestStackComponent(baseTypes).componentInvocations(ComponentInvocations.EXTENSION)
+            containingClassName = newestStackComponent(baseTypes)
+                    .componentInvocations(ComponentInvocations.EXTENSION)
                     .get(0).invokedComponent();
         } else {
+            String name = expression.toStringWithoutComments();
             // variable or static method call..
             final Component variableComponent = findLocalSourceFileComponent(name);
             if (variableComponent != null && variableComponent.name() != null) {
                 final List<ComponentInvocation> typeInstantiations = variableComponent
                         .componentInvocations(ComponentInvocations.DECLARATION);
                 if (!typeInstantiations.isEmpty()) {
-                    containingClassName = typeInstantiations.get(0).invokedComponent();
+                    containingClassName = typeInstantiations.get(0)
+                            .invokedComponent();
                 }
             } else {
                 final String text = name;
@@ -580,11 +670,9 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         return containingClassName;
     }
 
-
     private Component newestStackComponent(List<ComponentType> possibleTypes) {
 
         Component newestComponent = new Component();
-
         final Iterator<Component> iter = componentStack.iterator();
         while (iter.hasNext()) {
             final Component next = iter.next();
@@ -608,19 +696,20 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         }
         return new Component();
     }
-     */
+
     private void pointParentsToGivenChild(Component childCmp) {
 
         if (!componentStack.isEmpty()) {
             final String parentName = childCmp.parentUniqueName();
             for (int i = componentStack.size() - 1; i >= 0; i--) {
                 if (componentStack.get(i).uniqueName().equals(parentName)) {
-                    componentStack.get(i).insertChildComponent(childCmp.uniqueName());
+                    componentStack.get(i).insertChildComponent(
+                            childCmp.uniqueName());
                 }
             }
         }
     }
-    /*
+
     private int getArgumentsSize(MethodCallExpr ctx) {
         int invocationArguments = 0;
         if (ctx.getArgs() != null) {
@@ -628,5 +717,4 @@ public class JavaTreeListener extends VoidVisitorAdapter{
         }
         return invocationArguments;
     }
-     */
 }

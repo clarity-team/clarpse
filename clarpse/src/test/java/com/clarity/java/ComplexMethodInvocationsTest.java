@@ -82,7 +82,7 @@ public class ComplexMethodInvocationsTest {
 
 
     @Test
-    public void testClassATopMethodInvokesCustomObjAFooMethodA() throws Exception {
+    public void testClassATopMethodLocalVarInvokesCustomObjAFooMethodA() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod().bool")
                 .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
