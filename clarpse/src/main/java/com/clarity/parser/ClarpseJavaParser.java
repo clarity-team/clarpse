@@ -26,7 +26,7 @@ public class ClarpseJavaParser implements ClarpseParser {
         for (final RawFile file : files) {
 
             try {
-               srcModel.merge(new JavaTreeListener(srcModel, file, blockedInvocationSources).result());
+               new JavaTreeListener(srcModel, file, blockedInvocationSources).populateModel();
             } catch (final Exception e) {
                 continue;
             }

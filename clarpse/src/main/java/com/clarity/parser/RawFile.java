@@ -1,16 +1,14 @@
 package com.clarity.parser;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.Scanner;
 
 /**
- * Represents a file to be sent to clarity's rest api to be parsed.
+ * Represents a file to be sent to be parsed.
  *
  * @author Muntazir Fadhel
  */
@@ -50,18 +48,19 @@ public class RawFile implements Serializable, Cloneable {
     }
 
     public final String content() {
-    	return content;
+        return content;
     }
 
     public final InputStream stream() {
-    	return new ByteArrayInputStream(content().getBytes());
+        return new ByteArrayInputStream(content().getBytes());
     }
 
     @Override
     public final boolean equals(final Object obj) {
 
         final RawFile rawFile = (RawFile) obj;
-        return content().equals(rawFile.content()) && name().equals(rawFile.name());
+        return content().equals(rawFile.content())
+                && name().equals(rawFile.name());
     }
 
     @Override
