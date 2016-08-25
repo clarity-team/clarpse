@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.nio.charset.StandardCharsets;
 
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
@@ -95,7 +96,8 @@ public class JavaTreeListener extends VoidVisitorAdapter {
         CompilationUnit cu;
         ByteArrayInputStream in = null;
         try {
-            in = new ByteArrayInputStream(file.content().getBytes("UTF_8"));
+            in = new ByteArrayInputStream(file.content().getBytes(
+                    StandardCharsets.UTF_8));
             // parse the file
             cu = com.github.javaparser.JavaParser.parse(in, "UTF_8");
             visit(cu, null);
