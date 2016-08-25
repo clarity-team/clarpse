@@ -16,21 +16,6 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
  */
 public class ClarpseJavaParser implements ClarpseParser {
 
-    /**
-     * The package in which the ANTLR generated files are located in.
-     */
-    private final String antlrClassesPackageLocation;
-    private final String grammarName;
-    private final String clarityListenerPkgLocation;
-
-    public ClarpseJavaParser(final String parserGrammarName, final String parserAntlrClassesPackageLocation,
-            final String clarityListenerPackageLocation) throws Exception {
-
-        grammarName = parserGrammarName;
-        antlrClassesPackageLocation = parserAntlrClassesPackageLocation;
-        clarityListenerPkgLocation = clarityListenerPackageLocation;
-    }
-
     @Override
     public final OOPSourceCodeModel extractParseResult(final ParseRequestContent rawData) throws Exception {
 

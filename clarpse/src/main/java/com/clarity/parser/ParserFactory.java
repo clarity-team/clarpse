@@ -15,7 +15,7 @@ public class ParserFactory extends AbstractFactory {
         switch (parseType.toLowerCase()) {
 
         case "java":
-            return new ClarpseJavaParser("Java", "parser.java", "com.clarity.parser.java");
+            return new ClarpseJavaParser();
 
         default:
             throw new Exception("Could not find parsing tool for: " + parseType);

@@ -6,9 +6,9 @@ import org.junit.Test;
 
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
+import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
@@ -22,9 +22,9 @@ public class AnnotationInvocationTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").componentInvocations(
-        		ComponentInvocations.ANNOTATION).get(0));
+                ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Deprecated"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("Deprecated"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getValue().isEmpty());
@@ -37,7 +37,7 @@ public class AnnotationInvocationTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").componentInvocations(
                 ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Deprecated"));
@@ -52,7 +52,7 @@ public class AnnotationInvocationTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").componentInvocations(
                 ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Deprecated"));
@@ -67,7 +67,7 @@ public class AnnotationInvocationTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").componentInvocations(
                 ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Deprecated"));
@@ -78,12 +78,12 @@ public class AnnotationInvocationTest {
     @Test
     public void testFieldVarAnnotationRegisteredInvokedComponent() throws Exception {
 
-        final String code = "import org.annotation.Autowired; public class test { @Autowired static final String fieldVar; }";
+        final String code = "import org.annotation.Autowired; public class Test { @Autowired static final String fieldVar; }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.fieldVar")
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final ComponentInvocation invocation = (generatedSourceModel.getComponent("Test.fieldVar")
                 .componentInvocations(ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("org.annotation.Autowired"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("org.annotation.Autowired"));
@@ -97,7 +97,7 @@ public class AnnotationInvocationTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.aMethod(java.lang.String).var")
                 .componentInvocations(ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Override"));
@@ -112,7 +112,7 @@ public class AnnotationInvocationTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.fieldVar")
                 .componentInvocations(
                         ComponentInvocations.ANNOTATION).get(0));
@@ -133,7 +133,7 @@ public class AnnotationInvocationTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.method()")
                 .componentInvocations(
                         ComponentInvocations.ANNOTATION).get(0));
@@ -152,7 +152,7 @@ public class AnnotationInvocationTest {
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.method()")
                 .componentInvocations(
                         ComponentInvocations.ANNOTATION).get(0));
