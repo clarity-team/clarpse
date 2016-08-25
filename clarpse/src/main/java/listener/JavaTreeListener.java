@@ -99,7 +99,7 @@ public class JavaTreeListener extends VoidVisitorAdapter {
             in = new ByteArrayInputStream(file.content().getBytes(
                     StandardCharsets.UTF_8));
             // parse the file
-            cu = com.github.javaparser.JavaParser.parse(in, "UTF_8");
+            cu = com.github.javaparser.JavaParser.parse(in);
             visit(cu, null);
         } catch (final Exception e) {
             e.printStackTrace();
