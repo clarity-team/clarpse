@@ -4,9 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import listener.JavaTreeListener;
-
 import com.clarity.invocation.sources.InvocationSourceChain;
+import com.clarity.listener.JavaTreeListener;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**

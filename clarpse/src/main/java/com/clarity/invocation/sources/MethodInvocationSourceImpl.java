@@ -67,21 +67,23 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
         final List<Component> componentMatches = new ArrayList<Component>();
         for (final String child : containingClassCmp.children()) {
             final Component methodCmp = srcModel.getComponent(child);
-            if (methodCmp.componentType() == ComponentType.CONSTRUCTOR_COMPONENT
-                    || methodCmp.componentType() == ComponentType.METHOD_COMPONENT) {
-                if (methodCmp.name().equals(methodName)) {
-                    // figure out the number of parameters for this method..
-                    int methodParams = 0;
-                    for (final String methodChildCmp : methodCmp.children()) {
-                        if (srcModel.getComponent(methodChildCmp).componentType() == ComponentType.METHOD_PARAMETER_COMPONENT) {
-                            methodParams++;
+            if (methodCmp != null) {
+                if (methodCmp.componentType() == ComponentType.CONSTRUCTOR_COMPONENT
+                        || methodCmp.componentType() == ComponentType.METHOD_COMPONENT) {
+                    if (methodCmp.name().equals(methodName)) {
+                        // figure out the number of parameters for this method..
+                        int methodParams = 0;
+                        for (final String methodChildCmp : methodCmp.children()) {
+                            if (srcModel.getComponent(methodChildCmp).componentType() == ComponentType.METHOD_PARAMETER_COMPONENT) {
+                                methodParams++;
+                            }
+                        }
+                        if (methodParams == numParams) {
+                            componentMatches.add(methodCmp);
                         }
                     }
-                    if (methodParams == numParams) {
-                        componentMatches.add(methodCmp);
-                    }
-                }
 
+                }
             }
         }
         return componentMatches;
