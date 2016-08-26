@@ -2,6 +2,7 @@ package com.clarity.listener;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.nio.charset.StandardCharsets;
 
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
@@ -193,7 +193,7 @@ public class JavaTreeListener extends VoidVisitorAdapter {
             cmp = createComponent(ctx,
                     OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
         }
-
+        cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
         cmp.setComponentName(generateComponentName(ctx.getName()));
         cmp.setName(ctx.getName());
         cmp.setImports(currentImports);
@@ -272,6 +272,8 @@ public class JavaTreeListener extends VoidVisitorAdapter {
         enumCmp.setComponentName(generateComponentName(ctx.getName()));
         enumCmp.setImports(currentImports);
         enumCmp.setName(ctx.getName());
+        enumCmp.setAccessModifiers(resolveJavaParserModifiers(ctx
+                .getModifiers()));
         pointParentsToGivenChild(enumCmp);
         for (final AnnotationExpr annot : ctx.getAnnotations()) {
             populateAnnotation(enumCmp, annot);
@@ -309,7 +311,8 @@ public class JavaTreeListener extends VoidVisitorAdapter {
         } else {
             currMethodCmp.setValue("void");
         }
-
+        currMethodCmp.setAccessModifiers(resolveJavaParserModifiers(ctx
+                .getModifiers()));
         String formalParametersString = "(";
         if (ctx.getParameters() != null) {
             formalParametersString += getFormalParameterTypesList(ctx
@@ -382,6 +385,9 @@ public class JavaTreeListener extends VoidVisitorAdapter {
 
         final String methodName = ctx.getName();
         currMethodCmp.setName(methodName);
+
+        currMethodCmp.setAccessModifiers(resolveJavaParserModifiers(ctx
+                .getModifiers()));
 
         String formalParametersString = "(";
         if (ctx.getParameters() != null) {

@@ -1,6 +1,7 @@
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.clarity.java.AccessModifiersTest;
 import com.clarity.java.AnnotationInvocationTest;
 import com.clarity.java.ChildComponentsTest;
 import com.clarity.java.ComplexMethodInvocationsTest;
@@ -19,17 +20,18 @@ import com.clarity.java.TypeImplementationTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ComponentExistTest.class,
  PackageAttributeTest.class,
-    ComponentTypeTest.class,
-    LineNumberAttributeTest.class,
-    SimpleMethodInvocationsTest.class,
-    RawFileComparisonTest.class,
-    ComponentSourceFilePathTest.class,
+ ComponentTypeTest.class,
+ LineNumberAttributeTest.class,
+ SimpleMethodInvocationsTest.class,
+ RawFileComparisonTest.class,
+ ComponentSourceFilePathTest.class,
  ComplexMethodInvocationsTest.class, 
  AnnotationInvocationTest.class,
  TypeExtensionTest.class,
  TypeImplementationTest.class,
  TypeDeclarationTest.class,
- ChildComponentsTest.class
+ ChildComponentsTest.class,
+ AccessModifiersTest.class
 })
 public class ClarpseTest {
 
