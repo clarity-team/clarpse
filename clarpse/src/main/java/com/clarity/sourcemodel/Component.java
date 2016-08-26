@@ -235,6 +235,9 @@ public final class Component implements Serializable {
         return tmpInvocations;
     }
 
+    public List<ComponentInvocation> componentInvocations() {
+        return invocations;
+    }
     public void setName(final String name) {
         this.name = name;
     }
@@ -248,7 +251,7 @@ public final class Component implements Serializable {
     }
 
     public void setAccessModifiers(List<String> list) {
-        this.modifiers = list;
+        modifiers = list;
 
     }
 }

@@ -5,6 +5,9 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.clarity.sourcemodel.Component;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -64,5 +67,30 @@ public final class ClarpseUtil {
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
         return jsonMapper.readValue(json, type);
+    }
+
+    public static Component getParentMethodComponent(Component cmp, final Map<String, Component> components) {
+
+        String currParentClassName = cmp.uniqueName();
+        final int numberOfParentCmps = StringUtils.countMatches(cmp.componentName(), ".");
+        for (int i = numberOfParentCmps; i > 0; i--) {
+            currParentClassName = cmp.parentUniqueName();
+            if (components.containsKey(currParentClassName)
+                    && components.get(currParentClassName).componentType().isMethodComponent()) {
+                break;
+            }
+        }
+        return components.get(currParentClassName);
+    }
+
+    public static Component getParentBaseComponent(Component cmp, final Map<String, Component> map) {
+
+        String currParentClassName = cmp.parentUniqueName();
+        Component parent = map.get(currParentClassName);
+        while (parent != null && !parent.componentType().isBaseComponent()) {
+            currParentClassName = parent.parentUniqueName();
+            parent = map.get(currParentClassName);
+        }
+        return parent;
     }
 }
