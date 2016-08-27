@@ -31,6 +31,7 @@ public final class Component implements Serializable {
      */
     private String name;
     private String comment;
+    private String code;
     /**
      * Source file path from which the component was derived.
      */
@@ -63,6 +64,7 @@ public final class Component implements Serializable {
         start = component.startLine();
         end = component.endLine();
         sourceFile = component.sourceFile();
+        code = component.code();
     }
 
     public Component() {
@@ -253,5 +255,13 @@ public final class Component implements Serializable {
     public void setAccessModifiers(List<String> list) {
         modifiers = list;
 
+    }
+
+    public String code() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
