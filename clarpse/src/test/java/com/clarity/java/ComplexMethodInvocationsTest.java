@@ -5,9 +5,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.clarity.ClarpseUtil;
+import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
@@ -120,6 +120,7 @@ public class ComplexMethodInvocationsTest {
                 .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
                 .equals("com.CustomObjA.staticMethod()"));
     }
+
 
     @Test
     public void testClassATopMethodInvokesCustomObjASecondStaticMethod() throws Exception {

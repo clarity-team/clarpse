@@ -1,7 +1,12 @@
 package com.clarity.invocation;
 
-public class EmptyInvocation extends ComponentInvocation {
+import java.io.Serializable;
+import java.util.List;
 
+public class EmptyInvocation extends ComponentInvocation implements Serializable{
+
+    private static final long serialVersionUID = -3058881761749807208L;
+    public final String type = "empty";
     public EmptyInvocation(String invocationComponentName, int lineNum) {
         super(invocationComponentName, lineNum);
     }
@@ -9,5 +14,18 @@ public class EmptyInvocation extends ComponentInvocation {
     @Override
     public boolean empty() {
         return true;
+    }
+
+    public EmptyInvocation() {
+        super();
+    }
+
+    public EmptyInvocation(String invokedComponent, List<Integer> lines) {
+        super(invokedComponent, lines);
+    }
+
+    @Override
+    public Object clone() {
+        return new EmptyInvocation(invokedComponent(), lines());
     }
 }

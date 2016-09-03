@@ -30,7 +30,7 @@ public final class Component implements Serializable {
      * Short name.
      */
     private String name;
-    private String comment;
+    private String comment = "";
     private String code;
     /**
      * Source file path from which the component was derived.
@@ -39,7 +39,7 @@ public final class Component implements Serializable {
     private List<String> imports = new ArrayList<String>();
     private List<String> modifiers = new ArrayList<String>();
     private ComponentType type;
-    private ArrayList<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
+    private List<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
     /**
      * Formed by chaining parent components' names separated by a period.
      *
@@ -65,6 +65,7 @@ public final class Component implements Serializable {
         end = component.endLine();
         sourceFile = component.sourceFile();
         code = component.code();
+        comment = component.comment();
     }
 
     public Component() {
@@ -117,11 +118,16 @@ public final class Component implements Serializable {
         return declarationTypeSnippet;
     }
 
-    public ArrayList<ComponentInvocation> invocations() {
+    public List<ComponentInvocation> invocations() {
         return invocations;
     }
 
     public void insertComponentInvocation(final ComponentInvocation ref) {
+        for (final ComponentInvocation invocation : invocations) {
+            if (invocation.invokedComponent().equals(ref.invokedComponent()) && invocation.getClass().isInstance(ref)) {
+                invocation.insertLineNums(ref.lines());
+            }
+        }
         invocations.add(ref);
     }
 
@@ -158,7 +164,7 @@ public final class Component implements Serializable {
     public void insertAccessModifier(final String modifier) {
         if (OOPSourceModelConstants.getJavaAccessModifierMap().containsValue(
                 modifier)) {
-            modifiers.add(modifier);
+            modifiers.add(modifier.toLowerCase());
         }
     }
 
@@ -253,7 +259,9 @@ public final class Component implements Serializable {
     }
 
     public void setAccessModifiers(List<String> list) {
-        modifiers = list;
+        for (final String modifier : list) {
+            modifiers.add(modifier.toLowerCase());
+        }
 
     }
 

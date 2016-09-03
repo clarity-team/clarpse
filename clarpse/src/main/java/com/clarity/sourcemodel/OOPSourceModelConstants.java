@@ -1,5 +1,6 @@
 package com.clarity.sourcemodel;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -236,8 +237,8 @@ public final class OOPSourceModelConstants {
 
     public enum AccessModifiers {
 
-        FINAL(""), ABSTRACT(""), INTERFACE(""), NATIVE(""), PRIVATE("-"), PROTECTED("#"), PUBLIC("+"), STATIC(""), STRICTFP(""), SYNCHRONIZED(
-                ""), TRANSIENT(""), NONE("~"), VOLATILE("");
+        FINAL(""), ABSTRACT(""), INTERFACE(""), NATIVE(""), PRIVATE("-"), PROTECTED("#"), PUBLIC("+"), STATIC(""), STRICTFP(
+                ""), SYNCHRONIZED(""), TRANSIENT(""), NONE("~"), VOLATILE("");
 
         private String umlClassDigramSymbol = null;
 
@@ -274,32 +275,26 @@ public final class OOPSourceModelConstants {
      * @author Muntazir Fadhel
      *
      */
-    public enum ComponentType {
+    public enum ComponentType implements Serializable {
 
-        CLASS_COMPONENT(true, false, false), INTERFACE_COMPONENT(true, false, false), INTERFACE_CONSTANT_COMPONENT(false, false,
-                true), ENUM_COMPONENT(true, false, false), ANNOTATION_COMPONENT(false, false, false), METHOD_COMPONENT(false,
-                        true, false), CONSTRUCTOR_COMPONENT(false, true, false), ENUM_CONSTANT_COMPONENT(false, false, true), FIELD_COMPONENT(
-                                false, false, true), METHOD_PARAMETER_COMPONENT(false, false, true), CONSTRUCTOR_PARAMETER_COMPONENT(false,
-                                        false, true), LOCAL_VARIABLE_COMPONENT(false, false, true);
+        CLASS_COMPONENT("class", true, false, false), INTERFACE_COMPONENT("interface", true, false, false), INTERFACE_CONSTANT_COMPONENT("interface_constant", false, false,
+                true), ENUM_COMPONENT("enum", true, false, false), ANNOTATION_COMPONENT("annotation", false, false, false), METHOD_COMPONENT("method", false,
+                        true, false), CONSTRUCTOR_COMPONENT("method", false, true, false), ENUM_CONSTANT_COMPONENT("enum_constant", false, false, true), FIELD_COMPONENT(
+                                "field_variable", false, false, true), METHOD_PARAMETER_COMPONENT("method_parameter", false, false,
+                                        true), CONSTRUCTOR_PARAMETER_COMPONENT("constructor_parameter", false,
+                                                false, true), LOCAL_VARIABLE_COMPONENT("local_variable", false, false, true);
 
         private final boolean isBaseComponent;
         private final boolean isMethodComponent;
         private final boolean isVariableComponent;
+        private final String value;
 
-        /**
-         * Constructor.
-         *
-         * @param isBaseComponent
-         *            true when component is base component.
-         * @param isMethodComponent
-         *            true when method is method component.
-         * @param isVariableComponent
-         *            true when component is a variable type component.
-         */
-        ComponentType(final boolean isBaseComponent, final boolean isMethodComponent, final boolean isVariableComponent) {
+        ComponentType(final String value, final boolean isBaseComponent, final boolean isMethodComponent,
+                final boolean isVariableComponent) {
             this.isBaseComponent = isBaseComponent;
             this.isMethodComponent = isMethodComponent;
             this.isVariableComponent = isVariableComponent;
+            this.value = value;
         }
 
         public boolean isBaseComponent() {
@@ -312,6 +307,10 @@ public final class OOPSourceModelConstants {
 
         public boolean isVariableComponent() {
             return isVariableComponent;
+        }
+
+        public String getValue() {
+            return value;
         }
     }
 

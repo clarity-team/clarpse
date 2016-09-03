@@ -18,10 +18,10 @@ import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
  */
 public class SimpleMethodInvocationsTest {
 
-    private static String codeFile1 = "package com;" + "import java.util.List; import foo.customObjA; "
+    private static String codeFile1 = "package com;" + "import java.util.List; import java.io.IOException; import foo.customObjA; "
             + "public class ClassA { "
             + "  private String fieldVar;"
-            + "  public String topMethod(String s, int t) { "
+            + "  public String topMethod(String s, int t) throws IOException { "
             + "     bottomMethod(s,t);"
             + "     noParamsMethod();"
             + "     return \"foo\";"

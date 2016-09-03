@@ -15,26 +15,27 @@ public class ComponentCodeTest {
     @Test
     public void testClassLevelCode() throws Exception {
 
-        final String code = "public class Test { @Override Test(String str) { Object localVar;} @Deprecated interface Cakes { abstract void tester(); } }";
+        final String code = "/** lol */ package lol; import test; /** class comment */ public class Test { @Override Test(String str) { Object localVar;} @Deprecated interface Cakes { abstract void tester(); } }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").code().trim().replaceAll("[\\n\\t\\r ]", "")
+        assertTrue(generatedSourceModel.getComponent("lol.Test").code().trim().replaceAll("[\\n\\t\\r ]", "")
                 .equalsIgnoreCase(code.trim().replaceAll("[\\n\\t ]", "")));
     }
 
     @Test
     public void testMethodLevelCode() throws Exception {
 
-        final String code = "public class Test { @Override Test(String str) { Object localVar;} @Deprecated interface Cakes { abstract void tester(); } }";
+        final String code = "public class Test { /*lol*/@Override Test(String str) { Object localVar;} @Deprecated interface Cakes { abstract void tester(); } }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.Test(java.lang.String)").code().trim()
                 .replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("@Override Test(String str) { Object localVar;}".trim().replaceAll("[\\n\\t ]", "")));
+                .equalsIgnoreCase(
+                        "/*lol*/@Override Test(String str) { Object localVar;}".trim().replaceAll("[\\n\\t ]", "")));
     }
 
     @Test
