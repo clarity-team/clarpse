@@ -20,7 +20,8 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equalsIgnoreCase("A \n comment"));
+        assertTrue(generatedSourceModel.getComponent("test.Test").comment().replaceAll("[\\n\\t\\r ]", "")
+                .equalsIgnoreCase("/**Acomment*/"));
     }
 
     @Test
@@ -31,7 +32,8 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equalsIgnoreCase("A \n comment"));
+        assertTrue(generatedSourceModel.getComponent("test.Test").comment().replaceAll("[\\n\\t\\r ]", "")
+                .equalsIgnoreCase("/**Acomment*/"));
     }
 
     @Test
@@ -42,7 +44,8 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equalsIgnoreCase("A \n comment"));
+        assertTrue(generatedSourceModel.getComponent("test.Test").comment().replaceAll("[\\n\\t\\r ]", "")
+                .equalsIgnoreCase("/**Acomment*/"));
     }
 
     @Test
@@ -53,7 +56,8 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test.Base").comment().equalsIgnoreCase("A \n comment"));
+        assertTrue(generatedSourceModel.getComponent("test.Test.Base").comment().replaceAll("[\\n\\t\\r ]", "")
+                .equalsIgnoreCase("/**Acomment*/"));
     }
 
     @Test
@@ -64,7 +68,8 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().equalsIgnoreCase("lolcakes"));
+        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().replaceAll("[\\n\\t\\r ]", "")
+                .equalsIgnoreCase("/**lolcakes*/"));
     }
 
     @Test
@@ -75,7 +80,8 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().equalsIgnoreCase("lolcakes"));
+        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().replaceAll("[\\n\\t\\r ]", "")
+                .equalsIgnoreCase("/**lolcakes*/"));
     }
 
     @Test
@@ -86,7 +92,8 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").comment().equalsIgnoreCase("lolcakes"));
+        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").comment().replaceAll("[\\n\\t\\r ]", "")
+                .equalsIgnoreCase("/**lolcakes*/"));
     }
 
     @Test
@@ -98,6 +105,7 @@ public class CommentsParsingTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.aMethod(java.lang.String).methodParam").comment()
-                .equalsIgnoreCase("lolcakes"));
+                .replaceAll("[\\n\\t\\r ]", "")
+                .equalsIgnoreCase("/**lolcakes*/"));
     }
 }

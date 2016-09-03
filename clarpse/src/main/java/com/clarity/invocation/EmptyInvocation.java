@@ -3,7 +3,7 @@ package com.clarity.invocation;
 import java.io.Serializable;
 import java.util.List;
 
-public class EmptyInvocation extends ComponentInvocation implements Serializable{
+public class EmptyInvocation extends ComponentInvocation implements Serializable {
 
     private static final long serialVersionUID = -3058881761749807208L;
     public final String type = "empty";

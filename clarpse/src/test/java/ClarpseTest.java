@@ -4,7 +4,9 @@ import org.junit.runners.Suite;
 import com.clarity.java.AccessModifiersTest;
 import com.clarity.java.AnnotationInvocationTest;
 import com.clarity.java.ChildComponentsTest;
+import com.clarity.java.CommentsParsingTest;
 import com.clarity.java.ComplexMethodInvocationsTest;
+import com.clarity.java.ComponentCodeTest;
 import com.clarity.java.ComponentExistTest;
 import com.clarity.java.PackageAttributeTest;
 import com.clarity.java.ComponentTypeTest;
@@ -31,7 +33,9 @@ import com.clarity.java.TypeImplementationTest;
  TypeImplementationTest.class,
  TypeDeclarationTest.class,
  ChildComponentsTest.class,
- AccessModifiersTest.class
+ AccessModifiersTest.class,
+ CommentsParsingTest.class,
+ ComponentCodeTest.class
 })
 public class ClarpseTest {
 
