@@ -31,7 +31,11 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.5.0</version>
 		</dependency>
-
+<dependency>
+  <groupId>com.fasterxml.jackson.module</groupId>
+  <artifactId>jackson-module-afterburner</artifactId>
+  <version>2.7.1</version>
+</dependency>
 		<!-- Testing -->
 		<dependency>
 			<groupId>junit</groupId>
