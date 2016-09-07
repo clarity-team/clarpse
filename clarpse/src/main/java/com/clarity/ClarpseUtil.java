@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
 /**
  * @author Muntazir Fadhel
@@ -43,13 +44,14 @@ public final class ClarpseUtil {
     public static String fromJavaToJson(final Serializable object, final boolean prettyPrint)
             throws JsonGenerationException, JsonMappingException, IOException {
         final ObjectMapper jsonMapper = new ObjectMapper();
+        jsonMapper.registerModule(new AfterburnerModule());
         jsonMapper.setVisibilityChecker(jsonMapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
-        final String str = jsonMapper.writeValueAsString(object);
-        return str;
+        final byte[] bytes = jsonMapper.writeValueAsBytes(object);
+        return new String(bytes, "UTF-8");
     }
 
     public static String fromJavaToJson(final Serializable object) throws JsonGenerationException,
@@ -61,12 +63,13 @@ public final class ClarpseUtil {
     public static Object fromJsonToJava(final String json, @SuppressWarnings("rawtypes") final Class type)
             throws JsonParseException, JsonMappingException, IOException {
         final ObjectMapper jsonMapper = new ObjectMapper();
+        jsonMapper.registerModule(new AfterburnerModule());
         jsonMapper.setVisibilityChecker(jsonMapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
-        return jsonMapper.readValue(json, type);
+        return jsonMapper.readValue(json.getBytes("UTF-8"), type);
     }
 
     public static Component getParentMethodComponent(Component cmp, final Map<String, Component> components) {
