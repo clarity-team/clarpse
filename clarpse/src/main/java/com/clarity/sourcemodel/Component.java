@@ -17,8 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  * @author Muntazir Fadhel
  */
-@JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonPropertyOrder(alphabetic = true)
+
 public final class Component implements Serializable {
 
     private static final long serialVersionUID = 1L;
