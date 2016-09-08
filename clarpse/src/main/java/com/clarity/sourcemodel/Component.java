@@ -7,8 +7,6 @@ import java.util.List;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Representation of the individual code level components (classes,
