@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import com.clarity.invocation.sources.InvocationSourceChain;
 import com.clarity.listener.JavaTreeListener;
@@ -50,15 +48,9 @@ public class ClarpseJavaParser implements ClarpseParser {
 
             try {
                 future.get(100, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException ie) {
+            } catch (Exception ie) {
                 ie.printStackTrace();
-                /* Handle the interruption. Or ignore it. */
-            } catch (ExecutionException ee) {
-                ee.printStackTrace();
-                /* Handle the error. Or ignore it. */
-            } catch (TimeoutException te) {
-                te.printStackTrace();
-                /* Handle the timeout. Or ignore it. */
+                continue;
             }
             if (!executor.isTerminated()) {
                 executor.shutdownNow(); // If you want to stop the code that
