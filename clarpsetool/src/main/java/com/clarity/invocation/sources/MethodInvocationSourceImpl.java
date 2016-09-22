@@ -49,8 +49,9 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
                 }
             }
         }
-        // don't support method overloading with equal number of params yet,
-        // therefore result size must be 1
+        // Could not find the component that corresponds to the component
+        // invocation,
+        // return an empty invocation...
         if (methodComponentMatches.isEmpty() || methodComponentMatches.size() > 1) {
             return new EmptyInvocation("", 0);
         } else {
@@ -75,8 +76,8 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
                         int methodParams = 0;
                         for (final String methodChildCmp : methodCmp.children()) {
                             final Component methodChildComponent = srcModel.getComponent(methodChildCmp);
-                            if (methodChildComponent != null
-                                    && methodChildComponent.componentType() == ComponentType.METHOD_PARAMETER_COMPONENT) {
+                            if (methodChildComponent != null && methodChildComponent
+                                    .componentType() == ComponentType.METHOD_PARAMETER_COMPONENT) {
                                 methodParams++;
                             }
                         }
@@ -93,8 +94,8 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
 
     @Override
     public String toString() {
-        return ("containingClassName: " + containingClassComponentName() + ", methodName: " + methodName() + ", lineNumber: "
-                + lineNum() + ", numParams: " + numParams());
+        return ("containingClassName: " + containingClassComponentName() + ", methodName: " + methodName()
+                + ", lineNumber: " + lineNum() + ", numParams: " + numParams());
     }
 
     @Override

@@ -14,24 +14,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  *
  * @author Muntazir Fadhel
  */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "type")
-@JsonSubTypes({
-    @Type(value = AnnotationInvocation.class, name = "annotation"),
-    @Type(value = EmptyInvocation.class, name = "empty"),
-    @Type(value = MethodInvocation.class, name = "method"),
-    @Type(value = ThrownException.class, name = "exception"),
-    @Type(value = TypeDeclaration.class, name = "declaration"),
-    @Type(value = TypeExtension.class, name = "extension"),
-    @Type(value = TypeImplementation.class, name = "implementation"),
-    @Type(value = TypeParameter.class, name = "typeparameter") })
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = AnnotationInvocation.class, name = "annotation"),
+        @Type(value = EmptyInvocation.class, name = "empty"), @Type(value = MethodInvocation.class, name = "method"),
+        @Type(value = ThrownException.class, name = "exception"),
+        @Type(value = TypeDeclaration.class, name = "declaration"),
+        @Type(value = TypeExtension.class, name = "extension"),
+        @Type(value = TypeImplementation.class, name = "implementation"),
+        @Type(value = TypeParameter.class, name = "typeparameter") })
 public abstract class ComponentInvocation implements EmptyResource, Serializable, Cloneable {
 
     private static final long serialVersionUID = -242718695900611890L;
-    private String invokedComponent = "";
-    private List<Integer> invocationLines = new ArrayList<Integer>();
+    private String            invokedComponent = "";
+    private List<Integer>     invocationLines  = new ArrayList<Integer>();
 
     public ComponentInvocation(final String invocationComponentName, final int lineNum) {
         invokedComponent = invocationComponentName;
@@ -70,8 +65,7 @@ public abstract class ComponentInvocation implements EmptyResource, Serializable
     }
 
     @Override
-    public
-    boolean empty() {
+    public boolean empty() {
         return (invokedComponent.isEmpty() && invocationLines.isEmpty());
     }
 
