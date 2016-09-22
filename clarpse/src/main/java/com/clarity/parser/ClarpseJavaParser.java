@@ -47,7 +47,7 @@ public class ClarpseJavaParser implements ClarpseParser {
                 // there should be a lower timeout value
                 // but tests keep failing on low memory environments
                 // and the build environment.
-                future.get(500, TimeUnit.MILLISECONDS);
+                future.get(1000, TimeUnit.MILLISECONDS);
             } catch (Exception ie) {
                 ie.printStackTrace();
                 continue;
