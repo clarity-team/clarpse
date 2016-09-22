@@ -28,8 +28,6 @@ public class ClarpseJavaParser implements ClarpseParser {
 
         final List<RawFile> files = rawData.getFiles();
         for (final RawFile file : files) {
-            System.out.println("Current parsing file: " + files.indexOf(file));
-
             final Runnable parseFile = new Thread() {
                 @Override
                 public void run() {
@@ -43,11 +41,13 @@ public class ClarpseJavaParser implements ClarpseParser {
 
             final ExecutorService executor = Executors.newSingleThreadExecutor();
             final Future future = executor.submit(parseFile);
-            executor.shutdown(); // This does not cancel the already-scheduled
-                                 // task.
+            executor.shutdown();
 
             try {
-                future.get(100, TimeUnit.MILLISECONDS);
+                // there should be a lower timeout value
+                // but tests keep failing on low memory environments
+                // and the build environment.
+                future.get(1000, TimeUnit.MILLISECONDS);
             } catch (Exception ie) {
                 ie.printStackTrace();
                 continue;
