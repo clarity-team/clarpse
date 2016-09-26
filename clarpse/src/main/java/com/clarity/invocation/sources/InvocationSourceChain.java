@@ -12,8 +12,11 @@ import com.clarity.invocation.ComponentInvocation;
  */
 public abstract class InvocationSourceChain {
 
+    /**
+     * List of invocation sources in the chain.
+     */
     private final List<InvocationSource> invocationSources;
-    private int currentSourceIndex = 0;
+    private int                          currentSourceIndex = 0;
 
     public InvocationSourceChain(List<InvocationSource> invocationSources) {
         this.invocationSources = invocationSources;
@@ -22,6 +25,12 @@ public abstract class InvocationSourceChain {
         }
     }
 
+    /**
+     * Process the invocation source in the chain. Note it may not be possible
+     * to process a given invocation source at the moment, either because the
+     * required class has not been parsed yet or the invocation source is not
+     * satisfiable.
+     */
     public void process() {
         if (currentSourceIndex < (invocationSources.size())) {
             try {

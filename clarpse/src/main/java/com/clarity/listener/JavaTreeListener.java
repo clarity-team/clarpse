@@ -118,7 +118,19 @@ public class JavaTreeListener extends VoidVisitorAdapter {
 
                 while (invocationIterator.hasNext()) {
 
-                    parentCmp.insertComponentInvocation(invocationIterator.next());
+                    // We do not want to bubble up type implementations and
+                    // extensions
+                    // to the parent component because a child class for example
+                    // could
+                    // extend its containing class component. Without this check
+                    // this would
+                    // cause the parent class to have a type extension to itself
+                    // which will
+                    // cause problems down the line.
+                    ComponentInvocation invocation = invocationIterator.next();
+                    if (!(invocation instanceof TypeExtension || invocation instanceof TypeImplementation)) {
+                        parentCmp.insertComponentInvocation(invocation);
+                    }
                 }
             }
             srcModel.insertComponent(completedCmp);

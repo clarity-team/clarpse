@@ -4,7 +4,7 @@ import com.clarity.DynamicResource;
 import com.clarity.invocation.ComponentInvocation;
 
 /**
- * Used to create ComponentInvocation Objects.
+ * A template used to create Component Invocation Objects.
  *
  * @author Muntazir Fadhel
  */
@@ -15,5 +15,8 @@ public interface InvocationSource extends DynamicResource {
      */
     ComponentInvocation createComponentInvocation() throws Exception;
 
+    /**
+     * Returns the name of the class corresponding to the component invocation.
+     */
     String componentInvocationClassName();
 }
