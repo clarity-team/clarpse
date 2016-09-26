@@ -30,6 +30,7 @@ import com.clarity.sourcemodel.OOPSourceModelConstants;
 import com.clarity.sourcemodel.OOPSourceModelConstants.AccessModifiers;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
@@ -67,12 +68,12 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
  */
 public class JavaTreeListener extends VoidVisitorAdapter {
 
-    private final Stack<Component>                            componentStack    = new Stack<Component>();
-    private final ArrayList<String>                           currentImports    = new ArrayList<String>();
-    private String                                            currentPkg        = "";
-    private final OOPSourceCodeModel                          srcModel;
-    private final Map<String, String>                         currentImportsMap = new HashMap<String, String>();
-    private final RawFile                                     file;
+    private final Stack<Component> componentStack = new Stack<Component>();
+    private final ArrayList<String> currentImports = new ArrayList<String>();
+    private String currentPkg = "";
+    private final OOPSourceCodeModel srcModel;
+    private final Map<String, String> currentImportsMap = new HashMap<String, String>();
+    private final RawFile file;
     // key = required component name, value = blocked invocation source
     private volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources;
 
@@ -92,6 +93,7 @@ public class JavaTreeListener extends VoidVisitorAdapter {
 
     public void populateModel() throws IOException {
 
+        JavaParser.setDoNotConsiderAnnotationsAsNodeStartForCodeAttribution(false);
         CompilationUnit cu;
         ByteArrayInputStream in = null;
         try {
@@ -166,15 +168,19 @@ public class JavaTreeListener extends VoidVisitorAdapter {
         final Component newCmp = new Component();
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
-        String comment = "";
         if (node.getComment() != null) {
             newCmp.setComment(node.getComment().toString());
-            comment = node.getComment().toString();
+            // set the start line of the component to include the comment
+            // if the comment is before the annotations
+            if (node.getComment().getBegin().line < node.getBegin().line) {
+                newCmp.setStartLine(String.valueOf(node.getComment().getBegin().line));
+            }
         }
-        newCmp.setStartLine(String.valueOf(node.getBegin().line));
+        if (newCmp.startLine() == null) {
+            newCmp.setStartLine(String.valueOf(node.getBegin().line));
+        }
         newCmp.setEndLine(String.valueOf(node.getEnd().line));
         newCmp.setSourceFilePath(file.name());
-        newCmp.setCode(comment + node.toStringWithoutComments());
         return newCmp;
     }
 
@@ -211,7 +217,6 @@ public class JavaTreeListener extends VoidVisitorAdapter {
         } else {
             cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS_COMPONENT);
         }
-        cmp.setCode(file.content());
         cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
         cmp.setComponentName(generateComponentName(ctx.getName()));
         cmp.setName(ctx.getName());
@@ -296,7 +301,6 @@ public class JavaTreeListener extends VoidVisitorAdapter {
         enumCmp.setImports(currentImports);
         enumCmp.setName(ctx.getName());
         enumCmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
-        enumCmp.setCode(file.content());
         pointParentsToGivenChild(enumCmp);
         if (ctx.getJavaDoc() != null) {
             enumCmp.setComment(ctx.getJavaDoc().toString());

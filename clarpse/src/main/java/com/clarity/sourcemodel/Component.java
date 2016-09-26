@@ -7,8 +7,6 @@ import java.util.List;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Representation of the individual code level components (classes,
@@ -17,8 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  * @author Muntazir Fadhel
  */
-@JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonPropertyOrder(alphabetic = true)
+
 public final class Component implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,7 +32,6 @@ public final class Component implements Serializable {
      */
     private String name;
     private String comment = "";
-    private String code;
     /**
      * Source file path from which the component was derived.
      */
@@ -68,7 +64,6 @@ public final class Component implements Serializable {
         start = component.startLine();
         end = component.endLine();
         sourceFile = component.sourceFile();
-        code = component.code();
         comment = component.comment();
     }
 
@@ -143,13 +138,11 @@ public final class Component implements Serializable {
         return componentName;
     }
 
-    public void setDeclarationTypeSnippet(
-            final String componentDeclarationTypeFragment) {
+    public void setDeclarationTypeSnippet(final String componentDeclarationTypeFragment) {
         declarationTypeSnippet = componentDeclarationTypeFragment;
     }
 
-    public void setExternalTypeReferences(
-            final ArrayList<ComponentInvocation> externalReferences) {
+    public void setExternalTypeReferences(final ArrayList<ComponentInvocation> externalReferences) {
         invocations = externalReferences;
     }
 
@@ -166,8 +159,7 @@ public final class Component implements Serializable {
     }
 
     public void insertAccessModifier(final String modifier) {
-        if (OOPSourceModelConstants.getJavaAccessModifierMap().containsValue(
-                modifier)) {
+        if (OOPSourceModelConstants.getJavaAccessModifierMap().containsValue(modifier)) {
             modifiers.add(modifier.toLowerCase());
         }
     }
@@ -209,38 +201,30 @@ public final class Component implements Serializable {
         if (!type.isMethodComponent()) {
             if (uniqueName().contains(".")) {
                 final int lastPeriod = uniqueName().lastIndexOf(".");
-                final String currParentClassName = uniqueName().substring(0,
-                        lastPeriod);
+                final String currParentClassName = uniqueName().substring(0, lastPeriod);
                 return currParentClassName;
             } else {
-                throw new IllegalArgumentException(
-                        "Cannot get parent of component: " + uniqueName());
+                throw new IllegalArgumentException("Cannot get parent of component: " + uniqueName());
             }
         } else {
             final int lastOpeningBracket = uniqueName().lastIndexOf("(");
-            final String methodComponentUniqueNameMinusParamters = uniqueName()
-                    .substring(0, lastOpeningBracket);
-            final int lastPeriod = methodComponentUniqueNameMinusParamters
-                    .lastIndexOf(".");
-            final String currParentClassName = methodComponentUniqueNameMinusParamters
-                    .substring(0, lastPeriod);
+            final String methodComponentUniqueNameMinusParamters = uniqueName().substring(0, lastOpeningBracket);
+            final int lastPeriod = methodComponentUniqueNameMinusParamters.lastIndexOf(".");
+            final String currParentClassName = methodComponentUniqueNameMinusParamters.substring(0, lastPeriod);
             return currParentClassName;
         }
     }
 
-    public void insertComponentInvocations(
-            final ArrayList<ComponentInvocation> externalClassTypeReferenceList) {
+    public void insertComponentInvocations(final ArrayList<ComponentInvocation> externalClassTypeReferenceList) {
         for (final ComponentInvocation typeRef : externalClassTypeReferenceList) {
             insertComponentInvocation(typeRef);
         }
     }
 
-    public List<ComponentInvocation> componentInvocations(
-            final ComponentInvocations type) {
+    public List<ComponentInvocation> componentInvocations(final ComponentInvocations type) {
         final List<ComponentInvocation> tmpInvocations = new ArrayList<ComponentInvocation>();
         for (final ComponentInvocation compInvocation : invocations) {
-            if (type.getMatchingClass().isAssignableFrom(
-                    compInvocation.getClass())) {
+            if (type.getMatchingClass().isAssignableFrom(compInvocation.getClass())) {
                 tmpInvocations.add(compInvocation);
             }
         }
@@ -250,6 +234,7 @@ public final class Component implements Serializable {
     public List<ComponentInvocation> componentInvocations() {
         return invocations;
     }
+
     public void setName(final String name) {
         this.name = name;
     }
@@ -267,13 +252,5 @@ public final class Component implements Serializable {
             modifiers.add(modifier.toLowerCase());
         }
 
-    }
-
-    public String code() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 }

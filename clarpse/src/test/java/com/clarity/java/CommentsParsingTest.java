@@ -15,7 +15,7 @@ public class CommentsParsingTest {
     @Test
     public void testClassLevelComment() throws Exception {
 
-        final String code = "package test; /** Licensing */ import lol; /**A \n comment*/ public class Test { }";
+        final String code = "package test; /** Licensing */ import lol; /**A \n comment \n */ public class Test { }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -75,7 +75,7 @@ public class CommentsParsingTest {
     @Test
     public void testInterfaceMethodLevelComment() throws Exception {
 
-        final String code = "public interface Test { /**lolcakes*/abstract void test();}";
+        final String code = "public interface Test { /**lol \n cakes \n */abstract void test();}";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -105,7 +105,6 @@ public class CommentsParsingTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.aMethod(java.lang.String).methodParam").comment()
-                .replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("/**lolcakes*/"));
+                .replaceAll("[\\n\\t\\r ]", "").equalsIgnoreCase("/**lolcakes*/"));
     }
 }
