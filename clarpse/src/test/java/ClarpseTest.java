@@ -8,6 +8,7 @@ import com.clarity.java.CommentsParsingTest;
 import com.clarity.java.ComplexMethodInvocationsTest;
 import com.clarity.java.ComponentExistTest;
 import com.clarity.java.ComponentTypeTest;
+import com.clarity.java.InvocationInheritanceTest;
 import com.clarity.java.LineNumberAttributeTest;
 import com.clarity.java.PackageAttributeTest;
 import com.clarity.java.SimpleMethodInvocationsTest;
@@ -23,7 +24,7 @@ import com.clarity.java.TypeImplementationTest;
         LineNumberAttributeTest.class, SimpleMethodInvocationsTest.class, RawFileComparisonTest.class,
         ComponentSourceFilePathTest.class, ComplexMethodInvocationsTest.class, AnnotationInvocationTest.class,
         TypeExtensionTest.class, TypeImplementationTest.class, TypeDeclarationTest.class, ChildComponentsTest.class,
-        AccessModifiersTest.class, CommentsParsingTest.class })
+        AccessModifiersTest.class, CommentsParsingTest.class, InvocationInheritanceTest.class })
 public class ClarpseTest {
 
 }
