@@ -68,12 +68,12 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
  */
 public class JavaTreeListener extends VoidVisitorAdapter {
 
-    private final Stack<Component> componentStack = new Stack<Component>();
-    private final ArrayList<String> currentImports = new ArrayList<String>();
-    private String currentPkg = "";
-    private final OOPSourceCodeModel srcModel;
-    private final Map<String, String> currentImportsMap = new HashMap<String, String>();
-    private final RawFile file;
+    private final Stack<Component>                            componentStack    = new Stack<Component>();
+    private final ArrayList<String>                           currentImports    = new ArrayList<String>();
+    private String                                            currentPkg        = "";
+    private final OOPSourceCodeModel                          srcModel;
+    private final Map<String, String>                         currentImportsMap = new HashMap<String, String>();
+    private final RawFile                                     file;
     // key = required component name, value = blocked invocation source
     private volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources;
 
@@ -113,9 +113,9 @@ public class JavaTreeListener extends VoidVisitorAdapter {
             final Component completedCmp = componentStack.pop();
             // include the processed component's invocations into its parent
             // components
-            final Iterator<ComponentInvocation> invocationIterator = completedCmp.invocations().iterator();
             for (final Component parentCmp : componentStack) {
 
+                final Iterator<ComponentInvocation> invocationIterator = completedCmp.invocations().iterator();
                 while (invocationIterator.hasNext()) {
 
                     // We do not want to bubble up type implementations and
