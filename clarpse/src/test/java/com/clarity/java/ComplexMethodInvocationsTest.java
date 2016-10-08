@@ -19,48 +19,29 @@ import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
  */
 public class ComplexMethodInvocationsTest {
 
-    private static String codeFile1 = "package com;" + "import com.test.AbstractClassA; import com.fvt.AbstractClassE;"
-            + "public class ClassA extends ClassB { "
-            + "  private CustomObjA fieldVar;"
-            + "  public String topMethod() { "
-            + " if(true) {}"
+    private static String             codeFile1 = "package com;"
+            + "import com.test.AbstractClassA; import com.fvt.AbstractClassE;" + "public class ClassA extends ClassB { "
+            + "  private CustomObjA fieldVar;" + "  public String topMethod() { " + " if(true) {}"
             + "     fieldVar = new CustomObjA();"
             + "     boolean bool = fieldVar.fooMethodA(\"lol\", 4).fooMethodB().aMethod(\"test\").abstractMethod();"
-            + "     com.CustomObjA.staticMethod();"
-            + "     CustomObjA.secondStaticMethod();"
-            + "  } "
-            + "}";
+            + "     com.CustomObjA.staticMethod();" + "     CustomObjA.secondStaticMethod();" + "  } " + "}";
 
-    private static String codeFile2 = "package com; import com.test.AbstractClassA;"
-            + "public class CustomObjA extends AbstractClassA{ "
-            + "  public CustomObjB fooMethodA(String s, int t) { "
-            + "     return new CustomObjB();"
-            + "  } "
-            + "  public static String staticMethod() { "
-            + "     return \"\";"
-            + "  } "
-            + "  public static String secondStaticMethod() { "
-            + "     return \"\";"
-            + "  } "
-            + "}";
+    private static String             codeFile2 = "package com; import com.test.AbstractClassA;"
+            + "public class CustomObjA extends AbstractClassA{ " + "  public CustomObjB fooMethodA(String s, int t) { "
+            + "     return new CustomObjB();" + "  } " + "  public static String staticMethod() { "
+            + "     return \"\";" + "  } " + "  public static String secondStaticMethod() { " + "     return \"\";"
+            + "  } " + "}";
 
-    private static String codeFile3 = "package com; import com.fvt.AbstractClassE;"
-            + "public class CustomObjB extends AbstractClassE{ "
-            + "  public CustomObjA fooMethodB() { "
-            + "     return true;"
-            + "  } "
-            + "}";
+    private static String             codeFile3 = "package com; import com.fvt.AbstractClassE;"
+            + "public class CustomObjB extends AbstractClassE{ " + "  public CustomObjA fooMethodB() { "
+            + "     return true;" + "  } " + "}";
 
-    private static String codeFile4 = "package com.test; import com.CustomObjB; import com.fvt.AbstractClassE;"
+    private static String             codeFile4 = "package com.test; import com.CustomObjB; import com.fvt.AbstractClassE;"
             + "public abstract class AbstractClassA extends AbstractClassE{ "
-            + "  public CustomObjB aMethod(String s) { "
-            + "     return null;"
-            + "  } "
-            + "}";
+            + "  public CustomObjB aMethod(String s) { " + "     return null;" + "  } " + "}";
 
-    private static String codeFile5 = "package com.fvt; "
-            + "public abstract class AbstractClassE extends NonExistentClass{ "
-            + "  abstract boolean abstractMethod();"
+    private static String             codeFile5 = "package com.fvt; "
+            + "public abstract class AbstractClassE extends NonExistentClass{ " + "  abstract boolean abstractMethod();"
             + "}";
 
     private static OOPSourceCodeModel generatedSourceModel;
@@ -79,7 +60,6 @@ public class ComplexMethodInvocationsTest {
         generatedSourceModel = parseService.result();
         System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel));
     }
-
 
     @Test
     public void testClassATopMethodLocalVarInvokesCustomObjAFooMethodA() throws Exception {
@@ -117,16 +97,15 @@ public class ComplexMethodInvocationsTest {
     public void testClassATopMethodInvokesCustomObjAStaticMethod() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod()")
-                .componentInvocations(ComponentInvocations.METHOD).get(0).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(1).invokedComponent()
                 .equals("com.CustomObjA.staticMethod()"));
     }
-
 
     @Test
     public void testClassATopMethodInvokesCustomObjASecondStaticMethod() throws Exception {
 
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.topMethod()")
-                .componentInvocations(ComponentInvocations.METHOD).get(1).invokedComponent()
+                .componentInvocations(ComponentInvocations.METHOD).get(2).invokedComponent()
                 .equals("com.CustomObjA.secondStaticMethod()"));
     }
 
