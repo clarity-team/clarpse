@@ -1,12 +1,12 @@
 package com.clarity.invocation;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 public class TypeParameter extends ComponentInvocation implements Serializable {
 
     private static final long serialVersionUID = -6321838812633289752L;
-    public final String type = "typeparameter";
+    public final String       type             = "typeparameter";
 
     public TypeParameter(String invokedClass, int lineNumber) {
         super(invokedClass, lineNumber);
@@ -16,7 +16,7 @@ public class TypeParameter extends ComponentInvocation implements Serializable {
         super();
     }
 
-    public TypeParameter(String invokedComponent, List<Integer> lines) {
+    public TypeParameter(String invokedComponent, Set<Integer> lines) {
         super(invokedComponent, lines);
     }
 

@@ -69,8 +69,8 @@ public class MethodInvocationSourceImpl extends MethodInvocationSource {
         for (final String child : containingClassCmp.children()) {
             final Component methodCmp = srcModel.getComponent(child);
             if (methodCmp != null) {
-                if (methodCmp.componentType() == ComponentType.CONSTRUCTOR_COMPONENT
-                        || methodCmp.componentType() == ComponentType.METHOD_COMPONENT) {
+                if (methodCmp.componentType() == ComponentType.CONSTRUCTOR
+                        || methodCmp.componentType() == ComponentType.METHOD) {
                     if (methodCmp.name().equals(methodName)) {
                         // figure out the number of parameters for this method..
                         int methodParams = 0;

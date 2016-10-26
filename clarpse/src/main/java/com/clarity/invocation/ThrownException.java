@@ -1,12 +1,13 @@
 package com.clarity.invocation;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 public class ThrownException extends ComponentInvocation implements Serializable {
 
     private static final long serialVersionUID = 3346563314076095662L;
-    public final String type = "exception";
+    public final String       type             = "exception";
+
     public ThrownException(String invocationComponentName, int lineNum) {
         super(invocationComponentName, lineNum);
     }
@@ -15,7 +16,7 @@ public class ThrownException extends ComponentInvocation implements Serializable
         super();
     }
 
-    public ThrownException(String invokedComponent, List<Integer> lines) {
+    public ThrownException(String invokedComponent, Set<Integer> lines) {
         super(invokedComponent, lines);
     }
 

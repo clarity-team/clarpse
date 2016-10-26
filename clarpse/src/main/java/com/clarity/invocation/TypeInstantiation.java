@@ -1,12 +1,12 @@
 package com.clarity.invocation;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 public class TypeInstantiation extends ComponentInvocation implements Serializable {
 
     private static final long serialVersionUID = 7253490170234016131L;
-    public final String type = "instantiation";
+    public final String       type             = "instantiation";
 
     public TypeInstantiation(String invocationComponentName, int lineNum) {
         super(invocationComponentName, lineNum);
@@ -16,7 +16,7 @@ public class TypeInstantiation extends ComponentInvocation implements Serializab
         super();
     }
 
-    public TypeInstantiation(String invokedComponent, List<Integer> lines) {
+    public TypeInstantiation(String invokedComponent, Set<Integer> lines) {
         super(invokedComponent, lines);
     }
 

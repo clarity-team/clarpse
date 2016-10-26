@@ -26,7 +26,7 @@ public enum Lang {
     private String value;
     private String fileExt;
 
-    private Lang(final String value, final String extension) {
+    Lang(final String value, final String extension) {
         this.value = value;
         fileExt = extension;
     }

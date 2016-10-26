@@ -14,7 +14,8 @@ public class OOPSourceCodeModel implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public OOPSourceCodeModel() { }
+    public OOPSourceCodeModel() {
+    }
 
     private final Map<String, Component> components = new HashMap<String, Component>();
 
@@ -22,8 +23,7 @@ public class OOPSourceCodeModel implements Serializable {
         return components;
     }
 
-    public
-    void merge(final OOPSourceCodeModel sourceModel) {
+    public void merge(final OOPSourceCodeModel sourceModel) {
 
         insertComponents(sourceModel.getComponents());
     }
@@ -38,7 +38,7 @@ public class OOPSourceCodeModel implements Serializable {
     }
 
     public Component getComponent(final String componentName) {
-        return this.getComponents().get(componentName.replaceAll("\\s+", ""));
+        return this.getComponents().get(componentName);
     }
 
     public void insertComponents(final Map<String, Component> newCmps) {

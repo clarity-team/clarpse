@@ -1,5 +1,7 @@
 package com.clarity.invocation.sources;
 
+import java.util.List;
+
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.Component;
 
@@ -11,22 +13,20 @@ import com.clarity.sourcemodel.Component;
 public class BindedInvocationSource implements InvocationSource {
 
     private final InvocationSource original;
-    private final Component bindingComponent;
+    private final List<Component>  bindingComponents;
 
-    public BindedInvocationSource(InvocationSource original, Component bindingComponent) {
+    public BindedInvocationSource(InvocationSource original, List<Component> bindingComponents) {
 
         this.original = original;
-        this.bindingComponent = bindingComponent;
+        this.bindingComponents = bindingComponents;
     }
 
     @Override
     public ComponentInvocation createComponentInvocation() throws Exception {
 
-        final ComponentInvocation invocation = original.createComponentInvocation();
-        if (!invocation.empty()) {
-            bindingComponent.insertComponentInvocation(invocation);
-        }
-        return invocation;
+        ComponentInvocation originalInvocation = original.createComponentInvocation();
+        bindingComponents.forEach(bindingComponent -> bindingComponent.insertComponentInvocation(originalInvocation));
+        return originalInvocation;
     }
 
     @Override

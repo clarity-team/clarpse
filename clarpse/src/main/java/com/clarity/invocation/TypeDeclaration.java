@@ -1,12 +1,13 @@
 package com.clarity.invocation;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 public class TypeDeclaration extends ComponentInvocation implements Serializable {
 
     private static final long serialVersionUID = 7304258760520469246L;
-    public final String type = "declaration";
+    public final String       type             = "declaration";
+
     public TypeDeclaration(final String invocationComponentName, final int lineNum) {
         super(invocationComponentName, lineNum);
     }
@@ -15,7 +16,7 @@ public class TypeDeclaration extends ComponentInvocation implements Serializable
         super();
     }
 
-    public TypeDeclaration(String invokedComponent, List<Integer> lines) {
+    public TypeDeclaration(String invokedComponent, Set<Integer> lines) {
         super(invokedComponent, lines);
     }
 

@@ -1,12 +1,13 @@
 package com.clarity.invocation;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 public class InvalidInvocation extends ComponentInvocation implements Serializable {
 
     private static final long serialVersionUID = -3058881761749807208L;
-    public final String type = "empty";
+    public final String       type             = "empty";
+
     public InvalidInvocation(String invocationComponentName, int lineNum) {
         super(invocationComponentName, lineNum);
     }
@@ -20,7 +21,7 @@ public class InvalidInvocation extends ComponentInvocation implements Serializab
         super();
     }
 
-    public InvalidInvocation(String invokedComponent, List<Integer> lines) {
+    public InvalidInvocation(String invokedComponent, Set<Integer> lines) {
         super(invokedComponent, lines);
     }
 
