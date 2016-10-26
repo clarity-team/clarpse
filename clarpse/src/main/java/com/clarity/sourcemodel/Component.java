@@ -2,11 +2,15 @@ package com.clarity.sourcemodel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Representation of the individual code level components (classes,
@@ -18,39 +22,43 @@ import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
 public final class Component implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long        serialVersionUID = 1L;
 
-    private String start;
-    private String end;
+    private String                   start;
+    private String                   end;
     /**
      * Value of the component if applicable.
      */
-    private String value;
-    private String packageName;
+    private String                   value;
+    private String                   packageName;
     /**
      * Short name.
      */
-    private String name;
-    private String comment = "";
+    private String                   name;
+    private String                   comment          = "";
     /**
      * Source file path from which the component was derived.
      */
-    private String sourceFile;
-    private List<String> imports = new ArrayList<String>();
-    private List<String> modifiers = new ArrayList<String>();
-    private ComponentType type;
-    private List<ComponentInvocation> invocations = new ArrayList<ComponentInvocation>();
+    private String                   sourceFile;
+    @JsonInclude(Include.NON_EMPTY)
+    private List<String>             imports          = new ArrayList<String>();
+    @JsonInclude(Include.NON_EMPTY)
+    private Set<String>              modifiers        = new LinkedHashSet<String>();
+    private ComponentType            type;
+    @JsonInclude(Include.NON_EMPTY)
+    private Set<ComponentInvocation> invocations      = new LinkedHashSet<ComponentInvocation>();
     /**
      * Formed by chaining parent components' names separated by a period.
      *
      * Eg) ClassA -> MethodB -> varC = "ClassA.MethodB.varC"
      */
-    private String componentName;
+    private String                   componentName;
     /**
      * List of all child components.
      */
-    private final ArrayList<String> children = new ArrayList<String>();
-    private String declarationTypeSnippet;
+    @JsonInclude(Include.NON_EMPTY)
+    private final ArrayList<String>  children         = new ArrayList<String>();
+    private String                   declarationTypeSnippet;
 
     public Component(final Component component) {
         modifiers = component.modifiers();
@@ -117,7 +125,7 @@ public final class Component implements Serializable {
         return declarationTypeSnippet;
     }
 
-    public List<ComponentInvocation> invocations() {
+    public Set<ComponentInvocation> invocations() {
         return invocations;
     }
 
@@ -125,6 +133,7 @@ public final class Component implements Serializable {
         for (final ComponentInvocation invocation : invocations) {
             if (invocation.invokedComponent().equals(ref.invokedComponent()) && invocation.getClass().isInstance(ref)) {
                 invocation.insertLineNums(ref.lines());
+                return;
             }
         }
         invocations.add(ref);
@@ -142,19 +151,19 @@ public final class Component implements Serializable {
         declarationTypeSnippet = componentDeclarationTypeFragment;
     }
 
-    public void setExternalTypeReferences(final ArrayList<ComponentInvocation> externalReferences) {
+    public void setExternalTypeReferences(final Set<ComponentInvocation> externalReferences) {
         invocations = externalReferences;
     }
 
-    public void setImports(final ArrayList<String> importStatements) {
-        imports = importStatements;
+    public void setImports(final ArrayList<String> currentImports) {
+        imports = currentImports;
     }
 
     public void setComponentName(final String componentName) {
         this.componentName = componentName;
     }
 
-    public List<String> modifiers() {
+    public Set<String> modifiers() {
         return modifiers;
     }
 
@@ -231,7 +240,7 @@ public final class Component implements Serializable {
         return tmpInvocations;
     }
 
-    public List<ComponentInvocation> componentInvocations() {
+    public Set<ComponentInvocation> componentInvocations() {
         return invocations;
     }
 

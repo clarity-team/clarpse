@@ -25,12 +25,9 @@ public class ClarpseProject {
         this.rawData = rawData;
     }
 
-    private OOPSourceCodeModel parseRawData(final ParseRequestContent rawData)
-            throws Exception {
-        final AbstractFactory parserFactory = new FactoryProducer()
-                .getFactory(FactoryProducer.PARSE_KEYWORD);
-        final ClarpseParser parsingTool = parserFactory.getParsingTool(rawData
-                .getLanguage());
+    private OOPSourceCodeModel parseRawData(final ParseRequestContent rawData) throws Exception {
+        final AbstractFactory parserFactory = new FactoryProducer().getFactory(FactoryProducer.PARSE_KEYWORD);
+        final ClarpseParser parsingTool = parserFactory.getParsingTool(rawData.getLanguage());
         return parsingTool.extractParseResult(rawData);
     }
 
@@ -42,12 +39,10 @@ public class ClarpseProject {
         return srcModel;
     }
 
-    private void validateParseType(final String parseType)
-            throws IllegalArgumentException {
+    private void validateParseType(final String parseType) throws IllegalArgumentException {
 
         if (!PARSE_TYPE_MAP.containsKey(parseType)) {
-            throw new IllegalArgumentException(
-                    "The specified source language is not supported!");
+            throw new IllegalArgumentException("The specified source language is not supported!");
         }
     }
 }

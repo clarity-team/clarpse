@@ -3,6 +3,7 @@ package com.clarity.java;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.clarity.invocation.ComponentInvocation;
 import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
@@ -25,8 +26,8 @@ public class TypeExtensionTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations()
-                .get(0).invokedComponent().equals("com.ClassD"));
+        Assert.assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("com.ClassA").componentInvocations()
+                .toArray()[0]).invokedComponent().equals("com.ClassD"));
     }
 
     @Test
@@ -38,8 +39,7 @@ public class TypeExtensionTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations()
-                .size() == 1);
+        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations().size() == 1);
     }
 
     @Test
@@ -51,11 +51,10 @@ public class TypeExtensionTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations()
-                .get(0).invokedComponent().equals("com.ClassD"));
+        Assert.assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("com.ClassA.ClassB")
+                .componentInvocations().toArray()[0]).invokedComponent().equals("com.ClassD"));
 
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations()
-                .size() == 1);
+        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations().size() == 1);
     }
 
     @Test
@@ -67,7 +66,6 @@ public class TypeExtensionTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations()
-                .size() == 1);
+        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations().size() == 1);
     }
 }

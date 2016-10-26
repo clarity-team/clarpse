@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.clarity.invocation.ComponentInvocation;
 import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
@@ -24,8 +25,8 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test").invocations().toArray()[0])
+                .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -35,8 +36,8 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test").invocations().toArray()[0])
+                .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -46,8 +47,8 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test").invocations().toArray()[0])
+                .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -57,8 +58,8 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test").invocations().toArray()[0])
+                .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -68,8 +69,8 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test").invocations().toArray()[0])
+                .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -89,8 +90,8 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test").invocations().toArray()[0])
+                .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -100,8 +101,8 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test").invocations().toArray()[0])
+                .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -111,8 +112,8 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test").invocations().toArray()[0])
+                .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -122,8 +123,9 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.aMethod()").invocations().get(0).invokedComponent()
-                .equals("java.lang.String"));
+        assertTrue(
+                ((ComponentInvocation) generatedSourceModel.getComponent("Test.aMethod()").invocations().toArray()[0])
+                        .invokedComponent().equals("java.lang.String"));
     }
 
     @Test
@@ -133,7 +135,7 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.aMethod(java.lang.String)").invocations().get(0)
-                .invokedComponent().equals("java.lang.String"));
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test.aMethod(java.lang.String)")
+                .invocations().toArray()[0]).invokedComponent().equals("java.lang.String"));
     }
 }

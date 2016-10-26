@@ -118,7 +118,7 @@ public final class OOPSourceModelConstants {
         JAVA_ANNOTATIONS.put("Repeatable", "Repeatable");
 
     }
-    public static final String JAVA_DEFAULT_PKG = "java.lang.";
+    public static final String       JAVA_DEFAULT_PKG     = "java.lang.";
 
     static final Map<String, String> JAVA_DEFAULT_CLASSES = new HashMap<String, String>();
     static {
@@ -184,7 +184,8 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("ClassCastException", JAVA_DEFAULT_PKG + "ClassCastException");
         JAVA_DEFAULT_CLASSES.put("ClassNotFoundException", JAVA_DEFAULT_PKG + "ClassNotFoundException");
         JAVA_DEFAULT_CLASSES.put("CloneNotSupportedException", JAVA_DEFAULT_PKG + "CloneNotSupportedException");
-        JAVA_DEFAULT_CLASSES.put("EnumConstantNotPresentException", JAVA_DEFAULT_PKG + "EnumConstantNotPresentException  ");
+        JAVA_DEFAULT_CLASSES.put("EnumConstantNotPresentException",
+                JAVA_DEFAULT_PKG + "EnumConstantNotPresentException  ");
         JAVA_DEFAULT_CLASSES.put("Exception", JAVA_DEFAULT_PKG + "Exception");
         JAVA_DEFAULT_CLASSES.put("IllegalAccessException", JAVA_DEFAULT_PKG + "IllegalAccessException");
         JAVA_DEFAULT_CLASSES.put("IllegalArgumentException", JAVA_DEFAULT_PKG + "IllegalArgumentException");
@@ -202,7 +203,8 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("ReflectiveOperationException", JAVA_DEFAULT_PKG + "ReflectiveOperationException");
         JAVA_DEFAULT_CLASSES.put("RuntimeException", JAVA_DEFAULT_PKG + "RuntimeException");
         JAVA_DEFAULT_CLASSES.put("SecurityException", JAVA_DEFAULT_PKG + "SecurityException");
-        JAVA_DEFAULT_CLASSES.put("StringIndexOutOfBoundsException", JAVA_DEFAULT_PKG + "StringIndexOutOfBoundsException");
+        JAVA_DEFAULT_CLASSES.put("StringIndexOutOfBoundsException",
+                JAVA_DEFAULT_PKG + "StringIndexOutOfBoundsException");
         JAVA_DEFAULT_CLASSES.put("TypeNotPresentException", JAVA_DEFAULT_PKG + "TypeNotPresentException");
         JAVA_DEFAULT_CLASSES.put("UnsupportedOperationException", JAVA_DEFAULT_PKG + "UnsupportedOperationException");
         JAVA_DEFAULT_CLASSES.put("AbstractMethodError", JAVA_DEFAULT_PKG + "AbstractMethodError");
@@ -237,8 +239,8 @@ public final class OOPSourceModelConstants {
 
     public enum AccessModifiers {
 
-        FINAL(""), ABSTRACT(""), INTERFACE(""), NATIVE(""), PRIVATE("-"), PROTECTED("#"), PUBLIC("+"), STATIC(""), STRICTFP(
-                ""), SYNCHRONIZED(""), TRANSIENT(""), NONE("~"), VOLATILE("");
+        FINAL(""), ABSTRACT(""), INTERFACE(""), NATIVE(""), PRIVATE("-"), PROTECTED("#"), PUBLIC("+"), STATIC(
+                ""), STRICTFP(""), SYNCHRONIZED(""), TRANSIENT(""), NONE("~"), VOLATILE("");
 
         private String umlClassDigramSymbol = null;
 
@@ -253,9 +255,10 @@ public final class OOPSourceModelConstants {
 
     public enum ComponentInvocations {
 
-        ANNOTATION(AnnotationInvocation.class), METHOD(MethodInvocation.class), EXCEPTION(ThrownException.class), DECLARATION(
-                TypeDeclaration.class), INSTANTIATION(TypeInstantiation.class), EXTENSION(TypeExtension.class), IMPLEMENTATION(
-                        TypeImplementation.class);
+        ANNOTATION(AnnotationInvocation.class), METHOD(MethodInvocation.class), EXCEPTION(
+                ThrownException.class), DECLARATION(TypeDeclaration.class), INSTANTIATION(
+                        TypeInstantiation.class), EXTENSION(
+                                TypeExtension.class), IMPLEMENTATION(TypeImplementation.class);
 
         public Class<? extends ComponentInvocation> getMatchingClass() {
             return matchingClass;
@@ -277,17 +280,21 @@ public final class OOPSourceModelConstants {
      */
     public enum ComponentType implements Serializable {
 
-        CLASS_COMPONENT("class", true, false, false), INTERFACE_COMPONENT("interface", true, false, false), INTERFACE_CONSTANT_COMPONENT("interface_constant", false, false,
-                true), ENUM_COMPONENT("enum", true, false, false), ANNOTATION_COMPONENT("annotation", false, false, false), METHOD_COMPONENT("method", false,
-                        true, false), CONSTRUCTOR_COMPONENT("method", false, true, false), ENUM_CONSTANT_COMPONENT("enum_constant", false, false, true), FIELD_COMPONENT(
-                                "field_variable", false, false, true), METHOD_PARAMETER_COMPONENT("method_parameter", false, false,
-                                        true), CONSTRUCTOR_PARAMETER_COMPONENT("constructor_parameter", false,
-                                                false, true), LOCAL_VARIABLE_COMPONENT("local_variable", false, false, true);
+        CLASS("class", true, false, false), INTERFACE("interface", true, false,
+                false), INTERFACE_CONSTANT("interface_constant", false, false, true), ENUM("enum", true,
+                        false, false), ANNOTATION("annotation", false, false, false), METHOD(
+                                "method", false, true, false), CONSTRUCTOR("method", false, true,
+                                        false), ENUM_CONSTANT("enum_constant", false, false, true), FIELD(
+                                                "field_variable", false, false,
+                                                true), METHOD_PARAMETER_COMPONENT("method_parameter", false, false,
+                                                        true), CONSTRUCTOR_PARAMETER_COMPONENT("constructor_parameter",
+                                                                false, false, true), LOCAL(
+                                                                        "local_variable", false, false, true);
 
         private final boolean isBaseComponent;
         private final boolean isMethodComponent;
         private final boolean isVariableComponent;
-        private final String value;
+        private final String  value;
 
         ComponentType(final String value, final boolean isBaseComponent, final boolean isMethodComponent,
                 final boolean isVariableComponent) {
@@ -348,16 +355,16 @@ public final class OOPSourceModelConstants {
      */
     private static final Map<ComponentType, String> JAVA_COMPONENT_TYPES = new HashMap<ComponentType, String>();
     static {
-        getJavaComponentTypes().put(ComponentType.INTERFACE_COMPONENT, "interface");
-        getJavaComponentTypes().put(ComponentType.ENUM_COMPONENT, "enum");
-        getJavaComponentTypes().put(ComponentType.ENUM_CONSTANT_COMPONENT, "enumConstant");
-        getJavaComponentTypes().put(ComponentType.INTERFACE_CONSTANT_COMPONENT, "interfaceConstant");
-        getJavaComponentTypes().put(ComponentType.ANNOTATION_COMPONENT, "annotation");
-        getJavaComponentTypes().put(ComponentType.METHOD_COMPONENT, "method");
-        getJavaComponentTypes().put(ComponentType.CONSTRUCTOR_COMPONENT, "constructor");
-        getJavaComponentTypes().put(ComponentType.FIELD_COMPONENT, "field");
-        getJavaComponentTypes().put(ComponentType.LOCAL_VARIABLE_COMPONENT, "localVar");
-        getJavaComponentTypes().put(ComponentType.CLASS_COMPONENT, "class");
+        getJavaComponentTypes().put(ComponentType.INTERFACE, "interface");
+        getJavaComponentTypes().put(ComponentType.ENUM, "enum");
+        getJavaComponentTypes().put(ComponentType.ENUM_CONSTANT, "enumConstant");
+        getJavaComponentTypes().put(ComponentType.INTERFACE_CONSTANT, "interfaceConstant");
+        getJavaComponentTypes().put(ComponentType.ANNOTATION, "annotation");
+        getJavaComponentTypes().put(ComponentType.METHOD, "method");
+        getJavaComponentTypes().put(ComponentType.CONSTRUCTOR, "constructor");
+        getJavaComponentTypes().put(ComponentType.FIELD, "field");
+        getJavaComponentTypes().put(ComponentType.LOCAL, "localVar");
+        getJavaComponentTypes().put(ComponentType.CLASS, "class");
     }
 
 }

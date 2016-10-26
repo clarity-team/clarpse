@@ -1,8 +1,8 @@
 package com.clarity.invocation;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.clarity.EmptyResource;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -26,7 +26,7 @@ public abstract class ComponentInvocation implements EmptyResource, Serializable
 
     private static final long serialVersionUID = -242718695900611890L;
     private String            invokedComponent = "";
-    private List<Integer>     invocationLines  = new ArrayList<Integer>();
+    private Set<Integer>      invocationLines  = new HashSet<Integer>();
 
     public ComponentInvocation(final String invocationComponentName, final int lineNum) {
         invokedComponent = invocationComponentName;
@@ -43,7 +43,7 @@ public abstract class ComponentInvocation implements EmptyResource, Serializable
     public ComponentInvocation() {
     }
 
-    public ComponentInvocation(String invokedComponent2, List<Integer> lines) {
+    public ComponentInvocation(String invokedComponent2, Set<Integer> lines) {
         invokedComponent = invokedComponent2;
         invocationLines = lines;
     }
@@ -52,15 +52,13 @@ public abstract class ComponentInvocation implements EmptyResource, Serializable
         return invokedComponent;
     }
 
-    public void insertLineNums(final List<Integer> list) {
+    public void insertLineNums(final Set<Integer> list) {
         for (final Integer lineNum : list) {
-            if (!this.lines().contains(lineNum)) {
-                this.lines().add(lineNum);
-            }
+            this.lines().add(lineNum);
         }
     }
 
-    public List<Integer> lines() {
+    public Set<Integer> lines() {
         return invocationLines;
     }
 
