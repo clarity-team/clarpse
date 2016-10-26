@@ -23,11 +23,11 @@ public final class ClarpseUtil {
 
     public static final int   BUFFER_SIZE = 4096;
 
-    static final ObjectMapper jsonMapper  = new ObjectMapper();;
+    static final ObjectMapper JSON_MAPPER  = new ObjectMapper();;
     static {
-        jsonMapper.setSerializationInclusion(Include.NON_NULL);
-        jsonMapper.registerModule(new AfterburnerModule());
-        jsonMapper.setVisibilityChecker(jsonMapper.getSerializationConfig().getDefaultVisibilityChecker()
+        JSON_MAPPER.setSerializationInclusion(Include.NON_NULL);
+        JSON_MAPPER.registerModule(new AfterburnerModule());
+        JSON_MAPPER.setVisibilityChecker(JSON_MAPPER.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY).withGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
@@ -55,7 +55,7 @@ public final class ClarpseUtil {
     public static String fromJavaToJson(final Serializable object, final boolean prettyPrint)
             throws JsonGenerationException, JsonMappingException, IOException {
 
-        final byte[] bytes = jsonMapper.writeValueAsBytes(object);
+        final byte[] bytes = JSON_MAPPER.writeValueAsBytes(object);
         return new String(bytes, "UTF-8");
     }
 
@@ -67,7 +67,7 @@ public final class ClarpseUtil {
     @SuppressWarnings("unchecked")
     public static Object fromJsonToJava(final String json, @SuppressWarnings("rawtypes") final Class type)
             throws JsonParseException, JsonMappingException, IOException {
-        return jsonMapper.readValue(json.getBytes("UTF-8"), type);
+        return JSON_MAPPER.readValue(json.getBytes("UTF-8"), type);
     }
 
     public static Component getParentMethodComponent(Component cmp, final Map<String, Component> components) {
