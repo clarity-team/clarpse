@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
 script: 
          - cd clarpse
-         - export MAVEN_OPTS="-Xmx3000m"
          - mvn clean package assembly:single
 after_success:
+         - mvn deploy --settings ../settings.xml
          - bash <(curl -s https://codecov.io/bash)
