@@ -83,7 +83,7 @@ If you have checkout the project from GitHub you can build the project with mave
     The repo owner will respond to your issue promptly.
    - Fork the desired repo, develop and test your code changes.
    - Run a local maven build using "clean package assembly:single" to ensure all tests pass and the jar is produced
-   - Update the versioning using the x.y.z scheme:
+   - Update the versioning in the pom.xml using the x.y.z scheme:
      - x = main version number, Increase if introducing API breaking changes.
      - y = feature number, Increase this number if the change contains new features with or without bug fixes.
      - z = hotfix number, Increase this number if the change only contains bug fixes.
