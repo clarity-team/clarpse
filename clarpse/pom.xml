@@ -51,7 +51,13 @@
 		</dependency>
 
 	</dependencies>
-
+<distributionManagement>
+    <repository>
+        <id>central</id>
+        <name>ip-172-31-24-68-releases</name>
+        <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/libs-release-local</url>
+    </repository>
+</distributionManagement>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
