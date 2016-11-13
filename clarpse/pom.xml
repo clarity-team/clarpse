@@ -55,7 +55,7 @@
     <repository>
         <id>central</id>
         <name>ip-172-31-24-68-releases</name>
-        <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/libs-release-local</url>
+        <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/clarpse_v2</url>
     </repository>
 </distributionManagement>
 	<build>
