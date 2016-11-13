@@ -21,14 +21,8 @@
             <enabled>false</enabled>
           </snapshots>
           <id>central</id>
-          <name>libs-release</name>
-          <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/libs-release</url>
-        </repository>
-        <repository>
-          <snapshots />
-          <id>snapshots</id>
-          <name>libs-snapshot</name>
-          <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/libs-snapshot</url>
+          <name>clarpse_v2</name>
+          <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/clarpse_v2</url>
         </repository>
       </repositories>
       <pluginRepositories>
@@ -37,14 +31,8 @@
             <enabled>false</enabled>
           </snapshots>
           <id>central</id>
-          <name>plugins-release</name>
-          <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/plugins-release</url>
-        </pluginRepository>
-        <pluginRepository>
-          <snapshots />
-          <id>snapshots</id>
-          <name>plugins-snapshot</name>
-          <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/plugins-snapshot</url>
+          <name>clarpse_v2</name>
+          <url>http://ec2-35-163-141-233.us-west-2.compute.amazonaws.com/artifactory/clarpse_v2</url>
         </pluginRepository>
       </pluginRepositories>
       <id>artifactory</id>
