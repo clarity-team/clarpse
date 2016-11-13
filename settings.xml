@@ -9,7 +9,7 @@
     </server>
     <server>
       <username>user</username>
-      <password>${ARTIFACTORYPASS}</password>
+      <password>${ARTIFACTORYPASS}</password>   
       <id>snapshots</id>
     </server>
   </servers>
