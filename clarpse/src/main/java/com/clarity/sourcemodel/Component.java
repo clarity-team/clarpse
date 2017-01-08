@@ -262,4 +262,14 @@ public final class Component implements Serializable {
         }
 
     }
+    
+    @Override
+	public boolean equals(Object o) {
+		return (((Component) o).uniqueName().equals(this.uniqueName()));
+	}
+    
+    @Override
+    public int hashCode() {
+    	return this.uniqueName().hashCode();
+    }
 }

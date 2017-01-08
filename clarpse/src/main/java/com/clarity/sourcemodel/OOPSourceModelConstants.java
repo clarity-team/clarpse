@@ -29,72 +29,6 @@ public final class OOPSourceModelConstants {
 
     static final Map<String, String> JAVA_COLLECTIONS = new HashMap<String, String>();
 
-    /**
-     * @return the javaCollections
-     */
-    public static Map<String, String> getJavaCollections() {
-        return JAVA_COLLECTIONS;
-    }
-
-    static {
-        JAVA_COLLECTIONS.put("java.util.ArrayList", "java.util.ArrayList");
-        JAVA_COLLECTIONS.put("java.util.ArrayList", "java.util.Set");
-        JAVA_COLLECTIONS.put("java.util.ArrayList", "java.util.SortedSet");
-        JAVA_COLLECTIONS.put("java.util.Collection", "java.util.Collection");
-        JAVA_COLLECTIONS.put("java.util.AbstractCollection", "java.util.AbstractCollection");
-        JAVA_COLLECTIONS.put("java.util.AbstarctList", "java.util.AbstractList");
-        JAVA_COLLECTIONS.put("java.util.AbstractQueue", "java.util.AbstractQueue");
-        JAVA_COLLECTIONS.put("java.util.AbstractSequentialList", "java.util.AbstractSequentialList");
-        JAVA_COLLECTIONS.put("java.util.AbstractSet", "java.util.AbstractSet");
-        JAVA_COLLECTIONS.put("java.util.ArrayDeque", "java.util.ArrayDeque");
-        JAVA_COLLECTIONS.put("java.util.AttributeList", "java.util.AttributeList");
-        JAVA_COLLECTIONS.put("java.util.BeanContextServiceSupport", "java.util.BeanContextServiceSupport");
-        JAVA_COLLECTIONS.put("java.util.BeanContextServicesSupport", "java.util.BeanContextServicesSupport");
-        JAVA_COLLECTIONS.put("java.util.BeanContextSupport", "java.util.BeanContextSupport");
-        JAVA_COLLECTIONS.put("java.util.ConcurrentLinkedDeque", "java.util.ConcurrentLinkedDeque");
-        JAVA_COLLECTIONS.put("java.util.ConcurrentLinkedQueue", "java.util.ConcurrentLinkedQueue");
-        JAVA_COLLECTIONS.put("java.util.ConcurrentSkipListSet", "java.util.ConcurrentSkipListSet");
-        JAVA_COLLECTIONS.put("java.util.CopyOnWriteArrayList", "java.util.CopyOnWriteArrayList");
-        JAVA_COLLECTIONS.put("java.util.CopyOnWriteArraySet", "java.util.CopyOnWriteArraySet");
-        JAVA_COLLECTIONS.put("java.util.DelayQueue", "java.util.DelayQueue");
-        JAVA_COLLECTIONS.put("java.util.EnumSet", "java.util.EnumSet");
-        JAVA_COLLECTIONS.put("java.util.HashSet", "java.util.HashSet");
-        JAVA_COLLECTIONS.put("java.util.JobStateReasons", "java.util.JobStateReasons");
-        JAVA_COLLECTIONS.put("java.util.LinkedBlockingDeque", "java.util.LinkedBlockingDeque");
-        JAVA_COLLECTIONS.put("java.util.LinkedBlockingQueue", "java.util.LinkedBlockingQueue");
-        JAVA_COLLECTIONS.put("java.util.LinkedHashSet", "java.util.LinkedHashSet");
-        JAVA_COLLECTIONS.put("java.util.LinkedList", "java.util.LinkedList");
-        JAVA_COLLECTIONS.put("java.util.LinkedTransferQueue", "java.util.LinkedTransferQueue");
-        JAVA_COLLECTIONS.put("java.util.PriorityBlockingQueue", "java.util.PriorityBlockingQueue");
-        JAVA_COLLECTIONS.put("java.util.PriorityQueue", "java.util.PriorityQueue");
-        JAVA_COLLECTIONS.put("java.util.RoleList", "java.util.RoleList");
-        JAVA_COLLECTIONS.put("java.util.RoleUnresolvedList", "java.util.RoleUnresolvedList");
-        JAVA_COLLECTIONS.put("java.util.Stack", "java.util.Stack");
-        JAVA_COLLECTIONS.put("java.util.SynchronousQueue", "java.util.SynchronousQueue");
-        JAVA_COLLECTIONS.put("java.util.TreeSet", "java.util.TreeSet");
-        JAVA_COLLECTIONS.put("java.util.Vector", "java.util.Vector");
-        JAVA_COLLECTIONS.put("java.util.RoleList", "java.util.RoleList");
-        JAVA_COLLECTIONS.put("java.util.AbstractMap", "java.util.AbstractMap");
-        JAVA_COLLECTIONS.put("java.util.Attributes", "java.util.Attributes");
-        JAVA_COLLECTIONS.put("java.util.AuthProvider", "java.util.AuthProvider");
-        JAVA_COLLECTIONS.put("java.util.ConcurrentHashMap", "java.util.ConcurrentHashMap");
-        JAVA_COLLECTIONS.put("java.util.ConcurrentSkipListMap", "java.util.ConcurrentSkipListMap");
-        JAVA_COLLECTIONS.put("java.util.EnumMap", "java.util.EnumMap");
-        JAVA_COLLECTIONS.put("java.util.HashMap", "java.util.HashMap");
-        JAVA_COLLECTIONS.put("java.util.Hashtable", "java.util.Hashtable");
-        JAVA_COLLECTIONS.put("java.util.IdentityHashMap", "java.util.IdentityHashMap");
-        JAVA_COLLECTIONS.put("java.util.LinkedHashMap", "java.util.LinkedHashMap");
-        JAVA_COLLECTIONS.put("java.util.PrinterStateReasons", "java.util.PrinterStateReasons");
-        JAVA_COLLECTIONS.put("java.util.Properties", "java.util.Properties");
-        JAVA_COLLECTIONS.put("java.util.Provider", "java.util.Provider");
-        JAVA_COLLECTIONS.put("java.util.RenderingHints", "java.util.RenderingHints");
-        JAVA_COLLECTIONS.put("java.util.SimpleBindings", "java.util.SimpleBindings");
-        JAVA_COLLECTIONS.put("java.util.TabularDataSupport", "java.util.TabularDataSupport");
-        JAVA_COLLECTIONS.put("java.util.TreeMap", "java.util.TreeMap");
-        JAVA_COLLECTIONS.put("java.util.UIDefaults", "java.util.UIDefaults");
-        JAVA_COLLECTIONS.put("java.util.WeakHashMap", "java.util.WeakHashMap");
-    }
-
     static final Map<String, String> JAVA_ANNOTATIONS = new HashMap<String, String>();
 
     /**
@@ -130,7 +64,7 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("Iterable", JAVA_DEFAULT_PKG + "Iterable");
         JAVA_DEFAULT_CLASSES.put("Collection", JAVA_DEFAULT_PKG + "Collection");
         JAVA_DEFAULT_CLASSES.put("Readable", JAVA_DEFAULT_PKG + "Readable");
-        JAVA_DEFAULT_CLASSES.put("ArrayList", JAVA_DEFAULT_PKG + "ArrayList");
+        JAVA_DEFAULT_CLASSES.put("ArrayList", "java.util." + "ArrayList");
         JAVA_DEFAULT_CLASSES.put("Runnable", JAVA_DEFAULT_PKG + "Runnable");
         JAVA_DEFAULT_CLASSES.put("UncaughtExceptionHandler", JAVA_DEFAULT_PKG + "UncaughtExceptionHandler");
         JAVA_DEFAULT_CLASSES.put("Boolean", JAVA_DEFAULT_PKG + "Boolean");
@@ -231,6 +165,62 @@ public final class OOPSourceModelConstants {
         JAVA_DEFAULT_CLASSES.put("InternalError", JAVA_DEFAULT_PKG + "InternalError");
         JAVA_DEFAULT_CLASSES.put("VerifyError", JAVA_DEFAULT_PKG + "VerifyError");
         JAVA_DEFAULT_CLASSES.put("VirtualMachineError", JAVA_DEFAULT_PKG + "VirtualMachineError");
+        JAVA_DEFAULT_CLASSES.put("ArrayList", "java.util.ArrayList");
+        JAVA_DEFAULT_CLASSES.put("Set", "java.util.Set");
+        JAVA_DEFAULT_CLASSES.put("SortedSet", "java.util.SortedSet");
+        JAVA_DEFAULT_CLASSES.put("Collection", "java.util.Collection");
+        JAVA_DEFAULT_CLASSES.put("AbstractCollection", "java.util.AbstractCollection");
+        JAVA_DEFAULT_CLASSES.put("AbstarctList", "java.util.AbstractList");
+        JAVA_DEFAULT_CLASSES.put("AbstractQueue", "java.util.AbstractQueue");
+        JAVA_DEFAULT_CLASSES.put("AbstractSequentialList", "java.util.AbstractSequentialList");
+        JAVA_DEFAULT_CLASSES.put("AbstractSet", "java.util.AbstractSet");
+        JAVA_DEFAULT_CLASSES.put("ArrayDeque", "java.util.ArrayDeque");
+        JAVA_DEFAULT_CLASSES.put("AttributeList", "java.util.AttributeList");
+        JAVA_DEFAULT_CLASSES.put("BeanContextServiceSupport", "java.util.BeanContextServiceSupport");
+        JAVA_DEFAULT_CLASSES.put("BeanContextServicesSupport", "java.util.BeanContextServicesSupport");
+        JAVA_DEFAULT_CLASSES.put("BeanContextSupport", "java.util.BeanContextSupport");
+        JAVA_DEFAULT_CLASSES.put("ConcurrentLinkedDeque", "java.util.ConcurrentLinkedDeque");
+        JAVA_DEFAULT_CLASSES.put("ConcurrentLinkedQueue", "java.util.ConcurrentLinkedQueue");
+        JAVA_DEFAULT_CLASSES.put("ConcurrentSkipListSet", "java.util.ConcurrentSkipListSet");
+        JAVA_DEFAULT_CLASSES.put("CopyOnWriteArrayList", "java.util.CopyOnWriteArrayList");
+        JAVA_DEFAULT_CLASSES.put("CopyOnWriteArraySet", "java.util.CopyOnWriteArraySet");
+        JAVA_DEFAULT_CLASSES.put("DelayQueue", "java.util.DelayQueue");
+        JAVA_DEFAULT_CLASSES.put("EnumSet", "java.util.EnumSet");
+        JAVA_DEFAULT_CLASSES.put("HashSet", "java.util.HashSet");
+        JAVA_DEFAULT_CLASSES.put("JobStateReasons", "java.util.JobStateReasons");
+        JAVA_DEFAULT_CLASSES.put("LinkedBlockingDeque", "java.util.LinkedBlockingDeque");
+        JAVA_DEFAULT_CLASSES.put("LinkedBlockingQueue", "java.util.LinkedBlockingQueue");
+        JAVA_DEFAULT_CLASSES.put("LinkedHashSet", "java.util.LinkedHashSet");
+        JAVA_DEFAULT_CLASSES.put("LinkedList", "java.util.LinkedList");
+        JAVA_DEFAULT_CLASSES.put("LinkedTransferQueue", "java.util.LinkedTransferQueue");
+        JAVA_DEFAULT_CLASSES.put("PriorityBlockingQueue", "java.util.PriorityBlockingQueue");
+        JAVA_DEFAULT_CLASSES.put("PriorityQueue", "java.util.PriorityQueue");
+        JAVA_DEFAULT_CLASSES.put("RoleList", "java.util.RoleList");
+        JAVA_DEFAULT_CLASSES.put("RoleUnresolvedList", "java.util.RoleUnresolvedList");
+        JAVA_DEFAULT_CLASSES.put("Stack", "java.util.Stack");
+        JAVA_DEFAULT_CLASSES.put("SynchronousQueue", "java.util.SynchronousQueue");
+        JAVA_DEFAULT_CLASSES.put("TreeSet", "java.util.TreeSet");
+        JAVA_DEFAULT_CLASSES.put("Vector", "java.util.Vector");
+        JAVA_DEFAULT_CLASSES.put("RoleList", "java.util.RoleList");
+        JAVA_DEFAULT_CLASSES.put("AbstractMap", "java.util.AbstractMap");
+        JAVA_DEFAULT_CLASSES.put("Attributes", "java.util.Attributes");
+        JAVA_DEFAULT_CLASSES.put("AuthProvider", "java.util.AuthProvider");
+        JAVA_DEFAULT_CLASSES.put("ConcurrentHashMap", "java.util.ConcurrentHashMap");
+        JAVA_DEFAULT_CLASSES.put("ConcurrentSkipListMap", "java.util.ConcurrentSkipListMap");
+        JAVA_DEFAULT_CLASSES.put("EnumMap", "java.util.EnumMap");
+        JAVA_DEFAULT_CLASSES.put("HashMap", "java.util.HashMap");
+        JAVA_DEFAULT_CLASSES.put("Hashtable", "java.util.Hashtable");
+        JAVA_DEFAULT_CLASSES.put("IdentityHashMap", "java.util.IdentityHashMap");
+        JAVA_DEFAULT_CLASSES.put("LinkedHashMap", "java.util.LinkedHashMap");
+        JAVA_DEFAULT_CLASSES.put("PrinterStateReasons", "java.util.PrinterStateReasons");
+        JAVA_DEFAULT_CLASSES.put("Properties", "java.util.Properties");
+        JAVA_DEFAULT_CLASSES.put("Provider", "java.util.Provider");
+        JAVA_DEFAULT_CLASSES.put("RenderingHints", "java.util.RenderingHints");
+        JAVA_DEFAULT_CLASSES.put("SimpleBindings", "java.util.SimpleBindings");
+        JAVA_DEFAULT_CLASSES.put("TabularDataSupport", "java.util.TabularDataSupport");
+        JAVA_DEFAULT_CLASSES.put("TreeMap", "java.util.TreeMap");
+        JAVA_DEFAULT_CLASSES.put("UIDefaults", "java.util.UIDefaults");
+        JAVA_DEFAULT_CLASSES.put("WeakHashMap", "java.util.WeakHashMap");
     }
 
     public static Map<String, String> getJavaDefaultClasses() {
