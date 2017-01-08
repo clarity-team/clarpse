@@ -22,43 +22,43 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public final class Component implements Serializable {
 
-    private static final long        serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    private String                   start;
-    private String                   end;
+    private String start;
+    private String end;
     /**
      * Value of the component if applicable.
      */
-    private String                   value;
-    private String                   packageName;
+    private String value;
+    private String packageName;
     /**
      * Short name.
      */
-    private String                   name;
-    private String                   comment          = "";
+    private String name;
+    private String comment = "";
     /**
      * Source file path from which the component was derived.
      */
-    private String                   sourceFile;
+    private String sourceFile;
     @JsonInclude(Include.NON_EMPTY)
-    private List<String>             imports          = new ArrayList<String>();
+    private List<String> imports = new ArrayList<String>();
     @JsonInclude(Include.NON_EMPTY)
-    private Set<String>              modifiers        = new LinkedHashSet<String>();
-    private ComponentType            type;
+    private Set<String> modifiers = new LinkedHashSet<String>();
+    private ComponentType type;
     @JsonInclude(Include.NON_EMPTY)
-    private Set<ComponentInvocation> invocations      = new LinkedHashSet<ComponentInvocation>();
+    private Set<ComponentInvocation> invocations = new LinkedHashSet<ComponentInvocation>();
     /**
      * Formed by chaining parent components' names separated by a period.
      *
      * Eg) ClassA -> MethodB -> varC = "ClassA.MethodB.varC"
      */
-    private String                   componentName;
+    private String componentName;
     /**
      * List of all child components.
      */
     @JsonInclude(Include.NON_EMPTY)
-    private final ArrayList<String>  children         = new ArrayList<String>();
-    private String                   declarationTypeSnippet;
+    private final ArrayList<String> children = new ArrayList<String>();
+    private String declarationTypeSnippet;
 
     public Component(final Component component) {
         modifiers = component.modifiers();
@@ -261,5 +261,15 @@ public final class Component implements Serializable {
             modifiers.add(modifier.toLowerCase());
         }
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (((Component) o).uniqueName().equals(this.uniqueName()));
+    }
+
+    @Override
+    public int hashCode() {
+        return this.uniqueName().hashCode();
     }
 }
