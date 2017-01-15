@@ -1,6 +1,8 @@
 package com.clarity.parser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +23,14 @@ public enum Lang {
 
     static {
         namesMap.put(JAVA.value, JAVA);
+    }
+
+    public static List<Lang> supportedLanguages() {
+        List<Lang> langs = new ArrayList<Lang>();
+        for (Map.Entry<String, Lang> entry : namesMap.entrySet()) {
+            langs.add(entry.getValue());
+        }
+        return langs;
     }
 
     private String value;
