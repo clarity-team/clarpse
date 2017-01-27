@@ -16,7 +16,8 @@ public class ParserFactory extends AbstractFactory {
 
         case "java":
             return new ClarpseJavaParser();
-
+        case "javascript":
+            return new ClarpseClosureCompilerParser();
         default:
             throw new Exception("Could not find parsing tool for: " + parseType);
         }
