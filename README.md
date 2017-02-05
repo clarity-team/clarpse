@@ -70,7 +70,7 @@ The Component class is the heart of clarpse and represents any given construct o
 
 The following diagram represents the core workings of Clarpse. A Parser should implement the ClarpseParser interface which requires the implementing class to be able to convert a ParseRequestContent Object (A collection of source files of a given programming language) and return an OOPSourceCodeModel object representing the given codebase.
 
-![Clarity Views Diagram](http://api.clarityviews.io/v1/github/Zir0-93/clarpse?branch=master&file=Zir0-93-clarpse-501b062/clarpse/src/main/java/com/clarity/parser/ClarpseJavaParser.java&token=SfzKGvLCFyFadpZgT88BcuWekAoVy3N6H42IPbZaObyC0-A-_--9PAVKrYEiczvn2IglcU0E1xb0e9ekj5hqTw==)
+![Clarity Views Diagram](https://api.clarityviews.io/v1/github/Zir0-93/clarpse?branch=master&file=Zir0-93-clarpse-3e1e7b5/clarpse/src/main/java/com/clarity/parser/ClarpseJavaParser.java&token=8aPonI-ei8VgTTw_V0hMxG1y53JvSmdITJyTR9uETu4ZqaqTZrZ10OiyZ9J8OaWxt2-pfWF-eM_kqfeRaFuZTQ==)
 
 # Compile Sources
 If you have checkout the project from GitHub you can build the project with maven using:
