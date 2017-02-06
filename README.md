@@ -1,6 +1,6 @@
 # :rocket: Clarpse 
 
-[![Clarity Views Label](http://clarityviews.io/badge)](http://clarityviews.io/github/Zir0-93/clarpse?projectName=clarpse)
+[![Clarity Views Label](https://clarityviews.io/badge)](http://clarityviews.io/github/Zir0-93/clarpse?projectName=clarpse)
 [![Build Status](https://travis-ci.org/Zir0-93/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
 [![codecov](https://codecov.io/gh/Zir0-93/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/Zir0-93/clarpse)
 
