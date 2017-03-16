@@ -1,20 +1,13 @@
 package com.clarity.parser;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.clarity.AbstractFactory;
 import com.clarity.FactoryProducer;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
  * Entry point into Clarpse.
- *
- * @author Muntazir Fadhel
  */
 public class ClarpseProject {
-
-	private static final Map<String, String> PARSE_TYPE_MAP = new HashMap<String, String>();
 
 	private final ParseRequestContent rawData;
 

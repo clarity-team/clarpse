@@ -40,7 +40,7 @@ public class ClarpseJavaParser implements ClarpseParser {
             };
 
             final ExecutorService executor = Executors.newSingleThreadExecutor();
-            final Future future = executor.submit(parseFile);
+            final Future<?> future = executor.submit(parseFile);
             executor.shutdown();
 
             try {
@@ -54,7 +54,7 @@ public class ClarpseJavaParser implements ClarpseParser {
             }
             if (!executor.isTerminated()) {
                 executor.shutdownNow(); // If you want to stop the code that
-                                        // hasn't finished.
+                // hasn't finished.
             }
         }
         return srcModel;

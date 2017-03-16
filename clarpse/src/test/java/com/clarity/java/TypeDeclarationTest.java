@@ -9,12 +9,13 @@ import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.RawFile;
+import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
 public class TypeDeclarationTest {
 
-	@Test
+    @Test
     public void testFieldVarTypeDeclaration() throws Exception {
 
         final String code = "class Test { String fieldVar; }";
@@ -22,12 +23,12 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final ComponentInvocation invocation = (generatedSourceModel.getComponent("Test.fieldVar").componentInvocations(
-        		ComponentInvocations.DECLARATION).get(0));
+        final ComponentInvocation invocation = (generatedSourceModel.getComponent("Test.fieldVar")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0));
         assertTrue(invocation.invokedComponent().equals("java.lang.String"));
     }
-	
-	@Test
+
+    @Test
     public void testFieldVarTypeDeclarationListSize() throws Exception {
 
         final String code = "class Test { String fieldVar; }";
@@ -35,11 +36,24 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").componentInvocations(
-        		ComponentInvocations.DECLARATION).size() == 1);
+        assertTrue(generatedSourceModel.getComponent("Test.fieldVar")
+                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
     }
-	
-	@Test
+
+    @Test
+    public void testFieldVarDeclarationParameterizedTypesNotIncluded() throws Exception {
+
+        final String code = "package com; import org.slf4j.Logger;   import org.slf4j.LoggerFactory; public class Test {    private static final Logger LOGGER = LoggerFactory.getLogger(Test.class); }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        Component cmp = generatedSourceModel.getComponent("com.Test");
+        assertTrue(generatedSourceModel.getComponent("Test.fieldVar")
+                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
+    }
+
+    @Test
     public void testMethodParamTypeDeclaration() throws Exception {
 
         final String code = "class Test { void method(String s1, int s2){} }";
@@ -47,13 +61,15 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s1").componentInvocations(
-        		ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("java.lang.String"));
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s2").componentInvocations(
-        		ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("java.lang.Integer"));
+        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s1")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .equals("java.lang.String"));
+        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s2")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .equals("java.lang.Integer"));
     }
-	
-	@Test
+
+    @Test
     public void testMethodParamTypeDeclarationListSize() throws Exception {
 
         final String code = "class Test { void method(String s1, int s2){} }";
@@ -61,13 +77,13 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s1").componentInvocations(
-        		ComponentInvocations.DECLARATION).size() == 1);
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s2").componentInvocations(
-        		ComponentInvocations.DECLARATION).size() == 1);
+        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s1")
+                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
+        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s2")
+                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
     }
-	
-	@Test
+
+    @Test
     public void testMethodLocalVarTypeDeclaration() throws Exception {
 
         final String code = "class Test { void method(){ String s; } }";
@@ -75,11 +91,12 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method().s").componentInvocations(
-        		ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("java.lang.String"));
+        assertTrue(generatedSourceModel.getComponent("Test.method().s")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .equals("java.lang.String"));
     }
-	
-	@Test
+
+    @Test
     public void testMethodLocalVarTypeDeclarationListSize() throws Exception {
 
         final String code = "class Test { void method(){ String s; } }";
@@ -87,7 +104,7 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method().s").componentInvocations(
-        		ComponentInvocations.DECLARATION).size() == 1);
+        assertTrue(generatedSourceModel.getComponent("Test.method().s")
+                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
     }
 }

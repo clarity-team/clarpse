@@ -1,0 +1,11 @@
+class Polygon {
+  constructor(height, width) {}
+  logWidth() {}
+  set width(value) {}
+  get height(value) {}
+}
+
+/**
+   * Abstract callback to visit all nodes but not traverse into function
+   * bodies.
+   */

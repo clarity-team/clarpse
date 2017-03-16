@@ -68,12 +68,12 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
  */
 public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
-    private final Stack<Component>                            componentStack    = new Stack<Component>();
-    private final ArrayList<String>                           currentImports    = new ArrayList<String>();
-    private String                                            currentPkg        = "";
-    private final OOPSourceCodeModel                          srcModel;
-    private final Map<String, String>                         currentImportsMap = new HashMap<String, String>();
-    private final RawFile                                     file;
+    private final Stack<Component> componentStack = new Stack<Component>();
+    private final ArrayList<String> currentImports = new ArrayList<String>();
+    private String currentPkg = "";
+    private final OOPSourceCodeModel srcModel;
+    private final Map<String, String> currentImportsMap = new HashMap<String, String>();
+    private final RawFile file;
     // key = required component name, value = blocked invocation source
     private volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources;
 
@@ -322,8 +322,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     @Override
     public final void visit(final EnumConstantDeclaration ctx, Object arg) {
 
-        final Component enumConstCmp = createComponent(ctx,
-                OOPSourceModelConstants.ComponentType.ENUM_CONSTANT);
+        final Component enumConstCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM_CONSTANT);
         enumConstCmp.setName(ctx.getName());
         enumConstCmp.setComponentName(generateComponentName(ctx.getName()));
         pointParentsToGivenChild(enumConstCmp);
@@ -410,8 +409,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     @Override
     public final void visit(final ConstructorDeclaration ctx, Object arg) {
 
-        final Component currMethodCmp = createComponent(ctx,
-                OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
+        final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
 
         currMethodCmp.setValue("void");
 
@@ -526,7 +524,8 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
         super.visit(ctx, arg);
 
-        for (final VariableDeclarator copy : ctx.getVars()) {
+        int numVars = ctx.getVars().size();
+        for (int i = 0; i < numVars; i++) {
             completeComponent();
         }
     }
@@ -566,7 +565,8 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
             }
             super.visit(ctx, arg);
 
-            for (final VariableDeclarator copy : ctx.getVariables()) {
+            int numVars = ctx.getVariables().size();
+            for (int i = 0; i < numVars; i++) {
                 completeComponent();
             }
         }
@@ -735,13 +735,5 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                 }
             }
         }
-    }
-
-    private int getArgumentsSize(MethodCallExpr ctx) {
-        int invocationArguments = 0;
-        if (ctx.getArgs() != null) {
-            invocationArguments = ctx.getArgs().size();
-        }
-        return invocationArguments;
     }
 }
