@@ -8,7 +8,9 @@ import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.google.javascript.jscomp.AbstractCompiler;
 import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.CompilerPass;
+import com.google.javascript.jscomp.JsAst;
 import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.SourceFile;
 import com.google.javascript.jscomp.NodeTraversal.AbstractPostOrderCallback;
@@ -17,8 +19,7 @@ import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
 
 /**
- * Supports ES6+, based on google's closure compiler.
- *
+ * Listener for JavaScript ES6+ source files, based on google's closure compiler.
  */
 public class JavaScriptListener implements CompilerPass {
 
@@ -35,34 +36,28 @@ public class JavaScriptListener implements CompilerPass {
 	}
 
 	public void populateSourceModel() {
-		Node script = new Node(Token.SCRIPT);
-	    script.setStaticSourceFile(
-	        SourceFile.fromCode(file.name(), file.content()));
-	    script.setInputId(new InputId(file.name()));
-	    
-		process(null, script);
+		Compiler compiler = new Compiler();
+        CompilerOptions options = new CompilerOptions();
+        options.setIdeMode(true);
+        compiler.initOptions(options);
+        Node root = new JsAst(SourceFile.fromCode(this.file.name(), this.file.content())).getAstRoot(compiler);
+        NodeTraversal.traverseEs6(compiler, root, new Traversal());
 	}
 
 	@Override
-	public void process(Node externs, Node root) {
-
-		AbstractCompiler compiler = new Compiler();
-		NodeTraversal.traverseEs6(compiler, root, new Traversal());
-	}
+	public void process(Node externs, Node root) {}
 
 	private class Traversal extends AbstractPostOrderCallback {
 		@Override
 		public void visit(NodeTraversal t, Node n, Node parent) {
 			if (n.isClass()) {
-				System.out.println("Were in business!");
+				System.out.println(n.getFirstChild().getString());
 			}
-			
-			if (n.isVar()) {
-				System.out.println("Were in business!");
+			if (n.isMemberFunctionDef() || n.isGetterDef() || n.isSetterDef()) {
+				System.out.println(n.getString());
 			}
-			
-			if (n.isScript()) {
-				visit(t, n, parent);
+			if (n.isFunction()) {
+				System.out.println(n.getFirstChild().getString());
 			}
 		}
 	}

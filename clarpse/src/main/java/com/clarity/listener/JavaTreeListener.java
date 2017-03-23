@@ -63,8 +63,6 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
  * As the parse tree is developed by JavaParser, we add listener methods to
  * procedurally capture important information during this process and populate
  * our Source Code Model.
- *
- * @author Muntazir Fadhel
  */
 public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
