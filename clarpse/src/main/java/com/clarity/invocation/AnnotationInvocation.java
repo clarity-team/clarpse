@@ -12,6 +12,7 @@ import java.util.Set;
 public class AnnotationInvocation extends ComponentInvocation implements Serializable {
 
     private static final long                            serialVersionUID = 4146299386492074733L;
+    @SuppressWarnings("unused")
     private final String                                 type             = "annotation";
     private List<Entry<String, HashMap<String, String>>> annotations      = new ArrayList<Map.Entry<String, HashMap<String, String>>>();
 

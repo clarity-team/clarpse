@@ -1,12 +1,21 @@
 package com.clarity;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.clarity.parser.Lang;
+import com.clarity.parser.ParseRequestContent;
+import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,9 +25,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
-/**
- * @author Muntazir Fadhel
- */
+@SuppressWarnings("deprecation")
 public final class ClarpseUtil {
 
     public static final int   BUFFER_SIZE = 4096;
@@ -93,5 +100,51 @@ public final class ClarpseUtil {
             parent = map.get(currParentClassName);
         }
         return parent;
+    }
+
+    private static List<String> getResourceFiles(String path) throws IOException {
+        List<String> filenames = new ArrayList<>();
+
+        try (InputStream in = getResourceAsStream(path);
+                BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            String resource;
+
+            while ((resource = br.readLine()) != null) {
+                filenames.add(resource);
+            }
+        }
+
+        return filenames;
+    }
+
+    private static InputStream getResourceAsStream(String resource) {
+        final InputStream in = getContextClassLoader().getResourceAsStream(resource);
+
+        return in == null ? ClarpseUtil.class.getResourceAsStream(resource) : in;
+    }
+
+    private static ClassLoader getContextClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
+
+    public static ParseRequestContent javaParseRequestContentObjFromResourceDir(String dir) throws IOException {
+
+        ParseRequestContent req = new ParseRequestContent(Lang.JAVA);
+        List<String> fileNames = getResourceFiles(dir);
+        for (String s : fileNames) {
+            req.insertFile(
+                    new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
+        }
+        return req;
+    }
+
+    public static ParseRequestContent parseRequestContentObjFromResourceDir(String dir, Lang java) throws IOException {
+
+        ParseRequestContent req = new ParseRequestContent(java);
+        List<String> fileNames = getResourceFiles(dir);
+        for (String s : fileNames) {
+            req.insertFile(new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
+        }
+        return req;
     }
 }
