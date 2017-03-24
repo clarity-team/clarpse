@@ -1,10 +1,10 @@
 # :rocket: Clarpse 
 
-[![Clarity Views Label](http://clarityviews.io/badge)](http://clarityviews.io/github/Zir0-93/clarpse?projectName=clarpse)
+[![Clarity Views Label](https://clarityviews.io/badge)](https://clarityviews.io/github/Zir0-93/clarpse?projectName=clarpse)
 [![Build Status](https://travis-ci.org/Zir0-93/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
 [![codecov](https://codecov.io/gh/Zir0-93/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/Zir0-93/clarpse)
 
-[Clarpse](http://mfadhel.com/tech/clarpse) is a lightweight polyglot source code analysis tool built using ANTLRv4. Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable release.
+[Clarpse](http://mfadhel.com/2016/clarpse/) is a lightweight polyglot source code analysis tool. Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable release.
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
@@ -70,7 +70,7 @@ The Component class is the heart of clarpse and represents any given construct o
 
 The following diagram represents the core workings of Clarpse. A Parser should implement the ClarpseParser interface which requires the implementing class to be able to convert a ParseRequestContent Object (A collection of source files of a given programming language) and return an OOPSourceCodeModel object representing the given codebase.
 
-![Clarity Views Diagram](http://api.clarityviews.io/v1/github/Zir0-93/clarpse?branch=master&file=Zir0-93-clarpse-c8b45f9/clarpse/src/main/java/com/clarity/parser/ClarpseJavaParser.java&token=4NC_zv9M36_VPQekqcdRbpD811LREFEW2KaxDfOimmdQ7J5LF7x--R15EZw-7E6oym7UqY_0HrcOhVQeu8P3Pw==)
+![Clarity Views Diagram](https://api.clarityviews.io/v1/github/Zir0-93/clarpse?branch=master&file=Zir0-93-clarpse-fa61ccb/clarpse/src/main/java/com/clarity/parser/ClarpseJavaParser.java&id=3152027)
 
 # Compile Sources
 If you have checkout the project from GitHub you can build the project with maven using:
