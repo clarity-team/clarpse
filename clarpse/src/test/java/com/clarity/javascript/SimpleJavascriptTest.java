@@ -13,7 +13,7 @@ public class SimpleJavascriptTest {
 	@Test
 	public void testClassHasMethodChild() throws Exception {
 
-		final String code = "class Polygon { constructor(height, width) { this.width = width; this.height = height; } }";
+		final String code = "class Polygon { constructor(height, width) { this.width = width; this.height = height; } testMethod() {} function methodCakes(){}}";
 		final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
 		rawData.insertFile(new RawFile("polygon.js", code));
 		final ClarpseProject parseService = new ClarpseProject(rawData);
