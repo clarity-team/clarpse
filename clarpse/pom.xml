@@ -106,11 +106,6 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>com.clarity.parser.ParseService</mainClass>
-						</manifest>
-					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
@@ -134,7 +129,7 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
-							<excludes>com/zir0/clarity/core/tests</excludes>
+							<excludes>com/clarity/test</excludes>
 							<failOnViolation>true</failOnViolation>
 							<configLocation>${project.basedir}/src/main/resources/clarityparsecheckstyleconfig.xml</configLocation>
 							<violationSeverity>warning</violationSeverity>

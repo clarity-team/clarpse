@@ -28,9 +28,9 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 @SuppressWarnings("deprecation")
 public final class ClarpseUtil {
 
-    public static final int   BUFFER_SIZE = 4096;
+    public static final int BUFFER_SIZE = 4096;
 
-    static final ObjectMapper JSON_MAPPER  = new ObjectMapper();;
+    static final ObjectMapper JSON_MAPPER = new ObjectMapper();;
     static {
         JSON_MAPPER.setSerializationInclusion(Include.NON_NULL);
         JSON_MAPPER.registerModule(new AfterburnerModule());
@@ -120,7 +120,11 @@ public final class ClarpseUtil {
     private static InputStream getResourceAsStream(String resource) {
         final InputStream in = getContextClassLoader().getResourceAsStream(resource);
 
-        return in == null ? ClarpseUtil.class.getResourceAsStream(resource) : in;
+        if (in == null) {
+            return ClarpseUtil.class.getResourceAsStream(resource);
+        } else {
+            return in;
+        }
     }
 
     private static ClassLoader getContextClassLoader() {
@@ -132,8 +136,7 @@ public final class ClarpseUtil {
         ParseRequestContent req = new ParseRequestContent(Lang.JAVA);
         List<String> fileNames = getResourceFiles(dir);
         for (String s : fileNames) {
-            req.insertFile(
-                    new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
+            req.insertFile(new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
         }
         return req;
     }

@@ -18,17 +18,11 @@ import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.TypeParameter;
-import com.clarity.invocation.sources.BindedInvocationSource;
-import com.clarity.invocation.sources.InvocationSource;
-import com.clarity.invocation.sources.InvocationSourceChain;
-import com.clarity.invocation.sources.MethodInvocationSourceChain;
-import com.clarity.invocation.sources.MethodInvocationSourceImpl;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
 import com.clarity.sourcemodel.OOPSourceModelConstants.AccessModifiers;
-import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -48,7 +42,6 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
@@ -72,21 +65,16 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     private final OOPSourceCodeModel srcModel;
     private final Map<String, String> currentImportsMap = new HashMap<String, String>();
     private final RawFile file;
-    // key = required component name, value = blocked invocation source
-    private volatile Map<String, List<InvocationSourceChain>> blockedInvocationSources;
 
     /**
      * @param srcModel
-     *            Source model to populate from the parsing of the given code
-     *            base.
+     *            Source model to populate from the parsing of the given code base.
      * @param file
      *            The path of the source file being parsed.
      */
-    public JavaTreeListener(final OOPSourceCodeModel srcModel, final RawFile file,
-            Map<String, List<InvocationSourceChain>> blockedInvocationSources) {
+    public JavaTreeListener(final OOPSourceCodeModel srcModel, final RawFile file) {
         this.srcModel = srcModel;
         this.file = file;
-        this.blockedInvocationSources = blockedInvocationSources;
     }
 
     public void populateModel() throws IOException {
@@ -132,14 +120,6 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                 }
             }
             srcModel.insertComponent(completedCmp);
-            final List<InvocationSourceChain> blockedSources = blockedInvocationSources.get(completedCmp.uniqueName());
-            if (blockedSources != null) {
-                final List<InvocationSourceChain> blockedSourcesCopy = new ArrayList<InvocationSourceChain>(
-                        blockedSources);
-                for (final InvocationSourceChain src : blockedSourcesCopy) {
-                    src.process();
-                }
-            }
         }
     }
 
@@ -625,102 +605,6 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
             currCmp.insertComponentInvocation(new TypeDeclaration(resolveType(ctx.toString()), ctx.getBegin().line));
             componentStack.push(currCmp);
         }
-    }
-
-    @Override
-    public final void visit(MethodCallExpr ctx, Object arg) {
-        if (!componentStack.isEmpty()) {
-            final Component currCmp = componentStack.peek();
-            final List<InvocationSource> methodSources = new ArrayList<InvocationSource>();
-            final List<Component> invoComponents = new ArrayList<Component>();
-            invoComponents.addAll(componentStack);
-            invoComponents.add(currCmp);
-            while (ctx.getScope() != null && ctx.getScope() instanceof MethodCallExpr) {
-
-                methodSources.add(0,
-                        new BindedInvocationSource(new MethodInvocationSourceImpl("", ctx.getNameExpr().getName(),
-                                ctx.getBegin().line, ctx.getArgs().size(), srcModel, blockedInvocationSources),
-                                invoComponents));
-                ctx = (MethodCallExpr) ctx.getScope();
-            }
-
-            methodSources.add(0,
-                    new BindedInvocationSource(new MethodInvocationSourceImpl(
-                            retrieveContainingClassName(ctx.getScope(), ctx.getNameExpr().getName()),
-                            ctx.getNameExpr().getName(), ctx.getBegin().line, ctx.getArgs().size(), srcModel,
-                            blockedInvocationSources), invoComponents));
-            final MethodInvocationSourceChain methodChain = new MethodInvocationSourceChain(methodSources, srcModel,
-                    blockedInvocationSources);
-            methodChain.process();
-        }
-        super.visit(ctx, arg);
-    }
-
-    private String retrieveContainingClassName(Expression expression, String methodName) {
-
-        String containingClassName = "";
-
-        // local method call..
-        if (expression == null || expression.toStringWithoutComments().equals("this")) {
-            final List<ComponentType> baseTypes = new ArrayList<ComponentType>();
-            baseTypes.add(ComponentType.CLASS);
-            baseTypes.add(ComponentType.INTERFACE);
-            baseTypes.add(ComponentType.ENUM);
-            containingClassName = newestStackComponent(baseTypes).uniqueName();
-        } else if (methodName.equals("super")) {
-            final List<ComponentType> baseTypes = new ArrayList<ComponentType>();
-            baseTypes.add(ComponentType.CLASS);
-            baseTypes.add(ComponentType.INTERFACE);
-            baseTypes.add(ComponentType.ENUM);
-            containingClassName = newestStackComponent(baseTypes).componentInvocations(ComponentInvocations.EXTENSION)
-                    .get(0).invokedComponent();
-        } else {
-            final String name = expression.toStringWithoutComments();
-            // variable or static method call..
-            final Component variableComponent = findLocalSourceFileComponent(name);
-            if (variableComponent != null && variableComponent.name() != null) {
-                final List<ComponentInvocation> typeInstantiations = variableComponent
-                        .componentInvocations(ComponentInvocations.DECLARATION);
-                if (!typeInstantiations.isEmpty()) {
-                    containingClassName = typeInstantiations.get(0).invokedComponent();
-                }
-            } else {
-                final String text = name;
-                if (text.contains(".")) {
-                    containingClassName = text;
-                } else {
-                    containingClassName = resolveType(text);
-                }
-            }
-        }
-        return containingClassName;
-    }
-
-    private Component newestStackComponent(List<ComponentType> possibleTypes) {
-
-        Component newestComponent = new Component();
-        final Iterator<Component> iter = componentStack.iterator();
-        while (iter.hasNext()) {
-            final Component next = iter.next();
-            for (final ComponentType cmpType : possibleTypes) {
-                if (next.componentType() == cmpType) {
-                    newestComponent = next;
-                }
-            }
-        }
-        return newestComponent;
-    }
-
-    private Component findLocalSourceFileComponent(String componentShortName) {
-
-        for (int i = componentStack.size() - 1; i >= 0; i--) {
-            for (final String childCmpName : componentStack.get(i).children()) {
-                if (childCmpName.endsWith("." + componentShortName)) {
-                    return srcModel.getComponent(childCmpName);
-                }
-            }
-        }
-        return new Component();
     }
 
     private void pointParentsToGivenChild(Component childCmp) {
