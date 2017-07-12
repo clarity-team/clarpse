@@ -132,7 +132,6 @@ public final class Component implements Serializable {
     public void insertComponentInvocation(final ComponentInvocation ref) {
         for (final ComponentInvocation invocation : invocations) {
             if (invocation.invokedComponent().equals(ref.invokedComponent()) && invocation.getClass().isInstance(ref)) {
-                invocation.insertLineNums(ref.lines());
                 return;
             }
         }
