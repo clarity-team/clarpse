@@ -44,24 +44,15 @@ public class JavaScriptListener extends AbstractPreOrderCallback {
     private void completeComponent() {
         if (!componentStack.isEmpty()) {
             final Component completedCmp = componentStack.pop();
-            // include the processed component's invocations into its parent
-            // components
+            // bubble up the completing component's invocations to it's parent components
+            // that are currently on the stack
             for (final Component parentCmp : componentStack) {
-
                 final Iterator<ComponentInvocation> invocationIterator = completedCmp.invocations().iterator();
                 while (invocationIterator.hasNext()) {
-
-                    // We do not want to bubble up type implementations and
-                    // extensions
-                    // to the parent component because a child class for example
-                    // could
-                    // extend its containing class component. Without this check
-                    // this would
-                    // cause the parent class to have a type extension to itself
-                    // which will
-                    // cause problems down the line.
                     ComponentInvocation invocation = invocationIterator.next();
                     if (!(invocation instanceof TypeExtension || invocation instanceof TypeImplementation)) {
+                        // if the invocation is not a class extension or implementation,
+                        // bubble it up!
                         parentCmp.insertComponentInvocation(invocation);
                     }
                 }
@@ -107,7 +98,8 @@ public class JavaScriptListener extends AbstractPreOrderCallback {
     }
 
     /**
-     * Creates a new component.
+     * Creates a new component representing the given node object, see
+     * {@link Component}.
      */
     private Component createComponent(Node node, ComponentType componentType) {
         final Component newCmp = new Component();
