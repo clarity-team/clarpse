@@ -75,7 +75,6 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     public JavaTreeListener(final OOPSourceCodeModel srcModel, final RawFile file) {
         this.srcModel = srcModel;
         this.file = file;
-        System.out.println("\nParsing New File: " + file.name() + "\n");
     }
 
     public void populateModel() throws IOException {
@@ -149,16 +148,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         newCmp.setComponentType(componentType);
         if (node.getComment() != null) {
             newCmp.setComment(node.getComment().toString());
-            // set the start line of the component to include the comment
-            // if the comment is before the annotations
-            if (node.getComment().getBegin().line < node.getBegin().line) {
-                newCmp.setStartLine(String.valueOf(node.getComment().getBegin().line));
-            }
         }
-        if (newCmp.startLine() == null) {
-            newCmp.setStartLine(String.valueOf(node.getBegin().line));
-        }
-        newCmp.setEndLine(String.valueOf(node.getEnd().line));
         newCmp.setSourceFilePath(file.name());
         return newCmp;
     }
