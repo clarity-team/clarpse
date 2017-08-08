@@ -12,7 +12,7 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
-public class JavascriptClarpseTest {
+public class JavascriptParseTest {
 
     @Test
     public void testIfParsedES6ClassExists() throws Exception {
@@ -46,6 +46,17 @@ public class JavascriptClarpseTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon")
                 && generatedSourceModel.containsComponent("LolCakes"));
+    }
+
+    @Test
+    public void testIfParsedES6ClassExpressionComponentExists() throws Exception {
+
+        final String code = "const test = class Polygon {};";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("Polygon"));
     }
 
     @Test
@@ -260,6 +271,28 @@ public class JavascriptClarpseTest {
     }
 
     @Test
+    public void testIfParsedES6StaticInstanceMethodAccessModifier() throws Exception {
+
+        final String code = "class Polygon { static say() {} }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").modifiers().contains("static"));
+    }
+
+    @Test
+    public void testIfParsedES6StaticConstantModifier() throws Exception {
+
+        final String code = "class Polygon { static constant1 = 33; }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.constant1").modifiers().contains("static"));
+    }
+
+    @Test
     public void testIfParsedES6AsyncInstanceMethodExists() throws Exception {
 
         final String code = "class Polygon { static say() {} }";
@@ -396,6 +429,20 @@ public class JavascriptClarpseTest {
     }
 
     @Test
+    public void testIfParsedES6FieldVariableMultipleComponentTypes() throws Exception {
+
+        final String code = "class Polygon { constructor() {this.height = 4; this.width = false;} }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("Polygon.height")
+                && generatedSourceModel.containsComponent("Polygon.width"));
+
+        assertTrue(generatedSourceModel.getComponent("Polygon.width").declarationTypeSnippet().equals("Boolean"));
+    }
+
+    @Test
     public void testIfParsedES6FieldVariableIsChildOfClass() throws Exception {
 
         final String code = "class Polygon { constructor() {this.height = 4;} }";
@@ -473,13 +520,163 @@ public class JavascriptClarpseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableTypeDeclaration() throws Exception {
+    public void testIfParsedES6FieldVariableTypeInstantiation() throws Exception {
 
-        final String code = "class Polygon { constructor(height) {this.height = new React();} }";
+        final String code = "class React() {} class Polygon { constructor(height) {this.height = new React();} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").declarationTypeSnippet().equals("Boolean"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").declarationTypeSnippet().equals("React"));
+    }
+
+    @Test
+    public void testIfParsedES6FieldVariableTypeInstantiationWithValues() throws Exception {
+
+        final String code = "class React() {} class Polygon { constructor(height) {this.height = new React(2,4,\"fe\");} }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").declarationTypeSnippet().equals("React"));
+    }
+
+    @Test
+    public void testIfParsedES6LocalVariableExists() throws Exception {
+
+        final String code = "class React() {} class Polygon { say() { var test = new React(); }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("Polygon.say.test"));
+    }
+
+    @Test
+    public void testIfParsedES6LocalVariableComponentType() throws Exception {
+
+        final String code = "class Polygon { say() { var test = new React(); }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").componentType() == ComponentType.LOCAL);
+    }
+
+    @Test
+    public void testIfParsedES6LocalLetVariableComponentType() throws Exception {
+
+        final String code = "class Polygon { say() { let test = new React(); }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").componentType() == ComponentType.LOCAL);
+    }
+
+    @Test
+    public void testIfParsedES6LocalLetVariableComponentExists() throws Exception {
+
+        final String code = "class Polygon { say() { let test = new React(); }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("Polygon.say.test"));
+    }
+
+    @Test
+    public void testIfParsedES6LocalLetVariableTypeDeclaration() throws Exception {
+
+        final String code = "class Polygon { say() { let test = new React(); }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test")
+                .componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
+    }
+
+    @Test
+    public void testIfParsedES6LocalVariableIsChildOfParentMethod() throws Exception {
+
+        final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").children().size() == 2);
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").children().get(1).equals("Polygon.say.lol"));
+    }
+
+    @Test
+    public void testIfParsedES6LocalVariableTypeInstantiation() throws Exception {
+
+        final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test")
+                .componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
+    }
+
+    @Test
+    public void testIfParsedMultipleES6LocalVariables() throws Exception {
+
+        final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("Polygon.say.test")
+                && generatedSourceModel.containsComponent("Polygon.say.lol"));
+    }
+
+    @Test
+    public void testIfParsedES6LocalVariableQualifiedTypeInstantiation() throws Exception {
+
+        final String code = "class Polygon { say() { var test = new React.test(); var lol = 4; }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("React"));
+    }
+
+    @Test
+    public void testIfParsedES6ConstructorLocalVar() throws Exception {
+
+        final String code = "class Polygon { constructor() {  this.width = 4;  var test = new React(); } }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.test"));
+    }
+
+    @Test
+    public void testIfParsedES6MethodTypeDeclaration() throws Exception {
+
+        final String code = "class Polygon { constructor() {  new React().test(); } }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.constructor")
+                .componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
+    }
+
+    @Test
+    public void testIfParsedES6MethodTypeDeclarationFromStaticMethodCall() throws Exception {
+
+        final String code = "import React from '/test.js'; class Polygon { constructor() {  React.test(); } }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.constructor")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("React"));
     }
 }

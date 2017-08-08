@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Stack;
 
 import com.clarity.invocation.ComponentInvocation;
+import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
+import com.clarity.invocation.TypeInstantiation;
 import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
@@ -39,7 +41,7 @@ public class JavaScriptListener implements Callback {
 
         String baseCmpName = null;
 
-        if (NodeUtil.isClassDeclaration(n)) {
+        if (n.isClass()) {
             baseCmpName = n.getFirstChild().getString();
         } else if (n.isMemberFunctionDef()) {
             baseCmpName = n.getString();
@@ -71,11 +73,11 @@ public class JavaScriptListener implements Callback {
 
         Component cmp;
 
-        if (NodeUtil.isClassDeclaration(n)) {
+        if (n.isClass()) {
             System.out.println("Entering the " + n.getFirstChild().getString() + " class");
             cmp = createComponent(ComponentType.CLASS, n);
             cmp.setComponentName(generateComponentName(n.getFirstChild().getString()));
-            cmp.setName(n.getFirstChild().getString());
+            cmp.setName(generateComponentName(n.getFirstChild().getString()));
             pointParentsToGivenChild(cmp);
             if (n.getSecondChild().isName()) {
                 // this class extends another class
@@ -96,6 +98,10 @@ public class JavaScriptListener implements Callback {
                 cmp = createComponent(ComponentType.METHOD, n);
                 cmp.setComponentName(generateComponentName(n.getString()));
                 cmp.setName(n.getString());
+                if (n.isStaticMember()) {
+                    cmp.insertAccessModifier("static");
+                }
+                cmp.insertAccessModifier("public");
                 pointParentsToGivenChild(cmp);
                 componentStack.push(cmp);
             }
@@ -106,6 +112,10 @@ public class JavaScriptListener implements Callback {
             cmp.setComponentName(generateComponentName(cmpName));
             cmp.setName(cmpName);
             pointParentsToGivenChild(cmp);
+            if (n.isStaticMember()) {
+                cmp.insertAccessModifier("static");
+            }
+            cmp.insertAccessModifier("public");
             componentStack.push(cmp);
         } else if (n.isSetterDef()) {
             String cmpName = "set_" + n.getString();
@@ -113,6 +123,10 @@ public class JavaScriptListener implements Callback {
             cmp = createComponent(ComponentType.METHOD, n);
             cmp.setComponentName(generateComponentName(cmpName));
             cmp.setName(cmpName);
+            cmp.insertAccessModifier("public");
+            if (n.isStaticMember()) {
+                cmp.insertAccessModifier("static");
+            }
             pointParentsToGivenChild(cmp);
             componentStack.push(cmp);
         } else if (n.isParamList()) {
@@ -138,30 +152,73 @@ public class JavaScriptListener implements Callback {
             }
             for (Component paramCmp : generatedParamComponents) {
                 componentStack.push(paramCmp);
+                completeComponent();
             }
-        } else if (n.isAssign()) {
+        } else if (n.isAssign() && n.getFirstChild().getFirstChild().isThis()
+                && newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR) {
+            String fieldVarname = n.getFirstChild().getSecondChild().getString();
+            System.out.println("Found field variable: " + fieldVarname);
+            cmp = createComponent(ComponentType.FIELD, n);
+            cmp.setComponentName(generateComponentName(fieldVarname, ComponentType.FIELD));
+            cmp.setName(fieldVarname);
+            cmp.insertAccessModifier("private");
+            processVariableAssignment(cmp, n.getSecondChild());
+            try {
+                pointParentsToGivenChild(cmp);
+            } catch (Exception e) {
+                e.printStackTrace();
+                // don't add this component to the stack..
+                return true;
+            }
+            componentStack.push(cmp);
+            completeComponent();
 
-            // check is this is a field variable assignment
-            if (n.getFirstChild().getFirstChild().isThis()
-                    && newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR) {
-                String fieldVarname = n.getFirstChild().getSecondChild().getString();
-                System.out.println("Found field variable: " + fieldVarname);
-                cmp = createComponent(ComponentType.FIELD, n);
-                cmp.setComponentName(generateComponentName(fieldVarname, ComponentType.FIELD));
-                cmp.setName(fieldVarname);
-                cmp.setValue(NodeUtil.getStringValue(n.getSecondChild()));
-                cmp.setDeclarationTypeSnippet(declarationSnippet(n.getSecondChild().getToken()));
-                try {
-                    pointParentsToGivenChild(cmp);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // don't add this component to the stack..
-                    return true;
-                }
-                componentStack.push(cmp);
-            }
+        } else if ((n.isVar() || n.isLet()) && (newestMethodComponent().componentType() == ComponentType.METHOD
+                || newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR)) {
+            String localVarName = n.getFirstChild().getString();
+            System.out.println("Found local variable: " + localVarName);
+            cmp = createComponent(ComponentType.LOCAL, n);
+            cmp.setComponentName(generateComponentName(localVarName));
+            cmp.setName(localVarName);
+            processVariableAssignment(cmp, n.getFirstChild().getFirstChild());
+            pointParentsToGivenChild(cmp);
+            componentStack.push(cmp);
+            completeComponent();
+        } else if (n.isNew()) {
+            processVariableAssignment(newestMethodComponent(), n);
+        } else if (n.isName() && !n.getString().isEmpty()
+                && (NodeUtil.isImportedName(n) || Character.isUpperCase(n.getString().codePointAt(0)))
+                && !componentStack.isEmpty()) {
+            Component latestCmp = componentStack.pop();
+            latestCmp.insertComponentInvocation(new TypeDeclaration(n.getString()));
+            componentStack.push(latestCmp);
+        } else if (n.isGetProp() && n.getFirstChild().isName() && !n.getFirstChild().getString().isEmpty()
+                && (NodeUtil.isImportedName(n.getFirstChild())
+                        || Character.isUpperCase(n.getFirstChild().getString().codePointAt(0)))
+                && !componentStack.isEmpty()) {
+            Component latestCmp = componentStack.pop();
+            latestCmp.insertComponentInvocation(new TypeDeclaration(n.getFirstChild().getString()));
+            componentStack.push(latestCmp);
         }
         return true;
+    }
+
+    private void processVariableAssignment(Component cmp, Node assignmentNode) {
+        if (NodeUtil.isLiteralValue(assignmentNode, false)) {
+            cmp.setValue(NodeUtil.getStringValue(assignmentNode));
+            cmp.setDeclarationTypeSnippet(declarationSnippet(assignmentNode.getToken()));
+        } else if (assignmentNode.hasChildren() && assignmentNode.isNew()
+                && (assignmentNode.getFirstChild().isName() || assignmentNode.getFirstChild().isGetProp())) {
+            String invokedType;
+            if (assignmentNode.getFirstChild().isGetProp()) {
+                invokedType = assignmentNode.getFirstChild().getFirstChild().getString();
+                cmp.insertComponentInvocation(new TypeDeclaration(invokedType));
+            } else {
+                invokedType = assignmentNode.getFirstChild().getString();
+                cmp.insertComponentInvocation(new TypeInstantiation(invokedType));
+            }
+            cmp.setDeclarationTypeSnippet(invokedType);
+        }
     }
 
     private void completeComponent() {

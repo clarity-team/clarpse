@@ -14,6 +14,7 @@ import com.clarity.test.java.PackageAttributeTest;
 import com.clarity.test.java.TypeDeclarationTest;
 import com.clarity.test.java.TypeExtensionTest;
 import com.clarity.test.java.TypeImplementationTest;
+import com.clarity.test.javascript.JavascriptParseTest;
 
 /**
  * Clarpse's main test suite.
@@ -22,7 +23,8 @@ import com.clarity.test.java.TypeImplementationTest;
 @Suite.SuiteClasses({ ComponentExistTest.class, PackageAttributeTest.class, ComponentTypeTest.class,
         RawFileComparisonTest.class, ComponentSourceFilePathTest.class, AnnotationInvocationTest.class,
         TypeExtensionTest.class, TypeImplementationTest.class, TypeDeclarationTest.class, ChildComponentsTest.class,
-        AccessModifiersTest.class, CommentsParsingTest.class, InvocationInheritanceTest.class })
+        AccessModifiersTest.class, CommentsParsingTest.class, InvocationInheritanceTest.class,
+        JavascriptParseTest.class })
 public class ClarpseTest {
 
 }
