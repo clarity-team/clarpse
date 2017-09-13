@@ -65,7 +65,6 @@ An excellent way to get started is to look at Clarpe's unit tests.
     methodComponent.componentInvocations(ComponentInvocations.METHOD).get(0); // --> "com.foo.SampleClassB.fooMethod()"
 ```
 
-
 # Compile Sources
 If you have checkout the project from GitHub you can build the project with maven using:
 
@@ -75,17 +74,17 @@ If you have checkout the project from GitHub you can build the project with mave
 Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server using AWS.
 ```
 <repositories>
-		<repository>
-			<id>central</id>
-			<name>ip-172-31-28-11-releases</name>
-			<url>http://ec2-35-163-144-148.us-west-2.compute.amazonaws.com/artifactory/libs-release</url>
-		</repository>
-	</repositories>
+	<repository>
+		<id>central</id>
+		<name>ip-172-31-28-11-releases</name>
+		<url>http://ec2-35-163-144-148.us-west-2.compute.amazonaws.com/artifactory/libs-release</url>
+	</repository>
+</repositories>
  
  ...
  
 <dependencies>	 
-  <dependency>
+  	<dependency>
 		<groupId>com.clarityviews</groupId>
 		<artifactId>clarpse</artifactId>
 		<version>3.0.0</version>
