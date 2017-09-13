@@ -14,6 +14,7 @@ import com.clarity.test.java.PackageAttributeTest;
 import com.clarity.test.java.TypeDeclarationTest;
 import com.clarity.test.java.TypeExtensionTest;
 import com.clarity.test.java.TypeImplementationTest;
+import com.clarity.test.javascript.JavaScriptSmokeTest;
 import com.clarity.test.javascript.JavascriptParseTest;
 
 /**
@@ -24,7 +25,7 @@ import com.clarity.test.javascript.JavascriptParseTest;
         RawFileComparisonTest.class, ComponentSourceFilePathTest.class, AnnotationInvocationTest.class,
         TypeExtensionTest.class, TypeImplementationTest.class, TypeDeclarationTest.class, ChildComponentsTest.class,
         AccessModifiersTest.class, CommentsParsingTest.class, InvocationInheritanceTest.class,
-        JavascriptParseTest.class })
+        JavascriptParseTest.class, JavaScriptSmokeTest.class })
 public class ClarpseTest {
 
 }

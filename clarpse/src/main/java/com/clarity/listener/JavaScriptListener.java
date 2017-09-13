@@ -154,7 +154,7 @@ public class JavaScriptListener implements Callback {
                 componentStack.push(paramCmp);
                 completeComponent();
             }
-        } else if (n.isAssign() && n.getFirstChild().getFirstChild().isThis()
+        } else if (n.isAssign() && n.getFirstChild().hasChildren() && n.getFirstChild().getFirstChild().isThis()
                 && newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR) {
             String fieldVarname = n.getFirstChild().getSecondChild().getString();
             System.out.println("Found field variable: " + fieldVarname);
@@ -173,7 +173,7 @@ public class JavaScriptListener implements Callback {
             componentStack.push(cmp);
             completeComponent();
 
-        } else if ((n.isVar() || n.isLet()) && (newestMethodComponent().componentType() == ComponentType.METHOD
+        } else if (!componentStack.isEmpty() && (n.isVar() || n.isLet()) && (newestMethodComponent().componentType() == ComponentType.METHOD
                 || newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR)) {
             String localVarName = n.getFirstChild().getString();
             System.out.println("Found local variable: " + localVarName);
@@ -184,7 +184,7 @@ public class JavaScriptListener implements Callback {
             pointParentsToGivenChild(cmp);
             componentStack.push(cmp);
             completeComponent();
-        } else if (n.isNew()) {
+        } else if (!componentStack.isEmpty() && n.isNew()) {
             processVariableAssignment(newestMethodComponent(), n);
         } else if (n.isName() && !n.getString().isEmpty()
                 && (NodeUtil.isImportedName(n) || Character.isUpperCase(n.getString().codePointAt(0)))

@@ -106,7 +106,7 @@ public final class ClarpseUtil {
         List<String> filenames = new ArrayList<>();
 
         try (InputStream in = getResourceAsStream(path);
-                BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
             String resource;
 
             while ((resource = br.readLine()) != null) {

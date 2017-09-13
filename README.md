@@ -1,6 +1,5 @@
 # :rocket: Clarpse 
 
-[![Clarity Views Label](https://clarityviews.io/badge)](https://clarityviews.io/github/Zir0-93/clarpse?projectName=clarpse)
 [![Build Status](https://travis-ci.org/Zir0-93/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
 [![codecov](https://codecov.io/gh/Zir0-93/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/Zir0-93/clarpse)
 
@@ -10,6 +9,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 
 # Features
 
+ - Supports **Java** and **JavaScript** (ES6 and above)
  - Light weight
  - Performant
  - Easy to use
@@ -19,7 +19,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 # Terminology
 | Term                 | Definition                                                                                                                                                                  |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Component            | A language independant source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
+| Component            | A language independent source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
 |  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
 | Component Invocation | An invocation of an external component found in a source file, typically through type declaration, instantiation, extension, implementation, method invocations and so forth. |
 
@@ -64,13 +64,7 @@ An excellent way to get started is to look at Clarpe's unit tests.
     methodComponent.sourceFile();        // --> "foo.java"
     methodComponent.componentInvocations(ComponentInvocations.METHOD).get(0); // --> "com.foo.SampleClassB.fooMethod()"
 ```
-# Design
 
-The Component class is the heart of clarpse and represents any given construct of a source file (eg: Class, Interface, Method, Field, etc..). Furthermore, the OOPSourceCodeModel class represents a collection of such Components to represent a typical codebase. One can interact with these components in a OOPSourceCodeModel object in an object oriented manner to retrieve key information about the source code. The main challenge for Clarpse exists in parsing a given source file from any programming language and populating the polyglot OOPSourceCodeModel object. The benefit in this tool lies in the fact that this Object can be operated on in the same manner regarding of the original programming language used, check out [Clarity Views](http://clarityviews.io) to see Clarpse in action.
-
-The following diagram represents the core workings of Clarpse. A Parser should implement the ClarpseParser interface which requires the implementing class to be able to convert a ParseRequestContent Object (A collection of source files of a given programming language) and return an OOPSourceCodeModel object representing the given codebase.
-
-![Clarity Views Diagram](https://api.clarityviews.io/v1/github/Zir0-93/clarpse?branch=master&file=Zir0-93-clarpse-fa61ccb/clarpse/src/main/java/com/clarity/parser/ClarpseJavaParser.java&id=3152027)
 
 # Compile Sources
 If you have checkout the project from GitHub you can build the project with maven using:
@@ -94,7 +88,7 @@ Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server 
   <dependency>
 		<groupId>com.clarityviews</groupId>
 		<artifactId>clarpse</artifactId>
-		<version>2.5.4</version>
+		<version>3.0.0</version>
 	</dependency>
 </dependencies> 
  ```
