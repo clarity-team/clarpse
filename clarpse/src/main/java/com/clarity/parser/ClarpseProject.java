@@ -1,23 +1,14 @@
 package com.clarity.parser;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.clarity.AbstractFactory;
 import com.clarity.FactoryProducer;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
- * Entry point into Clarpse.
- *
- * @author Muntazir Fadhel
+ * Represents a project to be processed by Clarpse, serves as the entry point
+ * into Clarpse.
  */
 public class ClarpseProject {
-
-    private static final Map<String, String> PARSE_TYPE_MAP = new HashMap<String, String>();
-    static {
-        PARSE_TYPE_MAP.put("java", "java");
-    }
 
     private final ParseRequestContent rawData;
 
@@ -33,16 +24,21 @@ public class ClarpseProject {
 
     public OOPSourceCodeModel result() throws Exception {
 
-        validateParseType(rawData.getLanguage());
+        if (!validateParseType(rawData.getLanguage())) {
+            throw new IllegalArgumentException("The specified source language is not supported!");
+        }
         // parse the files!
         final OOPSourceCodeModel srcModel = parseRawData(rawData);
         return srcModel;
     }
 
-    private void validateParseType(final String parseType) throws IllegalArgumentException {
-
-        if (!PARSE_TYPE_MAP.containsKey(parseType)) {
-            throw new IllegalArgumentException("The specified source language is not supported!");
+    private boolean validateParseType(final String parseType) throws IllegalArgumentException {
+        boolean isValidLang = false;
+        for (Lang language : Lang.supportedLanguages()) {
+            if (language.value().equalsIgnoreCase(parseType)) {
+                isValidLang = true;
+            }
         }
+        return isValidLang;
     }
 }

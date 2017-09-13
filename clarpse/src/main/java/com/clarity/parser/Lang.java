@@ -17,12 +17,15 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum Lang {
 
-    JAVA("java", ".java");
+    JAVA("java", ".java"),
+    JAVASCRIPT("javascript", ".js");;
 
     private static Map<String, Lang> namesMap = new HashMap<String, Lang>(1);
 
     static {
         namesMap.put(JAVA.value, JAVA);
+        namesMap.put(JAVASCRIPT.value, JAVASCRIPT);
+
     }
 
     public static List<Lang> supportedLanguages() {

@@ -1,22 +1,17 @@
 package com.clarity.parser;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.clarity.invocation.sources.InvocationSourceChain;
 import com.clarity.listener.JavaTreeListener;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
  * JavaParser based parser.
- *
- * @author Muntazir Fadhel
  */
 public class ClarpseJavaParser implements ClarpseParser {
 
@@ -24,7 +19,6 @@ public class ClarpseJavaParser implements ClarpseParser {
     public final OOPSourceCodeModel extractParseResult(final ParseRequestContent rawData) throws Exception {
 
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-        final Map<String, List<InvocationSourceChain>> blockedInvocationSources = new HashMap<String, List<InvocationSourceChain>>();
 
         final List<RawFile> files = rawData.getFiles();
         for (final RawFile file : files) {
@@ -32,7 +26,7 @@ public class ClarpseJavaParser implements ClarpseParser {
                 @Override
                 public void run() {
                     try {
-                        new JavaTreeListener(srcModel, file, blockedInvocationSources).populateModel();
+                        new JavaTreeListener(srcModel, file).populateModel();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -40,7 +34,7 @@ public class ClarpseJavaParser implements ClarpseParser {
             };
 
             final ExecutorService executor = Executors.newSingleThreadExecutor();
-            final Future future = executor.submit(parseFile);
+            final Future<?> future = executor.submit(parseFile);
             executor.shutdown();
 
             try {
@@ -54,7 +48,7 @@ public class ClarpseJavaParser implements ClarpseParser {
             }
             if (!executor.isTerminated()) {
                 executor.shutdownNow(); // If you want to stop the code that
-                                        // hasn't finished.
+                // hasn't finished.
             }
         }
         return srcModel;

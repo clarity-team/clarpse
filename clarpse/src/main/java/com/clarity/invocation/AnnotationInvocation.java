@@ -7,21 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 public class AnnotationInvocation extends ComponentInvocation implements Serializable {
 
-    private static final long                            serialVersionUID = 4146299386492074733L;
-    private final String                                 type             = "annotation";
-    private List<Entry<String, HashMap<String, String>>> annotations      = new ArrayList<Map.Entry<String, HashMap<String, String>>>();
+    private static final long serialVersionUID = 4146299386492074733L;
+    @SuppressWarnings("unused")
+    private final String type = "annotation";
+    private List<Entry<String, HashMap<String, String>>> annotations = new ArrayList<Map.Entry<String, HashMap<String, String>>>();
 
     public List<Entry<String, HashMap<String, String>>> annotations() {
         return annotations;
     }
 
-    public AnnotationInvocation(final String invocationComponentName, final int lineNum,
+    public AnnotationInvocation(final String invocationComponentName,
             final SimpleEntry<String, HashMap<String, String>> annotation) {
-        super(invocationComponentName, lineNum);
+        super(invocationComponentName);
         annotations.add(annotation);
     }
 
@@ -29,9 +29,8 @@ public class AnnotationInvocation extends ComponentInvocation implements Seriali
         super();
     }
 
-    public AnnotationInvocation(String invokedComponent, Set<Integer> lines,
-            List<Entry<String, HashMap<String, String>>> annotations2) {
-        super(invokedComponent, lines);
+    public AnnotationInvocation(String invokedComponent, List<Entry<String, HashMap<String, String>>> annotations2) {
+        super(invokedComponent);
         annotations = annotations2;
     }
 
@@ -42,6 +41,6 @@ public class AnnotationInvocation extends ComponentInvocation implements Seriali
 
     @Override
     public Object clone() {
-        return new AnnotationInvocation(invokedComponent(), lines(), annotations);
+        return new AnnotationInvocation(invokedComponent(), annotations);
     }
 }

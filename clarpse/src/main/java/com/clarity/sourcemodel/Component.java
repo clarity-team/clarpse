@@ -24,8 +24,6 @@ public final class Component implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String start;
-    private String end;
     /**
      * Value of the component if applicable.
      */
@@ -69,8 +67,6 @@ public final class Component implements Serializable {
         componentName = component.componentName();
         packageName = component.packageName();
         value = component.value();
-        start = component.startLine();
-        end = component.endLine();
         sourceFile = component.sourceFile();
         comment = component.comment();
     }
@@ -80,22 +76,6 @@ public final class Component implements Serializable {
 
     public ArrayList<String> children() {
         return children;
-    }
-
-    public String startLine() {
-        return start;
-    }
-
-    public void setStartLine(final String startLine) {
-        start = startLine;
-    }
-
-    public String endLine() {
-        return end;
-    }
-
-    public void setEndLine(final String endLine) {
-        end = endLine;
     }
 
     public String uniqueName() {
@@ -132,7 +112,6 @@ public final class Component implements Serializable {
     public void insertComponentInvocation(final ComponentInvocation ref) {
         for (final ComponentInvocation invocation : invocations) {
             if (invocation.invokedComponent().equals(ref.invokedComponent()) && invocation.getClass().isInstance(ref)) {
-                invocation.insertLineNums(ref.lines());
                 return;
             }
         }
@@ -207,7 +186,9 @@ public final class Component implements Serializable {
 
     public String parentUniqueName() {
 
-        if (!type.isMethodComponent()) {
+        final int lastOpeningBracket = uniqueName().lastIndexOf("(");
+
+        if (lastOpeningBracket == -1 || !type.isMethodComponent()) {
             if (uniqueName().contains(".")) {
                 final int lastPeriod = uniqueName().lastIndexOf(".");
                 final String currParentClassName = uniqueName().substring(0, lastPeriod);
@@ -216,7 +197,6 @@ public final class Component implements Serializable {
                 throw new IllegalArgumentException("Cannot get parent of component: " + uniqueName());
             }
         } else {
-            final int lastOpeningBracket = uniqueName().lastIndexOf("(");
             final String methodComponentUniqueNameMinusParamters = uniqueName().substring(0, lastOpeningBracket);
             final int lastPeriod = methodComponentUniqueNameMinusParamters.lastIndexOf(".");
             final String currParentClassName = methodComponentUniqueNameMinusParamters.substring(0, lastPeriod);

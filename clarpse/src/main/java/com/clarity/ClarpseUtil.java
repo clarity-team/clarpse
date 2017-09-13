@@ -1,12 +1,21 @@
 package com.clarity;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.clarity.parser.Lang;
+import com.clarity.parser.ParseRequestContent;
+import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,14 +25,12 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
-/**
- * @author Muntazir Fadhel
- */
+@SuppressWarnings("deprecation")
 public final class ClarpseUtil {
 
-    public static final int   BUFFER_SIZE = 4096;
+    public static final int BUFFER_SIZE = 4096;
 
-    static final ObjectMapper JSON_MAPPER  = new ObjectMapper();;
+    static final ObjectMapper JSON_MAPPER = new ObjectMapper();;
     static {
         JSON_MAPPER.setSerializationInclusion(Include.NON_NULL);
         JSON_MAPPER.registerModule(new AfterburnerModule());
@@ -93,5 +100,54 @@ public final class ClarpseUtil {
             parent = map.get(currParentClassName);
         }
         return parent;
+    }
+
+    private static List<String> getResourceFiles(String path) throws IOException {
+        List<String> filenames = new ArrayList<>();
+
+        try (InputStream in = getResourceAsStream(path);
+                BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
+            String resource;
+
+            while ((resource = br.readLine()) != null) {
+                filenames.add(resource);
+            }
+        }
+
+        return filenames;
+    }
+
+    private static InputStream getResourceAsStream(String resource) {
+        final InputStream in = getContextClassLoader().getResourceAsStream(resource);
+
+        if (in == null) {
+            return ClarpseUtil.class.getResourceAsStream(resource);
+        } else {
+            return in;
+        }
+    }
+
+    private static ClassLoader getContextClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
+
+    public static ParseRequestContent javaParseRequestContentObjFromResourceDir(String dir) throws IOException {
+
+        ParseRequestContent req = new ParseRequestContent(Lang.JAVA);
+        List<String> fileNames = getResourceFiles(dir);
+        for (String s : fileNames) {
+            req.insertFile(new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
+        }
+        return req;
+    }
+
+    public static ParseRequestContent parseRequestContentObjFromResourceDir(String dir, Lang java) throws IOException {
+
+        ParseRequestContent req = new ParseRequestContent(java);
+        List<String> fileNames = getResourceFiles(dir);
+        for (String s : fileNames) {
+            req.insertFile(new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
+        }
+        return req;
     }
 }

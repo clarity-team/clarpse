@@ -1,6 +1,5 @@
 # :rocket: Clarpse 
 
-[![Clarity Views Label](https://clarityviews.io/badge)](https://clarityviews.io/github/Zir0-93/clarpse?projectName=clarpse)
 [![Build Status](https://travis-ci.org/Zir0-93/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
 [![codecov](https://codecov.io/gh/Zir0-93/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/Zir0-93/clarpse)
 
@@ -10,6 +9,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 
 # Features
 
+ - Supports **Java** and **JavaScript** (ES6 and above)
  - Light weight
  - Performant
  - Easy to use
@@ -19,7 +19,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 # Terminology
 | Term                 | Definition                                                                                                                                                                  |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Component            | A language independant source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
+| Component            | A language independent source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
 |  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
 | Component Invocation | An invocation of an external component found in a source file, typically through type declaration, instantiation, extension, implementation, method invocations and so forth. |
 
@@ -87,7 +87,7 @@ Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server 
   	<dependency>
 		<groupId>com.clarityviews</groupId>
 		<artifactId>clarpse</artifactId>
-		<version>2.5.4</version>
+		<version>3.0.0</version>
 	</dependency>
 </dependencies> 
  ```
