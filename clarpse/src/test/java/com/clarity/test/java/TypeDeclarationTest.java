@@ -9,7 +9,6 @@ import com.clarity.parser.ClarpseProject;
 import com.clarity.parser.Lang;
 import com.clarity.parser.ParseRequestContent;
 import com.clarity.parser.RawFile;
-import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
@@ -38,6 +37,18 @@ public class TypeDeclarationTest {
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.fieldVar")
                 .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
+    }
+
+    @Test
+    public void testClassExpressionsNotCountedAsTypeDeclaration() throws Exception {
+
+        final String code = "class Test { Logger log = new Logger(Lol.class); }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Test.log").componentInvocations(ComponentInvocations.DECLARATION)
+                .size() == 1);
     }
 
     @Test
