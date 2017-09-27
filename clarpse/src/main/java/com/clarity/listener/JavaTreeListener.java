@@ -39,6 +39,7 @@ import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
@@ -68,7 +69,8 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     /**
      * @param srcModel
-     *            Source model to populate from the parsing of the given code base.
+     *            Source model to populate from the parsing of the given code
+     *            base.
      * @param file
      *            The path of the source file being parsed.
      */
@@ -175,6 +177,18 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
             currentPkg = "";
         }
         super.visit(ctx, arg);
+    }
+
+    @Override
+    public final void visit(ClassExpr ctx, Object arg) {
+        if (ctx.toString().endsWith(".class")) {
+            for (Node node : ctx.getChildrenNodes()) {
+                if (node.toString().equals(ctx.toString().substring(0, ctx.toString().indexOf(".class")))) {
+                    ctx.getChildrenNodes().remove(node);
+                }
+            }
+
+        }
     }
 
     @Override
