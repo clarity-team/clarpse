@@ -173,8 +173,9 @@ public class JavaScriptListener implements Callback {
             componentStack.push(cmp);
             completeComponent();
 
-        } else if (!componentStack.isEmpty() && (n.isVar() || n.isLet()) && (newestMethodComponent().componentType() == ComponentType.METHOD
-                || newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR)) {
+        } else if (!componentStack.isEmpty() && (n.isVar() || n.isLet())
+                && (newestMethodComponent().componentType() == ComponentType.METHOD
+                        || newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR)) {
             String localVarName = n.getFirstChild().getString();
             System.out.println("Found local variable: " + localVarName);
             cmp = createComponent(ComponentType.LOCAL, n);
@@ -225,14 +226,16 @@ public class JavaScriptListener implements Callback {
         if (!componentStack.isEmpty()) {
             final Component completedCmp = componentStack.pop();
             System.out.println("Completing component: " + completedCmp.uniqueName());
-            // bubble up the completing component's invocations to it's parent components
+            // bubble up the completing component's invocations to it's parent
+            // components
             // that are currently on the stack
             for (final Component parentCmp : componentStack) {
                 final Iterator<ComponentInvocation> invocationIterator = completedCmp.invocations().iterator();
                 while (invocationIterator.hasNext()) {
                     ComponentInvocation invocation = invocationIterator.next();
                     if (!(invocation instanceof TypeExtension || invocation instanceof TypeImplementation)) {
-                        // if the invocation is not a class extension or implementation,
+                        // if the invocation is not a class extension or
+                        // implementation,
                         // bubble it up!
                         parentCmp.insertComponentInvocation(invocation);
                     }
