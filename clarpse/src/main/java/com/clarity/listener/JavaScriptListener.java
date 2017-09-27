@@ -42,7 +42,7 @@ public class JavaScriptListener implements Callback {
         String baseCmpName = null;
 
         if (n.isClass()) {
-            baseCmpName = n.getFirstC hild().getString();
+            baseCmpName = n.getFirstChild().getString();
         } else if (n.isMemberFunctionDef()) {
             baseCmpName = n.getString();
         } else if (n.isGetterDef()) {
