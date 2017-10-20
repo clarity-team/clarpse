@@ -17,6 +17,20 @@
 			<artifactId>closure-compiler</artifactId>
 			<version>v20170626</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
+		<!-- https://mvnrepository.com/artifact/com.tunnelvisionlabs/antlr4-runtime -->
+		<dependency>
+			<groupId>com.tunnelvisionlabs</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>4.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.tunnelvisionlabs/antlr4-maven-plugin -->
+		<dependency>
+			<groupId>com.tunnelvisionlabs</groupId>
+			<artifactId>antlr4-maven-plugin</artifactId>
+			<version>4.4</version>
+		</dependency>
+
 		<dependency>
 			<!-- APACHE COMMONS -->
 			<groupId>org.apache.commons</groupId>
@@ -64,6 +78,25 @@
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
+			<plugin>
+				<groupId>com.tunnelvisionlabs</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>4.4</version>
+				<configuration>
+					<arguments>
+						<argument>-visitor</argument>
+						<!-- <argument>-Dlanguage=JavaScript</argument> -->
+					</arguments>
+				</configuration>
+				<executions>
+					<execution>
+						<id>antlr</id>
+						<goals>
+							<goal>antlr4</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -129,6 +162,7 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
+							<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
 							<excludes>com/clarity/test</excludes>
 							<failOnViolation>true</failOnViolation>
 							<configLocation>${project.basedir}/src/main/resources/clarityparsecheckstyleconfig.xml</configLocation>

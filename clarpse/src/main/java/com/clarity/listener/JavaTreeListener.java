@@ -69,8 +69,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     /**
      * @param srcModel
-     *            Source model to populate from the parsing of the given code
-     *            base.
+     *            Source model to populate from the parsing of the given code base.
      * @param file
      *            The path of the source file being parsed.
      */
@@ -251,11 +250,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     }
 
     /**
-     * Returns the extend type name of the given type.
-     *
-     * @param type
-     *            type to resolve
-     * @return full name of the given type
+     * Returns the full, unique type name of the given type.
      */
     private String resolveType(final String type) {
 

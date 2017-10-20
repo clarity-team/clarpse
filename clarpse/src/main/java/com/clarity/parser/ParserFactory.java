@@ -15,6 +15,8 @@ public class ParserFactory extends AbstractFactory {
             return new ClarpseJavaParser();
         case "javascript":
             return new ClarpseJSParser();
+        case "golang":
+            return new ClarpseGoLangParser();
         default:
             throw new Exception("Could not find parsing tool for: " + parseType);
         }
