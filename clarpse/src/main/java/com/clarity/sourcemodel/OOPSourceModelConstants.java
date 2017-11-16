@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
-import com.clarity.invocation.MethodInvocation;
 import com.clarity.invocation.ThrownException;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
@@ -52,7 +51,7 @@ public final class OOPSourceModelConstants {
         JAVA_ANNOTATIONS.put("Repeatable", "Repeatable");
 
     }
-    public static final String       JAVA_DEFAULT_PKG     = "java.lang.";
+    public static final String JAVA_DEFAULT_PKG = "java.lang.";
 
     static final Map<String, String> JAVA_DEFAULT_CLASSES = new HashMap<String, String>();
     static {
@@ -245,10 +244,9 @@ public final class OOPSourceModelConstants {
 
     public enum ComponentInvocations {
 
-        ANNOTATION(AnnotationInvocation.class), METHOD(MethodInvocation.class), EXCEPTION(
-                ThrownException.class), DECLARATION(TypeDeclaration.class), INSTANTIATION(
-                        TypeInstantiation.class), EXTENSION(
-                                TypeExtension.class), IMPLEMENTATION(TypeImplementation.class);
+        ANNOTATION(AnnotationInvocation.class), EXCEPTION(ThrownException.class), DECLARATION(
+                TypeDeclaration.class), INSTANTIATION(TypeInstantiation.class), EXTENSION(
+                        TypeExtension.class), IMPLEMENTATION(TypeImplementation.class);
 
         public Class<? extends ComponentInvocation> getMatchingClass() {
             return matchingClass;
@@ -270,21 +268,20 @@ public final class OOPSourceModelConstants {
      */
     public enum ComponentType implements Serializable {
 
-        CLASS("class", true, false, false), INTERFACE("interface", true, false,
-                false), INTERFACE_CONSTANT("interface_constant", false, false, true), ENUM("enum", true,
-                        false, false), ANNOTATION("annotation", false, false, false), METHOD(
-                                "method", false, true, false), CONSTRUCTOR("method", false, true,
-                                        false), ENUM_CONSTANT("enum_constant", false, false, true), FIELD(
-                                                "field_variable", false, false,
-                                                true), METHOD_PARAMETER_COMPONENT("method_parameter", false, false,
-                                                        true), CONSTRUCTOR_PARAMETER_COMPONENT("constructor_parameter",
-                                                                false, false, true), LOCAL(
-                                                                        "local_variable", false, false, true);
+        CLASS("class", true, false, false), STRUCT("struct", true, false, false), INTERFACE("interface", true, false,
+                false), INTERFACE_CONSTANT("interface_constant", false, false, true), ENUM("enum", true, false,
+                        false), ANNOTATION("annotation", false, false, false), METHOD("method", false, true,
+                                false), CONSTRUCTOR("method", false, true, false), ENUM_CONSTANT("enum_constant", false,
+                                        false,
+                                        true), FIELD("field_variable", false, false, true), METHOD_PARAMETER_COMPONENT(
+                                                "method_parameter", false, false,
+                                                true), CONSTRUCTOR_PARAMETER_COMPONENT("constructor_parameter", false,
+                                                        false, true), LOCAL("local_variable", false, false, true);
 
         private final boolean isBaseComponent;
         private final boolean isMethodComponent;
         private final boolean isVariableComponent;
-        private final String  value;
+        private final String value;
 
         ComponentType(final String value, final boolean isBaseComponent, final boolean isMethodComponent,
                 final boolean isVariableComponent) {

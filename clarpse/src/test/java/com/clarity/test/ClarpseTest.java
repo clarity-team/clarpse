@@ -3,6 +3,7 @@ package com.clarity.test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.clarity.test.go.GoLangParseTest;
 import com.clarity.test.java.AccessModifiersTest;
 import com.clarity.test.java.AnnotationInvocationTest;
 import com.clarity.test.java.ChildComponentsTest;
@@ -25,7 +26,7 @@ import com.clarity.test.javascript.JavascriptParseTest;
         RawFileComparisonTest.class, ComponentSourceFilePathTest.class, AnnotationInvocationTest.class,
         TypeExtensionTest.class, TypeImplementationTest.class, TypeDeclarationTest.class, ChildComponentsTest.class,
         AccessModifiersTest.class, CommentsParsingTest.class, InvocationInheritanceTest.class,
-        JavascriptParseTest.class, JavaScriptSmokeTest.class })
+        JavascriptParseTest.class, JavaScriptSmokeTest.class, GoLangParseTest.class })
 public class ClarpseTest {
 
 }
