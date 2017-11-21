@@ -14,7 +14,6 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
 /**
  * Ensure component invocations for a given component are inherited by its
  * parents.
- *
  */
 public class InvocationInheritanceTest {
 

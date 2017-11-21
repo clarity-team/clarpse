@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
+import com.clarity.invocation.DocMention;
 import com.clarity.invocation.ThrownException;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
@@ -244,9 +245,10 @@ public final class OOPSourceModelConstants {
 
     public enum ComponentInvocations {
 
-        ANNOTATION(AnnotationInvocation.class), EXCEPTION(ThrownException.class), DECLARATION(
-                TypeDeclaration.class), INSTANTIATION(TypeInstantiation.class), EXTENSION(
-                        TypeExtension.class), IMPLEMENTATION(TypeImplementation.class);
+        DOC_MENTION(DocMention.class), ANNOTATION(AnnotationInvocation.class), EXCEPTION(
+                ThrownException.class), DECLARATION(TypeDeclaration.class), INSTANTIATION(
+                        TypeInstantiation.class), EXTENSION(
+                                TypeExtension.class), IMPLEMENTATION(TypeImplementation.class);
 
         public Class<? extends ComponentInvocation> getMatchingClass() {
             return matchingClass;

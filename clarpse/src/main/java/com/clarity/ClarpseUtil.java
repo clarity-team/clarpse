@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -149,5 +151,30 @@ public final class ClarpseUtil {
             req.insertFile(new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
         }
         return req;
+    }
+
+    public static List<String> extractDocTypeMentions(String docComment) {
+        List<String> docTypeMentions = new ArrayList<String>();
+        Pattern linkPattern = Pattern.compile("\\{\\@link (.*?)\\}");
+        Pattern linkPlainPattern = Pattern.compile("\\{\\@linkplain (.*?)\\}");
+
+        Matcher matchPattern = linkPattern.matcher(docComment);
+        while (matchPattern.find()) {
+            docTypeMentions.add(matchPattern.group(1));
+        }
+        matchPattern = linkPlainPattern.matcher(docComment);
+        while (matchPattern.find()) {
+            docTypeMentions.add(matchPattern.group(1));
+        }
+        // we only consider doc links to other classes, interfaces, etc... (no methods
+        // or variables)
+        List<String> invalidMentions = new ArrayList<String>();
+        docTypeMentions.forEach(mention -> {
+            if (mention.matches(".*[#/:\\[\\]\\(\\)].*")) {
+                invalidMentions.add(mention);
+            }
+        });
+        docTypeMentions.removeAll(invalidMentions);
+        return docTypeMentions;
     }
 }

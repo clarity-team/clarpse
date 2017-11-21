@@ -146,6 +146,19 @@ public class GoLangParseTest {
     }
 
     @Test
+    public void testTwoGoStructsReferenceEachOther() throws Exception {
+
+        final String code = "package test \n type person struct {teacher Teacher} \n type Teacher struct{}";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        rawData.insertFile(new RawFile("src/github/test/person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("github.test.person.teacher")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .equals("github.test.Teacher"));
+    }
+
+    @Test
     public void testParseGoStructPublicVisibility() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {} type Teacher struct{}";

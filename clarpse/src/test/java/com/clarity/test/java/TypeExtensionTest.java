@@ -12,8 +12,6 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
  * Ensure component type extensions invocations are accurate.
- *
- * @author Muntazir Fadhel
  */
 public class TypeExtensionTest {
 

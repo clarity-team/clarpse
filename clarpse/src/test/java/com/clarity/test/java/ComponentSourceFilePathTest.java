@@ -1,4 +1,4 @@
-package com.clarity.test;
+package com.clarity.test.java;
 
 
 import static org.junit.Assert.assertTrue;
@@ -14,8 +14,6 @@ import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 /**
  * Ensure components are displaying the correct associated source file path.
- *
- * @author Muntazir Fadhel
  */
 public class ComponentSourceFilePathTest {
 

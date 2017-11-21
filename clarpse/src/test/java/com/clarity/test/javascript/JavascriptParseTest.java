@@ -15,7 +15,7 @@ import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 public class JavascriptParseTest {
 
     @Test
-    public void testIfParsedES6ClassExists() throws Exception {
+    public void ES6ClassExists() throws Exception {
 
         final String code = "class Polygon extends Test {get prop() {return 'getter'; }}";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -26,7 +26,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ClassDoc() throws Exception {
+    public void ES6ClassDoc() throws Exception {
 
         final String code = "/**Test*/ class Polygon extends Test {get prop() {return 'getter'; }}";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -37,7 +37,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ClassesExists() throws Exception {
+    public void ES6ClassesExists() throws Exception {
 
         final String code = "class Polygon {} class LolCakes{}";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -49,7 +49,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ClassExpressionComponentExists() throws Exception {
+    public void ES6ClassExpressionComponentExists() throws Exception {
 
         final String code = "const test = class Polygon {};";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -60,7 +60,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ClassHasCorrectSourceFileAttr() throws Exception {
+    public void ES6ClassHasCorrectSourceFileAttr() throws Exception {
 
         final String code = "class Polygon {}";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -71,7 +71,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ClassHasCorrectComponentType() throws Exception {
+    public void ES6ClassHasCorrectComponentType() throws Exception {
 
         final String code = "\n\n class Polygon { }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -99,7 +99,24 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ConstructorFunctionExists() throws Exception {
+    public void testIfParseES6ClassHasCorrectExtendsAttrComplex() throws Exception {
+
+        final String code = "import { Shape as Shape} from 'shape.js' \n class Polygon extends Shape { }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        // assert the Polygon class component has one type extension component
+        // invocation
+        assertTrue(generatedSourceModel.getComponent("Polygon").componentInvocations(ComponentInvocations.EXTENSION)
+                .size() == 1);
+        // assert the component being extended is the Shape class
+        assertTrue(generatedSourceModel.getComponent("Polygon").componentInvocations(ComponentInvocations.EXTENSION)
+                .get(0).invokedComponent().equals("Shape"));
+    }
+
+    @Test
+    public void ES6ConstructorFunctionExists() throws Exception {
 
         final String code = "class Polygon { constructor() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -110,7 +127,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ConstructorDoc() throws Exception {
+    public void ES6ConstructorDoc() throws Exception {
 
         final String code = "class Polygon { /** constructor doc */ constructor() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -121,7 +138,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ConstructorIsChildOfParentClass() throws Exception {
+    public void ES6ConstructorIsChildOfParentClass() throws Exception {
 
         final String code = "class Polygon { constructor() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -132,7 +149,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ConstructorFunctionNameIsCorrect() throws Exception {
+    public void ES6ConstructorFunctionNameIsCorrect() throws Exception {
 
         final String code = "class Polygon { constructor() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -143,7 +160,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ConstructorComponentTypeIsCorrect() throws Exception {
+    public void ES6ConstructorComponentTypeIsCorrect() throws Exception {
 
         final String code = "class Polygon { constructor() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -155,7 +172,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ConstructorParamComponentExists() throws Exception {
+    public void ES6ConstructorParamComponentExists() throws Exception {
 
         final String code = "class Polygon { constructor(height) {call();} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -166,7 +183,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ConstructorParamComponentsExists() throws Exception {
+    public void ES6ConstructorParamComponentsExists() throws Exception {
 
         final String code = "class Polygon { constructor(height, length, width) {call();} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -179,7 +196,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6ConstructorParamComponentsIsChildOfConstructor() throws Exception {
+    public void ES6ConstructorParamComponentsIsChildOfConstructor() throws Exception {
 
         final String code = "class Polygon { constructor(height, length) {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -205,7 +222,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6InstanceMethodExists() throws Exception {
+    public void ES6InstanceMethodExists() throws Exception {
 
         final String code = "class Polygon { say() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -216,7 +233,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6InstanceMethodDoc() throws Exception {
+    public void ES6InstanceMethodDoc() throws Exception {
 
         final String code = "class Polygon { /** say doc \n comment */ say() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -227,7 +244,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6InstanceMethodIsChildOfParentClass() throws Exception {
+    public void ES6InstanceMethodIsChildOfParentClass() throws Exception {
 
         final String code = "class Polygon { say() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -238,7 +255,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6InstanceMethodNameIsCorrect() throws Exception {
+    public void ES6InstanceMethodNameIsCorrect() throws Exception {
 
         final String code = "class Polygon { say() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -249,7 +266,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6InstanceMethodComponentTypeIsCorrect() throws Exception {
+    public void ES6InstanceMethodComponentTypeIsCorrect() throws Exception {
 
         final String code = "class Polygon { say() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -260,7 +277,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6StaticInstanceMethodExists() throws Exception {
+    public void ES6StaticInstanceMethodExists() throws Exception {
 
         final String code = "class Polygon { static say() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -271,7 +288,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6StaticInstanceMethodAccessModifier() throws Exception {
+    public void ES6StaticInstanceMethodAccessModifier() throws Exception {
 
         final String code = "class Polygon { static say() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -282,7 +299,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6StaticConstantModifier() throws Exception {
+    public void ES6StaticConstantModifier() throws Exception {
 
         final String code = "class Polygon { static constant1 = 33; }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -293,7 +310,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6AsyncInstanceMethodExists() throws Exception {
+    public void ES6AsyncInstanceMethodExists() throws Exception {
 
         final String code = "class Polygon { static say() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -304,7 +321,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6InstanceMethodParamComponentExists() throws Exception {
+    public void ES6InstanceMethodParamComponentExists() throws Exception {
 
         final String code = "class Polygon { constructor() {} call(height) {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -315,7 +332,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6InstanceMethodParamComponentsExists() throws Exception {
+    public void ES6InstanceMethodParamComponentsExists() throws Exception {
 
         final String code = "class Polygon { constructor() {} call(height, length, width) {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -328,7 +345,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6InstanceMethodParamComponentIsChildOfInstanceMethod() throws Exception {
+    public void ES6InstanceMethodParamComponentIsChildOfInstanceMethod() throws Exception {
 
         final String code = "class Polygon { constructor() {} say(height, length) {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -352,7 +369,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6GetterMethodExists() throws Exception {
+    public void ES6GetterMethodExists() throws Exception {
 
         final String code = "class Polygon { get height() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -363,7 +380,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6GetterIsChildOfParentClass() throws Exception {
+    public void ES6GetterIsChildOfParentClass() throws Exception {
 
         final String code = "class Polygon { get height() {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -374,7 +391,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6SetterMethodComponentTypeIsCorrect() throws Exception {
+    public void ES6SetterMethodComponentTypeIsCorrect() throws Exception {
 
         final String code = "class Polygon { set height(value) {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -385,7 +402,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6SetterMethodExists() throws Exception {
+    public void ES6SetterMethodExists() throws Exception {
 
         final String code = "class Polygon { set height(str) {} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -396,7 +413,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableComponentExists() throws Exception {
+    public void ES6FieldVariableComponentExists() throws Exception {
 
         final String code = "class Polygon { constructor() {this.height = 4;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -407,7 +424,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableComponentName() throws Exception {
+    public void ES6FieldVariableComponentName() throws Exception {
 
         final String code = "class Polygon { constructor() {this.height = 4;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -418,7 +435,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableComponentType() throws Exception {
+    public void ES6FieldVariableComponentType() throws Exception {
 
         final String code = "class Polygon { constructor() {this.height = 4;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -429,7 +446,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableMultipleComponentTypes() throws Exception {
+    public void ES6FieldVariableMultipleComponentTypes() throws Exception {
 
         final String code = "class Polygon { constructor() {this.height = 4; this.width = false;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -443,7 +460,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableIsChildOfClass() throws Exception {
+    public void ES6FieldVariableIsChildOfClass() throws Exception {
 
         final String code = "class Polygon { constructor() {this.height = 4;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -454,7 +471,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableBooleanValue() throws Exception {
+    public void ES6FieldVariableBooleanValue() throws Exception {
 
         final String code = "class Polygon { constructor(height) {this.height = true;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -465,7 +482,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableStringValue() throws Exception {
+    public void ES6FieldVariableStringValue() throws Exception {
 
         final String code = "class Polygon { constructor(height) {this.height = \"test\";} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -476,7 +493,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableNumberValue() throws Exception {
+    public void ES6FieldVariableNumberValue() throws Exception {
 
         final String code = "class Polygon { constructor(height) {this.height = 56;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -487,7 +504,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableNumberDeclarationTypeSnippet() throws Exception {
+    public void ES6FieldVariableNumberDeclarationTypeSnippet() throws Exception {
 
         final String code = "class Polygon { constructor(height) {this.height = 56;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -498,7 +515,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableStringDeclarationTypeSnippet() throws Exception {
+    public void ES6FieldVariableStringDeclarationTypeSnippet() throws Exception {
 
         final String code = "class Polygon { constructor(height) {this.height = \"test\";} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -509,7 +526,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableBooleanDeclarationTypeSnippet() throws Exception {
+    public void ES6FieldVariableBooleanDeclarationTypeSnippet() throws Exception {
 
         final String code = "class Polygon { constructor(height) {this.height = false;} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -520,7 +537,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableTypeInstantiation() throws Exception {
+    public void ES6FieldVariableTypeInstantiation() throws Exception {
 
         final String code = "class React() {} class Polygon { constructor(height) {this.height = new React();} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -531,7 +548,18 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6FieldVariableTypeInstantiationWithValues() throws Exception {
+    public void ES6FieldVariablePackageName() throws Exception {
+
+        final String code = "class React() {} class Polygon { constructor(height) {this.height = new React();} }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("/github/http/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").packageName().equals("github.http"));
+    }
+
+    @Test
+    public void ES6FieldVariableTypeInstantiationWithValues() throws Exception {
 
         final String code = "class React() {} class Polygon { constructor(height) {this.height = new React(2,4,\"fe\");} }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -542,7 +570,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6LocalVariableExists() throws Exception {
+    public void ES6LocalVariableExists() throws Exception {
 
         final String code = "class React() {} class Polygon { say() { var test = new React(); }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -553,7 +581,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6LocalVariableComponentType() throws Exception {
+    public void ES6LocalVariableComponentType() throws Exception {
 
         final String code = "class Polygon { say() { var test = new React(); }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -564,7 +592,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6LocalLetVariableComponentType() throws Exception {
+    public void ES6LocalLetVariableComponentType() throws Exception {
 
         final String code = "class Polygon { say() { let test = new React(); }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -575,7 +603,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6LocalLetVariableComponentExists() throws Exception {
+    public void ES6LocalLetVariableComponentExists() throws Exception {
 
         final String code = "class Polygon { say() { let test = new React(); }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -586,7 +614,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6LocalLetVariableTypeDeclaration() throws Exception {
+    public void ES6LocalLetVariableTypeDeclaration() throws Exception {
 
         final String code = "class Polygon { say() { let test = new React(); }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -598,7 +626,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6LocalVariableIsChildOfParentMethod() throws Exception {
+    public void ES6LocalVariableIsChildOfParentMethod() throws Exception {
 
         final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -610,7 +638,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6LocalVariableTypeInstantiation() throws Exception {
+    public void ES6LocalVariableTypeInstantiation() throws Exception {
 
         final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -622,7 +650,18 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedMultipleES6LocalVariables() throws Exception {
+    public void ES6LocalVariablePackageName() throws Exception {
+
+        final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("src/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").packageName().equals(""));
+    }
+
+    @Test
+    public void MultipleES6LocalVariables() throws Exception {
 
         final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -634,19 +673,18 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6LocalVariableQualifiedTypeInstantiation() throws Exception {
+    public void testDefaultExportClassHasCorrectUniqueName() throws Exception {
 
-        final String code = "class Polygon { say() { var test = new React.test(); var lol = 4; }";
+        final String code = "export default class { }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
-        rawData.insertFile(new RawFile("polygon.js", code));
+        rawData.insertFile(new RawFile("/src/github/test.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say.test")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("React"));
+        assertTrue(generatedSourceModel.containsComponent("github.test"));
     }
 
     @Test
-    public void testIfParsedES6ConstructorLocalVar() throws Exception {
+    public void ES6ConstructorLocalVar() throws Exception {
 
         final String code = "class Polygon { constructor() {  this.width = 4;  var test = new React(); } }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -657,7 +695,7 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6MethodTypeDeclaration() throws Exception {
+    public void ES6MethodTypeDeclaration() throws Exception {
 
         final String code = "class Polygon { constructor() {  new React().test(); } }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
@@ -669,14 +707,43 @@ public class JavascriptParseTest {
     }
 
     @Test
-    public void testIfParsedES6MethodTypeDeclarationFromStaticMethodCall() throws Exception {
+    public void ES6MethodPackageName() throws Exception {
 
-        final String code = "import React from '/test.js'; class Polygon { constructor() {  React.test(); } }";
+        final String code = "class Polygon { constructor() {  new React().test(); } }";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
-        rawData.insertFile(new RawFile("polygon.js", code));
+        rawData.insertFile(new RawFile("/github/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.constructor")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("React"));
+        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").packageName().equals("github"));
+    }
+
+    @Test
+    public void ES6MethodTypeDeclarationFromStaticMethodCall() throws Exception {
+
+        final String code = "import { React } from \'github/react.js\'; \n class Polygon { constructor() {  React.test(); } }";
+        final String codeB = "class React {}";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("/src/test/polygon.js", code));
+        rawData.insertFile(new RawFile("/src/test/github/react.js", codeB));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("test.Polygon.constructor")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .equals("test.github.React"));
+    }
+
+    @Test
+    public void testResolvingOfAbsoluteImportPath() throws Exception {
+
+        final String code = "import { React } from \'/src/test/github/react.js\'; \n class Polygon { constructor() {  React.test(); } }";
+        final String codeB = "class React {}";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("/src/test/polygon.js", code));
+        rawData.insertFile(new RawFile("/src/test/github/react.js", codeB));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("test.Polygon.constructor")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .equals("test.github.React"));
     }
 }

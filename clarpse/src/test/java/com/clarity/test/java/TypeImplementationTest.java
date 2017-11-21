@@ -15,8 +15,6 @@ import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
 /**
  * Ensure component invocation data of a given class is accurate.
- *
- * @author Muntazir Fadhel
  */
 public class TypeImplementationTest {
 

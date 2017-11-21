@@ -718,7 +718,7 @@ IDENTIFIER
 
 // Keywords
 KEYWORD
-    : 'break'
+    : 'break' 
     | 'default'
     | 'func'
     | 'interface'

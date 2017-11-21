@@ -13,7 +13,10 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import com.clarity.antlr.golang.GolangBaseListener;
+import com.clarity.antlr.golang.GolangParser.AssignmentContext;
+import com.clarity.antlr.golang.GolangParser.ExpressionContext;
 import com.clarity.antlr.golang.GolangParser.FieldDeclContext;
+import com.clarity.antlr.golang.GolangParser.FunctionDeclContext;
 import com.clarity.antlr.golang.GolangParser.ImportSpecContext;
 import com.clarity.antlr.golang.GolangParser.InterfaceTypeContext;
 import com.clarity.antlr.golang.GolangParser.MethodDeclContext;
@@ -124,7 +127,13 @@ public class GoLangTreeListener extends GolangBaseListener {
     public final void enterPackageClause(PackageClauseContext ctx) {
         currentPkg = ctx.IDENTIFIER().getText();
         if (this.file.name().contains("/")) {
-            currentPkg = this.file.name().substring(0, this.file.name().lastIndexOf("/"));
+            String modFileName = this.file.name().substring(0, this.file.name().lastIndexOf("/"));
+            for (String s : projectFileTypes) {
+                if (modFileName.endsWith(s)) {
+                    currentPkg = s;
+                    break;
+                }
+            }
         }
         currentPkg = currentPkg.replaceAll("/", ".");
         currentImports.clear();
@@ -252,6 +261,23 @@ public class GoLangTreeListener extends GolangBaseListener {
             cmp.insertAccessModifier(visibility(cmp.name()));
             componentStack.push(cmp);
         }
+
+    }
+
+    @Override
+    public final void enterFunctionDecl(FunctionDeclContext ctx) {
+        exitFunctionDecl(ctx);
+    }
+
+    @Override
+    public final void enterAssignment(AssignmentContext ctx) {
+        exitAssignment(ctx);
+
+    }
+
+    @Override
+    public final void enterExpression(ExpressionContext ctx) {
+        exitExpression(ctx);
     }
 
     @Override

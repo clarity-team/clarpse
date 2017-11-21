@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.clarity.ClarpseUtil;
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
+import com.clarity.invocation.DocMention;
 import com.clarity.invocation.ThrownException;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
@@ -204,6 +206,9 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         cmp.setName(ctx.getName());
         cmp.setImports(currentImports);
         if (ctx.getJavaDoc() != null) {
+            for (String docMention : ClarpseUtil.extractDocTypeMentions(ctx.getJavaDoc().toString())) {
+                cmp.insertComponentInvocation(new DocMention(resolveType(docMention)));
+            }
             cmp.setComment(ctx.getJavaDoc().toString());
         }
         pointParentsToGivenChild(cmp);

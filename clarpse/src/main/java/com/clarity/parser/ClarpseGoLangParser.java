@@ -1,6 +1,7 @@
 package com.clarity.parser;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +14,8 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.apache.commons.lang3.StringUtils;
 
+import com.clarity.CommonDir;
 import com.clarity.antlr.golang.GolangBaseListener;
 import com.clarity.antlr.golang.GolangLexer;
 import com.clarity.antlr.golang.GolangParser;
@@ -27,6 +28,8 @@ import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 /**
  * Antlr4 based GoLang parser.
  */
@@ -38,59 +41,56 @@ public class ClarpseGoLangParser implements ClarpseParser {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
 
         final List<RawFile> files = rawData.getFiles();
-        System.out.println(files.size());
         List<String> projectFileTypes = new ArrayList<String>();
 
-        int slashesInCurrSmallestCodeBaseContainingDir = -1;
-        String smallestCodeBaseContaininingDir = "";
-        for (RawFile file : files) {
-            int slashesInFileName = StringUtils.countMatches(file.name(), "/");
-            if (((slashesInFileName < slashesInCurrSmallestCodeBaseContainingDir)
-                    || (slashesInCurrSmallestCodeBaseContainingDir == -1)) && (slashesInFileName > 0)) {
+        if (files.size() < 1) {
+            return srcModel;
+        } else {
+            String smallestCodeBaseContaininingDir = files.get(0).name();
 
-                slashesInCurrSmallestCodeBaseContainingDir = StringUtils.countMatches(file.name(), "/");
-                smallestCodeBaseContaininingDir = file.name().substring(0, file.name().lastIndexOf("/"));
-            } else if (slashesInFileName >= slashesInCurrSmallestCodeBaseContainingDir
-                    && !file.name().contains(smallestCodeBaseContaininingDir)) {
-                smallestCodeBaseContaininingDir = findLargestContainingDir(smallestCodeBaseContaininingDir,
-                        file.name());
-                slashesInCurrSmallestCodeBaseContainingDir = StringUtils.countMatches(smallestCodeBaseContaininingDir,
-                        "/");
-
-            } else if (slashesInCurrSmallestCodeBaseContainingDir > 0 && slashesInFileName < 1) {
-                smallestCodeBaseContaininingDir = "";
-                slashesInCurrSmallestCodeBaseContainingDir = 0;
+            for (int i = 1; i < files.size(); i++) {
+                smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir, files.get(i).name())
+                        .string();
             }
-        }
-        if (smallestCodeBaseContaininingDir.startsWith("/")) {
-            smallestCodeBaseContaininingDir.substring(1);
-        }
 
-        for (RawFile file : files) {
-            if (file.name().contains("src/")) {
-                file.name(file.name().substring(file.name().indexOf("src/") + 4));
-            } else {
-                String fileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
-                if (fileName.startsWith("/")) {
-                    fileName = fileName.substring(1);
+            if (smallestCodeBaseContaininingDir.startsWith("/")) {
+                smallestCodeBaseContaininingDir.substring(1);
+            }
+
+            for (RawFile file : files) {
+                String modFileName = "";
+                if (file.name().contains("src/")) {
+                    modFileName = (file.name().substring(file.name().indexOf("src/") + 4));
+                } else {
+                    modFileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
+                    if (modFileName.startsWith("/")) {
+                        modFileName = modFileName.substring(1);
+                    }
                 }
-                file.name(fileName);
+
+                if (modFileName.contains("/")) {
+                    projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
+                }
             }
 
-            if (file.name().contains("/")) {
-                projectFileTypes.add(file.name().substring(0, file.name().lastIndexOf("/")));
-            }
-        }
+            // sort fileTypes by length in desc order so that the longest types are at the
+            // top.
+            Collections.sort(projectFileTypes, new LengthComp());
 
-        for (RawFile file : files) {
-            CharStream charStream = new ANTLRInputStream(file.content());
-            GolangLexer lexer = new GolangLexer(charStream);
-            TokenStream tokens = new CommonTokenStream(lexer);
-            GolangParser parser = new GolangParser(tokens);
-            SourceFileContext sourceFileContext = parser.sourceFile();
-            ParseTreeWalker walker = new ParseTreeWalker();
-            GolangBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file);
-            walker.walk(listener, sourceFileContext);
+            for (RawFile file : files) {
+                try {
+                    CharStream charStream = new ANTLRInputStream(file.content());
+                    GolangLexer lexer = new GolangLexer(charStream);
+                    TokenStream tokens = new CommonTokenStream(lexer);
+                    GolangParser parser = new GolangParser(tokens);
+                    SourceFileContext sourceFileContext = parser.sourceFile();
+                    ParseTreeWalker walker = new ParseTreeWalker();
+                    GolangBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file);
+                    walker.walk(listener, sourceFileContext);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         /**
@@ -110,25 +110,6 @@ public class ClarpseGoLangParser implements ClarpseParser {
             }
         }
         return srcModel;
-    }
-
-    public String findLargestContainingDir(String dir1, String dir2) {
-        if (!dir1.contains("/") || !dir2.contains("/")) {
-            return "";
-        } else {
-            String dir1Parts[] = dir1.split("/");
-            String dir2Parts[] = dir2.split("/");
-            List<String> matchingParts = new ArrayList<String>();
-            int i = 0;
-            while (dir1Parts[i].equals(dir2Parts[i])) {
-                matchingParts.add(dir1Parts[i]);
-                i++;
-                if (i >= dir1Parts.length || i >= dir2Parts.length) {
-                    break;
-                }
-            }
-            return StringUtils.join(matchingParts, "/");
-        }
     }
 }
 
@@ -213,8 +194,10 @@ class ImplementedInterfaces {
         String signature = methodComponent.name() + "(";
         for (String methodParam : methodComponent.children()) {
             Component methodParamCmp = model.getComponent(methodParam);
-            signature += methodParamCmp.componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
-                    + ",";
+            if (methodParamCmp != null && methodParamCmp.invocations().size() > 0) {
+                signature += methodParamCmp.componentInvocations(ComponentInvocations.DECLARATION).get(0)
+                        .invokedComponent() + ",";
+            }
         }
         signature = signature.replaceAll(",$", "");
         signature += ")";
@@ -222,5 +205,12 @@ class ImplementedInterfaces {
             signature += methodComponent.value().replaceAll(" ", "");
         }
         return signature;
+    }
+}
+
+class LengthComp implements Comparator<String> {
+    @Override
+    public int compare(String o1, String o2) {
+        return Integer.compare(o2.length(), o1.length());
     }
 }
