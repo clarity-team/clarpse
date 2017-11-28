@@ -110,7 +110,8 @@ public class ClarpseGoLangParser implements ClarpseParser {
                 baseCmp.insertComponentInvocation(new TypeImplementation(implementedInterface));
             }
         }
-        System.out.println("GoLang parsing took: " + ((new Date().getTime() - startTime.getTime()) / 1000) + " seconds");
+        System.out
+                .println("GoLang parsing took: " + ((new Date().getTime() - startTime.getTime()) / 1000) + " seconds");
         return srcModel;
     }
 }
@@ -196,7 +197,8 @@ class ImplementedInterfaces {
         String signature = methodComponent.name() + "(";
         for (String methodParam : methodComponent.children()) {
             Component methodParamCmp = model.getComponent(methodParam);
-            if (methodParamCmp != null && methodParamCmp.invocations().size() > 0) {
+            if (methodParamCmp != null
+                    && methodParamCmp.componentInvocations(ComponentInvocations.DECLARATION).size() > 0) {
                 signature += methodParamCmp.componentInvocations(ComponentInvocations.DECLARATION).get(0)
                         .invokedComponent() + ",";
             }
