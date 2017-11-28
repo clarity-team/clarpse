@@ -746,4 +746,19 @@ public class JavascriptParseTest {
                 .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("test.github.React"));
     }
+
+    @Test
+    public void testResolvingOfAliasImportType() throws Exception {
+
+        final String code = "import { LoL as React } from \'/src/test/github/react.js\'; \n class Polygon { constructor() {  LoL.test(); } }";
+        final String codeB = "class React {}";
+        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVASCRIPT);
+        rawData.insertFile(new RawFile("/src/test/polygon.js", code));
+        rawData.insertFile(new RawFile("/src/test/github/react.js", codeB));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("test.Polygon.constructor")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .equals("test.github.React"));
+    }
 }

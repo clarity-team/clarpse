@@ -220,30 +220,30 @@ statementList
 
 statement
     : declaration
-    | labeledStmt
+    | IDENTIFIER ':' statement
     | simpleStmt
-    | goStmt
-    | returnStmt
-    | breakStmt
-    | continueStmt
-    | gotoStmt
-    | fallthroughStmt
+    | 'go' expression
+    | 'return' expressionList?
+    | 'break' IDENTIFIER?
+    | 'continue' IDENTIFIER?
+    | 'goto' IDENTIFIER
+    | 'fallthrough'
     | block
     | ifStmt
-    | switchStmt
-    | selectStmt
-    | forStmt
-    | deferStmt
+    | 'switch' ( simpleStmt ';' )? expression? '{' exprCaseClause* '}' | 'switch' ( simpleStmt ';' )? typeSwitchGuard '{' typeCaseClause* '}'
+    | 'select' '{' commClause* '}'
+    | 'for' ( expression | forClause | rangeClause )? block
+    | 'defer' expression
 	;
 
 //SimpleStmt = EmptyStmt | ExpressionStmt | SendStmt | IncDecStmt | Assignment | ShortVarDecl .
 simpleStmt
-    : sendStmt
+    : expression '<-' expression
     | expressionStmt
-    | incDecStmt
-    | assignment
-    | shortVarDecl
-    | emptyStmt
+    | expression ( '++' | '--' )
+    | expressionList ('+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^')? '=' expressionList
+    | identifierList ':=' expressionList
+    | ';'
     ;
 
 //ExpressionStmt = Expression .
@@ -251,89 +251,11 @@ expressionStmt
     : expression
     ;
 
-//SendStmt = Channel "<-" Expression .
-//Channel  = Expression .
-sendStmt
-    : expression '<-' expression
-    ;
-
-//IncDecStmt = Expression ( "++" | "--" ) .
-incDecStmt
-    : expression ( '++' | '--' )
-    ;
-
-//Assignment = ExpressionList assign_op ExpressionList .
-assignment
-    : expressionList assign_op expressionList
-    ;
-
-//assign_op = [ add_op | mul_op ] "=" .
-assign_op
-    : ('+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^')? '='
-    ;
-
-
-//ShortVarDecl = IdentifierList ":=" ExpressionList .
-shortVarDecl
-    : identifierList ':=' expressionList
-    ;
-
-emptyStmt
-    : ';'
-    ;
-
-//LabeledStmt = Label ":" Statement .
-//Label       = identifier .
-labeledStmt
-    : IDENTIFIER ':' statement
-    ;
-
-//ReturnStmt = "return" [ ExpressionList ] .
-returnStmt
-    : 'return' expressionList?
-    ;
-
-//BreakStmt = "break" [ Label ] .
-breakStmt
-    : 'break' IDENTIFIER?
-    ;
-
-//ContinueStmt = "continue" [ Label ] .
-continueStmt
-    : 'continue' IDENTIFIER?
-    ;
-
-//GotoStmt = "goto" Label .
-gotoStmt
-    : 'goto' IDENTIFIER
-    ;
-
-//FallthroughStmt = "fallthrough" .
-fallthroughStmt
-    : 'fallthrough'
-    ;
-
-//DeferStmt = "defer" Expression .
-deferStmt
-    : 'defer' expression
-    ;
-
 //IfStmt = "if" [ SimpleStmt ";" ] Expression Block [ "else" ( IfStmt | Block ) ] .
 ifStmt
     : 'if' (simpleStmt ';')? expression block ( 'else' ( ifStmt | block ) )?
     ;
 
-//SwitchStmt = ExprSwitchStmt | TypeSwitchStmt .
-switchStmt
-    : exprSwitchStmt | typeSwitchStmt
-    ;
-
-//ExprSwitchStmt = "switch" [ SimpleStmt ";" ] [ Expression ] "{" { ExprCaseClause } "}" .
-//ExprCaseClause = ExprSwitchCase ":" StatementList .
-//ExprSwitchCase = "case" ExpressionList | "default" .
-exprSwitchStmt
-    : 'switch' ( simpleStmt ';' )? expression? '{' exprCaseClause* '}'
-    ;
 
 exprCaseClause
     : exprSwitchCase ':' statementList
@@ -348,9 +270,7 @@ exprSwitchCase
 //TypeCaseClause  = TypeSwitchCase ":" StatementList .
 //TypeSwitchCase  = "case" TypeList | "default" .
 //TypeList        = Type { "," Type } .
-typeSwitchStmt
-    : 'switch' ( simpleStmt ';' )? typeSwitchGuard '{' typeCaseClause* '}'
-    ;
+
 typeSwitchGuard
     : ( IDENTIFIER ':=' )? primaryExpr '.' '(' 'type' ')'
     ;
@@ -364,29 +284,14 @@ typeList
     : type ( ',' type )*
     ;
 
-
-//SelectStmt = "select" "{" { CommClause } "}" .
-//CommClause = CommCase ":" StatementList .
-//CommCase   = "case" ( SendStmt | RecvStmt ) | "default" .
-//RecvStmt   = [ ExpressionList "=" | IdentifierList ":=" ] RecvExpr .
-//RecvExpr   = Expression .
-selectStmt
-    : 'select' '{' commClause* '}'
-    ;
 commClause
     : commCase ':' statementList
     ;
 commCase
-    : 'case' ( sendStmt | recvStmt ) | 'default'
+    : 'case' ( expression '<-' expression | recvStmt ) | 'default'
     ;
 recvStmt
     : ( expressionList '=' | identifierList ':=' )? expression
-    ;
-
-//ForStmt = "for" [ Condition | ForClause | RangeClause ] Block .
-//Condition = Expression .
-forStmt
-    : 'for' ( expression | forClause | rangeClause )? block
     ;
 
 //ForClause = [ InitStmt ] ";" [ Condition ] ";" [ PostStmt ] .
@@ -402,10 +307,6 @@ rangeClause
     : (expressionList '=' | identifierList ':=' )? 'range' expression
     ;
 
-//GoStmt = "go" Expression .
-goStmt
-    : 'go' expression
-    ;
 
 //Type      = TypeName | TypeLit | "(" Type ")" .
 type
@@ -423,20 +324,16 @@ typeName
 //TypeLit   = ArrayType | StructType | PointerType | FunctionType | InterfaceType |
 //	    SliceType | MapType | ChannelType .
 typeLit
-    : arrayType
+    : '[' arrayLength ']' elementType
     | structType
     | pointerType
     | functionType
     | interfaceType
-    | sliceType
-    | mapType
+    | '[' ']' elementType
+    | 'map' '[' type ']' elementType
     | channelType
     ;
 
-
-arrayType
-    : '[' arrayLength ']' elementType
-    ;
 
 arrayLength
     : expression
@@ -460,16 +357,6 @@ interfaceType
     : 'interface' '{' ( methodSpec eos )* '}'
     ;
 
-//SliceType = "[" "]" ElementType .
-sliceType
-    : '[' ']' elementType
-    ;
-
-//MapType     = "map" "[" KeyType "]" ElementType .
-//KeyType     = Type .
-mapType
-    : 'map' '[' type ']' elementType
-    ;
 
 //ChannelType = ( "chan" | "chan" "<-" | "<-" "chan" ) ElementType .
 channelType
@@ -529,17 +416,13 @@ operand
     ;
 
 literal
-    : basicLit
-    | compositeLit
-    | functionLit
-    ;
-
-basicLit
-    : INT_LIT
+    : (INT_LIT
     | FLOAT_LIT
     | IMAGINARY_LIT
     | RUNE_LIT
-    | STRING_LIT
+    | STRING_LIT)
+    | literalType '{' ( keyedElement (',' keyedElement)* ','? )? '}'
+    | 'func' function
     ;
 
 operandName
@@ -562,26 +445,16 @@ qualifiedIdent
 //FieldName     = identifier .
 //Element       = Expression | LiteralValue .
 
-compositeLit
-    : literalType literalValue
-    ;
 
 literalType
     : structType
-    | arrayType
+    | '[' arrayLength ']' elementType
     | '[' '...' ']' elementType
-    | sliceType
-    | mapType
+    | '[' ']' elementType
+    | 'map' '[' type ']' elementType
     | typeName
     ;
 
-literalValue
-    : '{' ( elementList ','? )? '}'
-    ;
-
-elementList
-    : keyedElement (',' keyedElement)*
-    ;
 
 keyedElement
     : (key ':')? element
@@ -590,12 +463,12 @@ keyedElement
 key
     : IDENTIFIER
     | expression
-    | literalValue
+    | '{' ( keyedElement (',' keyedElement)* ','? )? '}'
     ;
 
 element
     : expression
-    | literalValue
+    | '{' ( keyedElement (',' keyedElement)* ','? )? '}'
     ;
 
 //StructType     = "struct" "{" { FieldDecl ";" } "}" .
@@ -614,10 +487,6 @@ anonymousField
     : '*'? typeName
     ;
 
-//FunctionLit = "func" Function .
-functionLit
-    : 'func' function
-    ;
 
 //PrimaryExpr =
 //	Operand |
@@ -638,33 +507,14 @@ functionLit
 
 primaryExpr
     : operand
-    | conversion
-    | primaryExpr selector
-    | primaryExpr index
-    | primaryExpr slice
-    | primaryExpr typeAssertion
-	| primaryExpr arguments
+    | type '(' expression ','? ')'
+    | primaryExpr '.' IDENTIFIER
+    | primaryExpr '[' expression ']'
+    | primaryExpr '[' (( expression? ':' expression? ) | ( expression? ':' expression ':' expression )) ']'
+    | primaryExpr  '.' '(' type ')'
+	| primaryExpr '(' ( ( expressionList | type ( ',' expressionList )? ) '...'? ','? )? ')'
     ;
 
-selector
-    : '.' IDENTIFIER
-    ;
-
-index
-    : '[' expression ']'
-    ;
-
-slice
-    : '[' (( expression? ':' expression? ) | ( expression? ':' expression ':' expression )) ']'
-    ;
-
-typeAssertion
-    : '.' '(' type ')'
-    ;
-
-arguments
-    : '(' ( ( expressionList | type ( ',' expressionList )? ) '...'? ','? )? ')'
-    ;
 
 //MethodExpr    = ReceiverType "." MethodName .
 //ReceiverType  = TypeName | "(" "*" TypeName ")" | "(" ReceiverType ")" .
@@ -690,11 +540,6 @@ expression
 unaryExpr
     : primaryExpr
     | ('+'|'-'|'!'|'^'|'*'|'&'|'<-') unaryExpr
-    ;
-
-//Conversion = Type "(" Expression [ "," ] ")" .
-conversion
-    : type '(' expression ','? ')'
     ;
 
 eos
@@ -1252,5 +1097,5 @@ TERMINATOR
 
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
+    :   '//' ~[\r\n]* -> channel(HIDDEN)
     ;

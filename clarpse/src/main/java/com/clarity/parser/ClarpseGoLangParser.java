@@ -2,6 +2,7 @@ package com.clarity.parser;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +38,9 @@ public class ClarpseGoLangParser implements ClarpseParser {
 
     @Override
     public final OOPSourceCodeModel extractParseResult(final ParseRequestContent rawData) throws Exception {
-
+        Date startTime = new Date();
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-
+        System.out.println("number of files is: " + rawData.getFiles().size());
         final List<RawFile> files = rawData.getFiles();
         List<String> projectFileTypes = new ArrayList<String>();
 
@@ -109,6 +110,7 @@ public class ClarpseGoLangParser implements ClarpseParser {
                 baseCmp.insertComponentInvocation(new TypeImplementation(implementedInterface));
             }
         }
+        System.out.println("GoLang parsing took: " + ((new Date().getTime() - startTime.getTime()) / 1000) + " seconds");
         return srcModel;
     }
 }

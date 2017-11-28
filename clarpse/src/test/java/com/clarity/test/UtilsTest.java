@@ -37,4 +37,10 @@ public class UtilsTest {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/lol.js", "./test/forks.js");
         assertTrue(resolvedPath.value().equals("/test"));
     }
+
+    @Test
+    public void testResolvedDirv6() throws Exception {
+        ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/lol.js", "forks.js");
+        assertTrue(resolvedPath.value().equals("/"));
+    }
 }

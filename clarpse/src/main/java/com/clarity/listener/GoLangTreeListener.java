@@ -13,7 +13,6 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import com.clarity.antlr.golang.GolangBaseListener;
-import com.clarity.antlr.golang.GolangParser.AssignmentContext;
 import com.clarity.antlr.golang.GolangParser.ExpressionContext;
 import com.clarity.antlr.golang.GolangParser.FieldDeclContext;
 import com.clarity.antlr.golang.GolangParser.FunctionDeclContext;
@@ -267,12 +266,6 @@ public class GoLangTreeListener extends GolangBaseListener {
     @Override
     public final void enterFunctionDecl(FunctionDeclContext ctx) {
         exitFunctionDecl(ctx);
-    }
-
-    @Override
-    public final void enterAssignment(AssignmentContext ctx) {
-        exitAssignment(ctx);
-
     }
 
     @Override

@@ -161,7 +161,7 @@ public class GoLangParseTest {
     @Test
     public void testParseGoStructPublicVisibility() throws Exception {
 
-        final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {} type Teacher struct{}";
+        final String code = "package main\n import \"fmt\"\n /*test*/ \n type person struct {} type Teacher struct{}";
         final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -299,7 +299,7 @@ public class GoLangParseTest {
         final String codeA = "package main\n type person struct {}\n func (p person) someMethods() {}\n"
                 + "func (p* person) methodA() {}\n func (p person) methodB(x int, y int, z string) (f,d string) {}";
         final String codeB = "package github\n \n type anInterface interface { aSecondInterface \n someMethod();}";
-        final String codeC = "package github\n \n type aSecondInterface interface { methodA();\n methodB(x,y int, z string) (f string, d string);";
+        final String codeC = "package github\n \n type aSecondInterface interface { methodA();\n methodB(x,y int, z string) (f string, d string);}";
 
         final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/person.go", codeA));

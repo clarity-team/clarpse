@@ -135,58 +135,16 @@ public class JavaScriptListener implements Callback {
                 } else if (importSpec.hasTwoChildren()) {
                     String childOneStr = importSpec.getChildAtIndex(0).getString();
                     String childTwoStr = importSpec.getChildAtIndex(1).getString();
-                    currentImportsMap.put(childTwoStr, origin + "." + childOneStr);
+                    currentImportsMap.put(childOneStr, origin + "." + childTwoStr);
                 }
             }
         }
 
-        Component cmp;
+        Component cmp = null;
         if (n.isClass()) {
-            cmp = createComponent(ComponentType.CLASS, n);
-            String name = "";
-            if (n.getParent().isExport() && n.getParent().getBooleanProp(Node.EXPORT_DEFAULT)) {
-                String fileName = new TrimmedString(this.file.name(), "/").value();
-                if (fileName.contains("/")) {
-                    name = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf("."));
-                } else {
-                    name = fileName.substring(0, fileName.lastIndexOf("."));
-                }
-            } else if (n.hasChildren()) {
-                name = n.getFirstChild().getString();
-            }
-            name = name.replaceAll("/", ".");
-            cmp.setComponentName(generateComponentName(name));
-            cmp.setName(name);
-            cmp.setPackageName(currPackage);
-            pointParentsToGivenChild(cmp);
-            if (n.getSecondChild().isName()) {
-                // this class extends another class
-                System.out.println("this class extends " + n.getSecondChild().getString());
-                cmp.insertComponentInvocation(new TypeExtension(n.getSecondChild().getString()));
-            }
-            componentStack.push(cmp);
+            processClass(cmp, n);
         } else if (n.isMemberFunctionDef()) {
-            if (n.getString() != null && n.getString().equals("constructor")) {
-                System.out.println("Found constructor");
-                cmp = createComponent(ComponentType.CONSTRUCTOR, n);
-                cmp.setComponentName(generateComponentName("constructor"));
-                cmp.setName("constructor");
-                cmp.setPackageName(currPackage);
-                pointParentsToGivenChild(cmp);
-                componentStack.push(cmp);
-            } else {
-                System.out.println("Found instance method: " + n.getString());
-                cmp = createComponent(ComponentType.METHOD, n);
-                cmp.setComponentName(generateComponentName(n.getString()));
-                cmp.setName(n.getString());
-                cmp.setPackageName(currPackage);
-                if (n.isStaticMember()) {
-                    cmp.insertAccessModifier("static");
-                }
-                cmp.insertAccessModifier("public");
-                pointParentsToGivenChild(cmp);
-                componentStack.push(cmp);
-            }
+            processMemberFunctionDef(cmp, n);
         } else if (n.isGetterDef()) {
             String cmpName = "get_" + n.getString();
             System.out.println("Found getter definition: " + cmpName);
@@ -288,6 +246,58 @@ public class JavaScriptListener implements Callback {
             componentStack.push(latestCmp);
         }
         return true;
+    }
+
+    private void processClass(Component cmp, Node n) throws Exception {
+        cmp = createComponent(ComponentType.CLASS, n);
+        String name = "";
+        if (n.getParent().isExport() && n.getParent().getBooleanProp(Node.EXPORT_DEFAULT)) {
+            String fileName = new TrimmedString(this.file.name(), "/").value();
+            if (fileName.contains("/")) {
+                name = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf("."));
+            } else {
+                name = fileName.substring(0, fileName.lastIndexOf("."));
+            }
+        } else if (n.hasChildren()) {
+            name = n.getFirstChild().getString();
+        }
+        name = name.replaceAll("/", ".");
+        cmp.setComponentName(generateComponentName(name));
+        cmp.setName(name);
+        cmp.setPackageName(currPackage);
+        pointParentsToGivenChild(cmp);
+        if (n.getSecondChild().isName()) {
+            // this class extends another class
+            System.out.println("this class extends " + n.getSecondChild().getString());
+            cmp.insertComponentInvocation(new TypeExtension(n.getSecondChild().getString()));
+        }
+        componentStack.push(cmp);
+
+    }
+
+    private void processMemberFunctionDef(Component cmp, Node n) throws Exception {
+        if (n.getString() != null && n.getString().equals("constructor")) {
+            System.out.println("Found constructor");
+            cmp = createComponent(ComponentType.CONSTRUCTOR, n);
+            cmp.setComponentName(generateComponentName("constructor"));
+            cmp.setName("constructor");
+            cmp.setPackageName(currPackage);
+            pointParentsToGivenChild(cmp);
+            componentStack.push(cmp);
+        } else {
+            System.out.println("Found instance method: " + n.getString());
+            cmp = createComponent(ComponentType.METHOD, n);
+            cmp.setComponentName(generateComponentName(n.getString()));
+            cmp.setName(n.getString());
+            cmp.setPackageName(currPackage);
+            if (n.isStaticMember()) {
+                cmp.insertAccessModifier("static");
+            }
+            cmp.insertAccessModifier("public");
+            pointParentsToGivenChild(cmp);
+            componentStack.push(cmp);
+        }
+
     }
 
     private void processVariableAssignment(Component cmp, Node assignmentNode) {
