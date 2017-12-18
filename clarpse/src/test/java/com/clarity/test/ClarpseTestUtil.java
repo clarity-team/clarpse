@@ -7,15 +7,16 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 
-import com.clarity.parser.ClarpseProject;
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.RawFile;
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.SourceFiles;
+import com.clarity.compiler.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 public class ClarpseTestUtil {
@@ -28,23 +29,28 @@ public class ClarpseTestUtil {
         IOUtils.copy(new BufferedInputStream(conn.getInputStream(), 1024), baos);
         GitHubRepoInputStream repoStream = new GitHubRepoInputStream(githubRepoOwner, githubrepoName,
                 baos.toByteArray());
-        final ParseRequestContent sourceFiles = extractProjectFromArchive(
+        final SourceFiles sourceFiles = extractProjectFromArchive(
                 new ByteArrayInputStream(repoStream.getBaos()), null, Lang.GOLANG);
+        System.out.println("Number of files in " + githubRepoOwner + "/" + githubrepoName + " is "
+                + sourceFiles.getFiles().size());
+        Date compileBeginDate = new Date();
         OOPSourceCodeModel model = new ClarpseProject(sourceFiles).result();
+        System.out.println("Compiling " + githubRepoOwner + "/" + githubrepoName + " took: "
+                + ((new Date().getTime() - compileBeginDate.getTime()) / 1000) + " s");
         return model;
     }
 
     public static OOPSourceCodeModel sourceCodeModel(String testResourceZip, Lang language) throws Exception {
-        final ParseRequestContent sourceFiles = extractProjectFromArchive(
+        final SourceFiles sourceFiles = extractProjectFromArchive(
                 ClarpseTestUtil.class.getResourceAsStream(testResourceZip), null, language);
         OOPSourceCodeModel model = new ClarpseProject(sourceFiles).result();
         return model;
     }
 
-    public static ParseRequestContent extractProjectFromArchive(final InputStream is, String project, Lang language)
+    public static SourceFiles extractProjectFromArchive(final InputStream is, String project, Lang language)
             throws Exception {
 
-        final ParseRequestContent sourceFiles = new ParseRequestContent(language);
+        final SourceFiles sourceFiles = new SourceFiles(language);
         boolean currentlyExtractingProject = false;
         boolean finishedExtracting = false;
         ZipInputStream zis = null;

@@ -4,11 +4,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.invocation.ComponentInvocation;
-import com.clarity.parser.ClarpseProject;
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
@@ -24,7 +24,7 @@ public class JavaDocInvocationTest {
                 + " * The url argument must specify an absolute {@link URL}. The name\n"
                 + "\n*/\npublic class ClassA { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -37,10 +37,10 @@ public class JavaDocInvocationTest {
     public void avoidMethodComponentJavaDocInvocations() throws Exception {
 
         final String code = "package com; \n /**\n"
-                + " * The url argument must specify an absolute {@link URL#test()}. The name\n"
+                + " * The url argument must specify an absolute {@link URL#test()  }. The name\n"
                 + "\n*/\npublic class ClassA { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -51,10 +51,10 @@ public class JavaDocInvocationTest {
     public void resolveDocCommentShortLinkUsingImport() throws Exception {
 
         final String code = "package com; \n import org.test.Junit;\n/**\n"
-                + " * The url argument must specify an absolute {@linkplain Junit}. The name\n"
+                + " * The url argument must specify an absolute {  @linkplain Junit}. The name\n"
                 + "\n*/\npublic class ClassA { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -70,7 +70,7 @@ public class JavaDocInvocationTest {
                 + " * The url argument must specify an absolute {@linkplain org.test.Junit}. The name\n"
                 + "\n*/\npublic class ClassA { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -86,7 +86,23 @@ public class JavaDocInvocationTest {
                 + " * The url argument must specify an absolute {@linkplain org.test.Junit}. The name\n"
                 + "\n*/\npublic class ClassA { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file1", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        generatedSourceModel = parseService.result();
+        assertTrue(
+                generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.DOC_MENTION)
+                        .get(0).invokedComponent().equals("org.test.Junit"));
+    }
+
+    @Test
+    public void resolveDocCommentLongLinkWithAlias() throws Exception {
+
+        final String code = "package com; \n import org.test.Junit;\n/**\n"
+                + " * The url argument must specify an absolute {  @link org.test.Junit   Junit  }. The name\n"
+                + "\n*/\npublic class ClassA { }";
+        OOPSourceCodeModel generatedSourceModel;
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();

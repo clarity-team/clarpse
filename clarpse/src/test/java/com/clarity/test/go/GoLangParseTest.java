@@ -4,10 +4,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clarity.parser.ClarpseProject;
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.RawFile;
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
@@ -18,7 +18,7 @@ public class GoLangParseTest {
     public void testPackageGroup() throws Exception {
 
         final String code = "package main\ntype person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -29,7 +29,7 @@ public class GoLangParseTest {
     public void testShortImportType() throws Exception {
 
         final String code = "package main\n import\"fmt\"\n type person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -40,7 +40,7 @@ public class GoLangParseTest {
     public void testLongImportType() throws Exception {
 
         final String code = "package main\n import m \"fmt\"\n type person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -53,7 +53,7 @@ public class GoLangParseTest {
         final String code = "package main\n import \"html/template\"\n import temp \"text/template\"\n type berry struct {\n person template.Person}";
         final String codeB = "package template\n type Person struct {}";
         final String codeC = "package template\n type Person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/github/com/main/person.go", code));
         rawData.insertFile(new RawFile("/github/com/html/template/person.go", codeB));
         rawData.insertFile(new RawFile("/github/com/text/template/person.go", codeC));
@@ -69,7 +69,7 @@ public class GoLangParseTest {
 
         final String code = "package main\n import g \"github\"\n type person struct {}";
         final String codeB = "package github";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/main.go", code));
         rawData.insertFile(new RawFile("/src/http/cakes/github/person.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -81,7 +81,7 @@ public class GoLangParseTest {
     public void testDotImportType() throws Exception {
 
         final String code = "package main\n import . \"fmt\"\n type person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -92,7 +92,7 @@ public class GoLangParseTest {
     public void testParseGoStruct() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -103,7 +103,7 @@ public class GoLangParseTest {
     public void testParseGoStructs() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {} type teacher struct{}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -115,7 +115,7 @@ public class GoLangParseTest {
     public void testParseGoInterface() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person interface {} type teacher struct{}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -127,7 +127,7 @@ public class GoLangParseTest {
     public void testParseGoStructPrivateVisibility() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {} type Teacher struct{}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -138,7 +138,7 @@ public class GoLangParseTest {
     public void testParseGoInterfacePrivateVisibility() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person interface {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -149,7 +149,7 @@ public class GoLangParseTest {
     public void testTwoGoStructsReferenceEachOther() throws Exception {
 
         final String code = "package test \n type person struct {teacher Teacher} \n type Teacher struct{}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("src/github/test/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -162,7 +162,7 @@ public class GoLangParseTest {
     public void testParseGoStructPublicVisibility() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ \n type person struct {} type Teacher struct{}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -173,7 +173,7 @@ public class GoLangParseTest {
     public void testParseGoInterfacePublicVisibility() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person interface {} type Teacher struct{}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -186,7 +186,7 @@ public class GoLangParseTest {
         final String code = "package main \n type plain interface \n{ testMethodv2() (string, uintptr) {} }";
         final String codeB = "package main\n type Person struct {}";
 
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         rawData.insertFile(new RawFile("/src/main/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -198,7 +198,7 @@ public class GoLangParseTest {
     public void testInterfaceAnonymousTypeMethodParamType() throws Exception {
 
         final String code = "package main \n type plain interface \n{ testMethodv2(x string, h int) (string, uintptr) {} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -207,10 +207,79 @@ public class GoLangParseTest {
     }
 
     @Test
+    public void localVarWithoutTypeDoesNotExist() throws Exception {
+
+        final String code = "package main \n type plain struct \n{ func (t plain) testMethodv2(x string, h int) (string, uintptr) {\n a:=\"test\"} }";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("/src/main/plain.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2.a") == null);
+    }
+
+    @Test
+    public void localVarExists() throws Exception {
+
+        final String code = "package main \n type plain struct \n{} \n func (t plain) testMethodv2 () {\n var i int  = 2;\n}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("/src/main/plain.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("main.plain.testMethodv2.i"));
+    }
+
+    @Test
+    public void localVarName() throws Exception {
+
+        final String code = "package main \n type plain struct \n{} \n func (t plain) testMethodv2 () {\n var i int  = 2;\n}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("/src/main/plain.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2.i").name().equals("i"));
+    }
+
+    @Test
+    public void localVarUniqueName() throws Exception {
+
+        final String code = "package main \n type plain struct \n{} \n func (t plain) testMethodv2 () {\n var i int  = 2;\n}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("/src/main/plain.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2.i").uniqueName()
+                .equals("main.plain.testMethodv2.i"));
+    }
+
+    @Test
+    public void localVarComponentType() throws Exception {
+
+        final String code = "package main \n type plain struct \n{} \n func (t plain) testMethodv2 () {\n var i int  = 2;\n}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("/src/main/plain.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(
+                generatedSourceModel.getComponent("main.plain.testMethodv2.i").componentType() == ComponentType.LOCAL);
+    }
+
+    @Test
+    public void localVarComponentInvocation() throws Exception {
+
+        final String code = "package main \n type plain struct \n{} \n func (t plain) testMethodv2 () {\n var i int  = 2;\n}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("/src/main/plain.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2.i")
+                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("int"));
+    }
+
+    @Test
     public void testInterfaceAnonymousTypeMethodParamDeclaration() throws Exception {
 
         final String code = "package main \n type plain interface \n{ testMethodv2(x string, h int) (string, uintptr) {} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -228,7 +297,7 @@ public class GoLangParseTest {
     public void testInterfaceAnonymousTypeMethodParamsIsChildOfMethod() throws Exception {
 
         final String code = "package main \n type plain interface \n{ testMethodv2(x string, h int) (string, uintptr) {} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -243,7 +312,7 @@ public class GoLangParseTest {
         final String codeA = "package main\n import \"github\"\n type person struct {}\n func (p person) someMethod() {}";
         final String codeB = "package github\n \n type anInterface interface { someMethod();}";
 
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/person.go", codeA));
         rawData.insertFile(new RawFile("/src/lol/github/aninterface.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -259,7 +328,7 @@ public class GoLangParseTest {
         final String codeA = "package main\n import \"github\"\n type person struct {}\n func (p person) someMethod() {}";
         final String codeB = "package github\n \n type anInterface interface { someMethod();}";
 
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/person.go", codeA));
         rawData.insertFile(new RawFile("/src/lol/github/aninterface.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -276,7 +345,7 @@ public class GoLangParseTest {
         final String codeB = "package github\n \n type anInterface interface { aSecondInterface \n someMethod();}";
         final String codeC = "package github\n \n type aSecondInterface interface { methodA();\n methodB(x,y int, z string) (f string, d string);";
 
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/person.go", codeA));
         rawData.insertFile(new RawFile("/src/lol/github/aninterface.go", codeB));
         rawData.insertFile(new RawFile("/src/lol/github/aSecondinterface.go", codeC));
@@ -301,7 +370,7 @@ public class GoLangParseTest {
         final String codeB = "package github\n \n type anInterface interface { aSecondInterface \n someMethod();}";
         final String codeC = "package github\n \n type aSecondInterface interface { methodA();\n methodB(x,y int, z string) (f string, d string);}";
 
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/person.go", codeA));
         rawData.insertFile(new RawFile("/src/lol/github/aninterface.go", codeB));
         rawData.insertFile(new RawFile("/src/lol/github/aSecondinterface.go", codeC));
@@ -320,7 +389,7 @@ public class GoLangParseTest {
         final String codeB = "package github\n \n type anInterface interface {  someMethod();}";
         final String codeC = "package github\n \n type aSecondInterface interface { methodA();\n methodB(x,y int, z string) (f string, d string);";
 
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/person.go", codeA));
         rawData.insertFile(new RawFile("/src/lol/github/aninterface.go", codeB));
         rawData.insertFile(new RawFile("/src/lol/github/aSecondinterface.go", codeC));
@@ -341,7 +410,7 @@ public class GoLangParseTest {
     public void testParseGoStructExtensionThroughAnonymousType() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {fmt.Math}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -353,7 +422,7 @@ public class GoLangParseTest {
     public void testParseGoStructMultipleTypesInFieldVar() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n type person struct {aField map[*fmt.Node]bool}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -370,7 +439,7 @@ public class GoLangParseTest {
 
         final String code = "package main\n import \"package/http\"\n type person struct {http.Object}";
         final String codeB = "package http\n type Object struct{}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("src/custom/package/http/person.go", codeB));
         rawData.insertFile(new RawFile("/src/custom/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -385,7 +454,7 @@ public class GoLangParseTest {
 
         final String code = "package main\n import zed \"package/http\"\n type person struct {x zed.Object}";
         final String codeB = "package http\n type Object struct{}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("src/custom/package/http/person.go", codeB));
         rawData.insertFile(new RawFile("/src/custom/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -399,7 +468,7 @@ public class GoLangParseTest {
     public void testParseGoStructExtensionThroughAnonymousTypePointer() throws Exception {
 
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {*fmt.Math}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -411,7 +480,7 @@ public class GoLangParseTest {
     public void testParsedSingleLineStructDoc() throws Exception {
 
         final String code = "package main\n //test struct doc\n type person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -422,7 +491,7 @@ public class GoLangParseTest {
     public void testParsMultiLineStructDoc() throws Exception {
 
         final String code = "package main\n //test struct\n// doc\n type person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -433,7 +502,7 @@ public class GoLangParseTest {
     public void testParseMultiLineInterfaceDoc() throws Exception {
 
         final String code = "package main\n //test interface\n// doc\n type person interface {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -444,7 +513,7 @@ public class GoLangParseTest {
     public void testParseMultiLineStructDocAfterAnotherStruct() throws Exception {
 
         final String code = "package main\n type animal struct {}\n//test struct\n// doc\n type person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -455,7 +524,7 @@ public class GoLangParseTest {
     public void testParseMultiLineStructDocSeparatedByEmptyLines() throws Exception {
 
         final String code = "package main\n//test struct\n// doc\n\n\ntype person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -466,7 +535,7 @@ public class GoLangParseTest {
     public void testParseMultiLineStructDocForInterfaceMethodSpece() throws Exception {
 
         final String code = "package main\ntype person interface { \n//test\n testMethod() int}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -477,7 +546,7 @@ public class GoLangParseTest {
     public void testInterfaceMethodSpecExists() throws Exception {
 
         final String code = "package main\ntype person interface { \n//test\n testMethod() int}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -487,7 +556,7 @@ public class GoLangParseTest {
     @Test
     public void testInterfaceMethodSpecParamsExist() throws Exception {
         final String code = "package main\ntype person interface { testMethod() int}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -498,7 +567,7 @@ public class GoLangParseTest {
     public void testInterfaceComplexMethodSpecParamsExist() throws Exception {
         final String code = "package go\n import \"org\" \n type person interface { testMethod() org.Cake}";
         final String codeB = "package org\n type Cake struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("src/github/go/person.go", code));
         rawData.insertFile(new RawFile("src/github/game/org/cakes.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -511,7 +580,7 @@ public class GoLangParseTest {
     public void testInterfaceMethodSpecComponentType() throws Exception {
 
         final String code = "package main\ntype person interface { \n//test\n testMethod() int}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -522,7 +591,7 @@ public class GoLangParseTest {
     public void testInterfaceMethodSpecComponentIsChildOfParentInterface() throws Exception {
 
         final String code = "package main\ntype person interface { \n//test\n testMethod() int}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -535,7 +604,7 @@ public class GoLangParseTest {
         final String code = "package main \n type plain interface \n{testMethod() int\n Person\n testMethodv2() (string, uintptr) {} }";
         final String codeB = "package main\n type Person struct {}";
 
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         rawData.insertFile(new RawFile("/src/main/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -549,7 +618,7 @@ public class GoLangParseTest {
     public void testParseSingleLineStructDocSeparatedByEmptyLines() throws Exception {
 
         final String code = "package main\n//test struct doc\n\n\n\ntype person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -559,7 +628,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructHasCorrectSourceFileAttr() throws Exception {
         final String code = "package main\ntype person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -569,7 +638,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructHasCorrectComponentType() throws Exception {
         final String code = "package main\ntype person struct {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -579,7 +648,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructFieldVarExists() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -589,7 +658,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructFieldVarInvocation() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -601,7 +670,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructFieldVarComponentName() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -611,7 +680,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructFieldVarComponenType() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -621,7 +690,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructFieldVarPrivateVisibility() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -631,7 +700,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructFieldVarPublicVisibility() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {MathObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -641,7 +710,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructFieldVarName() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -651,7 +720,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructSideBySideFieldVars() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj , secondObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -662,7 +731,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructSideBySideFieldVarsInvocations() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj , secondObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -673,7 +742,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructFIeldVarIsChildOfStruct() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -683,7 +752,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodExists() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -693,7 +762,7 @@ public class GoLangParseTest {
     @Test
     public void testParseGoStructMethodWithUnnamedParameters() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x(string) () {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -703,7 +772,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodComponentType() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -713,7 +782,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodComponentName() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -723,7 +792,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodName() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -733,7 +802,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodComment() throws Exception {
         final String code = "package main\ntype person struct {}\n\n //test \n //test\n\nfunc (p person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -743,7 +812,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodDocComment() throws Exception {
         final String code = "package main\ntype person struct {}\n\n //test \n //test\n\nfunc (p person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -753,7 +822,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodIsChildofStruct() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -763,7 +832,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodPackageNameEqualsParentsPackageName() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("src/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -774,7 +843,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodSingleParamExists() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) lol(x int) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -784,7 +853,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodSingleParamComponentType() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) lol(x int) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -795,7 +864,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodSingleParamComponentIsChildOfMethod() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) lol(x int) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -805,7 +874,7 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodSingleParamComponentInvocation() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) lol(x int) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -817,7 +886,7 @@ public class GoLangParseTest {
     public void testGoStructMethodTripleParamComponentInvocation() throws Exception {
         final String codeB = "package http\ntype httpcakes struct {}";
         final String code = "package main\nimport \"http\"\ntype person struct {} \n func (p person) lol(x,y int, z *http.httpcakes) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("src/main/person.go", code));
         rawData.insertFile(new RawFile("src/github/http/http.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -835,7 +904,7 @@ public class GoLangParseTest {
     public void testGoStructMethodSingleParamUniqueNameComplex() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"test/main\" \n func (p tester.Person) x(v1,v2 tester.Person) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/test/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/main/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -853,7 +922,7 @@ public class GoLangParseTest {
     public void testGoStructMethodExistsInAnotherSourceFile() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package cakes\n import \"main\" \n func (p main.Person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/person.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -864,8 +933,8 @@ public class GoLangParseTest {
     @Test
     public void testGoStructMethodExistsInAnotherSourceFilev2() throws Exception {
         final String code = "package main\ntype Person struct {}";
-        final String codeB = "package cakes\n import tester \"main\" \n func (p tester.Person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final String codeB = "package cakes\n import main \"main\" \n func (p main.Person) x() int {}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -878,7 +947,7 @@ public class GoLangParseTest {
     public void testGoStructMethodValue() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() int {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -890,7 +959,7 @@ public class GoLangParseTest {
     public void testGoStructMethodMultipleDeclarationReturnValues() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() (x,y int) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -902,7 +971,7 @@ public class GoLangParseTest {
     public void testGoStructMethodMultipleIndividualDeclarationReturnValues() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() (x uint8,y int) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -914,7 +983,7 @@ public class GoLangParseTest {
     public void testGoStructMethodMultipleComplexDeclarationReturnValues() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() (x,z uint8, y int) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -926,7 +995,7 @@ public class GoLangParseTest {
     public void testGoStructMethodMultipleReturnValue() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() (string, int) {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
@@ -937,8 +1006,8 @@ public class GoLangParseTest {
     @Test
     public void testGoNoReturnStructMethodValueIsNull() throws Exception {
         final String code = "package main\ntype Person struct {}";
-        final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() {}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.GOLANG);
+        final String codeB = "package main\n import tester \"main\" \n func (p main.Person) x() {}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);

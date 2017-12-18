@@ -1,27 +1,29 @@
-package com.clarity.parser;
+package com.clarity.compiler;
 
 import com.clarity.AbstractFactory;
 import com.clarity.FactoryProducer;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
- * Represents a project to be processed by Clarpse, serves as the entry point
- * into Clarpse.
+ * Represents a project to be processed by Clarpse.
  */
 public class ClarpseProject {
 
-    private final ParseRequestContent rawData;
+    private final SourceFiles rawData;
 
-    public ClarpseProject(ParseRequestContent rawData) {
+    public ClarpseProject(SourceFiles rawData) {
         this.rawData = rawData;
     }
 
-    private OOPSourceCodeModel parseRawData(final ParseRequestContent rawData) throws Exception {
+    private OOPSourceCodeModel parseRawData(final SourceFiles rawData) throws Exception {
         final AbstractFactory parserFactory = new FactoryProducer().getFactory(FactoryProducer.PARSE_KEYWORD);
-        final ClarpseParser parsingTool = parserFactory.getParsingTool(rawData.getLanguage());
-        return parsingTool.extractParseResult(rawData);
+        final ClarpseCompiler parsingTool = parserFactory.getParsingTool(rawData.getLanguage());
+        return parsingTool.compile(rawData);
     }
 
+    /**
+     * The number of workers to use to compute the result.
+     */
     public OOPSourceCodeModel result() throws Exception {
 
         if (!validateParseType(rawData.getLanguage())) {

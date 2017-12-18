@@ -42,6 +42,9 @@ public class CommonDir {
                     commonDir = StringUtils.join(matchingParts, "/");
                 }
             }
+            if (!commonDir.endsWith("/")) {
+                commonDir += "/";
+            }
             return commonDir;
         }
     }

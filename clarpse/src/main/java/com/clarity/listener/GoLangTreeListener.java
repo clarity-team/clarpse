@@ -29,11 +29,12 @@ import com.clarity.antlr.golang.GolangParser.SourceFileContext;
 import com.clarity.antlr.golang.GolangParser.StructTypeContext;
 import com.clarity.antlr.golang.GolangParser.TypeNameContext;
 import com.clarity.antlr.golang.GolangParser.TypeSpecContext;
+import com.clarity.antlr.golang.GolangParser.VarSpecContext;
+import com.clarity.compiler.RawFile;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
-import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
@@ -147,10 +148,15 @@ public class GoLangTreeListener extends GolangBaseListener {
     public final void enterImportSpec(ImportSpecContext ctx) {
         String fullImportName = ctx.importPath().getText().replaceAll("\"", "");
         for (String s : projectFileTypes) {
-            if (s.endsWith(fullImportName)) {
+            if (this.file.name().contains("app_only_env")) {
+                System.out.println("");
+            }
+            if (s.endsWith(fullImportName) || fullImportName.endsWith(s)) {
                 fullImportName = s;
+                break;
             }
         }
+
         currentImports.add(fullImportName.replaceAll("/", "."));
         final String shortImportName;
         if (ctx.IDENTIFIER() != null && ctx.IDENTIFIER().getText() != null) {
@@ -223,7 +229,7 @@ public class GoLangTreeListener extends GolangBaseListener {
      * type and returns its Text Value. If there are multiple relevant child nodes,
      * we will return the text value for one of them at random.
      */
-    public String getChildContextText(RuleContext ctx, Class<? extends RuleContext> clazz) {
+    public String getChildContextText(RuleContext ctx) {
 
         if (ctx == null) {
             return "";
@@ -236,7 +242,7 @@ public class GoLangTreeListener extends GolangBaseListener {
         for (int i = 0; i < ctx.getChildCount(); i++) {
             if (!(ctx.getChild(i) instanceof TerminalNodeImpl)) {
                 try {
-                    String t = getChildContextText((RuleContext) ctx.getChild(i), clazz);
+                    String t = getChildContextText((RuleContext) ctx.getChild(i));
                     if (!t.isEmpty()) {
                         s += t + ",";
                     }
@@ -248,6 +254,16 @@ public class GoLangTreeListener extends GolangBaseListener {
         return s.replaceAll(",$", "");
     }
 
+    private VarSpecContext findParentVarSpecContext(RuleContext ctx) {
+        if (ctx instanceof VarSpecContext) {
+            return (VarSpecContext) ctx;
+        } else if (ctx.getParent() != null) {
+            return findParentVarSpecContext(ctx.getParent());
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public final void enterMethodDecl(MethodDeclContext ctx) {
         if (ctx.IDENTIFIER() != null) {
@@ -256,6 +272,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
+            cmp.setComponentName(generateComponentName(ctx.IDENTIFIER().getText()));
             pointParentsToGivenChild(cmp);
             cmp.insertAccessModifier(visibility(cmp.name()));
             componentStack.push(cmp);
@@ -282,7 +299,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                 if (!inReceiverContext && !inResultContext) {
                     String[] types = {};
                     for (int j = 0; j < paramCtx.children.size(); j++) {
-                        String type = getChildContextText(paramCtx, TypeNameContext.class);
+                        String type = getChildContextText(paramCtx);
                         types = type.split(",");
 
                         if (types.length < 1) {
@@ -375,6 +392,16 @@ public class GoLangTreeListener extends GolangBaseListener {
                 }
             }
             componentStack.push(cmp);
+            VarSpecContext tmpContext = findParentVarSpecContext(ctx);
+            if (tmpContext != null) {
+                for (TerminalNode identifier : tmpContext.identifierList().IDENTIFIER()) {
+                    Component localVarCmp = createComponent(ComponentType.LOCAL);
+                    localVarCmp.setName(identifier.getText());
+                    localVarCmp.setComponentName(generateComponentName(identifier.getText()));
+                    localVarCmp.insertComponentInvocation(new TypeDeclaration(resolvedType));
+                    completeComponent(localVarCmp);
+                }
+            }
         }
     }
 
@@ -418,10 +445,12 @@ public class GoLangTreeListener extends GolangBaseListener {
             for (TerminalNode token : ctx.identifierList().IDENTIFIER()) {
                 Component cmp = createComponent(ComponentType.FIELD);
                 cmp.setName(token.getText());
+                cmp.setComment(
+                        AntlrUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
                 cmp.setComponentName(generateComponentName(token.getText()));
                 cmp.insertAccessModifier(visibility(cmp.name()));
                 pointParentsToGivenChild(cmp);
-                String[] types = getChildContextText(ctx.type(), TypeNameContext.class).split(",");
+                String[] types = getChildContextText(ctx.type()).split(",");
                 for (String type : types) {
                     cmp.insertComponentInvocation(new TypeDeclaration(resolveType(type)));
                 }
@@ -429,7 +458,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             }
             fieldVars.forEach(item -> completeComponent(item));
         } else if (ctx.anonymousField() != null) {
-            String[] types = getChildContextText(ctx.anonymousField(), TypeNameContext.class).split(",");
+            String[] types = getChildContextText(ctx.anonymousField()).split(",");
             for (String type : types) {
                 insertExtensionIntoStackBaseComponent(type);
             }

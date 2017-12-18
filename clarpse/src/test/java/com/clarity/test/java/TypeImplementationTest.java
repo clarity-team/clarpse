@@ -5,11 +5,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.SourceFiles;
+import com.clarity.compiler.RawFile;
 import com.clarity.invocation.ComponentInvocation;
-import com.clarity.parser.ClarpseProject;
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
@@ -23,7 +23,7 @@ public class TypeImplementationTest {
 
         final String code = "package com; \n public class ClassA implements ClassD { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -37,7 +37,7 @@ public class TypeImplementationTest {
 
         final String code = "package com; \n public class ClassA implements ClassD, ClassE { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -54,7 +54,7 @@ public class TypeImplementationTest {
 
         final String code = "package com; \n public class ClassA implements ClassD { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -66,7 +66,7 @@ public class TypeImplementationTest {
 
         final String code = "package com; \n public class ClassA implements ClassD, ClassE { }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -78,7 +78,7 @@ public class TypeImplementationTest {
 
         final String code = "package com; \n public class ClassA {  class ClassB implements ClassD{} }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
@@ -93,7 +93,7 @@ public class TypeImplementationTest {
 
         final String code = "package com; \n public class ClassA { public class ClassB implements ClassD{} }";
         OOPSourceCodeModel generatedSourceModel;
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();

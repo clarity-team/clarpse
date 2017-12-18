@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.clarity.ClarpseUtil;
+import com.clarity.compiler.RawFile;
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.DocMention;
@@ -20,7 +21,6 @@ import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.TypeParameter;
-import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;

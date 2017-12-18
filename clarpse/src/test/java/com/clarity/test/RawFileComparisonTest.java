@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.clarity.parser.RawFile;
+import com.clarity.compiler.RawFile;
 
 
 public class RawFileComparisonTest {

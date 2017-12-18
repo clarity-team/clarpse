@@ -1,8 +1,7 @@
-package com.clarity.parser;
+package com.clarity.compiler;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +10,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import com.clarity.CommonDir;
@@ -32,75 +33,12 @@ import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
- * Antlr4 based GoLang parser.
+ * Antlr4 based GoLang compiler.
  */
-public class ClarpseGoLangParser implements ClarpseParser {
+public class ClarpseGoCompiler implements ClarpseCompiler {
 
-    @Override
-    public final OOPSourceCodeModel extractParseResult(final ParseRequestContent rawData) throws Exception {
-        Date startTime = new Date();
-        final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-        System.out.println("number of files is: " + rawData.getFiles().size());
-        final List<RawFile> files = rawData.getFiles();
-        List<String> projectFileTypes = new ArrayList<String>();
+    private void resolveInterfaces(OOPSourceCodeModel srcModel) throws Exception {
 
-        if (files.size() < 1) {
-            return srcModel;
-        } else {
-            String smallestCodeBaseContaininingDir = files.get(0).name();
-
-            for (int i = 1; i < files.size(); i++) {
-                smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir, files.get(i).name())
-                        .string();
-            }
-
-            if (smallestCodeBaseContaininingDir.startsWith("/")) {
-                smallestCodeBaseContaininingDir.substring(1);
-            }
-
-            for (RawFile file : files) {
-                String modFileName = "";
-                if (file.name().contains("src/")) {
-                    modFileName = (file.name().substring(file.name().indexOf("src/") + 4));
-                } else {
-                    modFileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
-                    if (modFileName.startsWith("/")) {
-                        modFileName = modFileName.substring(1);
-                    }
-                }
-
-                if (modFileName.contains("/")) {
-                    projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
-                }
-            }
-
-            // sort fileTypes by length in desc order so that the longest types are at the
-            // top.
-            Collections.sort(projectFileTypes, new LengthComp());
-
-            for (RawFile file : files) {
-                try {
-                    CharStream charStream = new ANTLRInputStream(file.content());
-                    GolangLexer lexer = new GolangLexer(charStream);
-                    TokenStream tokens = new CommonTokenStream(lexer);
-                    GolangParser parser = new GolangParser(tokens);
-                    SourceFileContext sourceFileContext = parser.sourceFile();
-                    ParseTreeWalker walker = new ParseTreeWalker();
-                    GolangBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file);
-                    walker.walk(listener, sourceFileContext);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        /**
-         * In GoLang, interfaces are implemented implicitly. As a result, we handle
-         * their detection in the following way: Once we have parsed the entire code
-         * base, we compare every paprsed interface to every parsed struct to see what
-         * interfaces the struct implements. Then we modify the source code model to
-         * represent our findings accordingly.
-         */
         Set<Component> baseComponents = srcModel.getComponents().values().stream()
                 .filter(s -> (s.componentType().isBaseComponent())).collect(Collectors.toSet());
         ImplementedInterfaces implementedInterfacesGatherer = new ImplementedInterfaces(srcModel);
@@ -110,9 +48,83 @@ public class ClarpseGoLangParser implements ClarpseParser {
                 baseCmp.insertComponentInvocation(new TypeImplementation(implementedInterface));
             }
         }
-        System.out
-                .println("GoLang parsing took: " + ((new Date().getTime() - startTime.getTime()) / 1000) + " seconds");
+    }
+
+    private List<String> getProjectFileSymbols(List<RawFile> files) throws Exception {
+
+        List<String> projectFileTypes = new ArrayList<String>();
+        String smallestCodeBaseContaininingDir = files.get(0).name();
+
+        for (int i = 1; i < files.size(); i++) {
+            smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir, files.get(i).name())
+                    .string();
+        }
+
+        if (smallestCodeBaseContaininingDir.startsWith("/")) {
+            smallestCodeBaseContaininingDir.substring(1);
+        }
+
+        for (RawFile file : files) {
+            String modFileName = "";
+            if (file.name().contains("src/")) {
+                modFileName = (file.name().substring(file.name().indexOf("src/") + 4));
+            } else {
+                modFileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
+                if (modFileName.startsWith("/")) {
+                    modFileName = modFileName.substring(1);
+                }
+            }
+
+            if (modFileName.contains("/")) {
+                projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
+            }
+        }
+        return projectFileTypes;
+    }
+
+    @Override
+    public OOPSourceCodeModel compile(SourceFiles rawData) throws Exception {
+        final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
+        final List<RawFile> files = rawData.getFiles();
+
+        if (files.size() < 1) {
+            return srcModel;
+        } else {
+            List<String> projectFileTypes = getProjectFileSymbols(files);
+            // sort fileTypes by length in desc order so that the longest types are at the
+            // top.
+            Collections.sort(projectFileTypes, new LengthComp());
+            // compile code based on number of workers
+            compileFiles(files, srcModel, projectFileTypes);
+            /**
+             * In GoLang, interfaces are implemented implicitly. As a result, we handle
+             * their detection in the following way: Once we have parsed the entire code
+             * base, we compare every parsed interface to every parsed struct to see if
+             * there is a match. Then we modify the source code model to represent our
+             * findings accordingly.
+             */
+            resolveInterfaces(srcModel);
+        }
         return srcModel;
+    }
+
+    private void compileFiles(List<RawFile> files, OOPSourceCodeModel srcModel, List<String> projectFileTypes) {
+        for (RawFile file : files) {
+            try {
+                CharStream charStream = new ANTLRInputStream(file.content());
+                GolangLexer lexer = new GolangLexer(charStream);
+                TokenStream tokens = new CommonTokenStream(lexer);
+                GolangParser parser = new GolangParser(tokens);
+                SourceFileContext sourceFileContext = parser.sourceFile();
+                parser.setErrorHandler(new BailErrorStrategy());
+                parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+                ParseTreeWalker walker = new ParseTreeWalker();
+                GolangBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file);
+                walker.walk(listener, sourceFileContext);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 
@@ -126,7 +138,10 @@ class ImplementedInterfaces {
                 .filter(s -> (s.componentType() == ComponentType.INTERFACE)).collect(Collectors.toSet());
         interfaceMethodSpecsPairs = new HashMap<String, List<String>>();
         for (Component interfaceCmp : allInterfaceComponents) {
-            interfaceMethodSpecsPairs.put(interfaceCmp.uniqueName(), getListOfMethodSpecs(interfaceCmp));
+            List<String> interfaceMethodSpecs = getListOfMethodSpecs(interfaceCmp);
+            if (!interfaceMethodSpecs.isEmpty()) {
+            interfaceMethodSpecsPairs.put(interfaceCmp.uniqueName(), interfaceMethodSpecs);
+            }
         }
     }
 

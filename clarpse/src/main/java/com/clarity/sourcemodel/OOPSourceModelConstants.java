@@ -13,17 +13,8 @@ import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.TypeInstantiation;
 
-/**
- * Constants related to source code model entities.
- *
- * @author Muntazir Fadhel
- *
- */
 public final class OOPSourceModelConstants {
 
-    /**
-     * private constructor.
-     */
     private OOPSourceModelConstants() {
     };
 
@@ -31,9 +22,6 @@ public final class OOPSourceModelConstants {
 
     static final Map<String, String> JAVA_ANNOTATIONS = new HashMap<String, String>();
 
-    /**
-     * @return the javaCollections
-     */
     public static Map<String, String> getJavaPredefinedAnnotations() {
         return JAVA_ANNOTATIONS;
     }
@@ -261,13 +249,6 @@ public final class OOPSourceModelConstants {
         }
     }
 
-    /**
-     * Enum constants representing types of component found in java code source
-     * model.
-     *
-     * @author Muntazir Fadhel
-     *
-     */
     public enum ComponentType implements Serializable {
 
         CLASS("class", true, false, false), STRUCT("struct", true, false, false), INTERFACE("interface", true, false,
@@ -316,11 +297,8 @@ public final class OOPSourceModelConstants {
         return JAVA_ACCESS_MODIFIER_MAP;
     }
 
-    /**
-     * @return the javaComponentTypes
-     */
     public static Map<ComponentType, String> getJavaComponentTypes() {
-        return JAVA_COMPONENT_TYPES;
+        return COMPONENT_TYPES;
     }
 
     static {
@@ -339,10 +317,7 @@ public final class OOPSourceModelConstants {
 
     }
 
-    /**
-     * Map of all the possible java component types..
-     */
-    private static final Map<ComponentType, String> JAVA_COMPONENT_TYPES = new HashMap<ComponentType, String>();
+    private static final Map<ComponentType, String> COMPONENT_TYPES = new HashMap<ComponentType, String>();
     static {
         getJavaComponentTypes().put(ComponentType.INTERFACE, "interface");
         getJavaComponentTypes().put(ComponentType.ENUM, "enum");

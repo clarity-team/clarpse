@@ -51,7 +51,7 @@ public class ResolvedRelativePath {
         String relativePath = preprocessedPath(this.unresolvedRelativePath);
 
         // build absolute path representing the given relative path
-        List<String> absoluteParts = new ArrayList(Arrays.asList(absolutePath.split("/")));
+        List<String> absoluteParts = new ArrayList<String>(Arrays.asList(absolutePath.split("/")));
         String[] relativeParts = relativePath.split("/");
         for (String relativePart : relativeParts) {
             if (relativePart.equals(".")) {

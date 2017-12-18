@@ -1,4 +1,4 @@
-package com.clarity.parser;
+package com.clarity.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +16,29 @@ import com.google.javascript.rhino.Node;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
-@Experimental
-public class ClarpseJSParser implements ClarpseParser {
+public class ClarpseJSCompiler implements ClarpseCompiler {
 
-    @Override
-    public OOPSourceCodeModel extractParseResult(ParseRequestContent rawData) throws Exception {
+    @SuppressWarnings("deprecation")
+    private OOPSourceCodeModel compileFiles(List<RawFile> files, List<String> projectFileTypes) {
+        OOPSourceCodeModel model = new OOPSourceCodeModel();
+        for (RawFile file : files) {
+            try {
+                Compiler compiler = new Compiler();
+                CompilerOptions options = new CompilerOptions();
+                options.setIdeMode(true);
+                options.setParseJsDocDocumentation(JsDocParsing.INCLUDE_DESCRIPTIONS_WITH_WHITESPACE);
+                compiler.initOptions(options);
+                Node root = new JsAst(SourceFile.fromCode(file.name(), file.content())).getAstRoot(compiler);
+                JavaScriptListener jsListener = new JavaScriptListener(model, file, projectFileTypes);
+                NodeTraversal.traverseEs6(compiler, root, jsListener);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return model;
+    }
 
-        final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-        final List<RawFile> files = rawData.getFiles();
-        System.out.println(files.size());
+    private List<String> getProjectFileTypes(List<RawFile> files) throws Exception {
         List<String> projectFileTypes = new ArrayList<String>();
         String smallestCodeBaseContaininingDir = "";
 
@@ -52,25 +66,20 @@ public class ClarpseJSParser implements ClarpseParser {
                 projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
             }
         }
+        return projectFileTypes;
+    }
 
+    @Override
+    public OOPSourceCodeModel compile(SourceFiles rawData) throws Exception {
+
+        OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
+        final List<RawFile> files = rawData.getFiles();
+        System.out.println(files.size());
+        List<String> projectFileTypes = getProjectFileTypes(files);
         // sort fileTypes by length in desc order so that the longest types are at the
         // top.
         Collections.sort(projectFileTypes, new LengthComp());
-
-        for (RawFile file : rawData.getFiles()) {
-            try {
-                Compiler compiler = new Compiler();
-                CompilerOptions options = new CompilerOptions();
-                options.setIdeMode(true);
-                options.setParseJsDocDocumentation(JsDocParsing.INCLUDE_DESCRIPTIONS_WITH_WHITESPACE);
-                compiler.initOptions(options);
-                Node root = new JsAst(SourceFile.fromCode(file.name(), file.content())).getAstRoot(compiler);
-                JavaScriptListener jsListener = new JavaScriptListener(srcModel, file, projectFileTypes);
-                NodeTraversal.traverseEs6(compiler, root, jsListener);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        srcModel = compileFiles(files, projectFileTypes);
         return srcModel;
     }
 }

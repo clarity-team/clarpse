@@ -4,11 +4,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.SourceFiles;
+import com.clarity.compiler.RawFile;
 import com.clarity.invocation.ComponentInvocation;
-import com.clarity.parser.ClarpseProject;
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
@@ -20,7 +20,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testClassInheritsFieldInvocations() throws Exception {
         final String code = "class Test { String fieldVar; }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -31,7 +31,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testClassInheritsMethodInvocations() throws Exception {
         final String code = "class Test { public String aMethod(){} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -42,7 +42,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testClassInheritsLocalVarsInvocations() throws Exception {
         final String code = "class Test { public void fieldVar(){String test;} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -53,7 +53,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testClassInheritsMethodParamsInvocations() throws Exception {
         final String code = "class Test { public void fieldVar(String test){} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -64,7 +64,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testClassInheritsNestedClassInvocations() throws Exception {
         final String code = "class Test { class NestedClass { public void fieldVar(String test){} } }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -75,7 +75,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testClassDoesNotInheritExtendsAndImplementsInvocations() throws Exception {
         final String code = "class Test { class NestedClass extends String implements Integer {} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -85,7 +85,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testInterfaceInheritsFieldInvocations() throws Exception {
         final String code = "interface Test { String localVar; }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -96,7 +96,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testInterfaceInheritsMethodInvocations() throws Exception {
         final String code = "interface Test { abstract String aMethod(); }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -107,7 +107,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testInterfaceInheritsMethodParamsInvocations() throws Exception {
         final String code = "interface Test { abstract void aMethod(String test); }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -118,7 +118,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testMethodInheritsLocalVarsInvocations() throws Exception {
         final String code = "class Test { public void aMethod(){String test;} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -130,7 +130,7 @@ public class InvocationInheritanceTest {
     @Test
     public void testMethodInheritsMethodParamsInvocations() throws Exception {
         final String code = "class Test { public void aMethod(String test){} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();

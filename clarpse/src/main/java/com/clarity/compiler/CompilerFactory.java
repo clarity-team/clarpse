@@ -1,22 +1,22 @@
-package com.clarity.parser;
+package com.clarity.compiler;
 
 import com.clarity.AbstractFactory;
 
 /**
  * Factory to retrieve appropriate parsing tool for our projects.
  */
-public class ParserFactory extends AbstractFactory {
+public class CompilerFactory extends AbstractFactory {
 
     @Override
-    public final ClarpseParser getParsingTool(final String parseType) throws Exception {
+    public final ClarpseCompiler getParsingTool(final String parseType) throws Exception {
         switch (parseType.toLowerCase()) {
 
         case "java":
-            return new ClarpseJavaParser();
+            return new ClarpseJavaCompiler();
         case "javascript":
-            return new ClarpseJSParser();
+            return new ClarpseJSCompiler();
         case "golang":
-            return new ClarpseGoLangParser();
+            return new ClarpseGoCompiler();
         default:
             throw new Exception("Could not find parsing tool for: " + parseType);
         }

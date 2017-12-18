@@ -4,10 +4,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.clarity.parser.ClarpseProject;
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.RawFile;
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.SourceFiles;
+import com.clarity.compiler.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 public class ChildComponentsTest {
@@ -16,7 +16,7 @@ public class ChildComponentsTest {
     public void testClassHasMethodChild() throws Exception {
 
         final String code = "class Test { void method(){} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -27,7 +27,7 @@ public class ChildComponentsTest {
     public void testClassHasFieldVarChild() throws Exception {
 
         final String code = "class Test { String fieldVar; }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -38,7 +38,7 @@ public class ChildComponentsTest {
     public void testIntefaceHasMethodChild() throws Exception {
 
         final String code = "interface Test { void method(); }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -49,7 +49,7 @@ public class ChildComponentsTest {
     public void testMethodeHasMethodParamChild() throws Exception {
 
         final String code = "class Test { void method(String str); }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -61,7 +61,7 @@ public class ChildComponentsTest {
     public void testIntefaceHasConstantFieldChild() throws Exception {
 
         final String code = "interface Test { String NEAR_TO_QUERY; }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -72,7 +72,7 @@ public class ChildComponentsTest {
     public void testClassHasNestedIntefaceChild() throws Exception {
 
         final String code = "class TestA { interface TestB { }}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -83,7 +83,7 @@ public class ChildComponentsTest {
     public void testClassHasNestedEnumChild() throws Exception {
 
         final String code = "class TestA { enum TestB { }}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -94,7 +94,7 @@ public class ChildComponentsTest {
     public void testEnumHasNestedConstantsChild() throws Exception {
 
         final String code = " enum TestA { A,B,C; }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -107,7 +107,7 @@ public class ChildComponentsTest {
     public void testClassWithMultipleChildren() throws Exception {
 
         final String code = " class TestA { String fieldVar; String method(){} interface TestB {}}";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();

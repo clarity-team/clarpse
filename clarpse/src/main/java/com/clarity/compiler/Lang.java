@@ -1,4 +1,4 @@
-package com.clarity.parser;
+package com.clarity.compiler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
