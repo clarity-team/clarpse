@@ -1,4 +1,4 @@
-package com.clarity.parser;
+package com.clarity.compiler;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

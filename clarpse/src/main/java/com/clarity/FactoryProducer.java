@@ -10,7 +10,7 @@ public final class FactoryProducer {
     private static final TreeMap<String, AbstractFactory> FACTORY_MAP = new TreeMap<String, AbstractFactory>(
             String.CASE_INSENSITIVE_ORDER) {
         {
-            put("PARSER", new com.clarity.parser.ParserFactory());
+            put("PARSER", new com.clarity.compiler.CompilerFactory());
         }
     };
 

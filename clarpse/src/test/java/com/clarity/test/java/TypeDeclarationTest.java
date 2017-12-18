@@ -4,11 +4,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.SourceFiles;
+import com.clarity.compiler.RawFile;
 import com.clarity.invocation.ComponentInvocation;
-import com.clarity.parser.ClarpseProject;
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
@@ -18,7 +18,7 @@ public class TypeDeclarationTest {
     public void testFieldVarTypeDeclaration() throws Exception {
 
         final String code = "class Test { String fieldVar; }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -31,7 +31,7 @@ public class TypeDeclarationTest {
     public void testFieldVarTypeDeclarationListSize() throws Exception {
 
         final String code = "class Test { String fieldVar; }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -43,7 +43,7 @@ public class TypeDeclarationTest {
     public void testClassExpressionsNotCountedAsTypeDeclaration() throws Exception {
 
         final String code = "class Test { Logger log = new Logger(Lol.class); }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -55,7 +55,7 @@ public class TypeDeclarationTest {
     public void testMethodParamTypeDeclaration() throws Exception {
 
         final String code = "class Test { void method(String s1, int s2){} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -71,7 +71,7 @@ public class TypeDeclarationTest {
     public void testMethodParamTypeDeclarationListSize() throws Exception {
 
         final String code = "class Test { void method(String s1, int s2){} }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -85,7 +85,7 @@ public class TypeDeclarationTest {
     public void testMethodLocalVarTypeDeclaration() throws Exception {
 
         final String code = "class Test { void method(){ String s; } }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
@@ -98,7 +98,7 @@ public class TypeDeclarationTest {
     public void testMethodLocalVarTypeDeclarationListSize() throws Exception {
 
         final String code = "class Test { void method(){ String s; } }";
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();

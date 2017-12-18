@@ -1,4 +1,4 @@
-package com.clarity.parser;
+package com.clarity.compiler;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,13 +13,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @author Muntazir Fadhel
  */
 @JsonInclude(Include.NON_NULL)
-public class ParseRequestContent implements Serializable {
+public class SourceFiles implements Serializable {
 
     private String language;
     private static final long serialVersionUID = 196237203663853669L;
     private List<RawFile> files = new ArrayList<RawFile>();
 
-    public ParseRequestContent() {
+    public SourceFiles() {
     }
 
     public String getLanguage() {
@@ -30,7 +30,7 @@ public class ParseRequestContent implements Serializable {
         this.language = language.value();
     }
 
-    public ParseRequestContent(final Lang language) {
+    public SourceFiles(final Lang language) {
         this.language = language.value();
     }
 

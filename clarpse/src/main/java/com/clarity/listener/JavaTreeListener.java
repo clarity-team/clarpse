@@ -11,14 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import com.clarity.ClarpseUtil;
+import com.clarity.compiler.RawFile;
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
+import com.clarity.invocation.DocMention;
 import com.clarity.invocation.ThrownException;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.TypeParameter;
-import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
@@ -69,8 +71,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     /**
      * @param srcModel
-     *            Source model to populate from the parsing of the given code
-     *            base.
+     *            Source model to populate from the parsing of the given code base.
      * @param file
      *            The path of the source file being parsed.
      */
@@ -205,6 +206,9 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         cmp.setName(ctx.getName());
         cmp.setImports(currentImports);
         if (ctx.getJavaDoc() != null) {
+            for (String docMention : ClarpseUtil.extractDocTypeMentions(ctx.getJavaDoc().toString())) {
+                cmp.insertComponentInvocation(new DocMention(resolveType(docMention)));
+            }
             cmp.setComment(ctx.getJavaDoc().toString());
         }
         pointParentsToGivenChild(cmp);
@@ -251,11 +255,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     }
 
     /**
-     * Returns the extend type name of the given type.
-     *
-     * @param type
-     *            type to resolve
-     * @return full name of the given type
+     * Returns the full, unique type name of the given type.
      */
     private String resolveType(final String type) {
 

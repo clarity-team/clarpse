@@ -1,4 +1,4 @@
-package com.clarity.parser;
+package com.clarity.compiler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,20 +12,17 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Indicates Clarpse's currently supported languages.
- *
- * @author Muntazir Fadhel
  */
 public enum Lang {
 
-    JAVA("java", ".java"),
-    JAVASCRIPT("javascript", ".js");;
+    JAVA("java", ".java"), JAVASCRIPT("javascript", ".js"), GOLANG("golang", ".go");
 
     private static Map<String, Lang> namesMap = new HashMap<String, Lang>(1);
 
     static {
         namesMap.put(JAVA.value, JAVA);
         namesMap.put(JAVASCRIPT.value, JAVASCRIPT);
-
+        namesMap.put(GOLANG.value, GOLANG);
     }
 
     public static List<Lang> supportedLanguages() {

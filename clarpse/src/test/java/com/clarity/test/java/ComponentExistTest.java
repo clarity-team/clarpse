@@ -5,10 +5,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.clarity.ClarpseUtil;
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.ClarpseProject;
-import com.clarity.parser.RawFile;
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.SourceFiles;
+import com.clarity.compiler.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
@@ -57,7 +57,7 @@ public class ComponentExistTest {
 
     @BeforeClass
     public static final void parseJavaSourceFile() throws Exception {
-        final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();

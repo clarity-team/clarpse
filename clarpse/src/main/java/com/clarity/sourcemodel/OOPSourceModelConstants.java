@@ -6,24 +6,15 @@ import java.util.Map;
 
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
-import com.clarity.invocation.MethodInvocation;
+import com.clarity.invocation.DocMention;
 import com.clarity.invocation.ThrownException;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.TypeInstantiation;
 
-/**
- * Constants related to source code model entities.
- *
- * @author Muntazir Fadhel
- *
- */
 public final class OOPSourceModelConstants {
 
-    /**
-     * private constructor.
-     */
     private OOPSourceModelConstants() {
     };
 
@@ -31,9 +22,6 @@ public final class OOPSourceModelConstants {
 
     static final Map<String, String> JAVA_ANNOTATIONS = new HashMap<String, String>();
 
-    /**
-     * @return the javaCollections
-     */
     public static Map<String, String> getJavaPredefinedAnnotations() {
         return JAVA_ANNOTATIONS;
     }
@@ -52,7 +40,7 @@ public final class OOPSourceModelConstants {
         JAVA_ANNOTATIONS.put("Repeatable", "Repeatable");
 
     }
-    public static final String       JAVA_DEFAULT_PKG     = "java.lang.";
+    public static final String JAVA_DEFAULT_PKG = "java.lang.";
 
     static final Map<String, String> JAVA_DEFAULT_CLASSES = new HashMap<String, String>();
     static {
@@ -245,7 +233,7 @@ public final class OOPSourceModelConstants {
 
     public enum ComponentInvocations {
 
-        ANNOTATION(AnnotationInvocation.class), METHOD(MethodInvocation.class), EXCEPTION(
+        DOC_MENTION(DocMention.class), ANNOTATION(AnnotationInvocation.class), EXCEPTION(
                 ThrownException.class), DECLARATION(TypeDeclaration.class), INSTANTIATION(
                         TypeInstantiation.class), EXTENSION(
                                 TypeExtension.class), IMPLEMENTATION(TypeImplementation.class);
@@ -261,30 +249,22 @@ public final class OOPSourceModelConstants {
         }
     }
 
-    /**
-     * Enum constants representing types of component found in java code source
-     * model.
-     *
-     * @author Muntazir Fadhel
-     *
-     */
     public enum ComponentType implements Serializable {
 
-        CLASS("class", true, false, false), INTERFACE("interface", true, false,
-                false), INTERFACE_CONSTANT("interface_constant", false, false, true), ENUM("enum", true,
-                        false, false), ANNOTATION("annotation", false, false, false), METHOD(
-                                "method", false, true, false), CONSTRUCTOR("method", false, true,
-                                        false), ENUM_CONSTANT("enum_constant", false, false, true), FIELD(
-                                                "field_variable", false, false,
-                                                true), METHOD_PARAMETER_COMPONENT("method_parameter", false, false,
-                                                        true), CONSTRUCTOR_PARAMETER_COMPONENT("constructor_parameter",
-                                                                false, false, true), LOCAL(
-                                                                        "local_variable", false, false, true);
+        CLASS("class", true, false, false), STRUCT("struct", true, false, false), INTERFACE("interface", true, false,
+                false), INTERFACE_CONSTANT("interface_constant", false, false, true), ENUM("enum", true, false,
+                        false), ANNOTATION("annotation", false, false, false), METHOD("method", false, true,
+                                false), CONSTRUCTOR("method", false, true, false), ENUM_CONSTANT("enum_constant", false,
+                                        false,
+                                        true), FIELD("field_variable", false, false, true), METHOD_PARAMETER_COMPONENT(
+                                                "method_parameter", false, false,
+                                                true), CONSTRUCTOR_PARAMETER_COMPONENT("constructor_parameter", false,
+                                                        false, true), LOCAL("local_variable", false, false, true);
 
         private final boolean isBaseComponent;
         private final boolean isMethodComponent;
         private final boolean isVariableComponent;
-        private final String  value;
+        private final String value;
 
         ComponentType(final String value, final boolean isBaseComponent, final boolean isMethodComponent,
                 final boolean isVariableComponent) {
@@ -317,11 +297,8 @@ public final class OOPSourceModelConstants {
         return JAVA_ACCESS_MODIFIER_MAP;
     }
 
-    /**
-     * @return the javaComponentTypes
-     */
     public static Map<ComponentType, String> getJavaComponentTypes() {
-        return JAVA_COMPONENT_TYPES;
+        return COMPONENT_TYPES;
     }
 
     static {
@@ -340,10 +317,7 @@ public final class OOPSourceModelConstants {
 
     }
 
-    /**
-     * Map of all the possible java component types..
-     */
-    private static final Map<ComponentType, String> JAVA_COMPONENT_TYPES = new HashMap<ComponentType, String>();
+    private static final Map<ComponentType, String> COMPONENT_TYPES = new HashMap<ComponentType, String>();
     static {
         getJavaComponentTypes().put(ComponentType.INTERFACE, "interface");
         getJavaComponentTypes().put(ComponentType.ENUM, "enum");

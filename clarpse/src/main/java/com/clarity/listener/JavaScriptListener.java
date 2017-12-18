@@ -1,16 +1,20 @@
 package com.clarity.listener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
+import com.clarity.ResolvedRelativePath;
+import com.clarity.TrimmedString;
+import com.clarity.compiler.RawFile;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
 import com.clarity.invocation.TypeImplementation;
 import com.clarity.invocation.TypeInstantiation;
-import com.clarity.parser.RawFile;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
@@ -29,33 +33,65 @@ public class JavaScriptListener implements Callback {
     private final Stack<Component> componentStack = new Stack<Component>();
     private OOPSourceCodeModel srcModel;
     private RawFile file;
+    private List<String> projectFileTypes;
+    private String currPackage = "";
+    private String currProjectFileType = "";
+    private final Map<String, String> currentImportsMap = new HashMap<String, String>();
 
-    public JavaScriptListener(final OOPSourceCodeModel srcModel, final RawFile file) {
+    public JavaScriptListener(final OOPSourceCodeModel srcModel, final RawFile file, List<String> projectFileTypes)
+            throws Exception {
         this.srcModel = srcModel;
         this.file = file;
+        this.projectFileTypes = projectFileTypes;
         System.out.println("\nParsing New JS File: " + file.name() + "\n");
+
+        if (file.name().contains("/")) {
+            String modFileName = file.name().substring(0, file.name().lastIndexOf("/"));
+            for (String s : projectFileTypes) {
+                if (modFileName.endsWith(s)) {
+                    currPackage = new TrimmedString(s, "/").value().replaceAll("/", ".");
+                    currProjectFileType = s;
+                    break;
+                }
+            }
+        }
     }
 
     @Override
     public void visit(NodeTraversal t, Node n, Node parent) {
 
-        String baseCmpName = null;
+        String fileName = null;
+        try {
+            fileName = new TrimmedString(this.file.name(), "/").value();
+            String baseCmpName = null;
 
-        if (n.isClass()) {
-            baseCmpName = n.getFirstChild().getString();
-        } else if (n.isMemberFunctionDef()) {
-            baseCmpName = n.getString();
-        } else if (n.isGetterDef()) {
-            baseCmpName = "get_" + n.getString();
-        } else if (n.isSetterDef()) {
-            baseCmpName = "set_" + n.getString();
-        }
-
-        if (baseCmpName != null) {
-            while (!componentStack.isEmpty() && (componentStack.peek().componentName().contains(baseCmpName + ".")
-                    || componentStack.peek().componentName().endsWith(baseCmpName))) {
-                completeComponent();
+            if (n.isClass()) {
+                if (n.getParent().isExport() && n.getParent().getBooleanProp(Node.EXPORT_DEFAULT)) {
+                    if (fileName.contains("/")) {
+                        baseCmpName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf("."));
+                    } else {
+                        baseCmpName = fileName.substring(0, fileName.lastIndexOf("."));
+                    }
+                } else if (n.hasChildren()) {
+                    baseCmpName = n.getFirstChild().getString();
+                }
+                baseCmpName = new TrimmedString(baseCmpName, "/").value().replaceAll("/", ".");
+            } else if (n.isMemberFunctionDef()) {
+                baseCmpName = n.getString();
+            } else if (n.isGetterDef()) {
+                baseCmpName = "get_" + n.getString();
+            } else if (n.isSetterDef()) {
+                baseCmpName = "set_" + n.getString();
             }
+
+            if (baseCmpName != null) {
+                while (!componentStack.isEmpty() && (componentStack.peek().componentName().contains(baseCmpName + ".")
+                        || componentStack.peek().componentName().endsWith(baseCmpName))) {
+                    completeComponent();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -71,40 +107,44 @@ public class JavaScriptListener implements Callback {
 
     public boolean shouldTraverse(Node n, Node parent) throws Exception {
 
-        Component cmp;
-
-        if (n.isClass()) {
-            System.out.println("Entering the " + n.getFirstChild().getString() + " class");
-            cmp = createComponent(ComponentType.CLASS, n);
-            cmp.setComponentName(generateComponentName(n.getFirstChild().getString()));
-            cmp.setName(generateComponentName(n.getFirstChild().getString()));
-            pointParentsToGivenChild(cmp);
-            if (n.getSecondChild().isName()) {
-                // this class extends another class
-                System.out.println("this class extends " + n.getSecondChild().getString());
-                cmp.insertComponentInvocation(new TypeExtension(n.getSecondChild().getString()));
-            }
-            componentStack.push(cmp);
-        } else if (n.isMemberFunctionDef()) {
-            if (n.getString() != null && n.getString().equals("constructor")) {
-                System.out.println("Found constructor");
-                cmp = createComponent(ComponentType.CONSTRUCTOR, n);
-                cmp.setComponentName(generateComponentName("constructor"));
-                cmp.setName("constructor");
-                pointParentsToGivenChild(cmp);
-                componentStack.push(cmp);
-            } else {
-                System.out.println("Found instance method: " + n.getString());
-                cmp = createComponent(ComponentType.METHOD, n);
-                cmp.setComponentName(generateComponentName(n.getString()));
-                cmp.setName(n.getString());
-                if (n.isStaticMember()) {
-                    cmp.insertAccessModifier("static");
+        if (n.isImport()) {
+            String origin = n.getChildAtIndex(2).getString();
+            String modOrigin = null;
+            if (origin.startsWith("/")) {
+                // absolute import path provided..
+                if (origin.contains(".")) {
+                    modOrigin = origin.substring(0, origin.lastIndexOf("/"));
                 }
-                cmp.insertAccessModifier("public");
-                pointParentsToGivenChild(cmp);
-                componentStack.push(cmp);
+            } else {
+                // relative import path provided...
+                modOrigin = new ResolvedRelativePath(currProjectFileType, origin).value();
             }
+            for (String s : projectFileTypes) {
+                if (modOrigin.endsWith(s)) {
+                    origin = new TrimmedString(s, "/").value().replaceAll("/", ".");
+                    break;
+                }
+            }
+
+            Node importSpecsNode = n.getChildAtIndex(1);
+            for (int i = 0; i < importSpecsNode.getChildCount(); i++) {
+                Node importSpec = importSpecsNode.getChildAtIndex(i);
+                if (importSpec.hasOneChild()) {
+                    String childOneStr = importSpec.getChildAtIndex(0).getString();
+                    currentImportsMap.put(childOneStr, origin + "." + childOneStr);
+                } else if (importSpec.hasTwoChildren()) {
+                    String childOneStr = importSpec.getChildAtIndex(0).getString();
+                    String childTwoStr = importSpec.getChildAtIndex(1).getString();
+                    currentImportsMap.put(childOneStr, origin + "." + childTwoStr);
+                }
+            }
+        }
+
+        Component cmp = null;
+        if (n.isClass()) {
+            processClass(cmp, n);
+        } else if (n.isMemberFunctionDef()) {
+            processMemberFunctionDef(cmp, n);
         } else if (n.isGetterDef()) {
             String cmpName = "get_" + n.getString();
             System.out.println("Found getter definition: " + cmpName);
@@ -123,6 +163,7 @@ public class JavaScriptListener implements Callback {
             cmp = createComponent(ComponentType.METHOD, n);
             cmp.setComponentName(generateComponentName(cmpName));
             cmp.setName(cmpName);
+            cmp.setPackageName(currPackage);
             cmp.insertAccessModifier("public");
             if (n.isStaticMember()) {
                 cmp.insertAccessModifier("static");
@@ -147,6 +188,7 @@ public class JavaScriptListener implements Callback {
                 }
                 cmp.setComponentName(generateComponentName(paramName));
                 cmp.setName(paramName);
+                cmp.setPackageName(currPackage);
                 pointParentsToGivenChild(cmp);
                 generatedParamComponents.add(cmp);
             }
@@ -161,6 +203,7 @@ public class JavaScriptListener implements Callback {
             cmp = createComponent(ComponentType.FIELD, n);
             cmp.setComponentName(generateComponentName(fieldVarname, ComponentType.FIELD));
             cmp.setName(fieldVarname);
+            cmp.setPackageName(currPackage);
             cmp.insertAccessModifier("private");
             processVariableAssignment(cmp, n.getSecondChild());
             try {
@@ -173,13 +216,15 @@ public class JavaScriptListener implements Callback {
             componentStack.push(cmp);
             completeComponent();
 
-        } else if (!componentStack.isEmpty() && (n.isVar() || n.isLet()) && (newestMethodComponent().componentType() == ComponentType.METHOD
-                || newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR)) {
+        } else if (!componentStack.isEmpty() && (n.isVar() || n.isLet())
+                && (newestMethodComponent().componentType() == ComponentType.METHOD
+                        || newestMethodComponent().componentType() == ComponentType.CONSTRUCTOR)) {
             String localVarName = n.getFirstChild().getString();
             System.out.println("Found local variable: " + localVarName);
             cmp = createComponent(ComponentType.LOCAL, n);
             cmp.setComponentName(generateComponentName(localVarName));
             cmp.setName(localVarName);
+            cmp.setPackageName(currPackage);
             processVariableAssignment(cmp, n.getFirstChild().getFirstChild());
             pointParentsToGivenChild(cmp);
             componentStack.push(cmp);
@@ -190,17 +235,69 @@ public class JavaScriptListener implements Callback {
                 && (NodeUtil.isImportedName(n) || Character.isUpperCase(n.getString().codePointAt(0)))
                 && !componentStack.isEmpty()) {
             Component latestCmp = componentStack.pop();
-            latestCmp.insertComponentInvocation(new TypeDeclaration(n.getString()));
+            latestCmp.insertComponentInvocation(new TypeDeclaration(resolveType(n.getString())));
             componentStack.push(latestCmp);
         } else if (n.isGetProp() && n.getFirstChild().isName() && !n.getFirstChild().getString().isEmpty()
                 && (NodeUtil.isImportedName(n.getFirstChild())
                         || Character.isUpperCase(n.getFirstChild().getString().codePointAt(0)))
                 && !componentStack.isEmpty()) {
             Component latestCmp = componentStack.pop();
-            latestCmp.insertComponentInvocation(new TypeDeclaration(n.getFirstChild().getString()));
+            latestCmp.insertComponentInvocation(new TypeDeclaration(resolveType(n.getFirstChild().getString())));
             componentStack.push(latestCmp);
         }
         return true;
+    }
+
+    private void processClass(Component cmp, Node n) throws Exception {
+        cmp = createComponent(ComponentType.CLASS, n);
+        String name = "";
+        if (n.getParent().isExport() && n.getParent().getBooleanProp(Node.EXPORT_DEFAULT)) {
+            String fileName = new TrimmedString(this.file.name(), "/").value();
+            if (fileName.contains("/")) {
+                name = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf("."));
+            } else {
+                name = fileName.substring(0, fileName.lastIndexOf("."));
+            }
+        } else if (n.hasChildren()) {
+            name = n.getFirstChild().getString();
+        }
+        name = name.replaceAll("/", ".");
+        cmp.setComponentName(generateComponentName(name));
+        cmp.setName(name);
+        cmp.setPackageName(currPackage);
+        pointParentsToGivenChild(cmp);
+        if (n.getSecondChild().isName()) {
+            // this class extends another class
+            System.out.println("this class extends " + n.getSecondChild().getString());
+            cmp.insertComponentInvocation(new TypeExtension(n.getSecondChild().getString()));
+        }
+        componentStack.push(cmp);
+
+    }
+
+    private void processMemberFunctionDef(Component cmp, Node n) throws Exception {
+        if (n.getString() != null && n.getString().equals("constructor")) {
+            System.out.println("Found constructor");
+            cmp = createComponent(ComponentType.CONSTRUCTOR, n);
+            cmp.setComponentName(generateComponentName("constructor"));
+            cmp.setName("constructor");
+            cmp.setPackageName(currPackage);
+            pointParentsToGivenChild(cmp);
+            componentStack.push(cmp);
+        } else {
+            System.out.println("Found instance method: " + n.getString());
+            cmp = createComponent(ComponentType.METHOD, n);
+            cmp.setComponentName(generateComponentName(n.getString()));
+            cmp.setName(n.getString());
+            cmp.setPackageName(currPackage);
+            if (n.isStaticMember()) {
+                cmp.insertAccessModifier("static");
+            }
+            cmp.insertAccessModifier("public");
+            pointParentsToGivenChild(cmp);
+            componentStack.push(cmp);
+        }
+
     }
 
     private void processVariableAssignment(Component cmp, Node assignmentNode) {
@@ -360,5 +457,25 @@ public class JavaScriptListener implements Callback {
             break;
         }
         return null;
+    }
+
+    /**
+     * Tries to return the full, unique type name of the given type.
+     */
+    private String resolveType(final String type) {
+
+        if (currentImportsMap.containsKey(type)) {
+            return currentImportsMap.get(type).replaceAll("/", ".");
+        }
+
+        final Iterator<?> it = currentImportsMap.entrySet().iterator();
+        while (it.hasNext()) {
+            @SuppressWarnings("rawtypes")
+            final Map.Entry pair = (Map.Entry) it.next();
+            if (type.startsWith((String) pair.getKey())) {
+                return (((String) pair.getValue()).replaceAll("/", "."));
+            }
+        }
+        return currPackage + "." + type;
     }
 }

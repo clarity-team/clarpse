@@ -9,13 +9,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.clarity.parser.Lang;
-import com.clarity.parser.ParseRequestContent;
-import com.clarity.parser.RawFile;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.sourcemodel.Component;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -131,9 +133,9 @@ public final class ClarpseUtil {
         return Thread.currentThread().getContextClassLoader();
     }
 
-    public static ParseRequestContent javaParseRequestContentObjFromResourceDir(String dir) throws IOException {
+    public static SourceFiles javaParseRequestContentObjFromResourceDir(String dir) throws IOException {
 
-        ParseRequestContent req = new ParseRequestContent(Lang.JAVA);
+        SourceFiles req = new SourceFiles(Lang.JAVA);
         List<String> fileNames = getResourceFiles(dir);
         for (String s : fileNames) {
             req.insertFile(new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
@@ -141,13 +143,39 @@ public final class ClarpseUtil {
         return req;
     }
 
-    public static ParseRequestContent parseRequestContentObjFromResourceDir(String dir, Lang java) throws IOException {
+    public static SourceFiles parseRequestContentObjFromResourceDir(String dir, Lang java) throws IOException {
 
-        ParseRequestContent req = new ParseRequestContent(java);
+        SourceFiles req = new SourceFiles(java);
         List<String> fileNames = getResourceFiles(dir);
         for (String s : fileNames) {
             req.insertFile(new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
         }
         return req;
+    }
+
+    public static List<String> extractDocTypeMentions(String docComment) {
+        List<String> docTypeMentions = new ArrayList<String>();
+        Pattern linkPattern = Pattern.compile("\\{ *\\@link +(([a-z]|[A-Z]|[0-9]|\\.)+)( +.*)? *\\}");
+        Pattern linkPlainPattern = Pattern.compile("\\{ *\\@linkplain +(([a-z]|[A-Z]|[0-9]|\\.)+)( +.*)? *\\}");
+
+        Matcher matchPattern = linkPattern.matcher(docComment);
+        while (matchPattern.find()) {
+            docTypeMentions.add(matchPattern.group(1));
+        }
+        matchPattern = linkPlainPattern.matcher(docComment);
+        while (matchPattern.find()) {
+            docTypeMentions.add(matchPattern.group(1));
+        }
+        // we only consider doc links to other classes, interfaces, etc... (no methods
+        // or variables)
+        List<String> invalidMentions = new ArrayList<String>();
+        docTypeMentions.forEach(mention -> {
+            mention = mention.split(" ")[0];
+            if (mention.matches(".*[#/:\\[\\]\\(\\)].*")) {
+                invalidMentions.add(mention);
+            }
+        });
+        docTypeMentions.removeAll(invalidMentions);
+        return docTypeMentions;
     }
 }

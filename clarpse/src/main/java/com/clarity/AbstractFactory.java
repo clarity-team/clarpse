@@ -1,12 +1,12 @@
 package com.clarity;
 
-import com.clarity.parser.ClarpseParser;
+import com.clarity.compiler.ClarpseCompiler;
 
 /**
  * @author Muntazir Fadhel
  */
 public abstract class AbstractFactory {
 
-    public abstract ClarpseParser getParsingTool(String type) throws Exception;
+    public abstract ClarpseCompiler getParsingTool(String type) throws Exception;
 
 }
