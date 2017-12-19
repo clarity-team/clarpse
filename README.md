@@ -87,7 +87,7 @@ Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server 
   	<dependency>
 		<groupId>com.clarityviews</groupId>
 		<artifactId>clarpse</artifactId>
-		<version>3.0.1</version>
+		<version>3.1.2</version>
 	</dependency>
 </dependencies> 
  ```
