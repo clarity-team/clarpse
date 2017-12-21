@@ -15,9 +15,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum Lang {
 
-    JAVA("java", ".java"), JAVASCRIPT("javascript", ".js"), GOLANG("golang", ".go");
+    JAVA("Java", ".java"), JAVASCRIPT("javascript", ".js"), GOLANG("Go", ".go");
 
-    private static Map<String, Lang> namesMap = new HashMap<String, Lang>(1);
+    private static Map<String, Lang> namesMap = new HashMap<>();
 
     static {
         namesMap.put(JAVA.value, JAVA);
@@ -26,9 +26,9 @@ public enum Lang {
     }
 
     public static List<Lang> supportedLanguages() {
-        List<Lang> langs = new ArrayList<Lang>();
+        List<Lang> langs = new ArrayList<>();
         for (Map.Entry<String, Lang> entry : namesMap.entrySet()) {
-            langs.add(entry.getValue());
+                langs.add(entry.getValue());
         }
         return langs;
     }

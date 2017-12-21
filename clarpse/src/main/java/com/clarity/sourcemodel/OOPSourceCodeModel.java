@@ -7,8 +7,6 @@ import java.util.Map;
 /**
  * A language independent representation of a codebase that reveals its
  * structural buildup.
- *
- * @author Muntazir Fadhel
  */
 public class OOPSourceCodeModel implements Serializable {
 
@@ -17,7 +15,7 @@ public class OOPSourceCodeModel implements Serializable {
     public OOPSourceCodeModel() {
     }
 
-    private final Map<String, Component> components = new HashMap<String, Component>();
+    private final Map<String, Component> components = new HashMap<>();
 
     public Map<String, Component> getComponents() {
         return components;
