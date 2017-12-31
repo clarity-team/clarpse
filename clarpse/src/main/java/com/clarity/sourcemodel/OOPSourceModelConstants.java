@@ -251,7 +251,7 @@ public final class OOPSourceModelConstants {
 
     public enum ComponentType implements Serializable {
 
-        CLASS("class", true, false, false), STRUCT("struct", true, false, false), INTERFACE("interface", true, false,
+        CLASS("class", true, false, false), STRUCT("class", true, false, false), INTERFACE("interface", true, false,
                 false), INTERFACE_CONSTANT("interface_constant", false, false, true), ENUM("enum", true, false,
                         false), ANNOTATION("annotation", false, false, false), METHOD("method", false, true,
                                 false), CONSTRUCTOR("method", false, true, false), ENUM_CONSTANT("enum_constant", false,
