@@ -320,6 +320,7 @@ public final class OOPSourceModelConstants {
     private static final Map<ComponentType, String> COMPONENT_TYPES = new HashMap<ComponentType, String>();
     static {
         getJavaComponentTypes().put(ComponentType.INTERFACE, "interface");
+        getJavaComponentTypes().put(ComponentType.STRUCT, "struct");
         getJavaComponentTypes().put(ComponentType.ENUM, "enum");
         getJavaComponentTypes().put(ComponentType.ENUM_CONSTANT, "enumConstant");
         getJavaComponentTypes().put(ComponentType.INTERFACE_CONSTANT, "interfaceConstant");
