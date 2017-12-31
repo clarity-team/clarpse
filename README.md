@@ -9,7 +9,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 
 # Features
 
- - Supports **Java** and **JavaScript** (ES6 and above)
+ - Supports **Java**, **GoLang**, and **JavaScript** (ES6 and above)
  - Light weight
  - Performant
  - Easy to use
@@ -87,7 +87,7 @@ Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server 
   	<dependency>
 		<groupId>com.clarityviews</groupId>
 		<artifactId>clarpse</artifactId>
-		<version>3.4.0</version>
+		<version>3.4.1</version>
 	</dependency>
 </dependencies> 
  ```
@@ -98,7 +98,7 @@ Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server 
     The repo owner will respond to your issue promptly.
    - Fork the desired repo, develop and test your code changes.
    - Run a local maven build using "clean package assembly:single" to ensure all tests pass and the jar is produced
-   - Update the versioning in the pom.xml using the x.y.z scheme:
+   - Update the versioning in the pom.xml and README.md using the x.y.z scheme:
      - x = main version number, Increase if introducing API breaking changes.
      - y = feature number, Increase this number if the change contains new features with or without bug fixes.
      - z = hotfix number, Increase this number if the change only contains bug fixes.

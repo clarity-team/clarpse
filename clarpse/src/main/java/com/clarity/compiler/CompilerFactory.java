@@ -1,14 +1,11 @@
 package com.clarity.compiler;
 
-import com.clarity.AbstractFactory;
-
 /**
  * Factory to retrieve appropriate parsing tool for our projects.
  */
-public class CompilerFactory extends AbstractFactory {
+public class CompilerFactory {
 
-    @Override
-    public final ClarpseCompiler getParsingTool(final String parseType) throws Exception {
+    public static final ClarpseCompiler getParsingTool(final String parseType) throws Exception {
         switch (parseType.toLowerCase()) {
 
         case "java":

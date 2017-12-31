@@ -1,7 +1,5 @@
 package com.clarity.compiler;
 
-import com.clarity.AbstractFactory;
-import com.clarity.FactoryProducer;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 
 /**
@@ -16,8 +14,7 @@ public class ClarpseProject {
     }
 
     private OOPSourceCodeModel parseRawData(final SourceFiles rawData) throws Exception {
-        final AbstractFactory parserFactory = new FactoryProducer().getFactory(FactoryProducer.PARSE_KEYWORD);
-        final ClarpseCompiler parsingTool = parserFactory.getParsingTool(rawData.getLanguage());
+        final ClarpseCompiler parsingTool = CompilerFactory.getParsingTool(rawData.getLanguage());
         return parsingTool.compile(rawData);
     }
 
