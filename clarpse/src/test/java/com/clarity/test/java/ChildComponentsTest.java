@@ -1,14 +1,13 @@
 package com.clarity.test.java;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
-import com.clarity.compiler.SourceFiles;
 import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class ChildComponentsTest {
 
@@ -32,6 +31,18 @@ public class ChildComponentsTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test").children().toArray()[0].equals("Test.fieldVar"));
+    }
+
+    @Test
+    public void ignoreClassDeclaredWithinMethods() throws Exception {
+
+        final String code = "class Test { void method() { class Tester {} } }";
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("Test.method().Tester") == null);
+        assertTrue(generatedSourceModel.getComponents().size() == 2);
     }
 
     @Test

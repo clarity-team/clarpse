@@ -1,17 +1,5 @@
 package com.clarity.listener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
-import org.apache.commons.lang3.RandomStringUtils;
-
 import com.clarity.antlr.golang.GolangBaseListener;
 import com.clarity.antlr.golang.GolangParser.ExpressionContext;
 import com.clarity.antlr.golang.GolangParser.FieldDeclContext;
@@ -38,8 +26,18 @@ import com.clarity.invocation.TypeImplementation;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
-
 import edu.emory.mathcs.backport.java.util.Arrays;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+import org.apache.commons.lang3.RandomStringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 public class GoLangTreeListener extends GolangBaseListener {
 
@@ -178,16 +176,21 @@ public class GoLangTreeListener extends GolangBaseListener {
     @Override
     public final void enterStructType(StructTypeContext ctx) {
         if (lastParsedTypeIdentifier != null) {
-            Component cmp = createComponent(ComponentType.STRUCT);
-            String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
-                    Arrays.asList(file.content().split("\n")));
-            cmp.setComment(comments);
-            cmp.setName(lastParsedTypeIdentifier);
-            cmp.setComponentName(generateComponentName(lastParsedTypeIdentifier));
-            cmp.setImports(currentImports);
-            pointParentsToGivenChild(cmp);
-            cmp.insertAccessModifier(visibility(cmp.name()));
-            componentStack.push(cmp);
+            if (componentStackContainsMethod()) {
+                // skip over structs defined within methods.
+                exitStructType(ctx);
+            } else {
+                Component cmp = createComponent(ComponentType.STRUCT);
+                String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
+                        Arrays.asList(file.content().split("\n")));
+                cmp.setComment(comments);
+                cmp.setName(lastParsedTypeIdentifier);
+                cmp.setComponentName(generateComponentName(lastParsedTypeIdentifier));
+                cmp.setImports(currentImports);
+                pointParentsToGivenChild(cmp);
+                cmp.insertAccessModifier(visibility(cmp.name()));
+                componentStack.push(cmp);
+            }
         }
     }
 
@@ -277,7 +280,6 @@ public class GoLangTreeListener extends GolangBaseListener {
             cmp.insertAccessModifier(visibility(cmp.name()));
             componentStack.push(cmp);
         }
-
     }
 
     @Override
@@ -293,49 +295,53 @@ public class GoLangTreeListener extends GolangBaseListener {
     @Override
     public final void enterParameters(ParametersContext ctx) {
 
-        if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
-            List<Component> paramCmps = new ArrayList<Component>();
-            for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
-                if (!inReceiverContext && !inResultContext) {
-                    String[] types = {};
-                    for (int j = 0; j < paramCtx.children.size(); j++) {
-                        String type = getChildContextText(paramCtx);
-                        types = type.split(",");
+        if (!componentStack.isEmpty() && componentStack.peek().componentType().isMethodComponent()) {
+            if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
+                List<Component> paramCmps = new ArrayList<Component>();
+                for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
+                    if (!inReceiverContext && !inResultContext) {
+                        String[] types = {};
+                        for (int j = 0; j < paramCtx.children.size(); j++) {
+                            String type = getChildContextText(paramCtx);
+                            types = type.split(",");
 
-                        if (types.length < 1) {
-                            // without a type we really can't continue...
-                            System.out.println(
-                                    "Error! Did not find TypeNameContext for ParamDeclContext: " + paramCtx.getText());
-                            return;
+                            if (types.length < 1) {
+                                // without a type we really can't continue...
+                                System.out.println(
+                                        "Error! Did not find TypeNameContext for ParamDeclContext: " + paramCtx.getText());
+                                return;
+                            } else {
+                                for (int g = 0; g < types.length; g++) {
+                                    types[g] = resolveType(types[g]);
+                                }
+                            }
+                        }
+                        List<String> argumentNames = new ArrayList<String>();
+                        if (paramCtx.identifierList() == null) {
+                            argumentNames.add(RandomStringUtils.randomAlphabetic(1));
                         } else {
-                            for (int g = 0; g < types.length; g++) {
-                                types[g] = resolveType(types[g]);
+                            paramCtx.identifierList().IDENTIFIER().forEach(nameCtx -> argumentNames.add(nameCtx.getText()));
+                        }
+                        for (String methodArgName : argumentNames) {
+                            Component cmp = createComponent(ComponentType.METHOD_PARAMETER_COMPONENT);
+                            cmp.setName(methodArgName);
+                            cmp.setComponentName(generateComponentName(cmp.name()));
+                            if (!componentStack.isEmpty()) {
+                                final Component completedCmp = componentStack.peek();
+                                cmp.setPackageName(completedCmp.packageName());
+                            }
+                            pointParentsToGivenChild(cmp);
+                            for (int h = 0; h < types.length; h++) {
+                                cmp.insertComponentInvocation(new TypeDeclaration(types[h]));
+                                paramCmps.add(cmp);
                             }
                         }
                     }
-                    List<String> argumentNames = new ArrayList<String>();
-                    if (paramCtx.identifierList() == null) {
-                        argumentNames.add(RandomStringUtils.randomAlphabetic(1));
-                    } else {
-                        paramCtx.identifierList().IDENTIFIER().forEach(nameCtx -> argumentNames.add(nameCtx.getText()));
-                    }
-                    for (String methodArgName : argumentNames) {
-                        Component cmp = createComponent(ComponentType.METHOD_PARAMETER_COMPONENT);
-                        cmp.setName(methodArgName);
-                        cmp.setComponentName(generateComponentName(cmp.name()));
-                        if (!componentStack.isEmpty()) {
-                            final Component completedCmp = componentStack.peek();
-                            cmp.setPackageName(completedCmp.packageName());
-                        }
-                        pointParentsToGivenChild(cmp);
-                        for (int h = 0; h < types.length; h++) {
-                            cmp.insertComponentInvocation(new TypeDeclaration(types[h]));
-                            paramCmps.add(cmp);
-                        }
-                    }
                 }
+                paramCmps.forEach(item -> completeComponent(item));
             }
-            paramCmps.forEach(item -> completeComponent(item));
+        } else {
+            exitParameters(ctx);
         }
     }
 
@@ -440,28 +446,32 @@ public class GoLangTreeListener extends GolangBaseListener {
 
     @Override
     public final void enterFieldDecl(FieldDeclContext ctx) {
-        if (ctx.identifierList() != null && !ctx.identifierList().isEmpty()) {
-            List<Component> fieldVars = new ArrayList<Component>();
-            for (TerminalNode token : ctx.identifierList().IDENTIFIER()) {
-                Component cmp = createComponent(ComponentType.FIELD);
-                cmp.setName(token.getText());
-                cmp.setComment(
-                        AntlrUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
-                cmp.setComponentName(generateComponentName(token.getText()));
-                cmp.insertAccessModifier(visibility(cmp.name()));
-                pointParentsToGivenChild(cmp);
-                String[] types = getChildContextText(ctx.type()).split(",");
-                for (String type : types) {
-                    cmp.insertComponentInvocation(new TypeDeclaration(resolveType(type)));
+        if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
+            if (ctx.identifierList() != null && !ctx.identifierList().isEmpty()) {
+                List<Component> fieldVars = new ArrayList<Component>();
+                for (TerminalNode token : ctx.identifierList().IDENTIFIER()) {
+                    Component cmp = createComponent(ComponentType.FIELD);
+                    cmp.setName(token.getText());
+                    cmp.setComment(
+                            AntlrUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
+                    cmp.setComponentName(generateComponentName(token.getText()));
+                    cmp.insertAccessModifier(visibility(cmp.name()));
+                    pointParentsToGivenChild(cmp);
+                    String[] types = getChildContextText(ctx.type()).split(",");
+                    for (String type : types) {
+                        cmp.insertComponentInvocation(new TypeDeclaration(resolveType(type)));
+                    }
+                    fieldVars.add(cmp);
                 }
-                fieldVars.add(cmp);
+                fieldVars.forEach(item -> completeComponent(item));
+            } else if (ctx.anonymousField() != null) {
+                String[] types = getChildContextText(ctx.anonymousField()).split(",");
+                for (String type : types) {
+                    insertExtensionIntoStackBaseComponent(type);
+                }
             }
-            fieldVars.forEach(item -> completeComponent(item));
-        } else if (ctx.anonymousField() != null) {
-            String[] types = getChildContextText(ctx.anonymousField()).split(",");
-            for (String type : types) {
-                insertExtensionIntoStackBaseComponent(type);
-            }
+        } else {
+            exitFieldDecl(ctx);
         }
     }
 
@@ -528,5 +538,14 @@ public class GoLangTreeListener extends GolangBaseListener {
     @Override
     public final void enterTypeSpec(TypeSpecContext ctx) {
         lastParsedTypeIdentifier = ctx.IDENTIFIER().getText();
+    }
+
+    private boolean componentStackContainsMethod() {
+        for (Component cmp : componentStack) {
+            if (cmp.componentType().isMethodComponent()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

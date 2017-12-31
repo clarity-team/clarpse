@@ -1,9 +1,5 @@
 package com.clarity.test.go;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
 import com.clarity.compiler.RawFile;
@@ -11,6 +7,9 @@ import com.clarity.compiler.SourceFiles;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class GoLangParseTest {
 
@@ -34,6 +33,22 @@ public class GoLangParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").imports().get(0).equals("fmt"));
+    }
+
+    @Test
+    public void testStructWithinMethodIgnored() throws Exception {
+
+        final String code = "package main\n import\"fmt\"\n func SomeFunc(b []byte) error {\n" +
+                "  var inside struct {\n" +
+                "    Foo string`json:\"foo\"`\n" +
+                "  }" +
+                "}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.SomeFunc.inside") == null);
+        assertTrue(generatedSourceModel.getComponents().size() == 0);
     }
 
     @Test

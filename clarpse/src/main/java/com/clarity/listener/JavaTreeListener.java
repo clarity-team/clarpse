@@ -1,16 +1,5 @@
 package com.clarity.listener;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
 import com.clarity.ClarpseUtil;
 import com.clarity.compiler.RawFile;
 import com.clarity.invocation.AnnotationInvocation;
@@ -54,6 +43,17 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * As the parse tree is developed by JavaParser, we add listener methods to
@@ -195,49 +195,51 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     @Override
     public final void visit(ClassOrInterfaceDeclaration ctx, Object arg) {
 
-        final Component cmp;
-        if (ctx.isInterface()) {
-            cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.INTERFACE);
-        } else {
-            cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS);
-        }
-        cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
-        cmp.setComponentName(generateComponentName(ctx.getName()));
-        cmp.setName(ctx.getName());
-        cmp.setImports(currentImports);
-        if (ctx.getJavaDoc() != null) {
-            for (String docMention : ClarpseUtil.extractDocTypeMentions(ctx.getJavaDoc().toString())) {
-                cmp.insertComponentInvocation(new DocMention(resolveType(docMention)));
+        if (!componentStackContainsMethod()) {
+            final Component cmp;
+            if (ctx.isInterface()) {
+                cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.INTERFACE);
+            } else {
+                cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CLASS);
             }
-            cmp.setComment(ctx.getJavaDoc().toString());
-        }
-        pointParentsToGivenChild(cmp);
-
-        if (ctx.getExtends() != null) {
-            for (final ClassOrInterfaceType outerType : ctx.getExtends()) {
-                cmp.insertComponentInvocation(new TypeExtension(resolveType(outerType.getName())));
+            cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
+            cmp.setComponentName(generateComponentName(ctx.getName()));
+            cmp.setName(ctx.getName());
+            cmp.setImports(currentImports);
+            if (ctx.getJavaDoc() != null) {
+                for (String docMention : ClarpseUtil.extractDocTypeMentions(ctx.getJavaDoc().toString())) {
+                    cmp.insertComponentInvocation(new DocMention(resolveType(docMention)));
+                }
+                cmp.setComment(ctx.getJavaDoc().toString());
             }
-        }
+            pointParentsToGivenChild(cmp);
 
-        if (ctx.getImplements() != null) {
-            for (final ClassOrInterfaceType outerType : ctx.getImplements()) {
-                cmp.insertComponentInvocation(new TypeImplementation(resolveType(outerType.getName())));
+            if (ctx.getExtends() != null) {
+                for (final ClassOrInterfaceType outerType : ctx.getExtends()) {
+                    cmp.insertComponentInvocation(new TypeExtension(resolveType(outerType.getName())));
+                }
             }
-        }
 
-        for (final AnnotationExpr annot : ctx.getAnnotations()) {
-            populateAnnotation(cmp, annot);
-        }
-
-        componentStack.push(cmp);
-        for (final Node node : ctx.getChildrenNodes()) {
-            if (node instanceof FieldDeclaration || node instanceof Statement || node instanceof Expression
-                    || node instanceof MethodDeclaration || node instanceof ConstructorDeclaration
-                    || node instanceof ClassOrInterfaceDeclaration || node instanceof EnumDeclaration) {
-                node.accept(this, arg);
+            if (ctx.getImplements() != null) {
+                for (final ClassOrInterfaceType outerType : ctx.getImplements()) {
+                    cmp.insertComponentInvocation(new TypeImplementation(resolveType(outerType.getName())));
+                }
             }
+
+            for (final AnnotationExpr annot : ctx.getAnnotations()) {
+                populateAnnotation(cmp, annot);
+            }
+
+            componentStack.push(cmp);
+            for (final Node node : ctx.getChildrenNodes()) {
+                if (node instanceof FieldDeclaration || node instanceof Statement || node instanceof Expression
+                        || node instanceof MethodDeclaration || node instanceof ConstructorDeclaration
+                        || node instanceof ClassOrInterfaceDeclaration || node instanceof EnumDeclaration) {
+                    node.accept(this, arg);
+                }
+            }
+            completeComponent();
         }
-        completeComponent();
     }
 
     @Override
@@ -278,27 +280,29 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     @Override
     public final void visit(EnumDeclaration ctx, Object arg) {
 
-        final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM);
-        enumCmp.setComponentName(generateComponentName(ctx.getName()));
-        enumCmp.setImports(currentImports);
-        enumCmp.setName(ctx.getName());
-        enumCmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
-        pointParentsToGivenChild(enumCmp);
-        if (ctx.getJavaDoc() != null) {
-            enumCmp.setComment(ctx.getJavaDoc().toString());
-        }
-        for (final AnnotationExpr annot : ctx.getAnnotations()) {
-            populateAnnotation(enumCmp, annot);
-        }
-        componentStack.push(enumCmp);
-        for (final Node node : ctx.getChildrenNodes()) {
-            if (node instanceof FieldDeclaration || node instanceof MethodDeclaration
-                    || node instanceof ConstructorDeclaration || node instanceof ClassOrInterfaceDeclaration
-                    || node instanceof EnumDeclaration || node instanceof EnumConstantDeclaration) {
-                node.accept(this, arg);
+        if (!componentStackContainsMethod()) {
+            final Component enumCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.ENUM);
+            enumCmp.setComponentName(generateComponentName(ctx.getName()));
+            enumCmp.setImports(currentImports);
+            enumCmp.setName(ctx.getName());
+            enumCmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
+            pointParentsToGivenChild(enumCmp);
+            if (ctx.getJavaDoc() != null) {
+                enumCmp.setComment(ctx.getJavaDoc().toString());
             }
+            for (final AnnotationExpr annot : ctx.getAnnotations()) {
+                populateAnnotation(enumCmp, annot);
+            }
+            componentStack.push(enumCmp);
+            for (final Node node : ctx.getChildrenNodes()) {
+                if (node instanceof FieldDeclaration || node instanceof MethodDeclaration
+                        || node instanceof ConstructorDeclaration || node instanceof ClassOrInterfaceDeclaration
+                        || node instanceof EnumDeclaration || node instanceof EnumConstantDeclaration) {
+                    node.accept(this, arg);
+                }
+            }
+            completeComponent();
         }
-        completeComponent();
     }
 
     @Override
@@ -374,6 +378,15 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         }
         super.visit(ctx, arg);
         completeComponent();
+    }
+
+    private boolean componentStackContainsMethod() {
+        for (Component cmp : componentStack) {
+            if (cmp.componentType().isMethodComponent()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getFormalParameterTypesList(final List<Parameter> formalParameterList) {
