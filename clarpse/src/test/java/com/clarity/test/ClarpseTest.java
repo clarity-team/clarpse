@@ -1,10 +1,8 @@
 package com.clarity.test;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
 import com.clarity.test.go.GoLangParseTest;
 import com.clarity.test.go.GoLangSmokeTest;
+import com.clarity.test.go.i74RegressionTest;
 import com.clarity.test.java.AccessModifiersTest;
 import com.clarity.test.java.AnnotationInvocationTest;
 import com.clarity.test.java.ChildComponentsTest;
@@ -20,6 +18,8 @@ import com.clarity.test.java.TypeExtensionTest;
 import com.clarity.test.java.TypeImplementationTest;
 import com.clarity.test.javascript.JavaScriptSmokeTest;
 import com.clarity.test.javascript.JavascriptParseTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * Clarpse's main test suite.
@@ -30,7 +30,8 @@ import com.clarity.test.javascript.JavascriptParseTest;
         TypeExtensionTest.class, TypeImplementationTest.class, TypeDeclarationTest.class, ChildComponentsTest.class,
         AccessModifiersTest.class, CommentsParsingTest.class, InvocationInheritanceTest.class,
         JavascriptParseTest.class, JavaScriptSmokeTest.class, GoLangParseTest.class, UtilsTest.class,
-        JavaDocInvocationTest.class, GoLangSmokeTest.class })
+        JavaDocInvocationTest.class, GoLangSmokeTest.class, i74RegressionTest.class
+})
 public class ClarpseTest {
 
 }
