@@ -357,9 +357,11 @@ public class GoLangTreeListener extends GolangBaseListener {
 
     @Override
     public final void exitMethodSpec(MethodSpecContext ctx) {
-        Component cmp = componentStack.peek();
-        if (cmp.componentType().isMethodComponent()) {
-            popAndCompleteComponent();
+        if (!componentStack.isEmpty()) {
+            Component cmp = componentStack.peek();
+            if (cmp.componentType().isMethodComponent()) {
+                popAndCompleteComponent();
+            }
         }
     }
 

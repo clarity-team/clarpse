@@ -1,22 +1,5 @@
 package com.clarity.compiler;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-
 import com.clarity.CommonDir;
 import com.clarity.antlr.golang.GolangBaseListener;
 import com.clarity.antlr.golang.GolangLexer;
@@ -29,8 +12,23 @@ import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
-
 import edu.emory.mathcs.backport.java.util.Collections;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Antlr4 based GoLang compiler.
@@ -43,7 +41,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
                 .filter(s -> (s.componentType().isBaseComponent())).collect(Collectors.toSet());
         ImplementedInterfaces implementedInterfacesGatherer = new ImplementedInterfaces(srcModel);
         for (Component baseCmp : baseComponents) {
-            List<String> implementedInterfaces = implementedInterfacesGatherer.getImplementedIntefaces(baseCmp);
+            List<String> implementedInterfaces = implementedInterfacesGatherer.getImplementedInterfaces(baseCmp);
             for (String implementedInterface : implementedInterfaces) {
                 baseCmp.insertComponentInvocation(new TypeImplementation(implementedInterface));
             }
@@ -149,7 +147,7 @@ class ImplementedInterfaces {
      * Retrieves a list of Strings corresponding to the the interfaces implemented
      * by the given base {@linkplain Component}.
      */
-    public List<String> getImplementedIntefaces(Component baseComponent) throws Exception {
+    public List<String> getImplementedInterfaces(Component baseComponent) {
 
         // holds all the implemented interfaces for the given component
         List<String> implementedInterfaces = new ArrayList<String>();
@@ -195,7 +193,8 @@ class ImplementedInterfaces {
 
         for (ComponentInvocation extend : interfaceComponent.componentInvocations(ComponentInvocations.EXTENSION)) {
             Component cmp = model.getComponent(extend.invokedComponent());
-            if (cmp != null && cmp.componentType() == ComponentType.INTERFACE) {
+            if (cmp != null && cmp.componentType() == ComponentType.INTERFACE
+                    && !cmp.equals(interfaceComponent)) {
                 methodSpecs.addAll(getListOfMethodSpecs(cmp));
             }
         }
