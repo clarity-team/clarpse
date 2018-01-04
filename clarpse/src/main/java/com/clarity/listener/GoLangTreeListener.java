@@ -108,11 +108,12 @@ public class GoLangTreeListener extends GolangBaseListener {
     /**
      * Creates a new component based on the given ParseRuleContext.
      */
-    private Component createComponent(ComponentType componentType) {
+    private Component createComponent(ComponentType componentType, int line) {
         final Component newCmp = new Component();
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
         newCmp.setSourceFilePath(file.name());
+        newCmp.setLine(line);
         return newCmp;
     }
 
@@ -180,7 +181,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                 // skip over structs defined within methods.
                 exitStructType(ctx);
             } else {
-                Component cmp = createComponent(ComponentType.STRUCT);
+                Component cmp = createComponent(ComponentType.STRUCT, ctx.getStart().getLine());
                 String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
                         Arrays.asList(file.content().split("\n")));
                 cmp.setComment(comments);
@@ -197,7 +198,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     @Override
     public final void enterInterfaceType(InterfaceTypeContext ctx) {
         if (lastParsedTypeIdentifier != null) {
-            Component cmp = createComponent(ComponentType.INTERFACE);
+            Component cmp = createComponent(ComponentType.INTERFACE, ctx.getStart().getLine());
             String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
@@ -213,7 +214,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     @Override
     public final void enterMethodSpec(MethodSpecContext ctx) {
         if (ctx.IDENTIFIER() != null) {
-            Component cmp = createComponent(ComponentType.METHOD);
+            Component cmp = createComponent(ComponentType.METHOD, ctx.getStart().getLine());
             String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
@@ -270,7 +271,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     @Override
     public final void enterMethodDecl(MethodDeclContext ctx) {
         if (ctx.IDENTIFIER() != null) {
-            Component cmp = createComponent(ComponentType.METHOD);
+            Component cmp = createComponent(ComponentType.METHOD, ctx.getStart().getLine());
             String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
@@ -323,7 +324,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                             paramCtx.identifierList().IDENTIFIER().forEach(nameCtx -> argumentNames.add(nameCtx.getText()));
                         }
                         for (String methodArgName : argumentNames) {
-                            Component cmp = createComponent(ComponentType.METHOD_PARAMETER_COMPONENT);
+                            Component cmp = createComponent(ComponentType.METHOD_PARAMETER_COMPONENT, ctx.getStart().getLine());
                             cmp.setName(methodArgName);
                             cmp.setComponentName(generateComponentName(cmp.name()));
                             if (!componentStack.isEmpty()) {
@@ -403,7 +404,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             VarSpecContext tmpContext = findParentVarSpecContext(ctx);
             if (tmpContext != null) {
                 for (TerminalNode identifier : tmpContext.identifierList().IDENTIFIER()) {
-                    Component localVarCmp = createComponent(ComponentType.LOCAL);
+                    Component localVarCmp = createComponent(ComponentType.LOCAL, ctx.getStart().getLine());
                     localVarCmp.setName(identifier.getText());
                     localVarCmp.setComponentName(generateComponentName(identifier.getText()));
                     localVarCmp.insertComponentInvocation(new TypeDeclaration(resolvedType));
@@ -452,11 +453,12 @@ public class GoLangTreeListener extends GolangBaseListener {
             if (ctx.identifierList() != null && !ctx.identifierList().isEmpty()) {
                 List<Component> fieldVars = new ArrayList<Component>();
                 for (TerminalNode token : ctx.identifierList().IDENTIFIER()) {
-                    Component cmp = createComponent(ComponentType.FIELD);
+                    Component cmp = createComponent(ComponentType.FIELD, ctx.getStart().getLine());
                     cmp.setName(token.getText());
                     cmp.setComment(
                             AntlrUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
                     cmp.setComponentName(generateComponentName(token.getText()));
+                    cmp.setValue(ctx.type().getText());
                     cmp.insertAccessModifier(visibility(cmp.name()));
                     pointParentsToGivenChild(cmp);
                     String[] types = getChildContextText(ctx.type()).split(",");

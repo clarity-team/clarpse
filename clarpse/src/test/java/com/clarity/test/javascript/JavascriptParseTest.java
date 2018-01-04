@@ -1,16 +1,15 @@
 package com.clarity.test.javascript;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
-import com.clarity.compiler.SourceFiles;
 import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class JavascriptParseTest {
 
@@ -157,6 +156,18 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor").name().equals("constructor"));
+    }
+
+    @Test
+    public void lineNumberTest() {
+    }
+
+    @Test
+    public void fieldComponentValue() {
+    }
+
+    @Test
+    public void methodComponentValue() {
     }
 
     @Test
