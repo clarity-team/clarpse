@@ -1,27 +1,27 @@
 package com.clarity.test.java;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
-import com.clarity.compiler.SourceFiles;
 import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class CommentsParsingTest {
 
     @Test
     public void testClassLevelComment() throws Exception {
 
-        final String code = "package test; /** Licensing */ import lol; /**A \n comment \n */ public class Test { }";
+        final String code = "package test; /** Licensing */ import lol; /**\n*A comment \n */ public class Test { }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("/**Acomment*/"));
+        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equals("/**\n" +
+                " * A comment\n" +
+                " */\n"));
     }
 
     @Test
@@ -32,8 +32,10 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("/**Acomment*/"));
+        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equals("/**\n" +
+                " * A\n" +
+                " * comment\n" +
+                " */\n"));
     }
 
     @Test
@@ -44,8 +46,10 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("/**Acomment*/"));
+        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equals("/**\n" +
+                " * A\n" +
+                " * comment\n" +
+                " */\n"));
     }
 
     @Test
@@ -56,20 +60,23 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test.Base").comment().replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("/**Acomment*/"));
+        assertTrue(generatedSourceModel.getComponent("test.Test.Base").comment().equals("/**\n" +
+                " * A\n" +
+                " * comment\n" +
+                " */\n"));
     }
 
     @Test
     public void testMethodLevelComment() throws Exception {
 
-        final String code = "public class Test { String fieldVar; /**lolcakes*/ void test() {} }";
+        final String code = "public class Test { String fieldVar;\n /**\nlolcakes\n*/\n void test() {} }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("/**lolcakes*/"));
+        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().equals("/**\n" +
+                " * lolcakes\n" +
+                " */\n"));
     }
 
     @Test
@@ -80,8 +87,10 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("/**lolcakes*/"));
+        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().equals("/**\n" +
+                " * lol\n" +
+                " * cakes\n" +
+                " */\n"));
     }
 
     @Test
@@ -92,8 +101,9 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").comment().replaceAll("[\\n\\t\\r ]", "")
-                .equalsIgnoreCase("/**lolcakes*/"));
+        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").comment().equals("/**\n" +
+                " * lolcakes\n" +
+                " */\n"));
     }
 
     @Test
@@ -104,7 +114,9 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.aMethod(java.lang.String).methodParam").comment()
-                .replaceAll("[\\n\\t\\r ]", "").equalsIgnoreCase("/**lolcakes*/"));
+        assertTrue(generatedSourceModel.getComponent("Test.aMethod(java.lang.String).methodParam").comment().equals("Optional[/**\n" +
+                " * lolcakes\n" +
+                " */\n" +
+                "]"));
     }
 }

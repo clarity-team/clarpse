@@ -1,16 +1,16 @@
 package com.clarity.sourcemodel;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Representation of the individual code level components (classes,
@@ -33,6 +33,7 @@ public final class Component implements Serializable {
      * Short name.
      */
     private String name;
+    private int line;
     private String comment = "";
     /**
      * Source file path from which the component was derived.
@@ -47,7 +48,7 @@ public final class Component implements Serializable {
     private Set<ComponentInvocation> invocations = new LinkedHashSet<ComponentInvocation>();
     /**
      * Formed by chaining parent components' names separated by a period.
-     *
+     * <p>
      * Eg) ClassA -> MethodB -> varC = "ClassA.MethodB.varC"
      */
     private String componentName;
@@ -69,6 +70,7 @@ public final class Component implements Serializable {
         value = component.value();
         sourceFile = component.sourceFile();
         comment = component.comment();
+        line = component.line();
     }
 
     public Component() {
@@ -116,6 +118,14 @@ public final class Component implements Serializable {
             }
         }
         invocations.add(ref);
+    }
+
+    public int line() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 
     public List<String> imports() {

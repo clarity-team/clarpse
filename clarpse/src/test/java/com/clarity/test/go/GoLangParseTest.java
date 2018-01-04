@@ -36,6 +36,30 @@ public class GoLangParseTest {
     }
 
     @Test
+    public void FieldVarValue() throws Exception {
+
+        final String code = "package main\n import\"fmt\"\n type person struct {SuggestFor []string}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").value().equals("[]string"));
+    }
+
+    @Test
+    public void lineNumber() throws Exception {
+
+        final String code = "package main\n import\"fmt\"\n type person struct {\nSuggestFor []string}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").line() == 4);
+        assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").line() == 4);
+
+    }
+
+    @Test
     public void testStructWithinMethodIgnored() throws Exception {
 
         final String code = "package main\n import\"fmt\"\n func SomeFunc(b []byte) error {\n" +
