@@ -462,7 +462,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                         String line = file.content().split("\n")[ctx.type().start.getLine() - 1];
                         int endPos = line.length() - 1;
                         if (line.trim().endsWith("}")) {
-                            endPos = line.lastIndexOf("}") -1;
+                            endPos = line.lastIndexOf("}") - 1;
                         }
                         cmp.setValue(line.substring(line.indexOf("func"), endPos).trim());
                     } else {
@@ -512,8 +512,7 @@ public class GoLangTreeListener extends GolangBaseListener {
 
         final Iterator<?> it = currentImportsMap.entrySet().iterator();
         while (it.hasNext()) {
-            @SuppressWarnings("rawtypes")
-            final Map.Entry pair = (Map.Entry) it.next();
+            @SuppressWarnings("rawtypes") final Map.Entry pair = (Map.Entry) it.next();
             if (type.startsWith((String) pair.getKey())) {
                 return (((String) pair.getValue()).replaceAll("/", ".")) + "." + type.replace(pair.getKey() + ".", "");
             }
