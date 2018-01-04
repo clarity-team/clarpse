@@ -36,7 +36,18 @@ public class GoLangParseTest {
     }
 
     @Test
-    public void FieldVarValue() throws Exception {
+    public void assertNoMethodParameters() throws Exception {
+
+        final String code = "package main\n import\"flag\"\n type Command struct {}\n func (c *Command) LocalFlags() *flag.FlagSet {}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.Command.LocalFlags").children().size() == 0);
+    }
+
+    @Test
+    public void fieldVarValue() throws Exception {
 
         final String code = "package main\n import\"fmt\"\n type person struct {SuggestFor []string}";
         final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
@@ -44,6 +55,30 @@ public class GoLangParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").value().equals("[]string"));
+    }
+
+    @Test
+    public void fieldVarFuncTypeValue() throws Exception {
+
+        final String code = "package main\n type person struct { PersistentPreRun func(cmd *Command, args []string) }";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        System.out.println(generatedSourceModel.getComponent("main.person.PersistentPreRun").value());
+        assertTrue(generatedSourceModel.getComponent("main.person.PersistentPreRun").value().equals("func(cmd *Command, args []string)"));
+    }
+
+    @Test
+    public void fieldVarFuncTypeValuev2() throws Exception {
+
+        final String code = "package main\n type person struct { globNormFunc func(f *flag.FlagSet, name string) flag.NormalizedName }";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        System.out.println(generatedSourceModel.getComponent("main.person.globNormFunc").value());
+        assertTrue(generatedSourceModel.getComponent("main.person.globNormFunc").value().equals("func(f *flag.FlagSet, name string) flag.NormalizedName"));
     }
 
     @Test
@@ -55,7 +90,7 @@ public class GoLangParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").line() == 4);
-        assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").line() == 4);
+        assertTrue(generatedSourceModel.getComponent("main.person").line() == 3);
 
     }
 

@@ -458,7 +458,16 @@ public class GoLangTreeListener extends GolangBaseListener {
                     cmp.setComment(
                             AntlrUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
                     cmp.setComponentName(generateComponentName(token.getText()));
-                    cmp.setValue(ctx.type().getText());
+                    if (ctx.type().getText().contains("func")) {
+                        String line = file.content().split("\n")[ctx.type().start.getLine() - 1];
+                        int endPos = line.length() - 1;
+                        if (line.trim().endsWith("}")) {
+                            endPos = line.lastIndexOf("}") -1;
+                        }
+                        cmp.setValue(line.substring(line.indexOf("func"), endPos).trim());
+                    } else {
+                        cmp.setValue(ctx.type().getText());
+                    }
                     cmp.insertAccessModifier(visibility(cmp.name()));
                     pointParentsToGivenChild(cmp);
                     String[] types = getChildContextText(ctx.type()).split(",");
