@@ -54,19 +54,31 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").codeFragment().equals("[]string"));
+        assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").codeFragment().equals("SuggestFor : []string"));
+    }
+
+    @Test
+    public void structMethodCodeFragment() throws Exception {
+
+        final String code = "package main\n import\"fmt\"\n type Command struct {} func (c *Command) SetHelpCommand(cmd *Command)";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        System.out.println(generatedSourceModel.getComponent("main.Command.SetHelpCommand").codeFragment());
+        assertTrue(generatedSourceModel.getComponent("main.Command.SetHelpCommand").codeFragment().equals("SetHelpCommand(*Command)"));
     }
 
 
     @Test
     public void fieldVarCodeFragmentWithComment() throws Exception {
 
-        final String code = "package main\n import\"fmt\"\n type person struct {SuggestFor []string \\\\test\n}";
+        final String code = "package main\n import\"fmt\"\n type person struct {usageFunc func(*Command) error // Usage can be defined by application\n}";
         final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").codeFragment().equals("[]string"));
+        assertTrue(generatedSourceModel.getComponent("main.person.usageFunc").codeFragment().equals("usageFunc : func(*Command) error"));
     }
 
     @Test
@@ -78,19 +90,19 @@ public class GoLangParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.person.PersistentPreRun").codeFragment());
-        assertTrue(generatedSourceModel.getComponent("main.person.PersistentPreRun").codeFragment().equals("func(cmd *Command, args []string)"));
+        assertTrue(generatedSourceModel.getComponent("main.person.PersistentPreRun").codeFragment().equals("PersistentPreRun : func(cmd *Command, args []string)"));
     }
 
     @Test
     public void fieldVarFuncTypeCodeFragmentWithComment() throws Exception {
 
-        final String code = "package main\n type person struct { PersistentPreRun func(cmd *Command, args []string) \\\\test \n}";
+        final String code = "package main\n type person struct { PersistentPreRun func(cmd *Command, args []string)//test \n}";
         final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.person.PersistentPreRun").codeFragment());
-        assertTrue(generatedSourceModel.getComponent("main.person.PersistentPreRun").codeFragment().equals("func(cmd *Command, args []string)"));
+        assertTrue(generatedSourceModel.getComponent("main.person.PersistentPreRun").codeFragment().equals("PersistentPreRun : func(cmd *Command, args []string)"));
     }
 
     @Test
@@ -102,7 +114,7 @@ public class GoLangParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.person.globNormFunc").codeFragment());
-        assertTrue(generatedSourceModel.getComponent("main.person.globNormFunc").codeFragment().equals("func(f *flag.FlagSet, name string) flag.NormalizedName"));
+        assertTrue(generatedSourceModel.getComponent("main.person.globNormFunc").codeFragment().equals("globNormFunc : func(f *flag.FlagSet, name string) flag.NormalizedName"));
     }
 
     @Test

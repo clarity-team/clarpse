@@ -352,6 +352,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                             }
                         }
                     }
+                    currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + ")");
                 }
                 paramCmps.forEach(item -> completeComponent(item));
             }
@@ -446,6 +447,8 @@ public class GoLangTreeListener extends GolangBaseListener {
             Component methodCmp = componentStack.peek();
             if (!methodCmp.codeFragment().endsWith(")")) {
                 methodCmp.setCodeFragment(methodCmp.codeFragment() + ") : ");
+            } else {
+                methodCmp.setCodeFragment(methodCmp.codeFragment() + " : ");
             }
             if (ctx.parameters() != null && ctx.parameters().parameterList() != null) {
                 for (ParameterDeclContext paramCtx : ctx.parameters().parameterList().parameterDecl()) {
@@ -511,12 +514,12 @@ public class GoLangTreeListener extends GolangBaseListener {
                         if (line.trim().endsWith("}")) {
                             line = line.substring(0, line.indexOf("}")).trim();
                         }
-                        if (line.contains("\\\\")) {
-                            line = line.substring(0, line.lastIndexOf("\\\\"));
+                        if (line.contains("//")) {
+                            line = line.substring(0, line.lastIndexOf("//"));
                         }
-                        cmp.setCodeFragment(line.substring(line.indexOf("func")).trim());
+                        cmp.setCodeFragment(cmp.name() + " : " + line.substring(line.indexOf("func")).trim());
                     } else {
-                        cmp.setCodeFragment(ctx.type().getText());
+                        cmp.setCodeFragment(cmp.name() + " : " + ctx.type().getText());
                     }
                     cmp.insertAccessModifier(visibility(cmp.name()));
                     pointParentsToGivenChild(cmp);
