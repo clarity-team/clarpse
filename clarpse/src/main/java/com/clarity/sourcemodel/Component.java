@@ -57,12 +57,12 @@ public final class Component implements Serializable {
      */
     @JsonInclude(Include.NON_EMPTY)
     private final ArrayList<String> children = new ArrayList<String>();
-    private String declarationTypeSnippet;
+    private String codeFragment;
 
     public Component(final Component component) {
         modifiers = component.modifiers();
         type = component.componentType();
-        declarationTypeSnippet = component.declarationTypeSnippet();
+        codeFragment = component.codeFragment();
         invocations = component.invocations();
         imports = component.imports();
         componentName = component.componentName();
@@ -103,8 +103,8 @@ public final class Component implements Serializable {
         imports.add(importStmt);
     }
 
-    public String declarationTypeSnippet() {
-        return declarationTypeSnippet;
+    public String codeFragment() {
+        return codeFragment;
     }
 
     public Set<ComponentInvocation> invocations() {
@@ -136,8 +136,8 @@ public final class Component implements Serializable {
         return componentName;
     }
 
-    public void setDeclarationTypeSnippet(final String componentDeclarationTypeFragment) {
-        declarationTypeSnippet = componentDeclarationTypeFragment;
+    public void setCodeFragment(final String componentDeclarationTypeFragment) {
+        codeFragment = componentDeclarationTypeFragment;
     }
 
     public void setExternalTypeReferences(final Set<ComponentInvocation> externalReferences) {

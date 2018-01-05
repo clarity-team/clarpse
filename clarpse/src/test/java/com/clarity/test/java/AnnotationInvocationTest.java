@@ -98,7 +98,7 @@ public class AnnotationInvocationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.aMethod(java.lang.String).var")
+        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.aMethod(String).var")
                 .componentInvocations(ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Override"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("Override"));

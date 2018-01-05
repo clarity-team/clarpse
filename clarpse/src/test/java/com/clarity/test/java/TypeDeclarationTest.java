@@ -12,6 +12,8 @@ import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
+import java.util.ArrayList;
+
 public class TypeDeclarationTest {
 
     @Test
@@ -59,10 +61,10 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s1")
+        assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s1")
                 .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("java.lang.String"));
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s2")
+        assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s2")
                 .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("java.lang.Integer"));
     }
@@ -75,9 +77,9 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s1")
+        assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s1")
                 .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String,java.lang.Integer).s2")
+        assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s2")
                 .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
     }
 
@@ -104,5 +106,17 @@ public class TypeDeclarationTest {
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.method().s")
                 .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
+    }
+
+    @Test
+    public void TypeDeclarationArrayList() throws Exception {
+        final RawFile file = new RawFile("ClassA.java", "package com.sample;" + "import java.util.ArrayList; import java.util.Map;"
+                + "public class ClassA {  private Map<String,ArrayList<ClassB>> b;}");
+        final SourceFiles reqCon = new SourceFiles(Lang.JAVA);
+        final ArrayList<SourceFiles> reqCons = new ArrayList<SourceFiles>();
+        reqCon.insertFile(file);
+        reqCons.add(reqCon);
+        final OOPSourceCodeModel codeModel = new ClarpseProject(reqCon).result();
+        assertTrue(codeModel.getComponent("com.sample.ClassA.b").invocations().size() == 4);
     }
 }

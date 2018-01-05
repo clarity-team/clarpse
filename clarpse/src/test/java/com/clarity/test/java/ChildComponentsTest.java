@@ -64,8 +64,8 @@ public class ChildComponentsTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method(java.lang.String)").children().toArray()[0]
-                .equals("Test.method(java.lang.String).str"));
+        assertTrue(generatedSourceModel.getComponent("Test.method(String)").children().toArray()[0]
+                .equals("Test.method(String).str"));
     }
 
     @Test

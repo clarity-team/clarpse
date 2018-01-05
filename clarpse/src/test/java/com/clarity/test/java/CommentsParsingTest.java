@@ -114,7 +114,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.aMethod(java.lang.String).methodParam").comment().equals("Optional[/**\n" +
+        assertTrue(generatedSourceModel.getComponent("Test.aMethod(String).methodParam").comment().equals("Optional[/**\n" +
                 " * lolcakes\n" +
                 " */\n" +
                 "]"));

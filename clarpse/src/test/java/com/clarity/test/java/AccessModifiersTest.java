@@ -105,7 +105,7 @@ public class AccessModifiersTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(
-                ((String) generatedSourceModel.getComponent("Test.Test(java.lang.String).str").modifiers().toArray()[0])
+                ((String) generatedSourceModel.getComponent("Test.Test(String).str").modifiers().toArray()[0])
                         .equalsIgnoreCase("final"));
     }
 }

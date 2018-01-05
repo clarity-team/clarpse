@@ -134,7 +134,7 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test.aMethod(java.lang.String)")
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("Test.aMethod(String)")
                 .invocations().toArray()[0]).invokedComponent().equals("java.lang.String"));
     }
 }

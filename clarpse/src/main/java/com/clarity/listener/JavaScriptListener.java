@@ -302,8 +302,8 @@ public class JavaScriptListener implements Callback {
 
     private void processVariableAssignment(Component cmp, Node assignmentNode) {
         if (NodeUtil.isLiteralValue(assignmentNode, false)) {
-            cmp.setValue(NodeUtil.getStringValue(assignmentNode));
-            cmp.setDeclarationTypeSnippet(declarationSnippet(assignmentNode.getToken()));
+            cmp.setCodeFragment(cmp.name() + " : " + NodeUtil.getStringValue(assignmentNode));
+            cmp.setCodeFragment(declarationSnippet(assignmentNode.getToken()));
         } else if (assignmentNode.hasChildren() && assignmentNode.isNew()
                 && (assignmentNode.getFirstChild().isName() || assignmentNode.getFirstChild().isGetProp())) {
             String invokedType;
@@ -314,7 +314,7 @@ public class JavaScriptListener implements Callback {
                 invokedType = assignmentNode.getFirstChild().getString();
                 cmp.insertComponentInvocation(new TypeInstantiation(invokedType));
             }
-            cmp.setDeclarationTypeSnippet(invokedType);
+            cmp.setCodeFragment(invokedType);
         }
     }
 

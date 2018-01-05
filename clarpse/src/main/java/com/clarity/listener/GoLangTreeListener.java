@@ -221,6 +221,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             cmp.setName(ctx.IDENTIFIER().getText());
             cmp.setComponentName(generateComponentName(cmp.name()));
             pointParentsToGivenChild(cmp);
+            cmp.setCodeFragment(cmp.name() + "(");
             cmp.insertAccessModifier(visibility(cmp.name()));
             componentStack.push(cmp);
         } else if (ctx.typeName() != null) {
@@ -278,6 +279,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             cmp.setName(ctx.IDENTIFIER().getText());
             cmp.setComponentName(generateComponentName(ctx.IDENTIFIER().getText()));
             pointParentsToGivenChild(cmp);
+            cmp.setCodeFragment(cmp.name() + "(");
             cmp.insertAccessModifier(visibility(cmp.name()));
             componentStack.push(cmp);
         }
@@ -297,10 +299,22 @@ public class GoLangTreeListener extends GolangBaseListener {
     public final void enterParameters(ParametersContext ctx) {
 
         if (!componentStack.isEmpty() && componentStack.peek().componentType().isMethodComponent()) {
+            Component currMethodCmp = componentStack.peek();
             if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
                 List<Component> paramCmps = new ArrayList<Component>();
-                for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
-                    if (!inReceiverContext && !inResultContext) {
+                if (!inReceiverContext && !inResultContext) {
+                    for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
+                        int interval = 1;
+                        if (paramCtx.identifierList() != null) {
+                            interval = paramCtx.identifierList().IDENTIFIER().size();
+                        }
+                        for (int i = 0; i < interval; i++) {
+                            if (currMethodCmp.codeFragment().endsWith("(")) {
+                                currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + paramCtx.type().getText());
+                            } else {
+                                currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + ", " + paramCtx.type().getText());
+                            }
+                        }
                         String[] types = {};
                         for (int j = 0; j < paramCtx.children.size(); j++) {
                             String type = getChildContextText(paramCtx);
@@ -351,6 +365,9 @@ public class GoLangTreeListener extends GolangBaseListener {
         if (!componentStack.isEmpty()) {
             Component cmp = componentStack.peek();
             if (cmp.componentType().isMethodComponent()) {
+                if (cmp.codeFragment().endsWith("(")) {
+                    cmp.setCodeFragment(cmp.codeFragment() + ")");
+                }
                 popAndCompleteComponent();
             }
         }
@@ -361,6 +378,9 @@ public class GoLangTreeListener extends GolangBaseListener {
         if (!componentStack.isEmpty()) {
             Component cmp = componentStack.peek();
             if (cmp.componentType().isMethodComponent()) {
+                if (cmp.codeFragment().endsWith("(")) {
+                    cmp.setCodeFragment(cmp.codeFragment() + ")");
+                }
                 popAndCompleteComponent();
             }
         }
@@ -422,6 +442,33 @@ public class GoLangTreeListener extends GolangBaseListener {
     @Override
     public final void enterResult(ResultContext ctx) {
         inResultContext = true;
+        if (!componentStack.isEmpty() && componentStack.peek().componentType().isMethodComponent()) {
+            Component methodCmp = componentStack.peek();
+            if (!methodCmp.codeFragment().endsWith(")")) {
+                methodCmp.setCodeFragment(methodCmp.codeFragment() + ") : ");
+            }
+            if (ctx.parameters() != null && ctx.parameters().parameterList() != null) {
+                for (ParameterDeclContext paramCtx : ctx.parameters().parameterList().parameterDecl()) {
+                    int iterations = 1;
+                    if (paramCtx.identifierList() != null) {
+                        iterations = paramCtx.identifierList().IDENTIFIER().size();
+                    }
+                    for (int i = 0; i < iterations; i++) {
+                        if (methodCmp.codeFragment().trim().endsWith(":")) {
+                            methodCmp.setCodeFragment(methodCmp.codeFragment() + paramCtx.type().getText());
+                        } else {
+                            methodCmp.setCodeFragment(methodCmp.codeFragment() + ", " + paramCtx.type().getText());
+                        }
+                    }
+                }
+            } else if (ctx.type() != null) {
+                if (methodCmp.codeFragment().trim().endsWith(":")) {
+                    methodCmp.setCodeFragment(methodCmp.codeFragment() + ctx.type().getText());
+                } else {
+                    methodCmp.setCodeFragment(methodCmp.codeFragment() + ", " + ctx.type().getText());
+                }
+            }
+        }
     }
 
     @Override
@@ -462,11 +509,14 @@ public class GoLangTreeListener extends GolangBaseListener {
                         String line = file.content().split("\n")[ctx.type().start.getLine() - 1];
                         int endPos = line.length() - 1;
                         if (line.trim().endsWith("}")) {
-                            endPos = line.lastIndexOf("}") - 1;
+                            line = line.substring(0, line.indexOf("}")).trim();
                         }
-                        cmp.setValue(line.substring(line.indexOf("func"), endPos).trim());
+                        if (line.contains("\\\\")) {
+                            line = line.substring(0, line.lastIndexOf("\\\\"));
+                        }
+                        cmp.setCodeFragment(line.substring(line.indexOf("func")).trim());
                     } else {
-                        cmp.setValue(ctx.type().getText());
+                        cmp.setCodeFragment(ctx.type().getText());
                     }
                     cmp.insertAccessModifier(visibility(cmp.name()));
                     pointParentsToGivenChild(cmp);

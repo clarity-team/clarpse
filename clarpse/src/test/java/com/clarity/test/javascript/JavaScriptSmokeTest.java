@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.clarity.compiler.ClarpseProject;
@@ -13,6 +14,7 @@ import com.clarity.compiler.RawFile;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 
+@Ignore
 public class JavaScriptSmokeTest {
 
 	private static OOPSourceCodeModel generatedSourceModel;
