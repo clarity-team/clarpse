@@ -11,7 +11,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 
 # Features
 
- - Supports **Java**, **GoLang**, and **JavaScript** (ES6 and above)
+ - Supports **Java** and **GoLang**. 
  - Light weight
  - Performant
  - Easy to use
@@ -23,7 +23,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Component            | A language independent source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
 |  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
-| Component Invocation | An invocation of an external component found in a source file, typically through type declaration, instantiation, extension, implementation, method invocations and so forth. |
+| Component Invocation | A relationship between two Components, typically through type declaration, instantiation, extension, implementation, etc.. |
 
 # Getting Started
 An excellent way to get started is to look at Clarpe's unit tests.
@@ -37,12 +37,15 @@ An excellent way to get started is to look at Clarpe's unit tests.
                                                +  "     SampleClassB.fooMethod();
                                                +  "     }                                                                      "
                                                +  " }                                                                          ";";
-    final ParseRequestContent rawData = new ParseRequestContent(Lang.JAVA);
+    final SourceFiles rawData = new SourceFiles(Lang.JAVA);
     // insert a sample source file
     rawData.insertFile(new RawFile("file2", code));
     final ClarpseProject project = new ClarpseProject(rawData);
     // get the parsed result.
     OOPSourceCodeModel generatedSourceModel = project.result();
+   ```
+   The compiled `OOPSourceCodeModel` is the polygot representation of our project through a collection of `Component` objects.
+   ```java
     // extract data from the OOPSourceCodeModel's components
     // get the main class component
     Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
@@ -52,7 +55,7 @@ An excellent way to get started is to look at Clarpe's unit tests.
     mainClassComponent.comment();        // --> "Sample Doc Comment"
     mainClassComponent.modifiers();      // --> ["public"]
     mainClassComponent.children();       // --> ["foo.java.SampleClass.sampleMethod(java.lang.String)"]
-    mainClassComponent.start();          // --> 1
+    mainClassComponent.line();           // --> 1
     mainClassComponent.sourceFile();     // --> "foo.java"
     mainClassComponent.componentInvocations(ComponentInvocations.EXTENSION).get(0); // --> "com.foo.AbstractClass"
     // get the inner method component
@@ -61,8 +64,9 @@ An excellent way to get started is to look at Clarpe's unit tests.
     methodComponent.type();              // --> METHOD
     methodComponent.annotations();       // --> ["SampleAnnotation=''"]
     methodComponent.modifiers();         // --> ["public"]
-    methodComponent.children();          // --> ["com.foo.java.SampleClass.sampleMethod(java.lang.String).sampleMethodParam"]
-    methodComponent.start();             // --> 5
+    methodComponent.children();          // --> ["com.foo.java.SampleClass.sampleMethod(String).sampleMethodParam"]
+    methodComponent.line() ;             // --> 5
+    methodComopnent.codeFragment();      // --> "sampleMethod(String)"
     methodComponent.sourceFile();        // --> "foo.java"
     methodComponent.componentInvocations(ComponentInvocations.METHOD).get(0); // --> "com.foo.SampleClassB.fooMethod()"
 ```
