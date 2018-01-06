@@ -24,6 +24,18 @@ public class CommentsParsingTest {
                 " */\n"));
     }
 
+
+    @Test
+    public void testClassLevelNoComment() throws Exception {
+
+        final String code = "package test; import lol; public class Test { }";
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("test.Test").comment() == "");
+    }
+
     @Test
     public void testInterfaceLevelComment() throws Exception {
 

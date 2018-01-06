@@ -149,7 +149,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         } else {
             newCmp.setLine(node.getBegin().get().line);
         }
-        if (node.getComment() != null) {
+        if (node.getComment().isPresent()) {
             newCmp.setComment(node.getComment().toString());
         }
         newCmp.setSourceFilePath(file.name());
