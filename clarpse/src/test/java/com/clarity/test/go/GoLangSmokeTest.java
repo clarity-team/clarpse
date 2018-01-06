@@ -43,7 +43,7 @@ public class GoLangSmokeTest {
     @Test
     public void spotCheckStructMethodv2() {
         assertTrue(generatedSourceModel
-                .containsComponent("pilot.platform.eureka.serviceAccounts.GetIstioServiceAccounts(string, []string) : []string"));
+                .containsComponent("pilot.platform.eureka.serviceAccounts.GetIstioServiceAccounts(string, []string) : ([]string)"));
     }
 
     /**
@@ -51,7 +51,7 @@ public class GoLangSmokeTest {
      */
     @Test
     public void spotCheckInterfaceMethod() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.Component.Start() : error"));
+        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.Component.Start() : (error)"));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class GoLangSmokeTest {
 
     @Test
     public void spotCheckStructMethod() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.IstioTestFramework.SetUp() : error"));
+        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.IstioTestFramework.SetUp() : (error)"));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class GoLangSmokeTest {
 
     @Test
     public void spotCheckStructFuncDoc() {
-        assertTrue(generatedSourceModel.getComponent("broker.pkg.platform.kube.crd.Client.RegisterResources() : error").comment()
+        assertTrue(generatedSourceModel.getComponent("broker.pkg.platform.kube.crd.Client.RegisterResources() : (error)").comment()
                 .trim().equals("RegisterResources sends a request to create CRDs and waits for them to initialize"));
     }
 }

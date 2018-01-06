@@ -197,17 +197,21 @@ public class GoLangTreeListener extends GolangBaseListener {
 
     @Override
     public final void enterInterfaceType(InterfaceTypeContext ctx) {
-        if (lastParsedTypeIdentifier != null) {
-            Component cmp = createComponent(ComponentType.INTERFACE, ctx.getStart().getLine());
-            String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
-                    Arrays.asList(file.content().split("\n")));
-            cmp.setComment(comments);
-            cmp.setName(lastParsedTypeIdentifier);
-            cmp.setComponentName(generateComponentName(lastParsedTypeIdentifier));
-            cmp.setImports(currentImports);
-            pointParentsToGivenChild(cmp);
-            cmp.insertAccessModifier(visibility(cmp.name()));
-            componentStack.push(cmp);
+        if (!componentStackContainsMethod()) {
+            if (lastParsedTypeIdentifier != null) {
+                Component cmp = createComponent(ComponentType.INTERFACE, ctx.getStart().getLine());
+                String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
+                        Arrays.asList(file.content().split("\n")));
+                cmp.setComment(comments);
+                cmp.setName(lastParsedTypeIdentifier);
+                cmp.setComponentName(generateComponentName(lastParsedTypeIdentifier));
+                cmp.setImports(currentImports);
+                pointParentsToGivenChild(cmp);
+                cmp.insertAccessModifier(visibility(cmp.name()));
+                componentStack.push(cmp);
+            }
+        } else {
+            exitInterfaceType(ctx);
         }
     }
 
@@ -237,7 +241,6 @@ public class GoLangTreeListener extends GolangBaseListener {
             insertExtensionIntoStackBaseComponent(ctx.typeName().getText());
         }
     }
-
     /**
      * Searches the children of the given context for a context of the given clazz
      * type and returns its Text Value. If there are multiple relevant child nodes,
@@ -388,6 +391,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                 if (cmp.codeFragment().endsWith("(")) {
                     cmp.setCodeFragment(cmp.codeFragment() + ")");
                 }
+                cmp.setName(ctx.IDENTIFIER().getText());
                 popAndCompleteComponent();
             }
         }
@@ -401,6 +405,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                 if (cmp.codeFragment().endsWith("(")) {
                     cmp.setCodeFragment(cmp.codeFragment() + ")");
                 }
+                cmp.setName(ctx.IDENTIFIER().getText());
                 popAndCompleteComponent();
             }
         }
@@ -485,9 +490,9 @@ public class GoLangTreeListener extends GolangBaseListener {
         if ((ctx.parameters() != null && !ctx.parameters().isEmpty() && ctx.parameters().parameterList() != null) || ctx.type() != null && !ctx.type().getText().isEmpty()) {
             if (!methodCmp.codeFragment().contains(":")) {
                 if (!methodCmp.codeFragment().endsWith(")") && !methodCmp.codeFragment().contains(":")) {
-                    methodCmp.setCodeFragment(methodCmp.codeFragment() + ") : ");
+                    methodCmp.setCodeFragment(methodCmp.codeFragment() + ") : (");
                 } else {
-                    methodCmp.setCodeFragment(methodCmp.codeFragment() + " : ");
+                    methodCmp.setCodeFragment(methodCmp.codeFragment() + " : (");
                 }
                 if (ctx.parameters() != null && ctx.parameters().parameterList() != null) {
                     for (ParameterDeclContext paramCtx : ctx.parameters().parameterList().parameterDecl()) {
@@ -497,7 +502,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                             iterations = paramCtx.identifierList().IDENTIFIER().size();
                         }
                         for (int i = 0; i < iterations; i++) {
-                            if (methodCmp.codeFragment().trim().endsWith(":")) {
+                            if (methodCmp.codeFragment().trim().endsWith("(")) {
                                 methodCmp.setCodeFragment(methodCmp.codeFragment() + paramType);
                             } else {
                                 methodCmp.setCodeFragment(methodCmp.codeFragment() + ", " + paramType);
@@ -506,12 +511,13 @@ public class GoLangTreeListener extends GolangBaseListener {
                     }
                 } else if (ctx.type() != null) {
                     String type = AntlrUtil.originalText(ctx.type());
-                    if (methodCmp.codeFragment().trim().endsWith(":")) {
+                    if (methodCmp.codeFragment().trim().endsWith("(")) {
                         methodCmp.setCodeFragment(methodCmp.codeFragment() + type);
                     } else {
                         methodCmp.setCodeFragment(methodCmp.codeFragment() + ", " + type);
                     }
                 }
+                methodCmp.setCodeFragment(methodCmp.codeFragment() + ")");
             }
         }
     }
@@ -531,12 +537,16 @@ public class GoLangTreeListener extends GolangBaseListener {
 
     @Override
     public final void exitStructType(StructTypeContext ctx) {
-        popAndCompleteComponent();
+        if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
+            popAndCompleteComponent();
+        }
     }
 
     @Override
     public final void exitInterfaceType(InterfaceTypeContext ctx) {
-        popAndCompleteComponent();
+        if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
+            popAndCompleteComponent();
+        }
     }
 
     @Override
@@ -552,7 +562,6 @@ public class GoLangTreeListener extends GolangBaseListener {
                     cmp.setComponentName(generateComponentName(token.getText()));
                     if (ctx.type().getText().contains("func")) {
                         String line = file.content().split("\n")[ctx.type().start.getLine() - 1];
-                        int endPos = line.length() - 1;
                         if (line.trim().endsWith("}")) {
                             line = line.substring(0, line.indexOf("}")).trim();
                         }

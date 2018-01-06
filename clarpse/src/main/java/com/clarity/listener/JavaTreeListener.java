@@ -324,58 +324,60 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     @Override
     public final void visit(final MethodDeclaration ctx, Object arg) {
 
-        final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.METHOD);
-        currMethodCmp.setName(ctx.getNameAsString());
-        currMethodCmp.setCodeFragment(ctx.getType().asString());
-        currMethodCmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
-        String formalParametersString = "(";
-        if (ctx.getParameters() != null) {
-            formalParametersString += getFormalParameterTypesList(ctx.getParameters());
-        }
-        formalParametersString += ")";
+        if (!componentStackContainsMethod()) {
+            final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.METHOD);
+            currMethodCmp.setName(ctx.getNameAsString());
+            currMethodCmp.setCodeFragment(ctx.getType().asString());
+            currMethodCmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
+            String formalParametersString = "(";
+            if (ctx.getParameters() != null) {
+                formalParametersString += getFormalParameterTypesList(ctx.getParameters());
+            }
+            formalParametersString += ")";
 
-        if (ctx.getComment().isPresent()) {
-            currMethodCmp.setComment(ctx.getComment().get().toString());
-        }
-        for (final AnnotationExpr annot : ctx.getAnnotations()) {
-            populateAnnotation(currMethodCmp, annot);
-        }
-
-        for (final ReferenceType stmt : ctx.getThrownExceptions()) {
-            currMethodCmp.insertComponentInvocation(
-                    new ThrownException(resolveType(stmt.getMetaModel().getTypeName())));
-        }
-        final String methodSignature = currMethodCmp.name() + formalParametersString;
-        String codeFragment = currMethodCmp.name() + formalParametersString;
-        if (ctx.getType().toString() != null && !ctx.getType().toString().equals("void")) {
-            codeFragment += " : " + ctx.getType().toString();
-        }
-        currMethodCmp.setCodeFragment(codeFragment);
-        currMethodCmp.setComponentName(generateComponentName(methodSignature));
-        pointParentsToGivenChild(currMethodCmp);
-        componentStack.push(currMethodCmp);
-        if (ctx.getParameters() != null) {
-            for (final Parameter param : ctx.getParameters()) {
-                final Component methodParamCmp = createComponent(param,
-                        OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
-                methodParamCmp.setName(param.getNameAsString());
-                methodParamCmp.setCodeFragment(param.getType().asString());
-                for (final AnnotationExpr annot : param.getAnnotations()) {
-                    populateAnnotation(methodParamCmp, annot);
-                }
-                methodParamCmp.setComponentName(generateComponentName(param.getNameAsString()));
-                methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
-                methodParamCmp.insertComponentInvocation(
-                        new TypeDeclaration(resolveType(param.getType().asString())));
-                methodParamCmp.uniqueName();
-                pointParentsToGivenChild(methodParamCmp);
-                componentStack.push(methodParamCmp);
-                completeComponent();
+            if (ctx.getComment().isPresent()) {
+                currMethodCmp.setComment(ctx.getComment().get().toString());
+            }
+            for (final AnnotationExpr annot : ctx.getAnnotations()) {
+                populateAnnotation(currMethodCmp, annot);
             }
 
+            for (final ReferenceType stmt : ctx.getThrownExceptions()) {
+                currMethodCmp.insertComponentInvocation(
+                        new ThrownException(resolveType(stmt.getMetaModel().getTypeName())));
+            }
+            final String methodSignature = currMethodCmp.name() + formalParametersString;
+            String codeFragment = currMethodCmp.name() + formalParametersString;
+            if (ctx.getType().toString() != null && !ctx.getType().toString().equals("void")) {
+                codeFragment += " : " + ctx.getType().toString();
+            }
+            currMethodCmp.setCodeFragment(codeFragment);
+            currMethodCmp.setComponentName(generateComponentName(methodSignature));
+            pointParentsToGivenChild(currMethodCmp);
+            componentStack.push(currMethodCmp);
+            if (ctx.getParameters() != null) {
+                for (final Parameter param : ctx.getParameters()) {
+                    final Component methodParamCmp = createComponent(param,
+                            OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
+                    methodParamCmp.setName(param.getNameAsString());
+                    methodParamCmp.setCodeFragment(param.getType().asString());
+                    for (final AnnotationExpr annot : param.getAnnotations()) {
+                        populateAnnotation(methodParamCmp, annot);
+                    }
+                    methodParamCmp.setComponentName(generateComponentName(param.getNameAsString()));
+                    methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
+                    methodParamCmp.insertComponentInvocation(
+                            new TypeDeclaration(resolveType(param.getType().asString())));
+                    methodParamCmp.uniqueName();
+                    pointParentsToGivenChild(methodParamCmp);
+                    componentStack.push(methodParamCmp);
+                    completeComponent();
+                }
+
+            }
+            super.visit(ctx, arg);
+            completeComponent();
         }
-        super.visit(ctx, arg);
-        completeComponent();
     }
 
     private boolean componentStackContainsMethod() {
@@ -403,61 +405,62 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     @Override
     public final void visit(final ConstructorDeclaration ctx, Object arg) {
 
-        final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
+        if (!componentStackContainsMethod()) {
+            final Component currMethodCmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
+            final String methodName = ctx.getNameAsString();
+            currMethodCmp.setName(methodName);
 
-        final String methodName = ctx.getNameAsString();
-        currMethodCmp.setName(methodName);
+            currMethodCmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
 
-        currMethodCmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
-
-        if (ctx.getComment().isPresent()) {
-            currMethodCmp.setComment(ctx.getComment().get().toString());
-        }
-
-        currMethodCmp.setCodeFragment("void");
-
-        String formalParametersString = "(";
-        if (ctx.getParameters() != null) {
-            formalParametersString += getFormalParameterTypesList(ctx.getParameters());
-        }
-        formalParametersString += ")";
-
-        for (final AnnotationExpr annot : ctx.getAnnotations()) {
-            populateAnnotation(currMethodCmp, annot);
-        }
-
-        for (final ReferenceType stmt : ctx.getThrownExceptions()) {
-            currMethodCmp.insertComponentInvocation(
-                    new ThrownException(resolveType(stmt.getMetaModel().getTypeName())));
-        }
-
-        final String methodSignature = currMethodCmp.name() + formalParametersString;
-        String codeFragment = currMethodCmp.name() + formalParametersString;
-        currMethodCmp.setCodeFragment(codeFragment);
-        currMethodCmp.setComponentName(generateComponentName(methodSignature));
-        pointParentsToGivenChild(currMethodCmp);
-        componentStack.push(currMethodCmp);
-        if (ctx.getParameters() != null) {
-            for (final Parameter param : ctx.getParameters()) {
-                final Component methodParamCmp = createComponent(param,
-                        OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
-                methodParamCmp.setCodeFragment(param.getType().asString());
-                methodParamCmp.setName(param.getNameAsString());
-                for (final AnnotationExpr annot : param.getAnnotations()) {
-                    populateAnnotation(methodParamCmp, annot);
-                }
-                methodParamCmp.setComponentName(generateComponentName(param.getNameAsString()));
-                methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
-                methodParamCmp.insertComponentInvocation(
-                        new TypeDeclaration(resolveType(param.getType().asClassOrInterfaceType().getNameAsString())));
-                pointParentsToGivenChild(methodParamCmp);
-                componentStack.push(methodParamCmp);
-                completeComponent();
+            if (ctx.getComment().isPresent()) {
+                currMethodCmp.setComment(ctx.getComment().get().toString());
             }
-        }
 
-        super.visit(ctx, arg);
-        completeComponent();
+            currMethodCmp.setCodeFragment("void");
+
+            String formalParametersString = "(";
+            if (ctx.getParameters() != null) {
+                formalParametersString += getFormalParameterTypesList(ctx.getParameters());
+            }
+            formalParametersString += ")";
+
+            for (final AnnotationExpr annot : ctx.getAnnotations()) {
+                populateAnnotation(currMethodCmp, annot);
+            }
+
+            for (final ReferenceType stmt : ctx.getThrownExceptions()) {
+                currMethodCmp.insertComponentInvocation(
+                        new ThrownException(resolveType(stmt.getMetaModel().getTypeName())));
+            }
+
+            final String methodSignature = currMethodCmp.name() + formalParametersString;
+            String codeFragment = currMethodCmp.name() + formalParametersString;
+            currMethodCmp.setCodeFragment(codeFragment);
+            currMethodCmp.setComponentName(generateComponentName(methodSignature));
+            pointParentsToGivenChild(currMethodCmp);
+            componentStack.push(currMethodCmp);
+            if (ctx.getParameters() != null) {
+                for (final Parameter param : ctx.getParameters()) {
+                    final Component methodParamCmp = createComponent(param,
+                            OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
+                    methodParamCmp.setCodeFragment(param.getType().asString());
+                    methodParamCmp.setName(param.getNameAsString());
+                    for (final AnnotationExpr annot : param.getAnnotations()) {
+                        populateAnnotation(methodParamCmp, annot);
+                    }
+                    methodParamCmp.setComponentName(generateComponentName(param.getNameAsString()));
+                    methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
+                    methodParamCmp.insertComponentInvocation(
+                            new TypeDeclaration(resolveType(param.getType().asClassOrInterfaceType().getNameAsString())));
+                    pointParentsToGivenChild(methodParamCmp);
+                    componentStack.push(methodParamCmp);
+                    completeComponent();
+                }
+            }
+
+            super.visit(ctx, arg);
+            completeComponent();
+        }
     }
 
     private List<String> resolveJavaParserModifiers(EnumSet<Modifier> modifiers) {

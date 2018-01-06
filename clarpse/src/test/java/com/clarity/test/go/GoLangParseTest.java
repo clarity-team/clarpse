@@ -43,7 +43,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.Command.LocalFlags() : *flag.FlagSet").children().size() == 0);
+        assertTrue(generatedSourceModel.getComponent("main.Command.LocalFlags() : (*flag.FlagSet)").children().size() == 0);
     }
 
     @Test
@@ -301,7 +301,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/main/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2() : string, uintptr").codeFragment().equals("testMethodv2() : string, uintptr"));
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2() : (string, uintptr)").codeFragment().equals("testMethodv2() : (string, uintptr)"));
     }
 
     @Test
@@ -312,7 +312,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : string, uintptr.x")
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : (string, uintptr).x")
                 .componentType() == ComponentType.METHOD_PARAMETER_COMPONENT);
     }
 
@@ -393,13 +393,13 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : string, uintptr.x")
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : (string, uintptr).x")
                 .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : string, uintptr.x")
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : (string, uintptr).x")
                 .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("string"));
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : string, uintptr.h")
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : (string, uintptr).h")
                 .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent().equals("int"));
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : string, uintptr.x")
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : (string, uintptr).x")
                 .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
     }
 
@@ -411,8 +411,8 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : string, uintptr").children().size() == 2);
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : string, uintptr.x")
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : (string, uintptr)").children().size() == 2);
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : (string, uintptr).x")
                 .componentType() == ComponentType.METHOD_PARAMETER_COMPONENT);
     }
 
@@ -649,7 +649,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : int").comment().equals("test"));
+        assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : (int)").comment().equals("test"));
     }
 
     @Test
@@ -660,7 +660,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.containsComponent("main.person.testMethod() : int"));
+        assertTrue(generatedSourceModel.containsComponent("main.person.testMethod() : (int)"));
     }
 
     @Test
@@ -670,7 +670,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : int").codeFragment().equals("testMethod() : int"));
+        assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : (int)").codeFragment().equals("testMethod() : (int)"));
     }
 
     @Test
@@ -682,8 +682,8 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("src/github/game/org/cakes.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("github.go.person.testMethod() : org.Cake").codeFragment()
-                .equals("testMethod() : org.Cake"));
+        assertTrue(generatedSourceModel.getComponent("github.go.person.testMethod() : (org.Cake)").codeFragment()
+                .equals("testMethod() : (org.Cake)"));
     }
 
     @Test
@@ -694,7 +694,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : int").componentType() == ComponentType.METHOD);
+        assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : (int)").componentType() == ComponentType.METHOD);
     }
 
     @Test
@@ -705,7 +705,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person").children().get(0).equals("main.person.testMethod() : int"));
+        assertTrue(generatedSourceModel.getComponent("main.person").children().get(0).equals("main.person.testMethod() : (int)"));
     }
 
     @Test
@@ -721,7 +721,7 @@ public class GoLangParseTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.plain").componentInvocations(ComponentInvocations.EXTENSION)
                 .get(0).invokedComponent().equals("main.Person"));
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2() : string, uintptr").codeFragment().equals("testMethodv2() : string, uintptr"));
+        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2() : (string, uintptr)").codeFragment().equals("testMethodv2() : (string, uintptr)"));
     }
 
     @Test
@@ -866,7 +866,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.containsComponent("main.person.x() : int"));
+        assertTrue(generatedSourceModel.containsComponent("main.person.x() : (int)"));
     }
 
     @Test
@@ -886,7 +886,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.x() : int").componentType() == ComponentType.METHOD);
+        assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").componentType() == ComponentType.METHOD);
     }
 
     @Test
@@ -896,7 +896,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.x() : int").componentName().equals("person.x() : int"));
+        assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").componentName().equals("person.x() : (int)"));
     }
 
     @Test
@@ -906,7 +906,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.x() : int").name().equals("x() : int"));
+        assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").name().equals("x"));
     }
 
     @Test
@@ -916,7 +916,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.x() : int").comment().equals("test test"));
+        assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").comment().equals("test test"));
     }
 
     @Test
@@ -926,7 +926,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person.x() : int").comment().equals("test test"));
+        assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").comment().equals("test test"));
     }
 
     @Test
@@ -936,7 +936,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person").children().contains("main.person.x() : int"));
+        assertTrue(generatedSourceModel.getComponent("main.person").children().contains("main.person.x() : (int)"));
     }
 
     @Test
@@ -947,7 +947,7 @@ public class GoLangParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").packageName()
-                .equals(generatedSourceModel.getComponent("main.person.x() : int").packageName()));
+                .equals(generatedSourceModel.getComponent("main.person.x() : (int)").packageName()));
     }
 
     @Test
@@ -1038,7 +1038,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.containsComponent("main.Person.x() : int"));
+        assertTrue(generatedSourceModel.containsComponent("main.Person.x() : (int)"));
     }
 
     @Test
@@ -1050,7 +1050,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.containsComponent("main.Person.x() : int"));
+        assertTrue(generatedSourceModel.containsComponent("main.Person.x() : (int)"));
         assertTrue(generatedSourceModel.containsComponent("main.Person"));
     }
 
@@ -1063,8 +1063,8 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        System.out.println(generatedSourceModel.getComponent("main.Person.x() : int").codeFragment());
-        assertTrue(generatedSourceModel.getComponent("main.Person.x() : int").codeFragment().equals("x() : int"));
+        System.out.println(generatedSourceModel.getComponent("main.Person.x() : (int)").codeFragment());
+        assertTrue(generatedSourceModel.getComponent("main.Person.x() : (int)").codeFragment().equals("x() : (int)"));
     }
 
     @Test
@@ -1074,8 +1074,8 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        System.out.println(generatedSourceModel.getComponent("main.Person.Get(interface{}) : interface{}, bool").codeFragment());
-        assertTrue(generatedSourceModel.getComponent("main.Person.Get(interface{}) : interface{}, bool").codeFragment().equals("Get(interface{}) : interface{}, bool"));
+        System.out.println(generatedSourceModel.getComponent("main.Person.Get(interface{}) : (interface{}, bool)").codeFragment());
+        assertTrue(generatedSourceModel.getComponent("main.Person.Get(interface{}) : (interface{}, bool)").codeFragment().equals("Get(interface{}) : (interface{}, bool)"));
     }
 
     @Test
@@ -1100,17 +1100,20 @@ public class GoLangParseTest {
         System.out.println(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(func(f *flag.FlagSet, name string))").codeFragment());
         assertTrue(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(func(f *flag.FlagSet, name string))").codeFragment()
                 .equals("SetGlobalNormalizationFunc(func(f *flag.FlagSet, name string))"));
+
+        assertTrue(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(func(f *flag.FlagSet, name string))").parentUniqueName()
+                .equals("main.Person"));
     }
 
     @Test
     public void testGoStructMethodWithFuncAsReturnCodeFragment() throws Exception {
-        final String code = "package main\ntype Person struct {  func (c *Person) SetGlobalNormalizationFunc(n int) func(f *flag.FlagSet, name string) {} }";
+        final String code = "package main\ntype Person struct {  func (c *Person) SetGlobalNormalizationFunc(n int) (func(f *flag.FlagSet, name string)) {} }";
         final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(int) : func(f *flag.FlagSet, name string)").codeFragment().equals(
-                "SetGlobalNormalizationFunc(int) : func(f *flag.FlagSet, name string)"));
+        assertTrue(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(int) : (func(f *flag.FlagSet, name string))").codeFragment().equals(
+                "SetGlobalNormalizationFunc(int) : (func(f *flag.FlagSet, name string))"));
     }
 
     @Test
@@ -1120,8 +1123,8 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(int) : int, func(f *flag.FlagSet, name string)").codeFragment().equals(
-                "SetGlobalNormalizationFunc(int) : int, func(f *flag.FlagSet, name string)"));
+        assertTrue(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(int) : (int, func(f *flag.FlagSet, name string))").codeFragment().equals(
+                "SetGlobalNormalizationFunc(int) : (int, func(f *flag.FlagSet, name string))"));
     }
 
     @Test
@@ -1133,7 +1136,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.Person.x() : int, int").codeFragment().equals("x() : int, int"));
+        assertTrue(generatedSourceModel.getComponent("main.Person.x() : (int, int)").codeFragment().equals("x() : (int, int)"));
     }
 
     @Test
@@ -1145,8 +1148,8 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        System.out.println(generatedSourceModel.getComponent("main.Person.x() : uint8, int").codeFragment());
-        assertTrue(generatedSourceModel.getComponent("main.Person.x() : uint8, int").codeFragment().equals("x() : uint8, int"));
+        System.out.println(generatedSourceModel.getComponent("main.Person.x() : (uint8, int)").codeFragment());
+        assertTrue(generatedSourceModel.getComponent("main.Person.x() : (uint8, int)").codeFragment().equals("x() : (uint8, int)"));
     }
 
     @Test
@@ -1158,7 +1161,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.Person.x() : uint8, uint8, int").codeFragment().equals("x() : uint8, uint8, int"));
+        assertTrue(generatedSourceModel.getComponent("main.Person.x() : (uint8, uint8, int)").codeFragment().equals("x() : (uint8, uint8, int)"));
     }
 
     @Test
@@ -1170,7 +1173,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.Person.x() : string, int").codeFragment().equals("x() : string, int"));
+        assertTrue(generatedSourceModel.getComponent("main.Person.x() : (string, int)").codeFragment().equals("x() : (string, int)"));
     }
 
     @Test
@@ -1189,13 +1192,19 @@ public class GoLangParseTest {
     @Test
     public void testGoReturnStructMethodComplexCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
-        final String codeB = "package main\n import tester \"main\" \n func (p main.Person) x(args []string, x,y map[string]string, v, u string) (j,i []string, map[string]string)  {}";
+        final String codeB = "package main\n import tester \"main\" \n func (p main.Person) x(args []string, x,y map[string]string, v, u string) (j,i []string, map[string]string.test)  {}";
         final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new RawFile("/src/main/cherry.go", code));
         rawData.insertFile(new RawFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        System.out.println(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : []string, []string, map[string]string").codeFragment());
-        assertTrue(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : []string, []string, map[string]string").codeFragment().equals("x([]string, map[string]string, map[string]string, string, string) : []string, []string, map[string]string"));
+        System.out.println(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)").codeFragment());
+        assertTrue(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)").codeFragment().equals("x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)"));
+
+        assertTrue(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test).u")
+                .parentUniqueName().equals("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)"));
+
+        assertTrue(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)")
+                .parentUniqueName().equals("main.Person"));
     }
 }

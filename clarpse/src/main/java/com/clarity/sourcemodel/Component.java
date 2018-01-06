@@ -34,6 +34,7 @@ public final class Component implements Serializable {
      */
     private String name;
     private int line;
+    private Component parent;
     private String comment = "";
     /**
      * Source file path from which the component was derived.
@@ -68,6 +69,7 @@ public final class Component implements Serializable {
         componentName = component.componentName();
         packageName = component.packageName();
         value = component.value();
+        parent = component.parent();
         sourceFile = component.sourceFile();
         comment = component.comment();
         line = component.line();
@@ -86,6 +88,14 @@ public final class Component implements Serializable {
         } else {
             return componentName;
         }
+    }
+
+    public Component parent() {
+        return (this.parent);
+    }
+
+    public void setParent(Component parent) {
+        this.parent = parent;
     }
 
     public String name() {
@@ -196,7 +206,7 @@ public final class Component implements Serializable {
 
     public String parentUniqueName() {
 
-        final int lastOpeningBracket = uniqueName().lastIndexOf("(");
+        final int lastOpeningBracket = uniqueName().indexOf("(");
 
         if (lastOpeningBracket == -1 || !type.isMethodComponent()) {
             if (uniqueName().contains(".")) {
