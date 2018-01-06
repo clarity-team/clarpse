@@ -451,7 +451,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                     methodParamCmp.setComponentName(generateComponentName(param.getNameAsString()));
                     methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
                     methodParamCmp.insertComponentInvocation(
-                            new TypeDeclaration(resolveType(param.getType().asClassOrInterfaceType().getNameAsString())));
+                            new TypeDeclaration(resolveType(param.getType().asString())));
                     pointParentsToGivenChild(methodParamCmp);
                     componentStack.push(methodParamCmp);
                     completeComponent();
