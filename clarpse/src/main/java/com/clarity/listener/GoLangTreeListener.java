@@ -219,11 +219,20 @@ public class GoLangTreeListener extends GolangBaseListener {
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
-            cmp.setComponentName(generateComponentName(cmp.name()));
-            pointParentsToGivenChild(cmp);
             cmp.setCodeFragment(cmp.name() + "(");
             cmp.insertAccessModifier(visibility(cmp.name()));
+            if (ctx.signature().parameters() != null) {
+                setCodeFragmentFromParameters(ctx.signature().parameters(), cmp);
+            }
+            if (ctx.signature().result() != null) {
+                processResult(ctx.signature().result(), cmp);
+            }
+            cmp.setName(cmp.codeFragment());
+            cmp.setComponentName(generateComponentName(cmp.name()));
+            pointParentsToGivenChild(cmp);
             componentStack.push(cmp);
+            processParameters(ctx.signature().parameters(), cmp);
+
         } else if (ctx.typeName() != null) {
             insertExtensionIntoStackBaseComponent(ctx.typeName().getText());
         }
@@ -277,11 +286,19 @@ public class GoLangTreeListener extends GolangBaseListener {
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
-            cmp.setComponentName(generateComponentName(ctx.IDENTIFIER().getText()));
             pointParentsToGivenChild(cmp);
             cmp.setCodeFragment(cmp.name() + "(");
             cmp.insertAccessModifier(visibility(cmp.name()));
+            if (ctx.function().signature().parameters() != null) {
+                setCodeFragmentFromParameters(ctx.function().signature().parameters(), cmp);
+            }
+            if (ctx.function().signature().result() != null) {
+                processResult(ctx.function().signature().result(), cmp);
+            }
+            cmp.setName(cmp.codeFragment());
+            cmp.setComponentName(generateComponentName(cmp.name()));
             componentStack.push(cmp);
+            processParameters(ctx.function().signature().parameters(), cmp);
         }
     }
 
@@ -295,69 +312,71 @@ public class GoLangTreeListener extends GolangBaseListener {
         exitExpression(ctx);
     }
 
-    @Override
-    public final void enterParameters(ParametersContext ctx) {
+    private void setCodeFragmentFromParameters(ParametersContext ctx, Component currMethodCmp) {
 
-        if (!componentStack.isEmpty() && componentStack.peek().componentType().isMethodComponent()) {
-            Component currMethodCmp = componentStack.peek();
-            if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
-                List<Component> paramCmps = new ArrayList<Component>();
-                if (!inReceiverContext && !inResultContext) {
-                    for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
-                        int interval = 1;
-                        if (paramCtx.identifierList() != null) {
-                            interval = paramCtx.identifierList().IDENTIFIER().size();
-                        }
-                        for (int i = 0; i < interval; i++) {
-                            if (currMethodCmp.codeFragment().endsWith("(")) {
-                                currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + paramCtx.type().getText());
-                            } else {
-                                currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + ", " + paramCtx.type().getText());
-                            }
-                        }
-                        String[] types = {};
-                        for (int j = 0; j < paramCtx.children.size(); j++) {
-                            String type = getChildContextText(paramCtx);
-                            types = type.split(",");
+        if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
+            for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
+                String type = AntlrUtil.originalText(paramCtx.type());
+                int interval = 1;
+                if (paramCtx.identifierList() != null) {
+                    interval = paramCtx.identifierList().IDENTIFIER().size();
+                }
+                for (int i = 0; i < interval; i++) {
+                    if (currMethodCmp.codeFragment().endsWith("(")) {
+                        currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + type);
+                    } else {
+                        currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + ", " + type);
+                    }
+                }
+            }
+        }
+        currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + ")");
+    }
 
-                            if (types.length < 1) {
-                                // without a type we really can't continue...
-                                System.out.println(
-                                        "Error! Did not find TypeNameContext for ParamDeclContext: " + paramCtx.getText());
-                                return;
-                            } else {
-                                for (int g = 0; g < types.length; g++) {
-                                    types[g] = resolveType(types[g]);
-                                }
-                            }
-                        }
-                        List<String> argumentNames = new ArrayList<String>();
-                        if (paramCtx.identifierList() == null) {
-                            argumentNames.add(RandomStringUtils.randomAlphabetic(1));
+    private void processParameters(ParametersContext ctx, Component currMethodCmp) {
+        if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
+            List<Component> paramCmps = new ArrayList<Component>();
+            if (!inReceiverContext && !inResultContext) {
+                for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
+                    String[] types = {};
+                    for (int j = 0; j < paramCtx.children.size(); j++) {
+                        String type = getChildContextText(paramCtx);
+                        types = type.split(",");
+
+                        if (types.length < 1) {
+                            // without a type we really can't continue...
+                            System.out.println(
+                                    "Error! Did not find TypeNameContext for ParamDeclContext: " + paramCtx.getText());
+                            return;
                         } else {
-                            paramCtx.identifierList().IDENTIFIER().forEach(nameCtx -> argumentNames.add(nameCtx.getText()));
-                        }
-                        for (String methodArgName : argumentNames) {
-                            Component cmp = createComponent(ComponentType.METHOD_PARAMETER_COMPONENT, ctx.getStart().getLine());
-                            cmp.setName(methodArgName);
-                            cmp.setComponentName(generateComponentName(cmp.name()));
-                            if (!componentStack.isEmpty()) {
-                                final Component completedCmp = componentStack.peek();
-                                cmp.setPackageName(completedCmp.packageName());
-                            }
-                            pointParentsToGivenChild(cmp);
-                            for (int h = 0; h < types.length; h++) {
-                                cmp.insertComponentInvocation(new TypeDeclaration(types[h]));
-                                paramCmps.add(cmp);
+                            for (int g = 0; g < types.length; g++) {
+                                types[g] = resolveType(types[g]);
                             }
                         }
                     }
-                    currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + ")");
+                    List<String> argumentNames = new ArrayList<String>();
+                    if (paramCtx.identifierList() == null) {
+                        argumentNames.add(RandomStringUtils.randomAlphabetic(1));
+                    } else {
+                        paramCtx.identifierList().IDENTIFIER().forEach(nameCtx -> argumentNames.add(nameCtx.getText()));
+                    }
+                    for (String methodArgName : argumentNames) {
+                        Component cmp = createComponent(ComponentType.METHOD_PARAMETER_COMPONENT, ctx.getStart().getLine());
+                        cmp.setName(methodArgName);
+                        cmp.setComponentName(generateComponentName(cmp.name()));
+                        if (!componentStack.isEmpty()) {
+                            final Component completedCmp = componentStack.peek();
+                            cmp.setPackageName(completedCmp.packageName());
+                        }
+                        pointParentsToGivenChild(cmp);
+                        for (int h = 0; h < types.length; h++) {
+                            cmp.insertComponentInvocation(new TypeDeclaration(types[h]));
+                            paramCmps.add(cmp);
+                        }
+                    }
                 }
-                paramCmps.forEach(item -> completeComponent(item));
             }
-        } else {
-            exitParameters(ctx);
+            paramCmps.forEach(item -> completeComponent(item));
         }
     }
 
@@ -385,6 +404,11 @@ public class GoLangTreeListener extends GolangBaseListener {
                 popAndCompleteComponent();
             }
         }
+    }
+
+    @Override
+    public final void enterResult(ResultContext ctx) {
+        inResultContext = true;
     }
 
     @Override
@@ -418,6 +442,23 @@ public class GoLangTreeListener extends GolangBaseListener {
                     Component parentCmp = srcModel.getComponent(resolvedType);
                     cmp.setComponentName(parentCmp.componentName() + "." + cmp.name());
                     cmp.setPackageName(parentCmp.packageName());
+                    List<String> childrenToBeRemoved = new ArrayList<>();
+                    List<String> childrenToBeAdded = new ArrayList<>();
+                    for (String child : cmp.children()) {
+                        Component childCmp = srcModel.getComponent(child);
+                        if (childCmp != null) {
+                            childCmp.setComponentName(cmp.componentName() + "." + childCmp.name());
+                            childCmp.setPackageName(cmp.packageName());
+                            childrenToBeAdded.add(childCmp.uniqueName());
+                        }
+                        if (child != childCmp.uniqueName()) {
+                            childrenToBeRemoved.add(child);
+                            srcModel.getComponents().remove(child);
+                            srcModel.insertComponent(childCmp);
+                        }
+                    }
+                    childrenToBeRemoved.forEach(item -> cmp.children().remove(item));
+                    childrenToBeAdded.forEach(item -> cmp.insertChildComponent(item));
                     parentCmp.insertChildComponent(cmp.uniqueName());
                 }
             }
@@ -440,35 +481,36 @@ public class GoLangTreeListener extends GolangBaseListener {
         inResultContext = false;
     }
 
-    @Override
-    public final void enterResult(ResultContext ctx) {
-        inResultContext = true;
-        if (!componentStack.isEmpty() && componentStack.peek().componentType().isMethodComponent()) {
-            Component methodCmp = componentStack.peek();
-            if (!methodCmp.codeFragment().endsWith(")")) {
-                methodCmp.setCodeFragment(methodCmp.codeFragment() + ") : ");
-            } else {
-                methodCmp.setCodeFragment(methodCmp.codeFragment() + " : ");
-            }
-            if (ctx.parameters() != null && ctx.parameters().parameterList() != null) {
-                for (ParameterDeclContext paramCtx : ctx.parameters().parameterList().parameterDecl()) {
-                    int iterations = 1;
-                    if (paramCtx.identifierList() != null) {
-                        iterations = paramCtx.identifierList().IDENTIFIER().size();
-                    }
-                    for (int i = 0; i < iterations; i++) {
-                        if (methodCmp.codeFragment().trim().endsWith(":")) {
-                            methodCmp.setCodeFragment(methodCmp.codeFragment() + paramCtx.type().getText());
-                        } else {
-                            methodCmp.setCodeFragment(methodCmp.codeFragment() + ", " + paramCtx.type().getText());
+    private void processResult(ResultContext ctx, Component methodCmp) {
+        if ((ctx.parameters() != null && !ctx.parameters().isEmpty() && ctx.parameters().parameterList() != null) || ctx.type() != null && !ctx.type().getText().isEmpty()) {
+            if (!methodCmp.codeFragment().contains(":")) {
+                if (!methodCmp.codeFragment().endsWith(")") && !methodCmp.codeFragment().contains(":")) {
+                    methodCmp.setCodeFragment(methodCmp.codeFragment() + ") : ");
+                } else {
+                    methodCmp.setCodeFragment(methodCmp.codeFragment() + " : ");
+                }
+                if (ctx.parameters() != null && ctx.parameters().parameterList() != null) {
+                    for (ParameterDeclContext paramCtx : ctx.parameters().parameterList().parameterDecl()) {
+                        String paramType = AntlrUtil.originalText(paramCtx.type());
+                        int iterations = 1;
+                        if (paramCtx.identifierList() != null) {
+                            iterations = paramCtx.identifierList().IDENTIFIER().size();
+                        }
+                        for (int i = 0; i < iterations; i++) {
+                            if (methodCmp.codeFragment().trim().endsWith(":")) {
+                                methodCmp.setCodeFragment(methodCmp.codeFragment() + paramType);
+                            } else {
+                                methodCmp.setCodeFragment(methodCmp.codeFragment() + ", " + paramType);
+                            }
                         }
                     }
-                }
-            } else if (ctx.type() != null) {
-                if (methodCmp.codeFragment().trim().endsWith(":")) {
-                    methodCmp.setCodeFragment(methodCmp.codeFragment() + ctx.type().getText());
-                } else {
-                    methodCmp.setCodeFragment(methodCmp.codeFragment() + ", " + ctx.type().getText());
+                } else if (ctx.type() != null) {
+                    String type = AntlrUtil.originalText(ctx.type());
+                    if (methodCmp.codeFragment().trim().endsWith(":")) {
+                        methodCmp.setCodeFragment(methodCmp.codeFragment() + type);
+                    } else {
+                        methodCmp.setCodeFragment(methodCmp.codeFragment() + ", " + type);
+                    }
                 }
             }
         }

@@ -1,5 +1,8 @@
 package com.clarity.listener;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.Interval;
+
 import java.util.List;
 
 public class AntlrUtil {
@@ -17,5 +20,9 @@ public class AntlrUtil {
             currLine = sourceFile.get(i).trim();
         }
         return comment.trim();
+    }
+
+    public static String originalText(ParserRuleContext ctx) {
+        return ctx.getStart().getInputStream().getText(Interval.of(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex()));
     }
 }

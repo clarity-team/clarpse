@@ -1,14 +1,13 @@
 package com.clarity.test.go;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.clarity.compiler.Lang;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.test.ClarpseTestUtil;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class GoLangSmokeTest {
 
@@ -36,15 +35,23 @@ public class GoLangSmokeTest {
                 .equals("pilot.model.ServiceAccounts"));
     }
 
+    /**
+     * func (sa *serviceAccounts) GetIstioServiceAccounts(hostname string, ports []string) []string {
+     * return nil
+     * }
+     */
     @Test
     public void spotCheckStructMethodv2() {
         assertTrue(generatedSourceModel
-                .containsComponent("pilot.platform.eureka.serviceAccounts.GetIstioServiceAccounts"));
+                .containsComponent("pilot.platform.eureka.serviceAccounts.GetIstioServiceAccounts(string, []string) : []string"));
     }
 
+    /**
+     * Start() error
+     */
     @Test
     public void spotCheckInterfaceMethod() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.Component.Start"));
+        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.Component.Start() : error"));
     }
 
     @Test
@@ -59,7 +66,7 @@ public class GoLangSmokeTest {
 
     @Test
     public void spotCheckStructMethod() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.IstioTestFramework.SetUp"));
+        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.IstioTestFramework.SetUp() : error"));
     }
 
     @Test
@@ -113,7 +120,7 @@ public class GoLangSmokeTest {
 
     @Test
     public void spotCheckStructFuncDoc() {
-        assertTrue(generatedSourceModel.getComponent("broker.pkg.platform.kube.crd.Client.RegisterResources").comment()
+        assertTrue(generatedSourceModel.getComponent("broker.pkg.platform.kube.crd.Client.RegisterResources() : error").comment()
                 .trim().equals("RegisterResources sends a request to create CRDs and waits for them to initialize"));
     }
 }

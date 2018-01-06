@@ -1,11 +1,11 @@
 package com.clarity.invocation;
 
-import java.io.Serializable;
-
-import com.clarity.EmptyResource;
+import com.clarity.Emptyable;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import java.io.Serializable;
 
 /**
  * Represents an invocation of another component in the code base.
@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(value = TypeImplementation.class, name = "implementation"),
         @Type(value = DocMention.class, name = "doc_mention"),
         @Type(value = TypeParameter.class, name = "typeparameter") })
-public abstract class ComponentInvocation implements EmptyResource, Serializable, Cloneable {
+public abstract class ComponentInvocation implements Emptyable, Serializable, Cloneable {
 
     private static final long serialVersionUID = -242718695900611890L;
     private String invokedComponent = "";
