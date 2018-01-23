@@ -30,7 +30,6 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
-import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -241,6 +240,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             insertExtensionIntoStackBaseComponent(ctx.typeName().getText());
         }
     }
+
     /**
      * Searches the children of the given context for a context of the given clazz
      * type and returns its Text Value. If there are multiple relevant child nodes,
@@ -338,6 +338,7 @@ public class GoLangTreeListener extends GolangBaseListener {
 
     private void processParameters(ParametersContext ctx, Component currMethodCmp) {
         if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
+            LetterProvider letterProvider = new LetterProvider();
             List<Component> paramCmps = new ArrayList<Component>();
             if (!inReceiverContext && !inResultContext) {
                 for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
@@ -359,7 +360,8 @@ public class GoLangTreeListener extends GolangBaseListener {
                     }
                     List<String> argumentNames = new ArrayList<String>();
                     if (paramCtx.identifierList() == null) {
-                        argumentNames.add(RandomStringUtils.randomAlphabetic(1));
+                        // no name provided for method arg, we have to name it ourselves.
+                        argumentNames.add(letterProvider.getLetter());
                     } else {
                         paramCtx.identifierList().IDENTIFIER().forEach(nameCtx -> argumentNames.add(nameCtx.getText()));
                     }
@@ -663,5 +665,19 @@ public class GoLangTreeListener extends GolangBaseListener {
             }
         }
         return false;
+    }
+
+
+    class LetterProvider {
+        private int count = -1;
+        private String[] letters = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+
+        /**
+         * Will hit array index out of bounds after 26 letters, but that should never happen.
+         */
+        public String getLetter() {
+            count += 1;
+            return letters[count];
+        }
     }
 }
