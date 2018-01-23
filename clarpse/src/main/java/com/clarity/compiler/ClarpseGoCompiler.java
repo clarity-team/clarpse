@@ -121,6 +121,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
                 walker.walk(listener, sourceFileContext);
             } catch (Exception e) {
                 e.printStackTrace();
+                continue;
             }
         }
     }
