@@ -283,7 +283,7 @@ public class GoLangTreeListener extends GolangBaseListener {
 
     @Override
     public final void enterMethodDecl(MethodDeclContext ctx) {
-        if (ctx.IDENTIFIER() != null) {
+        if (ctx.IDENTIFIER() != null && ctx.function() != null) {
             Component cmp = createComponent(ComponentType.METHOD, ctx.getStart().getLine());
             String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
                     Arrays.asList(file.content().split("\n")));

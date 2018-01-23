@@ -122,6 +122,9 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
             } catch (Exception e) {
                 e.printStackTrace();
                 continue;
+            } catch (StackOverflowError error) {
+                error.printStackTrace();
+                continue;
             }
         }
     }
