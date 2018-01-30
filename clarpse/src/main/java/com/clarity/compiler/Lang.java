@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum Lang {
 
-    JAVA("Java", ".java"), JAVASCRIPT("javascript", ".js"), GOLANG("Go", ".go");
+    JAVA("Java", ".java"), JAVASCRIPT("javascript", ".js"), GOLANG("Go", ".go"), PHP("php", ".php");
 
     private static Map<String, Lang> namesMap = new HashMap<>();
 
@@ -23,11 +23,13 @@ public enum Lang {
         namesMap.put(JAVA.value, JAVA);
         namesMap.put(JAVASCRIPT.value, JAVASCRIPT);
         namesMap.put(GOLANG.value, GOLANG);
+        namesMap.put(PHP.value, PHP);
     }
 
     public static List<Lang> supportedLanguages() {
         List<Lang> langs = new ArrayList<>();
         for (Map.Entry<String, Lang> entry : namesMap.entrySet()) {
+            // js is still experimental
             if (entry.getValue() != JAVASCRIPT) {
                 langs.add(entry.getValue());
             }

@@ -14,6 +14,8 @@ public class CompilerFactory {
             return new ClarpseJSCompiler();
         case "go":
             return new ClarpseGoCompiler();
+        case "php":
+                return new ClarpsePHPCompiler();
         default:
             throw new Exception("Could not find parsing tool for: " + parseType);
         }

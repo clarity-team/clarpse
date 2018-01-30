@@ -1,23 +1,7 @@
 package com.clarity.listener;
 
 import com.clarity.antlr.golang.GolangBaseListener;
-import com.clarity.antlr.golang.GolangParser.ExpressionContext;
-import com.clarity.antlr.golang.GolangParser.FieldDeclContext;
-import com.clarity.antlr.golang.GolangParser.FunctionDeclContext;
-import com.clarity.antlr.golang.GolangParser.ImportSpecContext;
-import com.clarity.antlr.golang.GolangParser.InterfaceTypeContext;
-import com.clarity.antlr.golang.GolangParser.MethodDeclContext;
-import com.clarity.antlr.golang.GolangParser.MethodSpecContext;
-import com.clarity.antlr.golang.GolangParser.PackageClauseContext;
-import com.clarity.antlr.golang.GolangParser.ParameterDeclContext;
-import com.clarity.antlr.golang.GolangParser.ParametersContext;
-import com.clarity.antlr.golang.GolangParser.ReceiverContext;
-import com.clarity.antlr.golang.GolangParser.ResultContext;
-import com.clarity.antlr.golang.GolangParser.SourceFileContext;
-import com.clarity.antlr.golang.GolangParser.StructTypeContext;
-import com.clarity.antlr.golang.GolangParser.TypeNameContext;
-import com.clarity.antlr.golang.GolangParser.TypeSpecContext;
-import com.clarity.antlr.golang.GolangParser.VarSpecContext;
+import com.clarity.antlr.golang.GolangParser.*;
 import com.clarity.compiler.RawFile;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.TypeDeclaration;
@@ -31,12 +15,7 @@ import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class GoLangTreeListener extends GolangBaseListener {
 
@@ -67,12 +46,8 @@ public class GoLangTreeListener extends GolangBaseListener {
             final Iterator<ComponentInvocation> invocationIterator = completedComponent.invocations().iterator();
             while (invocationIterator.hasNext()) {
 
-                // We do not want to bubble up type implementations and
-                // extensions to the parent component because a child
-                // class for example could extend its containing class
-                // component. Without this check this would
-                // cause the parent class to have a type extension to itself
-                // which will cause problems down the line.
+                // Bubble up component invocations (except type implementations and
+                // extensions) to the parent components on the stack
                 ComponentInvocation invocation = invocationIterator.next();
                 if (!(invocation instanceof TypeExtension || invocation instanceof TypeImplementation)) {
                     parentCmp.insertComponentInvocation(invocation);
@@ -114,11 +89,6 @@ public class GoLangTreeListener extends GolangBaseListener {
         newCmp.setSourceFilePath(file.name());
         newCmp.setLine(line);
         return newCmp;
-    }
-
-    @Override
-    public void enterSourceFile(SourceFileContext ctx) {
-        super.enterSourceFile(ctx);
     }
 
     @Override
