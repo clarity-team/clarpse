@@ -16,7 +16,7 @@ public class PHPParseTest {
     @Test
     public void testNamespace() throws Exception {
 
-        final String code = "<?php \n namespace App\\Models\\Entity; \n class Person {}";
+        final String code = "<?php \n namespace App\\Models\\Entity; \n class Person {} ";
         final SourceFiles rawData = new SourceFiles(Lang.PHP);
         rawData.insertFile(new RawFile("person.php", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
