@@ -1,17 +1,16 @@
 package com.clarity.test.java;
 
 
-import static org.junit.Assert.assertTrue;
-
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
+import com.clarity.sourcemodel.Component;
+import com.clarity.sourcemodel.OOPSourceCodeModel;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.clarity.compiler.ClarpseProject;
-import com.clarity.compiler.Lang;
-import com.clarity.compiler.SourceFiles;
-import com.clarity.compiler.RawFile;
-import com.clarity.sourcemodel.Component;
-import com.clarity.sourcemodel.OOPSourceCodeModel;
+import static org.junit.Assert.assertTrue;
 /**
  * Ensure components are displaying the correct associated source file path.
  */
@@ -53,50 +52,50 @@ public class ComponentSourceFilePathTest {
     }
 
     @Test
-    public void testClassAComponentHasCorrectSourceFilePath() throws Exception {
+    public void testClassAComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestA");
         assertTrue(component.sourceFile().equals(SOURCEFILE1NAME));
     }
 
     @Test
-    public void testClassAMethodAComponentHasCorrectSourceFilePath() throws Exception {
+    public void testClassAMethodAComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestA.methodA()");
         assertTrue(component.sourceFile().equals(SOURCEFILE1NAME));
     }
 
     @Test
-    public void testAbstractClassBComponentHasCorrectSourceFilePath() throws Exception {
+    public void testAbstractClassBComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestB");
         assertTrue(component.sourceFile().equals(SOURCEFILE1NAME));
     }
 
     @Test
-    public void testAbstractClassBMethodBComponentHasCorrectSourceFilePath() throws Exception {
+    public void testAbstractClassBMethodBComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE
  + ".TestB.methodB()");
         assertTrue(component.sourceFile().equals(SOURCEFILE1NAME));
     }
 
     @Test
-    public void testClassCComponentHasCorrectSourceFilePath() throws Exception {
+    public void testClassCComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC");
         assertTrue(component.sourceFile().equals(SOURCEFILE2NAME));
     }
 
     @Test
-    public void testClassCMethodCComponentHasCorrectSourceFilePath() throws Exception {
+    public void testClassCMethodCComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC.methodC()");
         assertTrue(component.sourceFile().equals(SOURCEFILE2NAME));
     }
 
     @Test
-    public void testClassCAbstractClassDComponentHasCorrectSourceFilePath() throws Exception {
+    public void testClassCAbstractClassDComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC.TestD");
         assertTrue(component.sourceFile().equals(SOURCEFILE2NAME));
     }
 
     @Test
-    public void testClassCAbstractClassDMethodDComponentHasCorrectSourceFilePath() throws Exception {
+    public void testClassCAbstractClassDMethodDComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE
  + ".TestC.TestD.methodD()");
         assertTrue(component.sourceFile().equals(SOURCEFILE2NAME));

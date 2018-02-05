@@ -88,12 +88,22 @@ Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server 
 </repositories>
  
  ...
- 
+  @RequestParam(value = "baseRepoOwner", required = true) String baseRepoOwner,
+             @RequestParam(value = "baseRepoName", required = true) String baseRepoName,
+             @RequestParam(value = "baseSha", required = true) String baseBranchSha,
+             @RequestParam(value = "headRepoOwner", required = true) String headRepoOwner,
+             @RequestParam(value = "headRepoName", required = true) String headRepoName,
+             @RequestParam(value = "issueNo", required = true) String issueNo,
+             @RequestParam(value = "headSha", required = true) String headBranchSha,
+             @RequestParam(value = "prUrl", required = true) String pullRequestUrl,
+             @RequestParam(value = "id", required = true) String prId,
+             @RequestParam(value = "commentId", required = false) String commentId,
+             @RequestParam(value = "access_token", required = false) String token) {
 <dependencies>	 
   	<dependency>
 		<groupId>com.clarityviews</groupId>
 		<artifactId>clarpse</artifactId>
-		<version>3.7.8</version>
+		<version>3.7.9</version>
 	</dependency>
 </dependencies> 
  ```

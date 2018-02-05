@@ -1,10 +1,12 @@
 package com.clarity.test;
 
-import static org.junit.Assert.assertTrue;
-
+import com.clarity.ResolvedRelativePath;
+import com.clarity.invocation.TypeDeclaration;
+import com.clarity.sourcemodel.Component;
+import com.clarity.sourcemodel.OOPSourceModelConstants;
 import org.junit.Test;
 
-import com.clarity.ResolvedRelativePath;
+import static org.junit.Assert.assertTrue;
 
 public class UtilsTest {
 
@@ -42,5 +44,29 @@ public class UtilsTest {
     public void testResolvedDirv6() throws Exception {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/lol.js", "forks.js");
         assertTrue(resolvedPath.value().equals("/"));
+    }
+
+    @Test
+    public void cloneComponentInvocationCopyTest() throws Exception {
+        Component aField = new Component();
+        aField.setPackageName("com.test");
+        aField.setComponentName("classA.aField");
+        aField.setComponentType(OOPSourceModelConstants.ComponentType.FIELD);
+        aField.setName("aField");
+        Component bField = new Component(aField);
+        bField.insertComponentInvocation(new TypeDeclaration("com.test.classB"));
+        assert (aField.invocations().size() == 0);
+    }
+
+    @Test
+    public void cloneComponentInvocationTest() throws Exception {
+        Component aField = new Component();
+        aField.setPackageName("com.test");
+        aField.setComponentName("classA.aField");
+        aField.setComponentType(OOPSourceModelConstants.ComponentType.FIELD);
+        aField.setName("aField");
+        aField.insertComponentInvocation(new TypeDeclaration("com.test.classB"));
+        Component bField = new Component(aField);
+        assert (bField.invocations().size() == 1);
     }
 }

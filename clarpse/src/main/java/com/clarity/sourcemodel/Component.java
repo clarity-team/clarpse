@@ -60,11 +60,10 @@ public final class Component implements Serializable {
     private final ArrayList<String> children = new ArrayList<String>();
     private String codeFragment;
 
-    public Component(final Component component) {
+    public Component(final Component component) throws Exception {
         modifiers = component.modifiers();
         type = component.componentType();
         codeFragment = component.codeFragment();
-        invocations = component.invocations();
         imports = component.imports();
         componentName = component.componentName();
         packageName = component.packageName();
@@ -73,6 +72,10 @@ public final class Component implements Serializable {
         sourceFile = component.sourceFile();
         comment = component.comment();
         line = component.line();
+        children.addAll(component.children);
+        for (ComponentInvocation inv : component.invocations()) {
+            invocations.add((ComponentInvocation) inv.clone());
+        }
     }
 
     public Component() {

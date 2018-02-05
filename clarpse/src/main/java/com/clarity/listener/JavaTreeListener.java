@@ -61,7 +61,7 @@ import java.util.Stack;
 public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     private final Stack<Component> componentStack = new Stack<Component>();
-    private final ArrayList<String> currentImports = new ArrayList<String>();
+    private final ArrayList<String> currentImports = new ArrayList<>();
     private String currentPkg = "";
     private final OOPSourceCodeModel srcModel;
     private final Map<String, String> currentImportsMap = new HashMap<String, String>();
@@ -126,8 +126,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
      * parents components as prefixes to the name.
      */
     private String generateComponentName(final String identifier) {
-        String componentName = "";
-
+        String componentName;
         if (!componentStack.isEmpty()) {
             final Component completedCmp = componentStack.peek();
             componentName = completedCmp.componentName() + "." + identifier;
@@ -368,7 +367,6 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                     methodParamCmp.setAccessModifiers(resolveJavaParserModifiers(param.getModifiers()));
                     methodParamCmp.insertComponentInvocation(
                             new TypeDeclaration(resolveType(param.getType().asString())));
-                    methodParamCmp.uniqueName();
                     pointParentsToGivenChild(methodParamCmp);
                     componentStack.push(methodParamCmp);
                     completeComponent();
@@ -464,7 +462,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     }
 
     private List<String> resolveJavaParserModifiers(EnumSet<Modifier> modifiers) {
-        final List<String> modifierList = new ArrayList<String>();
+        final List<String> modifierList = new ArrayList<>();
         for (Modifier modifier : modifiers) {
             modifierList.add(modifier.toString().toLowerCase().trim());
         }
@@ -473,59 +471,17 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     @Override
     public final void visit(VariableDeclarationExpr ctx, Object arg) {
-
-        final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.LOCAL);
-        for (final AnnotationExpr annot : ctx.getAnnotations()) {
-            populateAnnotation(cmp, annot);
-        }
-
-        cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
-        final List<Component> vars = new ArrayList<Component>();
-        for (final VariableDeclarator copy : ctx.getVariables()) {
-            final Component tmp = new Component(cmp);
-            tmp.setName(copy.getNameAsString());
-            tmp.setComponentName(generateComponentName(copy.getNameAsString()));
-            pointParentsToGivenChild(tmp);
-            vars.add(tmp);
-        }
-
-        for (final Component tmpCmp : vars) {
-            componentStack.push(tmpCmp);
-        }
-
-        super.visit(ctx, arg);
-
-        int numVars = ctx.getVariables().size();
-        for (int i = 0; i < numVars; i++) {
-            completeComponent();
-        }
-    }
-
-    @Override
-    public final void visit(FieldDeclaration ctx, Object arg) {
-
-        if (!componentStack.isEmpty()) {
-            final Component currCmp = componentStack.peek();
-            final Component cmp;
-
-            if (currCmp.componentType().equals(OOPSourceModelConstants.getJavaComponentTypes()
-                    .get(OOPSourceModelConstants.ComponentType.INTERFACE))) {
-                cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.INTERFACE_CONSTANT);
-            } else {
-                cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.FIELD);
-            }
+        try {
+            final Component cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.LOCAL);
             for (final AnnotationExpr annot : ctx.getAnnotations()) {
                 populateAnnotation(cmp, annot);
             }
-            if (ctx.getComment().isPresent()) {
-                cmp.setComment(ctx.getComment().get().toString());
-            }
+
             cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
-            final List<Component> vars = new ArrayList<Component>();
+            final List<Component> vars = new ArrayList<>();
             for (final VariableDeclarator copy : ctx.getVariables()) {
                 final Component tmp = new Component(cmp);
                 tmp.setName(copy.getNameAsString());
-                tmp.setCodeFragment(tmp.name() + " : " + copy.getType().toString());
                 tmp.setComponentName(generateComponentName(copy.getNameAsString()));
                 pointParentsToGivenChild(tmp);
                 vars.add(tmp);
@@ -534,11 +490,61 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
             for (final Component tmpCmp : vars) {
                 componentStack.push(tmpCmp);
             }
+
             super.visit(ctx, arg);
 
             int numVars = ctx.getVariables().size();
             for (int i = 0; i < numVars; i++) {
                 completeComponent();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public final void visit(FieldDeclaration ctx, Object arg) {
+
+        if (!componentStack.isEmpty()) {
+
+            try {
+                final Component currCmp = componentStack.peek();
+                final Component cmp;
+
+                if (currCmp.componentType().equals(OOPSourceModelConstants.getJavaComponentTypes()
+                        .get(OOPSourceModelConstants.ComponentType.INTERFACE))) {
+                    cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.INTERFACE_CONSTANT);
+                } else {
+                    cmp = createComponent(ctx, OOPSourceModelConstants.ComponentType.FIELD);
+                }
+                for (final AnnotationExpr annot : ctx.getAnnotations()) {
+                    populateAnnotation(cmp, annot);
+                }
+                if (ctx.getComment().isPresent()) {
+                    cmp.setComment(ctx.getComment().get().toString());
+                }
+                cmp.setAccessModifiers(resolveJavaParserModifiers(ctx.getModifiers()));
+                final List<Component> vars = new ArrayList<>();
+                for (final VariableDeclarator copy : ctx.getVariables()) {
+                    final Component tmp = new Component(cmp);
+                    tmp.setName(copy.getNameAsString());
+                    tmp.setCodeFragment(tmp.name() + " : " + copy.getType().toString());
+                    tmp.setComponentName(generateComponentName(copy.getNameAsString()));
+                    pointParentsToGivenChild(tmp);
+                    vars.add(tmp);
+                }
+
+                for (final Component tmpCmp : vars) {
+                    componentStack.push(tmpCmp);
+                }
+                super.visit(ctx, arg);
+
+                int numVars = ctx.getVariables().size();
+                for (int i = 0; i < numVars; i++) {
+                    completeComponent();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -547,7 +553,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
         if (annotation != null) {
             String typeName = "";
-            final HashMap<String, String> elementValuePairs = new HashMap<String, String>();
+            final HashMap<String, String> elementValuePairs = new HashMap<>();
             if (annotation instanceof NormalAnnotationExpr) {
                 final NormalAnnotationExpr expr = (NormalAnnotationExpr) annotation;
                 typeName = resolveAnnotationType(expr.asNormalAnnotationExpr().getNameAsString());
@@ -563,7 +569,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                 elementValuePairs.put("", expr.getMemberValue().toString());
             }
             cmp.insertComponentInvocation(new AnnotationInvocation(typeName,
-                    new SimpleEntry<String, HashMap<String, String>>(typeName, elementValuePairs)));
+                    new SimpleEntry<>(typeName, elementValuePairs)));
         }
     }
 

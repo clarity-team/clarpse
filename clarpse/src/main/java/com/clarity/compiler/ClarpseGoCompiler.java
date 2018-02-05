@@ -97,9 +97,8 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
             /**
              * In GoLang, interfaces are implemented implicitly. As a result, we handle
              * their detection in the following way: Once we have parsed the entire code
-             * base, we compare every parsed interface to every parsed struct to see if
-             * there is a match. Then we modify the source code model to represent our
-             * findings accordingly.
+             * base, we compare every parsed interface to every parsed struct to determine
+             * if that struct implements the given interface.
              */
             resolveInterfaces(srcModel);
         }
