@@ -106,6 +106,9 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
     }
 
     private void compileFiles(List<RawFile> files, OOPSourceCodeModel srcModel, List<String> projectFileTypes) {
+        // holds types that may be accessed by all the source file parsing operations...
+        List<Map.Entry<String, Component>> structWaitingList = new ArrayList<>();
+
         for (RawFile file : files) {
             try {
                 CharStream charStream = new ANTLRInputStream(file.content());
@@ -116,7 +119,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
                 parser.setErrorHandler(new BailErrorStrategy());
                 parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
                 ParseTreeWalker walker = new ParseTreeWalker();
-                GolangBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file);
+                GolangBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file, structWaitingList);
                 walker.walk(listener, sourceFileContext);
             } catch (Exception e) {
                 e.printStackTrace();

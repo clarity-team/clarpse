@@ -31,6 +31,7 @@ import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,17 +51,29 @@ public class GoLangTreeListener extends GolangBaseListener {
     /**
      * List of all type names in the project.
      */
-    private List<String> projectFileTypes = new ArrayList<String>();
+    private List<String> projectFileTypes;
     private boolean inReceiverContext = false;
     private boolean inResultContext = false;
+    private List<Map.Entry<String, Component>> structWaitingList;
 
-    public GoLangTreeListener(final OOPSourceCodeModel srcModel, List<String> projectFileTypes, RawFile filetoProcess) {
+    public GoLangTreeListener(final OOPSourceCodeModel srcModel, List<String> projectFileTypes, RawFile filetoProcess, List<Map.Entry<String, Component>> structWaitingList) {
         this.srcModel = srcModel;
         this.file = filetoProcess;
         this.projectFileTypes = projectFileTypes;
+        this.structWaitingList = structWaitingList;
     }
 
     private void completeComponent(Component completedComponent) {
+
+
+        // To handle the case where struct methods are parsed before their parent struct were,
+        // check if the completed component is such a parent and update accordingly.
+        structWaitingList.forEach(entry -> {
+            if (entry.getKey().equals(completedComponent.uniqueName())) {
+                udpateStructChild(completedComponent, entry.getValue());
+            }
+        });
+
         // include the processed component's invocations into its parent
         // components
         for (final Component parentCmp : componentStack) {
@@ -446,27 +459,10 @@ public class GoLangTreeListener extends GolangBaseListener {
             }
             if (inReceiverContext) {
                 if (srcModel.containsComponent(resolvedType)) {
-                    Component parentCmp = srcModel.getComponent(resolvedType);
-                    cmp.setComponentName(parentCmp.componentName() + "." + cmp.name());
-                    cmp.setPackageName(parentCmp.packageName());
-                    List<String> childrenToBeRemoved = new ArrayList<>();
-                    List<String> childrenToBeAdded = new ArrayList<>();
-                    for (String child : cmp.children()) {
-                        Component childCmp = srcModel.getComponent(child);
-                        if (childCmp != null) {
-                            childCmp.setComponentName(cmp.componentName() + "." + childCmp.name());
-                            childCmp.setPackageName(cmp.packageName());
-                            childrenToBeAdded.add(childCmp.uniqueName());
-                        }
-                        if (child != childCmp.uniqueName()) {
-                            childrenToBeRemoved.add(child);
-                            srcModel.getComponents().remove(child);
-                            srcModel.insertComponent(childCmp);
-                        }
-                    }
-                    childrenToBeRemoved.forEach(item -> cmp.children().remove(item));
-                    childrenToBeAdded.forEach(item -> cmp.insertChildComponent(item));
-                    parentCmp.insertChildComponent(cmp.uniqueName());
+                    Component structCmp = srcModel.getComponent(resolvedType);
+                    udpateStructChild(structCmp, cmp);
+                } else {
+                    structWaitingList.add(new AbstractMap.SimpleEntry<String, Component>(resolvedType, cmp));
                 }
             }
             componentStack.push(cmp);
@@ -481,6 +477,33 @@ public class GoLangTreeListener extends GolangBaseListener {
                 }
             }
         }
+    }
+
+    private void udpateStructChild(Component structCmp, Component structChildCmp) {
+        if (srcModel.containsComponent(structChildCmp.uniqueName())) {
+            srcModel.getComponents().remove(structChildCmp.uniqueName());
+        }
+        structChildCmp.setComponentName(structCmp.componentName() + "." + structChildCmp.codeFragment());
+        structChildCmp.setPackageName(structCmp.packageName());
+        srcModel.insertComponent(structChildCmp);
+        List<String> childrenToBeRemoved = new ArrayList<>();
+        List<String> childrenToBeAdded = new ArrayList<>();
+        for (String child : structChildCmp.children()) {
+            Component childCmp = srcModel.getComponent(child);
+            if (childCmp != null) {
+                childCmp.setComponentName(structChildCmp.componentName() + "." + childCmp.name());
+                childCmp.setPackageName(structChildCmp.packageName());
+                childrenToBeAdded.add(childCmp.uniqueName());
+            }
+            if (child != childCmp.uniqueName()) {
+                childrenToBeRemoved.add(child);
+                srcModel.getComponents().remove(child);
+                srcModel.insertComponent(childCmp);
+            }
+        }
+        childrenToBeRemoved.forEach(item -> structChildCmp.children().remove(item));
+        childrenToBeAdded.forEach(item -> structChildCmp.insertChildComponent(item));
+        structCmp.insertChildComponent(structChildCmp.uniqueName());
     }
 
     @Override
