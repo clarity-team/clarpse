@@ -1190,6 +1190,19 @@ public class GoLangParseTest {
     }
 
     @Test
+    public void structMethodInDifferentSourceFileInSamePackage() throws Exception {
+        final String code = "package main\ntype Person struct {}";
+        final String codeB = "package main\n func (p *Person) x(y string) []string {}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("/src/main/test.go", codeB));
+        rawData.insertFile(new RawFile("/src/main/cherry.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("main.Person.x(string) : ([]string)"));
+        assertTrue(generatedSourceModel.containsComponent("main.Person.x(string) : ([]string).y"));
+    }
+
+    @Test
     public void testGoReturnStructMethodComplexCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p main.Person) x(args []string, x,y map[string]string, v, u string) (j,i []string, map[string]string.test)  {}";
@@ -1200,10 +1213,8 @@ public class GoLangParseTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)").codeFragment());
         assertTrue(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)").codeFragment().equals("x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)"));
-
         assertTrue(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test).u")
                 .parentUniqueName().equals("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)"));
-
         assertTrue(generatedSourceModel.getComponent("main.Person.x([]string, map[string]string, map[string]string, string, string) : ([]string, []string, map[string]string.test)")
                 .parentUniqueName().equals("main.Person"));
     }

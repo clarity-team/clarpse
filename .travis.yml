@@ -7,7 +7,6 @@ jdk:
   - oraclejdk8
 script: 
          - cd clarpse
-         - mvn clean package assembly:single
+         - mvn clean package assembly:single deploy --settings settings.xml
 after_success:
-         - mvn deploy --settings ../settings.xml
          - bash <(curl -s https://codecov.io/bash)
