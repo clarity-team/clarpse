@@ -1,8 +1,6 @@
 # :rocket: Clarpse 
-[![Build Status](https://travis-ci.org/clarity-org/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
-[![codecov](https://codecov.io/gh/clarity-org/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/clarity-org/clarpse)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9c74dfe9ee2f42d2a0e1ee85d0d83c60)](https://www.codacy.com/app/fadhelm/clarpse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Zir0-93/clarpse&amp;utm_campaign=Badge_Grade)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/clarity-org/clarpse.svg?branch=master)](https://travis-ci.org/clarity-org/clarpse)[![codecov](https://codecov.io/gh/clarity-org/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/clarity-org/clarpse)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2685a1fc39474c11bd882cd4bd738115)](https://www.codacy.com/app/clarity-bot-admin/clarpse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=clarity-org/clarpse&amp;utm_campaign=Badge_Grade)[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 [Clarpse](http://mfadhel.com/2016/clarpse/) is a lightweight polyglot source code analysis tool. Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable release.
 
@@ -76,7 +74,7 @@ If you have checkout the project from GitHub you can build the project with mave
     mvn clean package assembly:single
 
 # Latest Version 
-Clarpse can be pulled in via gradle or maven, and is served using [jitpack](https://jitpack.io/)
+Clarpse can be pulled in via gradle or maven, and is served using [jitpack](https://jitpack.io/).
 ```
 <repositories>
 	<repository>
