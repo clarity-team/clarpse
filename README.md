@@ -78,7 +78,7 @@ If you have checkout the project from GitHub you can build the project with mave
     mvn clean package assembly:single
 
 # Latest Version 
-Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server using AWS.
+Clarpse can be pulled in via gradle or maven, and is served using [jitpack](https://jitpack.io/)
 ```
 <repositories>
 	<repository>
