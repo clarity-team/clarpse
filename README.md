@@ -1,7 +1,7 @@
 # :rocket: Clarpse 
 [![Build Status](https://travis-ci.org/clarity-org/clarpse.svg?branch=master)](https://travis-ci.org/clarity-org/clarpse) [![codecov](https://codecov.io/gh/clarity-org/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/clarity-org/clarpse)  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2685a1fc39474c11bd882cd4bd738115)](https://www.codacy.com/app/clarity-bot-admin/clarpse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=clarity-org/clarpse&amp;utm_campaign=Badge_Grade)  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-[Clarpse](http://mfadhel.com/2016/clarpse/) is a lightweight polyglot source code analysis tool. It breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields that are exposed via an easy to use, object oriented API. Clarpse has also been
+[Clarpse](http://mfadhel.com/2016/clarpse/) is a lightweight polyglot source code analysis tool built by [clarity-bot](https://clarity-bot.com). Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields that are exposed via an easy to use, object oriented API. Clarpse is also the main
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
