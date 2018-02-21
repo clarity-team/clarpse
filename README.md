@@ -1,11 +1,7 @@
 # :rocket: Clarpse 
+[![Build Status](https://travis-ci.org/clarity-org/clarpse.svg?branch=master)](https://travis-ci.org/clarity-org/clarpse) [![codecov](https://codecov.io/gh/clarity-org/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/clarity-org/clarpse)  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2685a1fc39474c11bd882cd4bd738115)](https://www.codacy.com/app/clarity-bot-admin/clarpse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=clarity-org/clarpse&amp;utm_campaign=Badge_Grade)  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-[![Build Status](https://travis-ci.org/Zir0-93/clarpse.svg?branch=master)](https://travis-ci.org/Zir0-93/clarpse)
-[![codecov](https://codecov.io/gh/Zir0-93/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/Zir0-93/clarpse)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9c74dfe9ee2f42d2a0e1ee85d0d83c60)](https://www.codacy.com/app/fadhelm/clarpse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Zir0-93/clarpse&amp;utm_campaign=Badge_Grade)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-[Clarpse](http://mfadhel.com/2016/clarpse/) is a lightweight polyglot source code analysis tool. Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields which can be accessed in an object oriented manner. Check out the [releases](https://github.com/Zir0-93/clarpse/releases) page for the latest stable release.
+Clarpse is a lightweight polyglot source code analysis tool built by [clarity-bot](https://clarity-bot.com). Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields that are exposed via an easy to use, object oriented API.
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
@@ -77,33 +73,21 @@ If you have checkout the project from GitHub you can build the project with mave
     mvn clean package assembly:single
 
 # Latest Version 
-Clarpse can be pulled in via maven, it is hosted on a public Artifactory Server using AWS.
+Clarpse can be pulled in via gradle or maven, and is served using [jitpack](https://jitpack.io/).
 ```
 <repositories>
 	<repository>
-		<id>central</id>
-		<name>ip-172-31-28-11-releases</name>
-		<url>http://ec2-35-163-144-148.us-west-2.compute.amazonaws.com/artifactory/libs-release</url>
+		<id>jitpack.io</id>
+		<url>https://jitpack.io</url>
 	</repository>
 </repositories>
  
  ...
-  @RequestParam(value = "baseRepoOwner", required = true) String baseRepoOwner,
-             @RequestParam(value = "baseRepoName", required = true) String baseRepoName,
-             @RequestParam(value = "baseSha", required = true) String baseBranchSha,
-             @RequestParam(value = "headRepoOwner", required = true) String headRepoOwner,
-             @RequestParam(value = "headRepoName", required = true) String headRepoName,
-             @RequestParam(value = "issueNo", required = true) String issueNo,
-             @RequestParam(value = "headSha", required = true) String headBranchSha,
-             @RequestParam(value = "prUrl", required = true) String pullRequestUrl,
-             @RequestParam(value = "id", required = true) String prId,
-             @RequestParam(value = "commentId", required = false) String commentId,
-             @RequestParam(value = "access_token", required = false) String token) {
 <dependencies>	 
   	<dependency>
-		<groupId>com.clarityviews</groupId>
+		<groupId>com.github.clarity-org</groupId>
 		<artifactId>clarpse</artifactId>
-		<version>3.8.0</version>
+		<version>master</version>
 	</dependency>
 </dependencies> 
  ```

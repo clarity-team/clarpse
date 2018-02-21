@@ -9,5 +9,5 @@ script:
          - cd clarpse
          - mvn clean package assembly:single
 after_success:
-         - mvn deploy --settings ../settings.xml
+         - mvn deploy --settings ../settings.xml -Dmaven.install.skip=true
          - bash <(curl -s https://codecov.io/bash)
