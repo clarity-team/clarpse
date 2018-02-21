@@ -29,6 +29,7 @@ public final class Component implements Serializable {
      */
     private String value;
     private String packageName;
+    private String code;
     /**
      * Short name.
      */
@@ -72,6 +73,7 @@ public final class Component implements Serializable {
         sourceFile = component.sourceFile();
         comment = component.comment();
         line = component.line();
+        code = component.code();
         children.addAll(component.children);
         for (ComponentInvocation inv : component.invocations()) {
             invocations.add((ComponentInvocation) inv.clone());
@@ -105,6 +107,15 @@ public final class Component implements Serializable {
 
         return name;
     }
+
+    public String code() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 
     public void insertChildComponent(final String childComponentName) {
         if (!children.contains(childComponentName)) {

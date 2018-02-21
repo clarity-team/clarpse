@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,6 +67,8 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     private final OOPSourceCodeModel srcModel;
     private final Map<String, String> currentImportsMap = new HashMap<String, String>();
     private final RawFile file;
+    private final String[] lines;
+
 
     /**
      * @param srcModel Source model to populate from the parsing of the given code base.
@@ -74,6 +77,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     public JavaTreeListener(final OOPSourceCodeModel srcModel, final RawFile file) {
         this.srcModel = srcModel;
         this.file = file;
+        lines = file.content().split("\\r?\\n");
     }
 
     public void populateModel() throws IOException {
@@ -151,6 +155,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         if (node.getComment().isPresent()) {
             newCmp.setComment(node.getComment().toString());
         }
+        newCmp.setCode(String.join("\n", Arrays.copyOfRange(lines, node.getRange().get().begin.line - 1, node.getRange().get().end.line)));
         newCmp.setSourceFilePath(file.name());
         return newCmp;
     }

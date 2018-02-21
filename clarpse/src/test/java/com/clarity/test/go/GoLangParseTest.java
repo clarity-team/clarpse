@@ -940,6 +940,17 @@ public class GoLangParseTest {
     }
 
     @Test
+    public void testMethodCode() throws Exception {
+        final String code = "package main\n import (\n\"math\"\n)\n type person struct {} \n func (p person) x(i uint64) int { math.MaxUint32 \n }";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new RawFile("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.person.x(uint64) : (int)").code().equals("func (p person) x(i uint64) int { math.MaxUint32 \n" +
+                " }"));
+    }
+
+    @Test
     public void testGoStructMethodPackageNameEqualsParentsPackageName() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
         final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
