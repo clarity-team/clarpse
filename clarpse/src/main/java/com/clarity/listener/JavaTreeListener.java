@@ -2,39 +2,16 @@ package com.clarity.listener;
 
 import com.clarity.ClarpseUtil;
 import com.clarity.compiler.RawFile;
-import com.clarity.invocation.AnnotationInvocation;
-import com.clarity.invocation.ComponentInvocation;
-import com.clarity.invocation.DocMention;
-import com.clarity.invocation.ThrownException;
+import com.clarity.invocation.*;
 import com.clarity.invocation.TypeDeclaration;
-import com.clarity.invocation.TypeExtension;
-import com.clarity.invocation.TypeImplementation;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EnumConstantDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.expr.ClassExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
-import com.github.javaparser.ast.expr.MemberValuePair;
-import com.github.javaparser.ast.expr.NormalAnnotationExpr;
-import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
@@ -45,14 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * As the parse tree is developed by JavaParser, we add listener methods to
@@ -68,6 +38,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     private final Map<String, String> currentImportsMap = new HashMap<String, String>();
     private final RawFile file;
     private final String[] lines;
+    private int currCyclomaticComplexity = 0;
 
 
     /**
@@ -472,6 +443,40 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
             modifierList.add(modifier.toString().toLowerCase().trim());
         }
         return modifierList;
+    }
+
+    @Override
+    public final void visit(IfStmt ctx, Object arg) {
+        currCyclomaticComplexity += 1;
+    }
+
+    @Override
+    public final void visit(CatchClause ctx, Object arg) {
+        currCyclomaticComplexity += 1;
+    }
+
+    @Override
+    public final void visit(ForStmt ctx, Object arg) {
+        currCyclomaticComplexity += 1;
+    }
+
+    @Override
+    public final void visit(WhileStmt ctx, Object arg) {
+        currCyclomaticComplexity += 1;
+    }
+
+    @Override
+    public final void visit(ThrowStmt ctx, Object arg) {
+        currCyclomaticComplexity += 1;
+    }
+
+    @Override
+    public final void visit(SwitchStmt ctx, Object arg) {
+        for (SwitchEntryStmt sEStmt : ctx.getEntries()) {
+            if (sEStmt.isLabeledStmt()) {
+                currCyclomaticComplexity += 1;
+            }
+        }
     }
 
     @Override
