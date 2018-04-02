@@ -70,6 +70,13 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     private void completeComponent() {
         if (!componentStack.isEmpty()) {
             final Component completedCmp = componentStack.pop();
+
+            // update and reset cyclomatic complexity if component is a method...
+            if (completedCmp.componentType().isMethodComponent()) {
+                completedCmp.setCyclo(currCyclomaticComplexity);
+                currCyclomaticComplexity = 0;
+            }
+
             // include the processed component's invocations into its parent
             // components
             for (final Component parentCmp : componentStack) {
@@ -317,6 +324,13 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                 populateAnnotation(currMethodCmp, annot);
             }
 
+            List<ReturnStmt> returnStms = ctx.findAll(ReturnStmt.class);
+            if (ctx.getType().toString() != null && !ctx.getType().toString().equals("void")) {
+                currCyclomaticComplexity += returnStms.size();
+            } else {
+                currCyclomaticComplexity += returnStms.size() + 1;
+            }
+
             for (final ReferenceType stmt : ctx.getThrownExceptions()) {
                 currMethodCmp.insertComponentInvocation(
                         new ThrownException(resolveType(stmt.getMetaModel().getTypeName())));
@@ -392,6 +406,8 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
             currMethodCmp.setCodeFragment("void");
 
+            currCyclomaticComplexity += ctx.findAll(ReturnStmt.class).size() + 1;
+
             String formalParametersString = "(";
             if (ctx.getParameters() != null) {
                 formalParametersString += getFormalParameterTypesList(ctx.getParameters());
@@ -431,7 +447,6 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                     completeComponent();
                 }
             }
-
             super.visit(ctx, arg);
             completeComponent();
         }
@@ -448,35 +463,54 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     @Override
     public final void visit(IfStmt ctx, Object arg) {
         currCyclomaticComplexity += 1;
+        super.visit(ctx, arg);
     }
 
     @Override
     public final void visit(CatchClause ctx, Object arg) {
         currCyclomaticComplexity += 1;
+        super.visit(ctx, arg);
+    }
+
+    @Override
+    public final void visit(ForeachStmt ctx, Object arg) {
+        currCyclomaticComplexity += 1;
+        super.visit(ctx, arg);
     }
 
     @Override
     public final void visit(ForStmt ctx, Object arg) {
         currCyclomaticComplexity += 1;
+        super.visit(ctx, arg);
     }
 
     @Override
     public final void visit(WhileStmt ctx, Object arg) {
         currCyclomaticComplexity += 1;
+        super.visit(ctx, arg);
     }
 
     @Override
     public final void visit(ThrowStmt ctx, Object arg) {
         currCyclomaticComplexity += 1;
+        super.visit(ctx, arg);
+    }
+
+    @Override
+    public final void visit(ConditionalExpr ctx, Object arg) {
+        System.out.println();
+        super.visit(ctx, arg);
     }
 
     @Override
     public final void visit(SwitchStmt ctx, Object arg) {
         for (SwitchEntryStmt sEStmt : ctx.getEntries()) {
-            if (sEStmt.isLabeledStmt()) {
+            if (sEStmt.isSwitchEntryStmt() &&
+                    (sEStmt.getStatements().size() > 0 && !sEStmt.getStatements().get(0).toString().equals("break;"))) {
                 currCyclomaticComplexity += 1;
             }
         }
+        super.visit(ctx, arg);
     }
 
     @Override

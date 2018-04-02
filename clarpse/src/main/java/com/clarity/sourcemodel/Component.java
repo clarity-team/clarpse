@@ -30,6 +30,7 @@ public final class Component implements Serializable {
     private String value;
     private String packageName;
     private String code;
+    private int cyclo;
     /**
      * Short name.
      */
@@ -93,6 +94,14 @@ public final class Component implements Serializable {
         } else {
             return componentName;
         }
+    }
+
+    public int cyclo() {
+        return this.cyclo;
+    }
+
+    public void setCyclo(int cyclo) {
+        this.cyclo = cyclo;
     }
 
     public Component parent() {
