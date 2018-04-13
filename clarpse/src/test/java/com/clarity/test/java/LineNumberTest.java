@@ -19,7 +19,7 @@ public class LineNumberTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").line() == 1);
+        assertTrue(generatedSourceModel.getComponent("Test").get().line() == 1);
     }
 
     @Test
@@ -30,7 +30,7 @@ public class LineNumberTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.Test(String)").line() == 2);
+        assertTrue(generatedSourceModel.getComponent("Test.Test(String)").get().line() == 2);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class LineNumberTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").line() == 2);
+        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").get().line() == 2);
     }
 
 
@@ -53,7 +53,7 @@ public class LineNumberTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.Test(String).test").line() == 3);
+        assertTrue(generatedSourceModel.getComponent("Test.Test(String).test").get().line() == 3);
     }
 
     @Test
@@ -64,6 +64,6 @@ public class LineNumberTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.Test(String).tester").line() == 4);
+        assertTrue(generatedSourceModel.getComponent("Test.Test(String).tester").get().line() == 4);
     }
 }

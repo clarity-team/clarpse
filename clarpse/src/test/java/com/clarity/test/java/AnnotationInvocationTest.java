@@ -1,17 +1,16 @@
 package com.clarity.test.java;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
-import com.clarity.compiler.SourceFiles;
 import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.invocation.AnnotationInvocation;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class AnnotationInvocationTest {
 
@@ -23,7 +22,7 @@ public class AnnotationInvocationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").componentInvocations(
+        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").get().componentInvocations(
                 ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Deprecated"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("Deprecated"));
@@ -38,7 +37,7 @@ public class AnnotationInvocationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").componentInvocations(
+        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").get().componentInvocations(
                 ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Deprecated"));
         System.out.println(((AnnotationInvocation) invocation).annotations().get(0).getValue().get("")
@@ -53,7 +52,7 @@ public class AnnotationInvocationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").componentInvocations(
+        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").get().componentInvocations(
                 ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Deprecated"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("Deprecated"));
@@ -68,7 +67,7 @@ public class AnnotationInvocationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").componentInvocations(
+        final ComponentInvocation invocation = (generatedSourceModel.getComponent("test").get().componentInvocations(
                 ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Deprecated"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("Deprecated"));
@@ -84,7 +83,7 @@ public class AnnotationInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("Test.fieldVar")
-                .componentInvocations(ComponentInvocations.ANNOTATION).get(0));
+                .get().componentInvocations(ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("org.annotation.Autowired"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("org.annotation.Autowired"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getValue().isEmpty());
@@ -99,7 +98,7 @@ public class AnnotationInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.aMethod(String).var")
-                .componentInvocations(ComponentInvocations.ANNOTATION).get(0));
+                .get().componentInvocations(ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("Override"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("Override"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getValue().isEmpty());
@@ -114,7 +113,7 @@ public class AnnotationInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.fieldVar")
-                .componentInvocations(
+                .get().componentInvocations(
                         ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("org.annotation.Autowired"));
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getKey().equals("org.annotation.Autowired"));
@@ -135,7 +134,7 @@ public class AnnotationInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.method()")
-                .componentInvocations(
+                .get().componentInvocations(
                         ComponentInvocations.ANNOTATION).get(0));
         assertTrue(invocation.invokedComponent().equals("org.springframework.RequestMapping"));
     }
@@ -154,7 +153,7 @@ public class AnnotationInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("test.method()")
-                .componentInvocations(
+                .get().componentInvocations(
                         ComponentInvocations.ANNOTATION).get(0));
 
         assertTrue(((AnnotationInvocation) invocation).annotations().get(0).getValue().get("value")

@@ -1,17 +1,16 @@
 package com.clarity.test.java;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
-import com.clarity.compiler.SourceFiles;
 import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Ensure component invocation data of a given class is accurate.
@@ -27,9 +26,9 @@ public class TypeImplementationTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("com.ClassA").componentInvocations()
+        assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("com.ClassA").get().componentInvocations()
                 .toArray()[0]).invokedComponent().equals("com.ClassD"));
-        assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations().size() == 1);
+        assertTrue(generatedSourceModel.getComponent("com.ClassA").get().componentInvocations().size() == 1);
     }
 
     @Test
@@ -42,10 +41,10 @@ public class TypeImplementationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("com.ClassA")
-                .componentInvocations(ComponentInvocations.IMPLEMENTATION).toArray()[0]).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.IMPLEMENTATION).toArray()[0]).invokedComponent()
                         .equals("com.ClassD"));
         assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("com.ClassA")
-                .componentInvocations(ComponentInvocations.IMPLEMENTATION).toArray()[1]).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.IMPLEMENTATION).toArray()[1]).invokedComponent()
                         .equals("com.ClassE"));
     }
 
@@ -58,7 +57,7 @@ public class TypeImplementationTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations().size() == 1);
+        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").get().componentInvocations().size() == 1);
     }
 
     @Test
@@ -70,7 +69,7 @@ public class TypeImplementationTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations().size() == 2);
+        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").get().componentInvocations().size() == 2);
     }
 
     @Test
@@ -83,9 +82,9 @@ public class TypeImplementationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         Assert.assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("com.ClassA.ClassB")
-                .componentInvocations().toArray()[0]).invokedComponent().equals("com.ClassD"));
+                .get().componentInvocations().toArray()[0]).invokedComponent().equals("com.ClassD"));
 
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations().size() == 1);
+        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").get().componentInvocations().size() == 1);
     }
 
     @Test
@@ -97,6 +96,6 @@ public class TypeImplementationTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").componentInvocations().size() == 1);
+        Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").get().componentInvocations().size() == 1);
     }
 }

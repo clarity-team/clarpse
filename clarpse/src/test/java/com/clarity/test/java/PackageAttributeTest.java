@@ -1,14 +1,13 @@
 package com.clarity.test.java;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
 import com.clarity.compiler.RawFile;
 import com.clarity.compiler.SourceFiles;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Tests to ensure package name attribute of parsed components are correct.
@@ -23,7 +22,7 @@ public class PackageAttributeTest {
         rawData.insertFile(new RawFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass");
+        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass").get();
         Assert.assertTrue(cmp.packageName().equals(pkgName));
     }
 
@@ -35,7 +34,7 @@ public class PackageAttributeTest {
         rawData.insertFile(new RawFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.sampleClassField");
+        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.sampleClassField").get();
         Assert.assertTrue(cmp.packageName().equals(pkgName));
     }
 
@@ -47,7 +46,7 @@ public class PackageAttributeTest {
         rawData.insertFile(new RawFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.method()");
+        final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.method()").get();
         Assert.assertTrue(cmp.packageName().equals(pkgName));
     }
 }

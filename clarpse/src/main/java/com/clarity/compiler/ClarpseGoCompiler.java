@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -112,8 +113,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         for (RawFile file : files) {
             try {
                 CharStream charStream = new ANTLRInputStream(file.content());
-                GolangLexer lexer = new GolangLexer(charStream);
-                TokenStream tokens = new CommonTokenStream(lexer);
+                TokenStream tokens = new CommonTokenStream(new GolangLexer(charStream));
                 GolangParser parser = new GolangParser(tokens);
                 SourceFileContext sourceFileContext = parser.sourceFile();
                 parser.setErrorHandler(new BailErrorStrategy());
@@ -163,9 +163,9 @@ class ImplementedInterfaces {
             // generate a list of method signatures for the given base component.
             List<String> baseComponentMethodSignatures = new ArrayList<String>();
             for (String baseComponentChild : baseComponent.children()) {
-                Component childCmp = model.getComponent(baseComponentChild);
-                if (childCmp != null && childCmp.componentType().isMethodComponent()) {
-                    baseComponentMethodSignatures.add(generateMethodSignature(childCmp));
+                Optional<Component> childCmp = model.getComponent(baseComponentChild);
+                if (childCmp.isPresent() && childCmp.get().componentType().isMethodComponent()) {
+                    baseComponentMethodSignatures.add(generateMethodSignature(childCmp.get()));
                 }
             }
 
@@ -198,16 +198,16 @@ class ImplementedInterfaces {
         ArrayList<String> methodSpecs = new ArrayList<String>();
 
         for (ComponentInvocation extend : interfaceComponent.componentInvocations(ComponentInvocations.EXTENSION)) {
-            Component cmp = model.getComponent(extend.invokedComponent());
-            if (cmp != null && cmp.componentType() == ComponentType.INTERFACE
+            Optional<Component> cmp = model.getComponent(extend.invokedComponent());
+            if (cmp.isPresent() && cmp.get().componentType() == ComponentType.INTERFACE
                     && !cmp.equals(interfaceComponent)) {
-                methodSpecs.addAll(getListOfMethodSpecs(cmp));
+                methodSpecs.addAll(getListOfMethodSpecs(cmp.get()));
             }
         }
         for (String childMethod : interfaceComponent.children()) {
-            Component childMethodCmp = model.getComponent(childMethod);
-            if (childMethodCmp != null && childMethodCmp.componentType() == ComponentType.METHOD) {
-                methodSpecs.add(generateMethodSignature(childMethodCmp));
+            Optional<Component> childMethodCmp = model.getComponent(childMethod);
+            if (childMethodCmp.isPresent() && childMethodCmp.get().componentType() == ComponentType.METHOD) {
+                methodSpecs.add(generateMethodSignature(childMethodCmp.get()));
             }
         }
         return methodSpecs;
@@ -216,10 +216,10 @@ class ImplementedInterfaces {
     private String generateMethodSignature(Component methodComponent) {
         String signature = methodComponent.name() + "(";
         for (String methodParam : methodComponent.children()) {
-            Component methodParamCmp = model.getComponent(methodParam);
-            if (methodParamCmp != null
-                    && methodParamCmp.componentInvocations(ComponentInvocations.DECLARATION).size() > 0) {
-                signature += methodParamCmp.componentInvocations(ComponentInvocations.DECLARATION).get(0)
+            Optional<Component> methodParamCmp = model.getComponent(methodParam);
+            if (methodParamCmp.isPresent()
+                    && methodParamCmp.get().componentInvocations(ComponentInvocations.DECLARATION).size() > 0) {
+                signature += methodParamCmp.get().componentInvocations(ComponentInvocations.DECLARATION).get(0)
                         .invokedComponent() + ",";
             }
         }

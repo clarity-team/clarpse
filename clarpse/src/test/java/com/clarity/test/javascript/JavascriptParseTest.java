@@ -34,7 +34,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").comment().equals("/**Test*/"));
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().comment().equals("/**Test*/"));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").sourceFile().equals("polygon.js"));
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().sourceFile().equals("polygon.js"));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").componentType() == ComponentType.CLASS);
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().componentType() == ComponentType.CLASS);
     }
 
     @Test
@@ -92,10 +92,10 @@ public class JavascriptParseTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         // assert the Polygon class component has one type extension component
         // invocation
-        assertTrue(generatedSourceModel.getComponent("Polygon").componentInvocations(ComponentInvocations.EXTENSION)
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().componentInvocations(ComponentInvocations.EXTENSION)
                 .size() == 1);
         // assert the component being extended is the Shape class
-        assertTrue(generatedSourceModel.getComponent("Polygon").componentInvocations(ComponentInvocations.EXTENSION)
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().componentInvocations(ComponentInvocations.EXTENSION)
                 .get(0).invokedComponent().equals("Shape"));
     }
 
@@ -109,10 +109,10 @@ public class JavascriptParseTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         // assert the Polygon class component has one type extension component
         // invocation
-        assertTrue(generatedSourceModel.getComponent("Polygon").componentInvocations(ComponentInvocations.EXTENSION)
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().componentInvocations(ComponentInvocations.EXTENSION)
                 .size() == 1);
         // assert the component being extended is the Shape class
-        assertTrue(generatedSourceModel.getComponent("Polygon").componentInvocations(ComponentInvocations.EXTENSION)
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().componentInvocations(ComponentInvocations.EXTENSION)
                 .get(0).invokedComponent().equals("Shape"));
     }
 
@@ -135,7 +135,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").comment().equals("/** constructor doc */"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().comment().equals("/** constructor doc */"));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").children().get(0).equals("Polygon.constructor"));
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.constructor"));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").name().equals("constructor"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().name().equals("constructor"));
     }
 
     @Test
@@ -181,7 +181,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(
-                generatedSourceModel.getComponent("Polygon.constructor").componentType() == ComponentType.CONSTRUCTOR);
+                generatedSourceModel.getComponent("Polygon.constructor").get().componentType() == ComponentType.CONSTRUCTOR);
     }
 
     @Test
@@ -216,9 +216,9 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").children().get(0)
+        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().children().get(0)
                 .equals("Polygon.constructor.height"));
-        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").children().get(1)
+        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().children().get(1)
                 .equals("Polygon.constructor.length"));
     }
 
@@ -231,7 +231,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor.height")
-                .componentType() == ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
+                .get().componentType() == ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
     }
 
     @Test
@@ -253,7 +253,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").comment().equals("/** say doc \n comment */"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().comment().equals("/** say doc \n comment */"));
     }
 
     @Test
@@ -264,7 +264,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").children().get(0).equals("Polygon.say"));
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.say"));
     }
 
     @Test
@@ -275,7 +275,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").name().equals("say"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().name().equals("say"));
     }
 
     @Test
@@ -286,7 +286,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").componentType() == ComponentType.METHOD);
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().componentType() == ComponentType.METHOD);
     }
 
     @Test
@@ -308,7 +308,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").modifiers().contains("static"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().modifiers().contains("static"));
     }
 
     @Test
@@ -319,7 +319,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.constant1").modifiers().contains("static"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.constant1").get().modifiers().contains("static"));
     }
 
     @Test
@@ -365,8 +365,8 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").children().get(0).equals("Polygon.say.height"));
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").children().get(1).equals("Polygon.say.length"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().get(0).equals("Polygon.say.height"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().get(1).equals("Polygon.say.length"));
     }
 
     @Test
@@ -378,7 +378,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.height")
-                .componentType() == ComponentType.METHOD_PARAMETER_COMPONENT);
+                .get().componentType() == ComponentType.METHOD_PARAMETER_COMPONENT);
     }
 
     @Test
@@ -400,7 +400,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").children().get(0).equals("Polygon.get_height"));
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.get_height"));
     }
 
     @Test
@@ -411,7 +411,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.set_height").componentType() == ComponentType.METHOD);
+        assertTrue(generatedSourceModel.getComponent("Polygon.set_height").get().componentType() == ComponentType.METHOD);
     }
 
     @Test
@@ -444,7 +444,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").name().equals("height"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().name().equals("height"));
     }
 
     @Test
@@ -455,7 +455,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").componentType() == ComponentType.FIELD);
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().componentType() == ComponentType.FIELD);
     }
 
     @Test
@@ -469,7 +469,7 @@ public class JavascriptParseTest {
         assertTrue(generatedSourceModel.containsComponent("Polygon.height")
                 && generatedSourceModel.containsComponent("Polygon.width"));
 
-        assertTrue(generatedSourceModel.getComponent("Polygon.width").codeFragment().equals("Boolean"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.width").get().codeFragment().equals("Boolean"));
     }
 
     @Test
@@ -480,7 +480,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").children().get(1).equals("Polygon.height"));
+        assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(1).equals("Polygon.height"));
     }
 
     @Test
@@ -491,7 +491,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").codeFragment().equals("true"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment().equals("true"));
     }
 
     @Test
@@ -502,7 +502,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").codeFragment().equals("test"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment().equals("test"));
     }
 
     @Test
@@ -513,7 +513,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").codeFragment().equals("56"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment().equals("56"));
     }
 
     @Test
@@ -524,7 +524,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").codeFragment().equals("Number"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment().equals("Number"));
     }
 
     @Test
@@ -535,7 +535,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").codeFragment().equals("String"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment().equals("String"));
     }
 
     @Test
@@ -546,7 +546,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").codeFragment().equals("Boolean"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment().equals("Boolean"));
     }
 
     @Test
@@ -557,7 +557,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").codeFragment().equals("React"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment().equals("React"));
     }
 
     @Test
@@ -568,7 +568,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("/github/http/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").packageName().equals("github.http"));
+        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().packageName().equals("github.http"));
     }
 
     @Test
@@ -579,7 +579,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").codeFragment().equals("React"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment().equals("React"));
     }
 
     @Test
@@ -601,7 +601,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").componentType() == ComponentType.LOCAL);
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").get().componentType() == ComponentType.LOCAL);
     }
 
     @Test
@@ -612,7 +612,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").componentType() == ComponentType.LOCAL);
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").get().componentType() == ComponentType.LOCAL);
     }
 
     @Test
@@ -635,7 +635,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.test")
-                .componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
+                .get().componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
     }
 
     @Test
@@ -646,8 +646,8 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").children().size() == 2);
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").children().get(1).equals("Polygon.say.lol"));
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().size() == 2);
+        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().get(1).equals("Polygon.say.lol"));
     }
 
     @Test
@@ -659,7 +659,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.test")
-                .componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
+                .get().componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
     }
 
     @Test
@@ -670,7 +670,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("src/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").packageName().equals(""));
+        assertTrue(generatedSourceModel.getComponent("Polygon.say.test").get().packageName().equals(""));
     }
 
     @Test
@@ -716,7 +716,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor")
-                .componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
+                .get().componentInvocations(ComponentInvocations.INSTANTIATION).get(0).invokedComponent().equals("React"));
     }
 
     @Test
@@ -727,7 +727,7 @@ public class JavascriptParseTest {
         rawData.insertFile(new RawFile("/github/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").packageName().equals("github"));
+        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().packageName().equals("github"));
     }
 
     @Test
@@ -741,7 +741,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Polygon.constructor")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("test.github.React"));
     }
 
@@ -756,7 +756,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Polygon.constructor")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("test.github.React"));
     }
 
@@ -771,7 +771,7 @@ public class JavascriptParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Polygon.constructor")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("test.github.React"));
     }
 }

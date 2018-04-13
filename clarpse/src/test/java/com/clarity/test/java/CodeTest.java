@@ -19,7 +19,7 @@ public class CodeTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod(String)").code().equals(" static void aMethod (String a) { \n" +
+        assertTrue(generatedSourceModel.getComponent("test.aMethod(String)").get().code().equals(" static void aMethod (String a) { \n" +
                 " int x = 1; \n" +
                 " a = null; \n" +
                 " } "));
@@ -33,7 +33,7 @@ public class CodeTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test").code().equals("@Deprecated public class test { \n" +
+        assertTrue(generatedSourceModel.getComponent("test").get().code().equals("@Deprecated public class test { \n" +
                 " static void aMethod (String a) { \n" +
                 " int x = 1; \n" +
                 " a = null; \n" +

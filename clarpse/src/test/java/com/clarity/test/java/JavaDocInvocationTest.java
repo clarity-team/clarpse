@@ -1,9 +1,5 @@
 package com.clarity.test.java;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
 import com.clarity.compiler.RawFile;
@@ -11,6 +7,9 @@ import com.clarity.compiler.SourceFiles;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Ensure component invocation data of a given class is accurate.
@@ -29,7 +28,7 @@ public class JavaDocInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(((ComponentInvocation) generatedSourceModel.getComponent("com.ClassA")
-                .componentInvocations(ComponentInvocations.DOC_MENTION).toArray()[0]).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.DOC_MENTION).toArray()[0]).invokedComponent()
                         .equals("com.URL"));
     }
 
@@ -44,7 +43,7 @@ public class JavaDocInvocationTest {
         rawData.insertFile(new RawFile("file1", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("com.ClassA").componentInvocations().size() == 0);
+        assertTrue(generatedSourceModel.getComponent("com.ClassA").get().componentInvocations().size() == 0);
     }
 
     @Test
@@ -59,7 +58,7 @@ public class JavaDocInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(
-                generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.DOC_MENTION)
+                generatedSourceModel.getComponent("com.ClassA").get().componentInvocations(ComponentInvocations.DOC_MENTION)
                         .get(0).invokedComponent().equals("org.test.Junit"));
     }
 
@@ -75,7 +74,7 @@ public class JavaDocInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(
-                generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.DOC_MENTION)
+                generatedSourceModel.getComponent("com.ClassA").get().componentInvocations(ComponentInvocations.DOC_MENTION)
                         .get(0).invokedComponent().equals("org.test.Junit"));
     }
 
@@ -91,7 +90,7 @@ public class JavaDocInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(
-                generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.DOC_MENTION)
+                generatedSourceModel.getComponent("com.ClassA").get().componentInvocations(ComponentInvocations.DOC_MENTION)
                         .get(0).invokedComponent().equals("org.test.Junit"));
     }
 
@@ -107,7 +106,7 @@ public class JavaDocInvocationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(
-                generatedSourceModel.getComponent("com.ClassA").componentInvocations(ComponentInvocations.DOC_MENTION)
+                generatedSourceModel.getComponent("com.ClassA").get().componentInvocations(ComponentInvocations.DOC_MENTION)
                         .get(0).invokedComponent().equals("org.test.Junit"));
     }
 

@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 
 public class GoLangTreeListener extends GolangBaseListener {
@@ -462,8 +463,10 @@ public class GoLangTreeListener extends GolangBaseListener {
             }
             if (inReceiverContext) {
                 if (srcModel.containsComponent(resolvedType)) {
-                    Component structCmp = srcModel.getComponent(resolvedType);
-                    udpateStructChild(structCmp, cmp);
+                    Optional<Component> structCmp = srcModel.getComponent(resolvedType);
+                    if (structCmp.isPresent()) {
+                        udpateStructChild(structCmp.get(), cmp);
+                    }
                 } else {
                     structWaitingList.add(new AbstractMap.SimpleEntry<String, Component>(resolvedType, cmp));
                 }
@@ -493,16 +496,16 @@ public class GoLangTreeListener extends GolangBaseListener {
         List<String> childrenToBeRemoved = new ArrayList<>();
         List<String> childrenToBeAdded = new ArrayList<>();
         for (String child : structChildCmp.children()) {
-            Component childCmp = srcModel.getComponent(child);
-            if (childCmp != null) {
-                childCmp.setComponentName(structChildCmp.componentName() + "." + childCmp.name());
-                childCmp.setPackageName(structChildCmp.packageName());
-                childrenToBeAdded.add(childCmp.uniqueName());
+            Optional<Component> childCmp = srcModel.getComponent(child);
+            if (childCmp.isPresent()) {
+                childCmp.get().setComponentName(structChildCmp.componentName() + "." + childCmp.get().name());
+                childCmp.get().setPackageName(structChildCmp.packageName());
+                childrenToBeAdded.add(childCmp.get().uniqueName());
             }
-            if (child != childCmp.uniqueName()) {
+            if (child != childCmp.get().uniqueName()) {
                 childrenToBeRemoved.add(child);
                 srcModel.getComponents().remove(child);
-                srcModel.insertComponent(childCmp);
+                srcModel.insertComponent(childCmp.get());
             }
         }
         childrenToBeRemoved.forEach(item -> structChildCmp.children().remove(item));

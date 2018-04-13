@@ -9,6 +9,9 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertTrue;
 
+/**
+ * Tests accuracy of Java Component cyclomatic complexity attribute. See {@link com.clarity.sourcemodel.Component}.
+ */
 public class CycloTest {
 
     @Test
@@ -29,8 +32,9 @@ public class CycloTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod()").cyclo() == 8);
+        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 8);
     }
+
 
     @Test
     public void switchStmtCycloTest() throws Exception {
@@ -47,7 +51,7 @@ public class CycloTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.Test()").cyclo() == 3);
+        assertTrue(generatedSourceModel.getComponent("Test.Test()").get().cyclo() == 3);
     }
 
     @Test
@@ -55,8 +59,8 @@ public class CycloTest {
         final String code = "public class test {\n" +
                 "    boolean aMethod() {\n" +
                 "        while (2 > 4) {\n" +
-                "            for (int i = 0; i < 3; i++) {\n" +
-                "                if (i = 3);\n" +
+                "            for (int i = 0; i < 3 && 2 == 3; i++) {\n" +
+                "                if (i = 3); \n" +
                 "                   try {return false; } catch (Exception e) {}\n" +
                 "            }\n" +
                 "        }\n" +
@@ -67,6 +71,22 @@ public class CycloTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod()").cyclo() == 6);
+        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 8);
+    }
+
+    @Test
+    public void ignoreOperatorsInComments() throws Exception {
+        final String code = "public class test {\n" +
+                "    boolean aMethod() {\n" +
+                "        while (2 > 4) { // && || \n" +
+                "        }\n" +
+                "        return true;" +
+                "    }\n" +
+                "}";
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 4);
     }
 }
