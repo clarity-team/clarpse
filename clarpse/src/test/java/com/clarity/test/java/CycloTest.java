@@ -89,4 +89,58 @@ public class CycloTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 4);
     }
+
+
+    @Test
+    public void ignoreInterfaceMethods() throws Exception {
+        final String code = "public interface test {\n" +
+                "    boolean aMethod();\n" +
+                "}";
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 0);
+    }
+
+
+    @Test
+    public void classCycloTest() throws Exception {
+        final String code = "public class test {\n" +
+                "    public String tester = \"test\";       \n" +
+                "    boolean aMethod() {\n" +
+                "        while (2 > 4) {\n" +
+                "            for (int i = 0; i < 3 && 2 == 3; i++) {\n" +
+                "                if (i = 3); \n" +
+                "                   try {return false; } catch (Exception e) {}\n" +
+                "            }\n" +
+                "        }\n" +
+                "        return true;" +
+                "    }\n" +
+                "    boolean bMethod() {\n" +
+                "        while (2 > 4) {\n" +
+                "            for (int i = 0; i < 3 && 2 == 3; i++) {\n" +
+                "            }\n" +
+                "        }\n" +
+                "        return true;" +
+                "    }\n" +
+                "}";
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("test").get().cyclo() == 6);
+    }
+
+    @Test
+    public void emptyClassCycloTest() throws Exception {
+        final String code = "public class test {\n" +
+                "    public String tester = \"test\";       \n" +
+                "}";
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("test").get().cyclo() == 0);
+    }
 }

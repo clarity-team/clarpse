@@ -140,7 +140,7 @@ class ImplementedInterfaces {
         this.model = srcModel;
         Set<Component> allInterfaceComponents = srcModel.getComponents().values().stream()
                 .filter(s -> (s.componentType() == ComponentType.INTERFACE)).collect(Collectors.toSet());
-        interfaceMethodSpecsPairs = new HashMap<String, List<String>>();
+        interfaceMethodSpecsPairs = new HashMap<>();
         for (Component interfaceCmp : allInterfaceComponents) {
             List<String> interfaceMethodSpecs = getListOfMethodSpecs(interfaceCmp);
             if (!interfaceMethodSpecs.isEmpty()) {
@@ -200,7 +200,7 @@ class ImplementedInterfaces {
         for (ComponentInvocation extend : interfaceComponent.componentInvocations(ComponentInvocations.EXTENSION)) {
             Optional<Component> cmp = model.getComponent(extend.invokedComponent());
             if (cmp.isPresent() && cmp.get().componentType() == ComponentType.INTERFACE
-                    && !cmp.equals(interfaceComponent)) {
+                    && !cmp.get().equals(interfaceComponent)) {
                 methodSpecs.addAll(getListOfMethodSpecs(cmp.get()));
             }
         }

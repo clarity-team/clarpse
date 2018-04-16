@@ -41,7 +41,7 @@ public class ChildComponentsTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method().Tester") == null);
+        assertTrue(!generatedSourceModel.getComponent("Test.method().Tester").isPresent());
         assertTrue(generatedSourceModel.getComponents().size() == 2);
     }
 

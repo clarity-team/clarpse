@@ -142,7 +142,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.SomeFunc.inside") == null);
+        assertTrue(!generatedSourceModel.getComponent("main.SomeFunc.inside").isPresent());
         assertTrue(generatedSourceModel.getComponents().size() == 0);
     }
 
@@ -324,7 +324,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2.a") == null);
+        assertTrue(!generatedSourceModel.getComponent("main.plain.testMethodv2.a").isPresent());
     }
 
     @Test

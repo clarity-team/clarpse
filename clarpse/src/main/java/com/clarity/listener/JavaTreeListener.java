@@ -72,11 +72,11 @@ import java.util.Stack;
  */
 public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
-    private final Stack<Component> componentStack = new Stack<Component>();
+    private final Stack<Component> componentStack = new Stack<>();
     private final ArrayList<String> currentImports = new ArrayList<>();
     private String currentPkg = "";
     private final OOPSourceCodeModel srcModel;
-    private final Map<String, String> currentImportsMap = new HashMap<String, String>();
+    private final Map<String, String> currentImportsMap = new HashMap<>();
     private final RawFile file;
     private final String[] lines;
     private int currCyclomaticComplexity = 0;
@@ -110,20 +110,20 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     private void completeComponent() {
         if (!componentStack.isEmpty()) {
+
             final Component completedCmp = componentStack.pop();
 
             // update cyclomatic complexity if component is a method or class
-            if (completedCmp.componentType() == ComponentType.METHOD
-                    || completedCmp.componentType() == ComponentType.CONSTRUCTOR) {
+            if (completedCmp.componentType().isMethodComponent() && !componentStackContainsInterface()) {
                 completedCmp.setCyclo(currCyclomaticComplexity);
             } else if (completedCmp.componentType() == ComponentType.CLASS
                     || completedCmp.componentType() == ComponentType.ENUM) {
-                // class component cyclo attribute is a weighted average of children method complexities.
+                // class component complexity is a weighted average of its method children complexities.
                 int childCount = 0;
                 int complexityTotal = 0;
                 for (String childrenName : completedCmp.children()) {
                     Optional<Component> child = srcModel.getComponent(childrenName);
-                    if (child.isPresent()) {
+                    if (child.isPresent() && child.get().componentType().isMethodComponent()) {
                         childCount += 1;
                         complexityTotal += child.get().cyclo();
                     }
@@ -431,9 +431,19 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     }
 
     private boolean componentStackContainsMethod() {
+        return componentStackContainsComponentType(ComponentType.METHOD, ComponentType.CONSTRUCTOR);
+    }
+
+    private boolean componentStackContainsInterface() {
+        return componentStackContainsComponentType(ComponentType.INTERFACE);
+    }
+
+    private boolean componentStackContainsComponentType(ComponentType... componentTypes) {
         for (Component cmp : componentStack) {
-            if (cmp.componentType().isMethodComponent()) {
-                return true;
+            for (ComponentType type : componentTypes) {
+                if (cmp.componentType() == type) {
+                    return true;
+                }
             }
         }
         return false;
