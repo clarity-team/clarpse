@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * A language independent representation of a codebase that reveals its
@@ -23,10 +24,12 @@ public class OOPSourceCodeModel implements Serializable {
     }
 
     public void merge(final OOPSourceCodeModel sourceModel) {
-
         insertComponents(sourceModel.getComponents());
     }
 
+    public int size() {
+        return components.size();
+    }
     public void insertComponent(final Component component) {
 
         components.put(component.uniqueName(), component);
@@ -45,5 +48,13 @@ public class OOPSourceCodeModel implements Serializable {
         for (final Map.Entry<String, Component> entry : newCmps.entrySet()) {
             insertComponent(entry.getValue());
         }
+    }
+
+    public void removeComponent(String componentName) {
+        this.components.remove(componentName);
+    }
+
+    public Stream<Component> components() {
+        return components.values().stream();
     }
 }

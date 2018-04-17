@@ -38,7 +38,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
 
     private void resolveInterfaces(OOPSourceCodeModel srcModel) throws Exception {
 
-        Set<Component> baseComponents = srcModel.getComponents().values().stream()
+        Set<Component> baseComponents = srcModel.components()
                 .filter(s -> (s.componentType().isBaseComponent())).collect(Collectors.toSet());
         ImplementedInterfaces implementedInterfacesGatherer = new ImplementedInterfaces(srcModel);
         for (Component baseCmp : baseComponents) {
@@ -114,7 +114,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
     }
 
     private void updateStructCyclomaticComplexities(OOPSourceCodeModel srcModel) {
-        srcModel.getComponents().forEach((k, v) -> {
+        srcModel.components().forEach(v -> {
             if (v.componentType() == ComponentType.STRUCT) {
                 int childCount = 0;
                 int complexityTotal = 0;
@@ -163,7 +163,7 @@ class ImplementedInterfaces {
 
     ImplementedInterfaces(OOPSourceCodeModel srcModel) throws Exception {
         this.model = srcModel;
-        Set<Component> allInterfaceComponents = srcModel.getComponents().values().stream()
+        Set<Component> allInterfaceComponents = srcModel.components()
                 .filter(s -> (s.componentType() == ComponentType.INTERFACE)).collect(Collectors.toSet());
         interfaceMethodSpecsPairs = new HashMap<>();
         for (Component interfaceCmp : allInterfaceComponents) {

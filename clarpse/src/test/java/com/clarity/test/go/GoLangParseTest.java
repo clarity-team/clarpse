@@ -144,7 +144,7 @@ public class GoLangParseTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertFalse(generatedSourceModel.getComponent("main.SomeFunc.inside").isPresent());
-        assertTrue(generatedSourceModel.getComponents().size() == 0);
+        assertTrue(generatedSourceModel.size() == 0);
     }
 
     @Test

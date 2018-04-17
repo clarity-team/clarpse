@@ -43,7 +43,7 @@ public class ChildComponentsTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertFalse(generatedSourceModel.getComponent("Test.method().Tester").isPresent());
-        assertTrue(generatedSourceModel.getComponents().size() == 2);
+        assertTrue(generatedSourceModel.size() == 2);
     }
 
     @Test

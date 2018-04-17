@@ -508,7 +508,7 @@ public class GoLangTreeListener extends GolangBaseListener {
 
     private void udpateStructChild(Component structCmp, Component structChildCmp) {
         if (srcModel.containsComponent(structChildCmp.uniqueName())) {
-            srcModel.getComponents().remove(structChildCmp.uniqueName());
+            srcModel.removeComponent(structChildCmp.uniqueName());
         }
         structChildCmp.setComponentName(structCmp.componentName() + "." + structChildCmp.codeFragment());
         structChildCmp.setPackageName(structCmp.packageName());
@@ -524,7 +524,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             }
             if (child != childCmp.get().uniqueName()) {
                 childrenToBeRemoved.add(child);
-                srcModel.getComponents().remove(child);
+                srcModel.removeComponent(child);
                 srcModel.insertComponent(childCmp.get());
             }
         }
