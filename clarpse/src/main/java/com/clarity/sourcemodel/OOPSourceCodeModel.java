@@ -18,7 +18,7 @@ public class OOPSourceCodeModel implements Serializable {
 
     private final Map<String, Component> components = new HashMap<>();
 
-    public Map<String, Component> getComponents() {
+    private Map<String, Component> getComponents() {
         return components;
     }
 
