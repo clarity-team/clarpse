@@ -586,28 +586,22 @@ public class GoLangTreeListener extends GolangBaseListener {
 
     @Override
     public final void enterExprSwitchCase(GolangParser.ExprSwitchCaseContext ctx) {
-        if (ctx.children != null && ctx.children.size() > 0) {
-            if (ctx.children.get(0).toString().equals("case")) {
-                currCyclomaticComplexity += 1;
-            }
+        if (ctx.children != null && ctx.children.size() > 0 && ctx.children.get(0).toString().equals("case")) {
+            currCyclomaticComplexity += 1;
         }
     }
 
     @Override
     public final void enterTypeSwitchCase(GolangParser.TypeSwitchCaseContext ctx) {
-        if (ctx.children != null && ctx.children.size() > 0) {
-            if (ctx.children.get(0).toString().equals("case")) {
-                currCyclomaticComplexity += 1;
-            }
+        if (ctx.children != null && ctx.children.size() > 0 && ctx.children.get(0).toString().equals("case")) {
+            currCyclomaticComplexity += 1;
         }
     }
 
     @Override
     public final void enterCommCase(GolangParser.CommCaseContext ctx) {
-        if (ctx.children != null && ctx.children.size() > 0) {
-            if (ctx.children.get(0).toString().equals("case")) {
-                currCyclomaticComplexity += 1;
-            }
+        if (ctx.children != null && ctx.children.size() > 0 && ctx.children.get(0).toString().equals("case")) {
+            currCyclomaticComplexity += 1;
         }
     }
 

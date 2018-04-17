@@ -7,6 +7,7 @@ import com.clarity.compiler.SourceFiles;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ChildComponentsTest {
@@ -41,7 +42,7 @@ public class ChildComponentsTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(!generatedSourceModel.getComponent("Test.method().Tester").isPresent());
+        assertFalse(generatedSourceModel.getComponent("Test.method().Tester").isPresent());
         assertTrue(generatedSourceModel.getComponents().size() == 2);
     }
 
