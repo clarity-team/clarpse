@@ -33,7 +33,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").get().comment() == "");
+        assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals(""));
     }
 
     @Test

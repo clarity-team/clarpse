@@ -9,6 +9,7 @@ import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class GoLangParseTest {
@@ -142,7 +143,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(!generatedSourceModel.getComponent("main.SomeFunc.inside").isPresent());
+        assertFalse(generatedSourceModel.getComponent("main.SomeFunc.inside").isPresent());
         assertTrue(generatedSourceModel.getComponents().size() == 0);
     }
 
@@ -324,7 +325,7 @@ public class GoLangParseTest {
         rawData.insertFile(new RawFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(!generatedSourceModel.getComponent("main.plain.testMethodv2.a").isPresent());
+        assertFalse(generatedSourceModel.getComponent("main.plain.testMethodv2.a").isPresent());
     }
 
     @Test

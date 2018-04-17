@@ -60,7 +60,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         }
 
         if (smallestCodeBaseContaininingDir.startsWith("/")) {
-            smallestCodeBaseContaininingDir.substring(1);
+            smallestCodeBaseContaininingDir = smallestCodeBaseContaininingDir.substring(1);
         }
 
         for (RawFile file : files) {
