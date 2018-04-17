@@ -548,8 +548,8 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     @Override
     public final void visit(SwitchStmt ctx, Object arg) {
         for (SwitchEntryStmt sEStmt : ctx.getEntries()) {
-            if (sEStmt.isSwitchEntryStmt() &&
-                    (sEStmt.getStatements().size() > 0 && !sEStmt.toString().trim().startsWith("default:"))) {
+            if (sEStmt.isSwitchEntryStmt()
+                    && (sEStmt.getStatements().size() > 0 && !sEStmt.toString().trim().startsWith("default:"))) {
                 currCyclomaticComplexity += 1;
             }
         }
