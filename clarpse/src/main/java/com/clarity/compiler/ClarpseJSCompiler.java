@@ -1,8 +1,5 @@
 package com.clarity.compiler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.clarity.CommonDir;
 import com.clarity.listener.JavaScriptListener;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
@@ -13,8 +10,10 @@ import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.SourceFile;
 import com.google.javascript.jscomp.parsing.Config.JsDocParsing;
 import com.google.javascript.rhino.Node;
-
 import edu.emory.mathcs.backport.java.util.Collections;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClarpseJSCompiler implements ClarpseCompiler {
 
@@ -44,7 +43,7 @@ public class ClarpseJSCompiler implements ClarpseCompiler {
 
         for (int i = 1; i < files.size(); i++) {
             smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir, files.get(i).name())
-                    .string();
+                    .value();
         }
 
         if (smallestCodeBaseContaininingDir.startsWith("/")) {

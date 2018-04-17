@@ -1,12 +1,12 @@
 package com.clarity;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
- * Represents a common directory that is shared amongst a group of directories.
+ * Represents a common directory.
  */
 public class CommonDir {
 
@@ -16,7 +16,7 @@ public class CommonDir {
         this.dirs = dirs;
     }
 
-    public String string() throws Exception {
+    public String value() throws Exception {
         if (dirs.length < 1) {
             throw new Exception("No dirs were supplied!");
         } else if (dirs.length < 2) {
@@ -32,12 +32,9 @@ public class CommonDir {
                     String dirBParts[] = dirs[i].split("/");
                     List<String> matchingParts = new ArrayList<String>();
                     int j = 0;
-                    while (dirAParts[j].equals(dirBParts[j])) {
+                    while (j < dirAParts.length && j < dirBParts.length && dirAParts[j].equals(dirBParts[j])) {
                         matchingParts.add(dirAParts[j]);
                         j++;
-                        if (j >= dirAParts.length || j >= dirBParts.length) {
-                            break;
-                        }
                     }
                     commonDir = StringUtils.join(matchingParts, "/");
                 }

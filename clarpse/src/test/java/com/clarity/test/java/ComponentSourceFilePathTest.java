@@ -53,51 +53,51 @@ public class ComponentSourceFilePathTest {
 
     @Test
     public void testClassAComponentHasCorrectSourceFilePath() {
-        final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestA");
+        final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestA").get();
         assertTrue(component.sourceFile().equals(SOURCEFILE1NAME));
     }
 
     @Test
     public void testClassAMethodAComponentHasCorrectSourceFilePath() {
-        final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestA.methodA()");
+        final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestA.methodA()").get();
         assertTrue(component.sourceFile().equals(SOURCEFILE1NAME));
     }
 
     @Test
     public void testAbstractClassBComponentHasCorrectSourceFilePath() {
-        final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestB");
+        final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE + ".TestB").get();
         assertTrue(component.sourceFile().equals(SOURCEFILE1NAME));
     }
 
     @Test
     public void testAbstractClassBMethodBComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE1PACKAGE
- + ".TestB.methodB()");
+                + ".TestB.methodB()").get();
         assertTrue(component.sourceFile().equals(SOURCEFILE1NAME));
     }
 
     @Test
     public void testClassCComponentHasCorrectSourceFilePath() {
-        final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC");
+        final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC").get();
         assertTrue(component.sourceFile().equals(SOURCEFILE2NAME));
     }
 
     @Test
     public void testClassCMethodCComponentHasCorrectSourceFilePath() {
-        final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC.methodC()");
+        final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC.methodC()").get();
         assertTrue(component.sourceFile().equals(SOURCEFILE2NAME));
     }
 
     @Test
     public void testClassCAbstractClassDComponentHasCorrectSourceFilePath() {
-        final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC.TestD");
+        final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE + ".TestC.TestD").get();
         assertTrue(component.sourceFile().equals(SOURCEFILE2NAME));
     }
 
     @Test
     public void testClassCAbstractClassDMethodDComponentHasCorrectSourceFilePath() {
         final Component component = sourceCodeModel.getComponent(SOURCEFILE2PACKAGE
- + ".TestC.TestD.methodD()");
+                + ".TestC.TestD.methodD()").get();
         assertTrue(component.sourceFile().equals(SOURCEFILE2NAME));
     }
 }

@@ -19,7 +19,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equals("/**\n" +
+        assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals("/**\n" +
                 " * A comment\n" +
                 " */\n"));
     }
@@ -33,7 +33,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment() == "");
+        assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals(""));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equals("/**\n" +
+        assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals("/**\n" +
                 " * A\n" +
                 " * comment\n" +
                 " */\n"));
@@ -58,7 +58,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test").comment().equals("/**\n" +
+        assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals("/**\n" +
                 " * A\n" +
                 " * comment\n" +
                 " */\n"));
@@ -72,7 +72,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.Test.Base").comment().equals("/**\n" +
+        assertTrue(generatedSourceModel.getComponent("test.Test.Base").get().comment().equals("/**\n" +
                 " * A\n" +
                 " * comment\n" +
                 " */\n"));
@@ -86,7 +86,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().equals("/**\n" +
+        assertTrue(generatedSourceModel.getComponent("Test.test()").get().comment().equals("/**\n" +
                 " * lolcakes\n" +
                 " */\n"));
     }
@@ -94,14 +94,13 @@ public class CommentsParsingTest {
     @Test
     public void testInterfaceMethodLevelComment() throws Exception {
 
-        final String code = "public interface Test { /**lol \n cakes \n */abstract void test();}";
+        final String code = "public interface Test { /**lol cakes */ void test();}";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.test()").comment().equals("/**\n" +
-                " * lol\n" +
-                " * cakes\n" +
+        assertTrue(generatedSourceModel.getComponent("Test.test()").get().comment().equals("/**\n" +
+                " * lol cakes\n" +
                 " */\n"));
     }
 
@@ -113,7 +112,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").comment().equals("/**\n" +
+        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").get().comment().equals("/**\n" +
                 " * lolcakes\n" +
                 " */\n"));
     }
@@ -126,7 +125,7 @@ public class CommentsParsingTest {
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.aMethod(String).methodParam").comment().equals("Optional[/**\n" +
+        assertTrue(generatedSourceModel.getComponent("Test.aMethod(String).methodParam").get().comment().equals("Optional[/**\n" +
                 " * lolcakes\n" +
                 " */\n" +
                 "]"));

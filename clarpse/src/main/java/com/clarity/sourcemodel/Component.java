@@ -30,6 +30,7 @@ public final class Component implements Serializable {
     private String value;
     private String packageName;
     private String code;
+    private int cyclo;
     /**
      * Short name.
      */
@@ -93,6 +94,14 @@ public final class Component implements Serializable {
         } else {
             return componentName;
         }
+    }
+
+    public int cyclo() {
+        return this.cyclo;
+    }
+
+    public void setCyclo(int cyclo) {
+        this.cyclo = cyclo;
     }
 
     public Component parent() {
@@ -231,9 +240,9 @@ public final class Component implements Serializable {
                 throw new IllegalArgumentException("Cannot get parent of component: " + uniqueName());
             }
         } else {
-            final String methodComponentUniqueNameMinusParamters = uniqueName().substring(0, lastOpeningBracket);
-            final int lastPeriod = methodComponentUniqueNameMinusParamters.lastIndexOf(".");
-            final String currParentClassName = methodComponentUniqueNameMinusParamters.substring(0, lastPeriod);
+            final String methodComponentUniqueNameMinusParameters = uniqueName().substring(0, lastOpeningBracket);
+            final int lastPeriod = methodComponentUniqueNameMinusParameters.lastIndexOf(".");
+            final String currParentClassName = methodComponentUniqueNameMinusParameters.substring(0, lastPeriod);
             return currParentClassName;
         }
     }

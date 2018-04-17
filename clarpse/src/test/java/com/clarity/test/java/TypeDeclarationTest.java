@@ -1,18 +1,17 @@
 package com.clarity.test.java;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.clarity.compiler.ClarpseProject;
 import com.clarity.compiler.Lang;
-import com.clarity.compiler.SourceFiles;
 import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
+import org.junit.Test;
 
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertTrue;
 
 public class TypeDeclarationTest {
 
@@ -25,7 +24,7 @@ public class TypeDeclarationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentInvocation invocation = (generatedSourceModel.getComponent("Test.fieldVar")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0));
+                .get().componentInvocations(ComponentInvocations.DECLARATION).get(0));
         assertTrue(invocation.invokedComponent().equals("java.lang.String"));
     }
 
@@ -38,7 +37,7 @@ public class TypeDeclarationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.fieldVar")
-                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
+                .get().componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
     }
 
     @Test
@@ -49,7 +48,7 @@ public class TypeDeclarationTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.log").componentInvocations(ComponentInvocations.DECLARATION)
+        assertTrue(generatedSourceModel.getComponent("Test.log").get().componentInvocations(ComponentInvocations.DECLARATION)
                 .size() == 1);
     }
 
@@ -62,10 +61,10 @@ public class TypeDeclarationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s1")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("java.lang.String"));
         assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s2")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("java.lang.Integer"));
     }
 
@@ -78,9 +77,9 @@ public class TypeDeclarationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s1")
-                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
+                .get().componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
         assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s2")
-                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
+                .get().componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
     }
 
     @Test
@@ -92,7 +91,7 @@ public class TypeDeclarationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.method().s")
-                .componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
+                .get().componentInvocations(ComponentInvocations.DECLARATION).get(0).invokedComponent()
                 .equals("java.lang.String"));
     }
 
@@ -105,7 +104,7 @@ public class TypeDeclarationTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.method().s")
-                .componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
+                .get().componentInvocations(ComponentInvocations.DECLARATION).size() == 1);
     }
 
     @Test
@@ -117,6 +116,6 @@ public class TypeDeclarationTest {
         reqCon.insertFile(file);
         reqCons.add(reqCon);
         final OOPSourceCodeModel codeModel = new ClarpseProject(reqCon).result();
-        assertTrue(codeModel.getComponent("com.sample.ClassA.b").invocations().size() == 4);
+        assertTrue(codeModel.getComponent("com.sample.ClassA.b").get().invocations().size() == 4);
     }
 }

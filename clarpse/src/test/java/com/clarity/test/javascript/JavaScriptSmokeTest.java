@@ -1,18 +1,17 @@
 package com.clarity.test.javascript;
 
-import static org.junit.Assert.assertTrue;
-
+import com.clarity.compiler.ClarpseProject;
+import com.clarity.compiler.Lang;
+import com.clarity.compiler.RawFile;
+import com.clarity.compiler.SourceFiles;
+import com.clarity.sourcemodel.OOPSourceCodeModel;
+import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.clarity.compiler.ClarpseProject;
-import com.clarity.compiler.Lang;
-import com.clarity.compiler.SourceFiles;
-import com.clarity.compiler.RawFile;
-import com.clarity.sourcemodel.OOPSourceCodeModel;
-import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
+import static org.junit.Assert.assertTrue;
 
 @Ignore
 public class JavaScriptSmokeTest {
@@ -61,12 +60,12 @@ public class JavaScriptSmokeTest {
 
 	@Test
 	public void testSquareExtendsPolygon() {
-		assertTrue(generatedSourceModel.getComponent("Square").componentInvocations(ComponentInvocations.EXTENSION)
+		assertTrue(generatedSourceModel.getComponent("Square").get().componentInvocations(ComponentInvocations.EXTENSION)
 				.get(0).invokedComponent().equals("Polygon"));
 	}
 
 	@Test
 	public void testStaticMethodWasParsed() {
-		assertTrue(generatedSourceModel.getComponent("Triple.triple").modifiers().iterator().next().equals("static"));
+		assertTrue(generatedSourceModel.getComponent("Triple.triple").get().modifiers().iterator().next().equals("static"));
 	}
 }

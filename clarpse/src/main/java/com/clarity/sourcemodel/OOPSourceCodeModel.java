@@ -3,6 +3,7 @@ package com.clarity.sourcemodel;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A language independent representation of a codebase that reveals its
@@ -35,8 +36,8 @@ public class OOPSourceCodeModel implements Serializable {
         return getComponents().containsKey(componentName);
     }
 
-    public Component getComponent(final String componentName) {
-        return this.getComponents().get(componentName);
+    public Optional<Component> getComponent(final String componentName) {
+        return Optional.ofNullable(this.getComponents().get(componentName));
     }
 
     public void insertComponents(final Map<String, Component> newCmps) {
