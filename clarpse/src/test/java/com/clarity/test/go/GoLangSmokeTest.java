@@ -36,7 +36,7 @@ public class GoLangSmokeTest {
     }
 
     /**
-     * func (sa *serviceAccounts) GetIstioServiceAccounts(hostname string, ports []string) []string {
+     * func (sa *serviceAccounts) GetIstioServiceAccounts(hostname value, ports []value) []value {
      * return nil
      * }
      */
@@ -84,13 +84,13 @@ public class GoLangSmokeTest {
     @Test
     public void spotCheckStructComponentInvocations() {
         assertTrue(generatedSourceModel.getComponent("mixer.pkg.pool.GoroutinePool").get().invocations().toString().equals(
-                "[TypeDeclaration:mixer.pkg.pool.WorkFunc, TypeDeclaration:sync.WaitGroup, TypeDeclaration:bool]"));
+                "[TypeDeclaration:mixer.pkg.pool.WorkFunc, TypeDeclaration:sync.WaitGroup, TypeDeclaration:bool, TypeDeclaration:int]"));
     }
 
     @Test
     public void spotCheckStructComponentInvocationsv2() {
         assertTrue(generatedSourceModel.getComponent("mixer.pkg.aspect.quotasExecutor").get().invocations().toString().equals(
-                "[TypeDeclaration:mixer.pkg.aspect.quotasManager, TypeDeclaration:mixer.pkg.adapter.QuotasAspect, TypeDeclaration:string, TypeDeclaration:mixer.pkg.aspect.quotaInfo, TypeImplementation:mixer.pkg.aspect.QuotaExecutor]"));
+                "[TypeDeclaration:mixer.pkg.aspect.quotasManager, TypeDeclaration:mixer.pkg.adapter.QuotasAspect, TypeDeclaration:string, TypeDeclaration:mixer.pkg.aspect.quotaInfo, TypeDeclaration:mixer.pkg.attribute.Bag, TypeDeclaration:mixer.pkg.expr.Evaluator, TypeDeclaration:mixer.pkg.aspect.QuotaMethodArgs, TypeDeclaration:mixer.pkg.adapter.QuotaResultLegacy, TypeImplementation:mixer.pkg.aspect.QuotaExecutor]"));
     }
 
     @Test

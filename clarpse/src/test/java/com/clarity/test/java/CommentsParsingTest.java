@@ -94,14 +94,13 @@ public class CommentsParsingTest {
     @Test
     public void testInterfaceMethodLevelComment() throws Exception {
 
-        final String code = "public interface Test { /**lol \n cakes \n */abstract void test();}";
+        final String code = "public interface Test { /**lol cakes */ void test();}";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.test()").get().comment().equals("/**\n" +
-                " * lol\n" +
-                " * cakes\n" +
+                " * lol cakes\n" +
                 " */\n"));
     }
 

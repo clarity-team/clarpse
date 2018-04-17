@@ -56,7 +56,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
 
         for (int i = 1; i < files.size(); i++) {
             smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir, files.get(i).name())
-                    .string();
+                    .value();
         }
 
         if (smallestCodeBaseContaininingDir.startsWith("/")) {
@@ -93,7 +93,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
             // sort fileTypes by length in desc order so that the longest types are at the
             // top.
             Collections.sort(projectFileTypes, new LengthComp());
-            // compile code based on number of workers
+            // compile code based on number of workers.
             compileFiles(files, srcModel, projectFileTypes);
             /**
              * In GoLang, interfaces are implemented implicitly. As a result, we handle
@@ -102,10 +102,35 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
              * if that struct implements the given interface.
              */
             resolveInterfaces(srcModel);
+            /**
+             * Update cyclomatic complexities of all structs. We do this right now after the source
+             * code model has been built as opposed to at parse time because methods for any given
+             * struct in Go can be located anywhere in the project, making their parsing order
+             * nondeterministic.
+             */
+            updateStructCyclomaticComplexities(srcModel);
         }
         return srcModel;
     }
 
+    private void updateStructCyclomaticComplexities(OOPSourceCodeModel srcModel) {
+        srcModel.getComponents().forEach((k, v) -> {
+            if (v.componentType() == ComponentType.STRUCT) {
+                int childCount = 0;
+                int complexityTotal = 0;
+                for (String childrenName : v.children()) {
+                    Optional<Component> child = srcModel.getComponent(childrenName);
+                    if (child.isPresent() && child.get().componentType().isMethodComponent()) {
+                        childCount += 1;
+                        complexityTotal += child.get().cyclo();
+                    }
+                }
+                if (childCount != 0 && complexityTotal != 0) {
+                    v.setCyclo(complexityTotal / childCount);
+                }
+            }
+        });
+    }
     private void compileFiles(List<RawFile> files, OOPSourceCodeModel srcModel, List<String> projectFileTypes) {
         // holds types that may be accessed by all the source file parsing operations...
         List<Map.Entry<String, Component>> structWaitingList = new ArrayList<>();

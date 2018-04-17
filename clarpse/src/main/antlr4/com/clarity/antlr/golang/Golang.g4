@@ -230,11 +230,16 @@ statement
     | 'fallthrough'
     | block
     | ifStmt
+    | forStmt
     | 'switch' ( simpleStmt ';' )? expression? '{' exprCaseClause* '}' | 'switch' ( simpleStmt ';' )? typeSwitchGuard '{' typeCaseClause* '}'
     | 'select' '{' commClause* '}'
-    | 'for' ( expression | forClause | rangeClause )? block
+
     | 'defer' expression
 	;
+
+forStmt
+    : 'for' ( expression | forClause | rangeClause )? block
+    ;
 
 //SimpleStmt = EmptyStmt | ExpressionStmt | SendStmt | IncDecStmt | Assignment | ShortVarDecl .
 simpleStmt

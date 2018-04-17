@@ -1,6 +1,7 @@
 package com.clarity.listener;
 
 import com.clarity.antlr.golang.GolangBaseListener;
+import com.clarity.antlr.golang.GolangParser;
 import com.clarity.antlr.golang.GolangParser.ExpressionContext;
 import com.clarity.antlr.golang.GolangParser.FieldDeclContext;
 import com.clarity.antlr.golang.GolangParser.FunctionDeclContext;
@@ -22,7 +23,6 @@ import com.clarity.compiler.RawFile;
 import com.clarity.invocation.ComponentInvocation;
 import com.clarity.invocation.TypeDeclaration;
 import com.clarity.invocation.TypeExtension;
-import com.clarity.invocation.TypeImplementation;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
@@ -31,6 +31,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     private boolean inReceiverContext = false;
     private boolean inResultContext = false;
     private List<Map.Entry<String, Component>> structWaitingList;
+    private int currCyclomaticComplexity = 0;
 
     public GoLangTreeListener(final OOPSourceCodeModel srcModel, List<String> projectFileTypes, RawFile filetoProcess, List<Map.Entry<String, Component>> structWaitingList) {
         this.srcModel = srcModel;
@@ -68,6 +70,12 @@ public class GoLangTreeListener extends GolangBaseListener {
     private void completeComponent(Component completedComponent) {
 
 
+        // update cyclomatic complexity if component is a method or class
+        if (completedComponent.componentType().isMethodComponent()
+                && !ParseUtil.componentStackContainsInterface(componentStack)) {
+            completedComponent.setCyclo(currCyclomaticComplexity);
+        }
+
         // To handle the case where struct methods are parsed before their parent struct were,
         // check if the completed component is such a parent and update accordingly.
         structWaitingList.forEach(entry -> {
@@ -76,24 +84,23 @@ public class GoLangTreeListener extends GolangBaseListener {
             }
         });
 
+        if (completedComponent.componentType().isMethodComponent()
+                && srcModel.containsComponent(completedComponent.parentUniqueName())) {
+            Component parentCmp = srcModel.getComponent(completedComponent.parentUniqueName()).get();
+            final Iterator<ComponentInvocation> invocationIterator = completedComponent.invocations().iterator();
+            while (invocationIterator.hasNext()) {
+                parentCmp.insertComponentInvocation(invocationIterator.next());
+            }
+        }
+
         // include the processed component's invocations into its parent
         // components
         for (final Component parentCmp : componentStack) {
             final Iterator<ComponentInvocation> invocationIterator = completedComponent.invocations().iterator();
             while (invocationIterator.hasNext()) {
-
-                // We do not want to bubble up type implementations and
-                // extensions to the parent component because a child
-                // class for example could extend its containing class
-                // component. Without this check this would
-                // cause the parent class to have a type extension to itself
-                // which will cause problems down the line.
-                ComponentInvocation invocation = invocationIterator.next();
-                if (!(invocation instanceof TypeExtension || invocation instanceof TypeImplementation)) {
-                    parentCmp.insertComponentInvocation(invocation);
+                parentCmp.insertComponentInvocation(invocationIterator.next());
                 }
             }
-        }
         srcModel.insertComponent(completedComponent);
     }
 
@@ -128,7 +135,7 @@ public class GoLangTreeListener extends GolangBaseListener {
         newCmp.setComponentType(componentType);
         newCmp.setSourceFilePath(file.name());
         newCmp.setLine(line);
-        newCmp.setCode(AntlrUtil.originalText(ctx));
+        newCmp.setCode(ParseUtil.originalText(ctx));
         return newCmp;
     }
 
@@ -197,13 +204,13 @@ public class GoLangTreeListener extends GolangBaseListener {
                 exitStructType(ctx);
             } else {
                 Component cmp = createComponent(ComponentType.STRUCT, ctx.getStart().getLine(), ctx);
-                String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
+                String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                         Arrays.asList(file.content().split("\n")));
                 cmp.setComment(comments);
                 cmp.setName(lastParsedTypeIdentifier);
                 cmp.setComponentName(generateComponentName(lastParsedTypeIdentifier));
                 cmp.setImports(currentImports);
-                pointParentsToGivenChild(cmp);
+                ParseUtil.pointParentsToGivenChild(cmp, componentStack);
                 cmp.insertAccessModifier(visibility(cmp.name()));
                 componentStack.push(cmp);
             }
@@ -215,13 +222,13 @@ public class GoLangTreeListener extends GolangBaseListener {
         if (!componentStackContainsMethod()) {
             if (lastParsedTypeIdentifier != null) {
                 Component cmp = createComponent(ComponentType.INTERFACE, ctx.getStart().getLine(), ctx);
-                String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
+                String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                         Arrays.asList(file.content().split("\n")));
                 cmp.setComment(comments);
                 cmp.setName(lastParsedTypeIdentifier);
                 cmp.setComponentName(generateComponentName(lastParsedTypeIdentifier));
                 cmp.setImports(currentImports);
-                pointParentsToGivenChild(cmp);
+                ParseUtil.pointParentsToGivenChild(cmp, componentStack);
                 cmp.insertAccessModifier(visibility(cmp.name()));
                 componentStack.push(cmp);
             }
@@ -234,7 +241,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     public final void enterMethodSpec(MethodSpecContext ctx) {
         if (ctx.IDENTIFIER() != null) {
             Component cmp = createComponent(ComponentType.METHOD, ctx.getStart().getLine(), ctx);
-            String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
+            String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
@@ -248,7 +255,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             }
             cmp.setName(cmp.codeFragment());
             cmp.setComponentName(generateComponentName(cmp.name()));
-            pointParentsToGivenChild(cmp);
+            ParseUtil.pointParentsToGivenChild(cmp, componentStack);
             componentStack.push(cmp);
             processParameters(ctx.signature().parameters(), cmp);
 
@@ -301,11 +308,11 @@ public class GoLangTreeListener extends GolangBaseListener {
     public final void enterMethodDecl(MethodDeclContext ctx) {
         if (ctx.IDENTIFIER() != null && ctx.function() != null) {
             Component cmp = createComponent(ComponentType.METHOD, ctx.getStart().getLine(), ctx);
-            String comments = AntlrUtil.goLangComments(ctx.getStart().getLine(),
+            String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
-            pointParentsToGivenChild(cmp);
+            ParseUtil.pointParentsToGivenChild(cmp, componentStack);
             cmp.setCodeFragment(cmp.name() + "(");
             cmp.insertAccessModifier(visibility(cmp.name()));
             if (ctx.function().signature().parameters() != null) {
@@ -316,6 +323,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             }
             cmp.setName(cmp.codeFragment());
             cmp.setComponentName(generateComponentName(cmp.name()));
+            currCyclomaticComplexity = 1 + countLogicalBinaryOperators(ctx);
             componentStack.push(cmp);
             processParameters(ctx.function().signature().parameters(), cmp);
         }
@@ -335,7 +343,7 @@ public class GoLangTreeListener extends GolangBaseListener {
 
         if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
             for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
-                String type = AntlrUtil.originalText(paramCtx.type());
+                String type = ParseUtil.originalText(paramCtx.type());
                 int interval = 1;
                 if (paramCtx.identifierList() != null) {
                     interval = paramCtx.identifierList().IDENTIFIER().size();
@@ -389,7 +397,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                             final Component completedCmp = componentStack.peek();
                             cmp.setPackageName(completedCmp.packageName());
                         }
-                        pointParentsToGivenChild(cmp);
+                        ParseUtil.pointParentsToGivenChild(cmp, componentStack);
                         for (int h = 0; h < types.length; h++) {
                             cmp.insertComponentInvocation(new TypeDeclaration(types[h]));
                             paramCmps.add(cmp);
@@ -413,6 +421,18 @@ public class GoLangTreeListener extends GolangBaseListener {
                 popAndCompleteComponent();
             }
         }
+    }
+
+    private int countLogicalBinaryOperators(ParserRuleContext ctx) {
+        int logicalBinaryOperators = 0;
+        String[] codeLines = ParseUtil.originalText(ctx).split("\\r?\\n");
+        for (String codeLine : codeLines) {
+            if (!codeLine.trim().startsWith("/")) {
+                logicalBinaryOperators += StringUtils.countMatches(codeLine, " && ");
+                logicalBinaryOperators += StringUtils.countMatches(codeLine, " || ");
+            }
+        }
+        return logicalBinaryOperators;
     }
 
     @Override
@@ -528,7 +548,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                 }
                 if (ctx.parameters() != null && ctx.parameters().parameterList() != null) {
                     for (ParameterDeclContext paramCtx : ctx.parameters().parameterList().parameterDecl()) {
-                        String paramType = AntlrUtil.originalText(paramCtx.type());
+                        String paramType = ParseUtil.originalText(paramCtx.type());
                         int iterations = 1;
                         if (paramCtx.identifierList() != null) {
                             iterations = paramCtx.identifierList().IDENTIFIER().size();
@@ -542,7 +562,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                         }
                     }
                 } else if (ctx.type() != null) {
-                    String type = AntlrUtil.originalText(ctx.type());
+                    String type = ParseUtil.originalText(ctx.type());
                     if (methodCmp.codeFragment().trim().endsWith("(")) {
                         methodCmp.setCodeFragment(methodCmp.codeFragment() + type);
                     } else {
@@ -558,6 +578,45 @@ public class GoLangTreeListener extends GolangBaseListener {
     public final void exitReceiver(ReceiverContext ctx) {
         inReceiverContext = false;
     }
+
+    @Override
+    public final void enterForStmt(GolangParser.ForStmtContext ctx) {
+        currCyclomaticComplexity += 1;
+    }
+
+    @Override
+    public final void enterExprSwitchCase(GolangParser.ExprSwitchCaseContext ctx) {
+        if (ctx.children != null && ctx.children.size() > 0) {
+            if (ctx.children.get(0).toString().equals("case")) {
+                currCyclomaticComplexity += 1;
+            }
+        }
+    }
+
+    @Override
+    public final void enterTypeSwitchCase(GolangParser.TypeSwitchCaseContext ctx) {
+        if (ctx.children != null && ctx.children.size() > 0) {
+            if (ctx.children.get(0).toString().equals("case")) {
+                currCyclomaticComplexity += 1;
+            }
+        }
+    }
+
+    @Override
+    public final void enterCommCase(GolangParser.CommCaseContext ctx) {
+        if (ctx.children != null && ctx.children.size() > 0) {
+            if (ctx.children.get(0).toString().equals("case")) {
+                currCyclomaticComplexity += 1;
+            }
+        }
+    }
+
+    @Override
+    public final void enterIfStmt(GolangParser.IfStmtContext ctx) {
+        currCyclomaticComplexity += 1;
+    }
+
+
 
     private String visibility(String goLangComponentName) {
         if (Character.isUpperCase(goLangComponentName.charAt(0))) {
@@ -590,7 +649,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                     Component cmp = createComponent(ComponentType.FIELD, ctx.getStart().getLine(), ctx);
                     cmp.setName(token.getText());
                     cmp.setComment(
-                            AntlrUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
+                            ParseUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
                     cmp.setComponentName(generateComponentName(token.getText()));
                     if (ctx.type().getText().contains("func")) {
                         String line = file.content().split("\n")[ctx.type().start.getLine() - 1];
@@ -605,7 +664,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                         cmp.setCodeFragment(cmp.name() + " : " + ctx.type().getText());
                     }
                     cmp.insertAccessModifier(visibility(cmp.name()));
-                    pointParentsToGivenChild(cmp);
+                    ParseUtil.pointParentsToGivenChild(cmp, componentStack);
                     String[] types = getChildContextText(ctx.type()).split(",");
                     for (String type : types) {
                         cmp.insertComponentInvocation(new TypeDeclaration(resolveType(type)));
@@ -671,17 +730,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                 || type.equals("complex64") || type.equals("complex128") || type.equals("bool"));
     }
 
-    private void pointParentsToGivenChild(Component childCmp) {
 
-        if (!componentStack.isEmpty()) {
-            final String parentName = childCmp.parentUniqueName();
-            for (int i = componentStack.size() - 1; i >= 0; i--) {
-                if (componentStack.get(i).uniqueName().equals(parentName)) {
-                    componentStack.get(i).insertChildComponent(childCmp.uniqueName());
-                }
-            }
-        }
-    }
 
     @Override
     public final void enterTypeSpec(TypeSpecContext ctx) {

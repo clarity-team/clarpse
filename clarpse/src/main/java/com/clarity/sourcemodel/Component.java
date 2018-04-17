@@ -240,9 +240,9 @@ public final class Component implements Serializable {
                 throw new IllegalArgumentException("Cannot get parent of component: " + uniqueName());
             }
         } else {
-            final String methodComponentUniqueNameMinusParamters = uniqueName().substring(0, lastOpeningBracket);
-            final int lastPeriod = methodComponentUniqueNameMinusParamters.lastIndexOf(".");
-            final String currParentClassName = methodComponentUniqueNameMinusParamters.substring(0, lastPeriod);
+            final String methodComponentUniqueNameMinusParameters = uniqueName().substring(0, lastOpeningBracket);
+            final int lastPeriod = methodComponentUniqueNameMinusParameters.lastIndexOf(".");
+            final String currParentClassName = methodComponentUniqueNameMinusParameters.substring(0, lastPeriod);
             return currParentClassName;
         }
     }

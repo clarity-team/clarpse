@@ -16,8 +16,8 @@ public class CycloTest {
 
     @Test
     public void simpleCycloTest() throws Exception {
-        final String code = "public class test {\n" +
-                "    void aMethod() {\n" +
+        final String code = "public class Test {\n" +
+                "    Test() {\n" +
                 "        if (2 > 4 || (5 < 7 && 5 < 7)) {\n" +
                 "            return true;\n" +
                 "        } else {\n" +
@@ -32,7 +32,7 @@ public class CycloTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 8);
+        assertTrue(generatedSourceModel.getComponent("Test.Test()").get().cyclo() == 6);
     }
 
 
@@ -43,7 +43,7 @@ public class CycloTest {
                 "        switch (s) {\n" +
                 "            case \"a\": System.out.println(); break;\n" +
                 "            case \"b\": System.out.println(); break;\n" +
-                "            default: break; " +
+                "            default: System.out.println(); break; " +
                 "        } \n" +
                 "    }\n" +
                 "}";
@@ -71,7 +71,7 @@ public class CycloTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 8);
+        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 6);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class CycloTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 4);
+        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 2);
     }
 
 
@@ -129,7 +129,7 @@ public class CycloTest {
         rawData.insertFile(new RawFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("test").get().cyclo() == 6);
+        assertTrue(generatedSourceModel.getComponent("test").get().cyclo() == 5);
     }
 
     @Test

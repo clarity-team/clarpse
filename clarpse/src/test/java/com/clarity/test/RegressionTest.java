@@ -1,5 +1,6 @@
 package com.clarity.test;
 
+import com.clarity.CommonDir;
 import com.clarity.compiler.Lang;
 import org.junit.Test;
 
@@ -14,6 +15,11 @@ public class RegressionTest {
     @Test
     public void shouldNotThrowStackOverflowException() throws Exception {
         ClarpseTestUtil.sourceCodeModel("/go-master.zip", Lang.GOLANG);
-        assertTrue(true);
+    }
+
+
+    @Test
+    public void shouldNotArrayOutOfBoundsException() throws Exception {
+        assertTrue(new CommonDir("/test/lol/cakes", "/").value().equalsIgnoreCase("/"));
     }
 }
