@@ -1,9 +1,9 @@
 package com.clarity;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Represents a resolved path.
@@ -43,7 +43,7 @@ public class ResolvedRelativePath {
     }
 
     /**
-     * @see {@link ResolvedRelativePath#ResolvedRelativePath(String, String)}
+     * @see ResolvedRelativePath#ResolvedRelativePath(String, String)
      */
     public String value() throws Exception {
 
@@ -51,7 +51,7 @@ public class ResolvedRelativePath {
         String relativePath = preprocessedPath(this.unresolvedRelativePath);
 
         // build absolute path representing the given relative path
-        List<String> absoluteParts = new ArrayList<String>(Arrays.asList(absolutePath.split("/")));
+        @SuppressWarnings("unchecked") List<String> absoluteParts = new ArrayList<String>(Arrays.asList(absolutePath.split("/", -1)));
         String[] relativeParts = relativePath.split("/");
         for (String relativePart : relativeParts) {
             if (relativePart.equals(".")) {
@@ -64,6 +64,7 @@ public class ResolvedRelativePath {
                 absoluteParts.add(relativePart);
             }
         }
+        absoluteParts.removeIf(String::isEmpty);
         return "/" + String.join("/", absoluteParts);
     }
 }

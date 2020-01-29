@@ -97,7 +97,7 @@ public class AccessModifiersTest {
     }
 
     @Test
-    public void testLocalVarLevelModifier() throws Exception {
+    public void testMethodParamLevelModifier() throws Exception {
 
         final String code = "public class Test { Test(final String str){} }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
@@ -107,5 +107,29 @@ public class AccessModifiersTest {
         assertTrue(
                 ((String) generatedSourceModel.getComponent("Test.Test(String).str").get().modifiers().toArray()[0])
                         .equalsIgnoreCase("final"));
+    }
+
+    @Test
+    public void testMethodLocalVarLevelModifier() throws Exception {
+
+        final String code = "public class Test { Test(){ final String str;} }";
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(
+                generatedSourceModel.getComponent("Test.Test().str").get().modifiers().size() == 1);
+    }
+
+    @Test
+    public void testMethodLocalVarLevelNoModifier() throws Exception {
+
+        final String code = "public class Test { Test(){ String str;} }";
+        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
+        rawData.insertFile(new RawFile("file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(
+                generatedSourceModel.getComponent("Test.Test().str").get().modifiers().isEmpty());
     }
 }

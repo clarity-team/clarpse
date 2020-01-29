@@ -1,20 +1,5 @@
 package com.clarity;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.clarity.compiler.Lang;
 import com.clarity.compiler.RawFile;
 import com.clarity.compiler.SourceFiles;
@@ -26,13 +11,25 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
-@SuppressWarnings("deprecation")
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public final class ClarpseUtil {
 
     public static final int BUFFER_SIZE = 4096;
 
-    static final ObjectMapper JSON_MAPPER = new ObjectMapper();;
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
     static {
         JSON_MAPPER.setSerializationInclusion(Include.NON_NULL);
         JSON_MAPPER.registerModule(new AfterburnerModule());
@@ -52,7 +49,6 @@ public final class ClarpseUtil {
     public static Object getObjectFromStringObjectKeyValueMap(final String value, final Map<?, ?> map) {
         final Iterator<?> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            @SuppressWarnings("rawtypes")
             final Map.Entry pair = (Map.Entry) it.next();
             if (pair.getValue().equals(value)) {
                 return pair.getKey();
@@ -61,7 +57,7 @@ public final class ClarpseUtil {
         return null;
     }
 
-    public static String fromJavaToJson(final Serializable object, final boolean prettyPrint)
+    private static String fromJavaToJson(final Serializable object, final boolean prettyPrint)
             throws JsonGenerationException, JsonMappingException, IOException {
 
         final byte[] bytes = JSON_MAPPER.writeValueAsBytes(object);
@@ -74,7 +70,7 @@ public final class ClarpseUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static Object fromJsonToJava(final String json, @SuppressWarnings("rawtypes") final Class type)
+    public static Object fromJsonToJava(final String json, final Class type)
             throws JsonParseException, JsonMappingException, IOException {
         return JSON_MAPPER.readValue(json.getBytes("UTF-8"), type);
     }
@@ -151,31 +147,5 @@ public final class ClarpseUtil {
             req.insertFile(new RawFile(s, IOUtils.toString(ClarpseUtil.class.getResourceAsStream(dir + s), "UTF-8")));
         }
         return req;
-    }
-
-    public static List<String> extractDocTypeMentions(String docComment) {
-        List<String> docTypeMentions = new ArrayList<String>();
-        Pattern linkPattern = Pattern.compile("\\{ *\\@link +(([a-z]|[A-Z]|[0-9]|\\.)+)( +.*)? *\\}");
-        Pattern linkPlainPattern = Pattern.compile("\\{ *\\@linkplain +(([a-z]|[A-Z]|[0-9]|\\.)+)( +.*)? *\\}");
-
-        Matcher matchPattern = linkPattern.matcher(docComment);
-        while (matchPattern.find()) {
-            docTypeMentions.add(matchPattern.group(1));
-        }
-        matchPattern = linkPlainPattern.matcher(docComment);
-        while (matchPattern.find()) {
-            docTypeMentions.add(matchPattern.group(1));
-        }
-        // we only consider doc links to other classes, interfaces, etc... (no methods
-        // or variables)
-        List<String> invalidMentions = new ArrayList<String>();
-        docTypeMentions.forEach(mention -> {
-            mention = mention.split(" ")[0];
-            if (mention.matches(".*[#/:\\[\\]\\(\\)].*")) {
-                invalidMentions.add(mention);
-            }
-        });
-        docTypeMentions.removeAll(invalidMentions);
-        return docTypeMentions;
     }
 }

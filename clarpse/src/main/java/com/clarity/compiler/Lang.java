@@ -28,9 +28,7 @@ public enum Lang {
     public static List<Lang> supportedLanguages() {
         List<Lang> langs = new ArrayList<>();
         for (Map.Entry<String, Lang> entry : namesMap.entrySet()) {
-            if (entry.getValue() != JAVASCRIPT) {
-                langs.add(entry.getValue());
-            }
+            langs.add(entry.getValue());
         }
         return langs;
     }

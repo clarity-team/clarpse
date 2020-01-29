@@ -2,7 +2,7 @@ package com.clarity.test.go;
 
 import com.clarity.compiler.Lang;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
-import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
+import com.clarity.sourcemodel.OOPSourceModelConstants.TypeReferences;
 import com.clarity.test.ClarpseTestUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class GoLangSmokeTest {
     @Test
     public void spotCheckStructImplementsInterface() {
         assertTrue(generatedSourceModel.getComponent("pilot.platform.eureka.serviceAccounts")
-                .get().componentInvocations(ComponentInvocations.IMPLEMENTATION).get(0).invokedComponent()
+                .get().references(TypeReferences.IMPLEMENTATION).get(0).invokedComponent()
                 .equals("pilot.model.ServiceAccounts"));
     }
 
@@ -77,20 +77,20 @@ public class GoLangSmokeTest {
     @Test
     public void spotCheckStructExtension() {
         assertTrue(generatedSourceModel.getComponent("tests.integration.environment.AppOnlyEnv")
-                .get().componentInvocations(ComponentInvocations.EXTENSION).get(0).invokedComponent()
+                .get().references(TypeReferences.EXTENSION).get(0).invokedComponent()
                 .equals("tests.integration.framework.TestEnv"));
     }
 
     @Test
-    public void spotCheckStructComponentInvocations() {
-        assertTrue(generatedSourceModel.getComponent("mixer.pkg.pool.GoroutinePool").get().invocations().toString().equals(
-                "[TypeDeclaration:mixer.pkg.pool.WorkFunc, TypeDeclaration:sync.WaitGroup, TypeDeclaration:bool, TypeDeclaration:int]"));
+    public void spotCheckStructcomponentReferences() {
+        assertTrue(generatedSourceModel.getComponent("mixer.pkg.pool.GoroutinePool").get().references().toString().equals(
+                "[SimpleTypeReference:mixer.pkg.pool.WorkFunc, SimpleTypeReference:sync.WaitGroup, SimpleTypeReference:bool, SimpleTypeReference:int]"));
     }
 
     @Test
-    public void spotCheckStructComponentInvocationsv2() {
-        assertTrue(generatedSourceModel.getComponent("mixer.pkg.aspect.quotasExecutor").get().invocations().toString().equals(
-                "[TypeDeclaration:mixer.pkg.aspect.quotasManager, TypeDeclaration:mixer.pkg.adapter.QuotasAspect, TypeDeclaration:string, TypeDeclaration:mixer.pkg.aspect.quotaInfo, TypeDeclaration:mixer.pkg.attribute.Bag, TypeDeclaration:mixer.pkg.expr.Evaluator, TypeDeclaration:mixer.pkg.aspect.QuotaMethodArgs, TypeDeclaration:mixer.pkg.adapter.QuotaResultLegacy, TypeImplementation:mixer.pkg.aspect.QuotaExecutor]"));
+    public void spotCheckStructcomponentReferencesv2() {
+        assertTrue(generatedSourceModel.getComponent("mixer.pkg.aspect.quotasExecutor").get().references().toString().equals(
+                "[SimpleTypeReference:mixer.pkg.aspect.quotasManager, SimpleTypeReference:mixer.pkg.adapter.QuotasAspect, SimpleTypeReference:string, SimpleTypeReference:mixer.pkg.aspect.quotaInfo, SimpleTypeReference:mixer.pkg.attribute.Bag, SimpleTypeReference:mixer.pkg.expr.Evaluator, SimpleTypeReference:mixer.pkg.aspect.QuotaMethodArgs, SimpleTypeReference:mixer.pkg.adapter.QuotaResultLegacy]"));
     }
 
     @Test

@@ -24,7 +24,6 @@ public class CommentsParsingTest {
                 " */\n"));
     }
 
-
     @Test
     public void testClassLevelNoComment() throws Exception {
 

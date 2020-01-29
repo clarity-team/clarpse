@@ -14,7 +14,6 @@ public class ChildComponentsTest {
 
     @Test
     public void testClassHasMethodChild() throws Exception {
-
         final String code = "class Test { void method(){} }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -25,7 +24,6 @@ public class ChildComponentsTest {
 
     @Test
     public void testClassHasFieldVarChild() throws Exception {
-
         final String code = "class Test { String fieldVar; }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -36,7 +34,6 @@ public class ChildComponentsTest {
 
     @Test
     public void ignoreClassDeclaredWithinMethods() throws Exception {
-
         final String code = "class Test { void method() { class Tester {} } }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -48,7 +45,6 @@ public class ChildComponentsTest {
 
     @Test
     public void testIntefaceHasMethodChild() throws Exception {
-
         final String code = "interface Test { void method(); }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -58,8 +54,7 @@ public class ChildComponentsTest {
     }
 
     @Test
-    public void testMethodeHasMethodParamChild() throws Exception {
-
+    public void testMethodHasMethodParamChild() throws Exception {
         final String code = "class Test { void method(String str); }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -70,8 +65,7 @@ public class ChildComponentsTest {
     }
 
     @Test
-    public void testIntefaceHasConstantFieldChild() throws Exception {
-
+    public void testInterfaceHasConstantFieldChild() throws Exception {
         final String code = "interface Test { String NEAR_TO_QUERY; }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -82,7 +76,6 @@ public class ChildComponentsTest {
 
     @Test
     public void testClassHasNestedIntefaceChild() throws Exception {
-
         final String code = "class TestA { interface TestB { }}";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -93,7 +86,6 @@ public class ChildComponentsTest {
 
     @Test
     public void testClassHasNestedEnumChild() throws Exception {
-
         final String code = "class TestA { enum TestB { }}";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -104,7 +96,6 @@ public class ChildComponentsTest {
 
     @Test
     public void testEnumHasNestedConstantsChild() throws Exception {
-
         final String code = " enum TestA { A,B,C; }";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));
@@ -117,7 +108,6 @@ public class ChildComponentsTest {
 
     @Test
     public void testClassWithMultipleChildren() throws Exception {
-
         final String code = " class TestA { String fieldVar; String method(){} interface TestB {}}";
         final SourceFiles rawData = new SourceFiles(Lang.JAVA);
         rawData.insertFile(new RawFile("file2", code));

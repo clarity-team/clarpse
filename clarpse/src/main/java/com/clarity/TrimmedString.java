@@ -11,16 +11,17 @@ public class TrimmedString {
     }
 
     public String value() throws Exception {
-
-        if (untrimmedString == null || trimValue == null || untrimmedString.length() < trimValue.length()) {
+        if (untrimmedString == null || trimValue == null) {
             throw new Exception("Invalid Input found!");
         }
         String result = untrimmedString;
-        if (untrimmedString.startsWith(trimValue)) {
+
+        while (result.startsWith(trimValue)) {
             result = result.substring(trimValue.length());
         }
-        if (result.endsWith(trimValue)) {
-            result = result.substring(0, result.length() - (1 + trimValue.length()));
+
+        while (result.endsWith(trimValue)) {
+            result = result.substring(0, result.length() - (trimValue.length()));
         }
         return result;
     }
