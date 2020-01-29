@@ -1,9 +1,5 @@
 language: java
-dist: trusty
-cache:
-  directories:
-  - .autoconf
-  - $HOME/.m2
+dist: trusty  
 jdk:
   - oraclejdk8
 script: 
