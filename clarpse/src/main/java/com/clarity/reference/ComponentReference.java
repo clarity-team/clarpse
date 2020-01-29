@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
-        @Type(value = SimpleTypeReference.class, name = "declaration"),
+        @Type(value = SimpleTypeReference.class, name = "simple"),
         @Type(value = TypeExtensionReference.class, name = "extension"),
         @Type(value = TypeImplementationReference.class, name = "implementation")})
 public abstract class ComponentReference implements Serializable, Cloneable {
@@ -32,7 +32,7 @@ public abstract class ComponentReference implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ":" + this.invokedComponent;
+        return getClass().getSimpleName() + ":" + invokedComponent;
     }
 
     public ComponentReference(String invokedComponent2) {
