@@ -19,7 +19,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Component            | A language independent source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
 |  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
-| Component Invocation | A relationship between two Components, typically through type declaration, instantiation, extension, implementation, etc.. |
+| Component Reference | Any given component may contain a number of "Component References" which simply represent its dependency on those referenced components. These references typically exist through import statements, variable declarations, method calls, and so on. |
 
 # Getting Started
 First execute `mvn generate-resources` to generate neccessary Antlr files. An excellent way to get familiar with Clarpse is to check out some unit tests.
