@@ -72,7 +72,7 @@
 		<repository>
 			<id>central</id>
 			<name>ip-172-31-28-11-releases</name>
-			<url>http://ec2-35-163-144-148.us-west-2.compute.amazonaws.com/artifactory/libs-release-local</url>
+			<url>http://artifactory.clarity-bot.com/artifactory/libs-release-local</url>
 		</repository>
 	</distributionManagement>
 	<build>
