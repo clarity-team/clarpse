@@ -1,13 +1,13 @@
 # :rocket: Clarpse 
 [![Build Status](https://travis-ci.org/clarity-org/clarpse.svg?branch=master)](https://travis-ci.org/clarity-org/clarpse) [![codecov](https://codecov.io/gh/clarity-org/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/clarity-org/clarpse)  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2685a1fc39474c11bd882cd4bd738115)](https://www.codacy.com/app/clarity-bot-admin/clarpse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=clarity-org/clarpse&amp;utm_campaign=Badge_Grade)  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Clarpse is a lightweight polyglot source code analysis tool built by [clarity-bot](https://clarity-bot.com). Clarpse breaks down a codebase into programming language agnostic components representing common source code constructs such as classes, methods, and fields that are exposed via an easy to use, object oriented API.
+Clarpse is a lightweight polyglot source code analysis tool designed to represent a codebase as language agnostic components representing common source code constructs such as classes, methods, and fields. Clarpse exposes these objects via an easy to use, object oriented API.
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
 # Features
 
- - Supports **Java** and **GoLang**. 
+ - Supports **Java**, **GoLang** and **JavaScript(ES6 Syntax)**. 
  - Light weight
  - Performant
  - Easy to use
@@ -47,24 +47,18 @@ First execute `mvn generate-resources` to generate neccessary Antlr files. An ex
     Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
     mainclassComponent.name();           // --> "SampleClass"
     mainClassComponent.type();           // --> CLASS
-    mainClassComponent.annotations();    // --> SampleAnnotation
     mainClassComponent.comment();        // --> "Sample Doc Comment"
     mainClassComponent.modifiers();      // --> ["public"]
     mainClassComponent.children();       // --> ["foo.java.SampleClass.sampleMethod(java.lang.String)"]
-    mainClassComponent.line();           // --> 1
     mainClassComponent.sourceFile();     // --> "foo.java"
-    mainClassComponent.componentInvocations(ComponentInvocations.EXTENSION).get(0); // --> "com.foo.AbstractClass"
     // get the inner method component
     methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
     methodComponent.name();              // --> "sampleMethod"
     methodComponent.type();              // --> METHOD
-    methodComponent.annotations();       // --> ["SampleAnnotation=''"]
     methodComponent.modifiers();         // --> ["public"]
     methodComponent.children();          // --> ["com.foo.java.SampleClass.sampleMethod(String).sampleMethodParam"]
-    methodComponent.line() ;             // --> 5
     methodComopnent.codeFragment();      // --> "sampleMethod(String)"
     methodComponent.sourceFile();        // --> "foo.java"
-    methodComponent.componentInvocations(ComponentInvocations.METHOD).get(0); // --> "com.foo.SampleClassB.fooMethod()"
 ```
 
 # Compile Sources
