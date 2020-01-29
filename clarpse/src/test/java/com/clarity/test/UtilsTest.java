@@ -1,7 +1,7 @@
 package com.clarity.test;
 
 import com.clarity.ResolvedRelativePath;
-import com.clarity.invocation.TypeDeclaration;
+import com.clarity.reference.SimpleTypeReference;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceModelConstants;
 import org.junit.Test;
@@ -54,8 +54,8 @@ public class UtilsTest {
         aField.setComponentType(OOPSourceModelConstants.ComponentType.FIELD);
         aField.setName("aField");
         Component bField = new Component(aField);
-        bField.insertComponentInvocation(new TypeDeclaration("com.test.classB"));
-        assert (aField.invocations().size() == 0);
+        bField.insertComponentRef(new SimpleTypeReference("com.test.classB"));
+        assert (aField.references().size() == 0);
     }
 
     @Test
@@ -65,8 +65,8 @@ public class UtilsTest {
         aField.setComponentName("classA.aField");
         aField.setComponentType(OOPSourceModelConstants.ComponentType.FIELD);
         aField.setName("aField");
-        aField.insertComponentInvocation(new TypeDeclaration("com.test.classB"));
+        aField.insertComponentRef(new SimpleTypeReference("com.test.classB"));
         Component bField = new Component(aField);
-        assert (bField.invocations().size() == 1);
+        assert (bField.references().size() == 1);
     }
 }

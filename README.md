@@ -22,7 +22,7 @@ If you have any questions or are interested in adding new functionality, feel fr
 | Component Invocation | A relationship between two Components, typically through type declaration, instantiation, extension, implementation, etc.. |
 
 # Getting Started
-An excellent way to get started is to look at Clarpe's unit tests.
+First execute `mvn generate-resources` to generate neccessary Antlr files. An excellent way to get familiar with Clarpse is to check out some unit tests.
 ```java
    // Create a new ParseRequestContent Object representing a codebase
    final String code =                       " package com.foo;  "

@@ -4,14 +4,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.clarity.invocation.AnnotationInvocation;
-import com.clarity.invocation.ComponentInvocation;
-import com.clarity.invocation.DocMention;
-import com.clarity.invocation.ThrownException;
-import com.clarity.invocation.TypeDeclaration;
-import com.clarity.invocation.TypeExtension;
-import com.clarity.invocation.TypeImplementation;
-import com.clarity.invocation.TypeInstantiation;
+import com.clarity.reference.ComponentReference;
+import com.clarity.reference.SimpleTypeReference;
+import com.clarity.reference.TypeExtensionReference;
+import com.clarity.reference.TypeImplementationReference;
 
 public final class OOPSourceModelConstants {
 
@@ -231,20 +227,19 @@ public final class OOPSourceModelConstants {
         }
     }
 
-    public enum ComponentInvocations {
+    public enum TypeReferences {
 
-        DOC_MENTION(DocMention.class), ANNOTATION(AnnotationInvocation.class), EXCEPTION(
-                ThrownException.class), DECLARATION(TypeDeclaration.class), INSTANTIATION(
-                        TypeInstantiation.class), EXTENSION(
-                                TypeExtension.class), IMPLEMENTATION(TypeImplementation.class);
+        SIMPLE(SimpleTypeReference.class),
+        EXTENSION(TypeExtensionReference.class),
+        IMPLEMENTATION(TypeImplementationReference.class);
 
-        public Class<? extends ComponentInvocation> getMatchingClass() {
+        public Class<? extends ComponentReference> getMatchingClass() {
             return matchingClass;
         }
 
-        private Class<? extends ComponentInvocation> matchingClass = null;
+        private Class<? extends ComponentReference> matchingClass = null;
 
-        ComponentInvocations(final Class<? extends ComponentInvocation> matchingClass) {
+        TypeReferences(final Class<? extends ComponentReference> matchingClass) {
             this.matchingClass = matchingClass;
         }
     }

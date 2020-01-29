@@ -5,13 +5,13 @@ import com.clarity.antlr.golang.GolangBaseListener;
 import com.clarity.antlr.golang.GolangLexer;
 import com.clarity.antlr.golang.GolangParser;
 import com.clarity.antlr.golang.GolangParser.SourceFileContext;
-import com.clarity.invocation.ComponentInvocation;
-import com.clarity.invocation.TypeImplementation;
 import com.clarity.listener.GoLangTreeListener;
+import com.clarity.reference.ComponentReference;
+import com.clarity.reference.TypeImplementationReference;
 import com.clarity.sourcemodel.Component;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
-import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
+import com.clarity.sourcemodel.OOPSourceModelConstants.TypeReferences;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -22,7 +22,6 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +43,14 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         for (Component baseCmp : baseComponents) {
             List<String> implementedInterfaces = implementedInterfacesGatherer.getImplementedInterfaces(baseCmp);
             for (String implementedInterface : implementedInterfaces) {
-                baseCmp.insertComponentInvocation(new TypeImplementation(implementedInterface));
+                baseCmp.insertComponentRef(new TypeImplementationReference(implementedInterface));
             }
         }
     }
 
     private List<String> getProjectFileSymbols(List<RawFile> files) throws Exception {
 
-        List<String> projectFileTypes = new ArrayList<String>();
+        List<String> projectFileTypes = new ArrayList<>();
         String smallestCodeBaseContaininingDir = files.get(0).name();
 
         for (int i = 1; i < files.size(); i++) {
@@ -65,13 +64,10 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
 
         for (RawFile file : files) {
             String modFileName = "";
-            if (file.name().contains("src/")) {
-                modFileName = (file.name().substring(file.name().indexOf("src/") + 4));
-            } else {
-                modFileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
-                if (modFileName.startsWith("/")) {
-                    modFileName = modFileName.substring(1);
-                }
+
+            modFileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
+            if (modFileName.startsWith("/")) {
+                modFileName = modFileName.substring(1);
             }
 
             if (modFileName.contains("/")) {
@@ -106,7 +102,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
              * Update cyclomatic complexities of all structs. We do this right now after the source
              * code model has been built as opposed to at parse time because methods for any given
              * struct in Go can be located anywhere in the project, making their parsing order
-             * nondeterministic.
+             * non-deterministic.
              */
             updateStructCyclomaticComplexities(srcModel);
         }
@@ -162,7 +158,7 @@ class ImplementedInterfaces {
     private Map<String, List<String>> interfaceMethodSpecsPairs;
 
     ImplementedInterfaces(OOPSourceCodeModel srcModel) throws Exception {
-        this.model = srcModel;
+        model = srcModel;
         Set<Component> allInterfaceComponents = srcModel.components()
                 .filter(s -> (s.componentType() == ComponentType.INTERFACE)).collect(Collectors.toSet());
         interfaceMethodSpecsPairs = new HashMap<>();
@@ -178,15 +174,15 @@ class ImplementedInterfaces {
      * Retrieves a list of Strings corresponding to the the interfaces implemented
      * by the given base {@linkplain Component}.
      */
-    public List<String> getImplementedInterfaces(Component baseComponent) {
+    List<String> getImplementedInterfaces(Component baseComponent) {
 
         // holds all the implemented interfaces for the given component
-        List<String> implementedInterfaces = new ArrayList<String>();
+        List<String> implementedInterfaces = new ArrayList<>();
 
         if (baseComponent.componentType().isBaseComponent()
                 && baseComponent.componentType() != ComponentType.INTERFACE) {
             // generate a list of method signatures for the given base component.
-            List<String> baseComponentMethodSignatures = new ArrayList<String>();
+            List<String> baseComponentMethodSignatures = new ArrayList<>();
             for (String baseComponentChild : baseComponent.children()) {
                 Optional<Component> childCmp = model.getComponent(baseComponentChild);
                 if (childCmp.isPresent() && childCmp.get().componentType().isMethodComponent()) {
@@ -197,7 +193,7 @@ class ImplementedInterfaces {
             // check to see if the current component satisfies any of the collected
             // interfaces
             if (!baseComponentMethodSignatures.isEmpty()) {
-                for (Entry<String, List<String>> potentiallyImplementedInterface : this.interfaceMethodSpecsPairs
+                for (Entry<String, List<String>> potentiallyImplementedInterface : interfaceMethodSpecsPairs
                         .entrySet()) {
 
                     if (baseComponentMethodSignatures.containsAll(potentiallyImplementedInterface.getValue())) {
@@ -220,9 +216,9 @@ class ImplementedInterfaces {
             throw new Exception("Cannot retrieve method specs for a non-interface component!");
         }
 
-        ArrayList<String> methodSpecs = new ArrayList<String>();
+        ArrayList<String> methodSpecs = new ArrayList<>();
 
-        for (ComponentInvocation extend : interfaceComponent.componentInvocations(ComponentInvocations.EXTENSION)) {
+        for (ComponentReference extend : interfaceComponent.references(TypeReferences.EXTENSION)) {
             Optional<Component> cmp = model.getComponent(extend.invokedComponent());
             if (cmp.isPresent() && cmp.get().componentType() == ComponentType.INTERFACE
                     && !cmp.get().equals(interfaceComponent)) {
@@ -243,8 +239,8 @@ class ImplementedInterfaces {
         for (String methodParam : methodComponent.children()) {
             Optional<Component> methodParamCmp = model.getComponent(methodParam);
             if (methodParamCmp.isPresent()
-                    && methodParamCmp.get().componentInvocations(ComponentInvocations.DECLARATION).size() > 0) {
-                signature += methodParamCmp.get().componentInvocations(ComponentInvocations.DECLARATION).get(0)
+                    && methodParamCmp.get().references(TypeReferences.SIMPLE).size() > 0) {
+                signature += methodParamCmp.get().references(TypeReferences.SIMPLE).get(0)
                         .invokedComponent() + ",";
             }
         }
@@ -257,9 +253,3 @@ class ImplementedInterfaces {
     }
 }
 
-class LengthComp implements Comparator<String> {
-    @Override
-    public int compare(String o1, String o2) {
-        return Integer.compare(o2.length(), o1.length());
-    }
-}

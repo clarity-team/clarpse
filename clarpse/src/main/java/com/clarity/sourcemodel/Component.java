@@ -1,7 +1,7 @@
 package com.clarity.sourcemodel;
 
-import com.clarity.invocation.ComponentInvocation;
-import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentInvocations;
+import com.clarity.reference.ComponentReference;
+import com.clarity.sourcemodel.OOPSourceModelConstants.TypeReferences;
 import com.clarity.sourcemodel.OOPSourceModelConstants.ComponentType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -29,13 +29,11 @@ public final class Component implements Serializable {
      */
     private String value;
     private String packageName;
-    private String code;
     private int cyclo;
     /**
      * Short name.
      */
     private String name;
-    private int line;
     private Component parent;
     private String comment = "";
     /**
@@ -48,7 +46,7 @@ public final class Component implements Serializable {
     private Set<String> modifiers = new LinkedHashSet<String>();
     private ComponentType type;
     @JsonInclude(Include.NON_EMPTY)
-    private Set<ComponentInvocation> invocations = new LinkedHashSet<ComponentInvocation>();
+    private Set<ComponentReference> references = new LinkedHashSet<ComponentReference>();
     /**
      * Formed by chaining parent components' names separated by a period.
      * <p>
@@ -73,11 +71,9 @@ public final class Component implements Serializable {
         parent = component.parent();
         sourceFile = component.sourceFile();
         comment = component.comment();
-        line = component.line();
-        code = component.code();
         children.addAll(component.children);
-        for (ComponentInvocation inv : component.invocations()) {
-            invocations.add((ComponentInvocation) inv.clone());
+        for (ComponentReference ref : component.references()) {
+            references.add((ComponentReference) ref.clone());
         }
     }
 
@@ -117,15 +113,6 @@ public final class Component implements Serializable {
         return name;
     }
 
-    public String code() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-
     public void insertChildComponent(final String childComponentName) {
         if (!children.contains(childComponentName)) {
             children.add(childComponentName);
@@ -140,25 +127,17 @@ public final class Component implements Serializable {
         return codeFragment;
     }
 
-    public Set<ComponentInvocation> invocations() {
-        return invocations;
+    public Set<ComponentReference> references() {
+        return references;
     }
 
-    public void insertComponentInvocation(final ComponentInvocation ref) {
-        for (final ComponentInvocation invocation : invocations) {
-            if (invocation.invokedComponent().equals(ref.invokedComponent()) && invocation.getClass().isInstance(ref)) {
+    public void insertComponentRef(final ComponentReference ref) {
+        for (final ComponentReference reference : references) {
+            if (reference.invokedComponent().equals(ref.invokedComponent()) && reference.getClass().isInstance(ref)) {
                 return;
             }
         }
-        invocations.add(ref);
-    }
-
-    public int line() {
-        return line;
-    }
-
-    public void setLine(int line) {
-        this.line = line;
+        references.add(ref);
     }
 
     public List<String> imports() {
@@ -173,11 +152,11 @@ public final class Component implements Serializable {
         codeFragment = componentDeclarationTypeFragment;
     }
 
-    public void setExternalTypeReferences(final Set<ComponentInvocation> externalReferences) {
-        invocations = externalReferences;
+    public void setExternalTypeReferences(final Set<ComponentReference> externalReferences) {
+        references = externalReferences;
     }
 
-    public void setImports(final ArrayList<String> currentImports) {
+    public void setImports(final List<String> currentImports) {
         imports = currentImports;
     }
 
@@ -247,24 +226,20 @@ public final class Component implements Serializable {
         }
     }
 
-    public void insertComponentInvocations(final ArrayList<ComponentInvocation> externalClassTypeReferenceList) {
-        for (final ComponentInvocation typeRef : externalClassTypeReferenceList) {
-            insertComponentInvocation(typeRef);
+    public void insertComponentReferences(final List<ComponentReference> externalClassTypeReferenceList) {
+        for (final ComponentReference typeRef : externalClassTypeReferenceList) {
+            insertComponentRef(typeRef);
         }
     }
 
-    public List<ComponentInvocation> componentInvocations(final ComponentInvocations type) {
-        final List<ComponentInvocation> tmpInvocations = new ArrayList<ComponentInvocation>();
-        for (final ComponentInvocation compInvocation : invocations) {
-            if (type.getMatchingClass().isAssignableFrom(compInvocation.getClass())) {
-                tmpInvocations.add(compInvocation);
+    public List<ComponentReference> references(final TypeReferences type) {
+        final List<ComponentReference> tmpReferences = new ArrayList<ComponentReference>();
+        for (final ComponentReference compReference : references) {
+            if (type.getMatchingClass().isAssignableFrom(compReference.getClass())) {
+                tmpReferences.add(compReference);
             }
         }
-        return tmpInvocations;
-    }
-
-    public Set<ComponentInvocation> componentInvocations() {
-        return invocations;
+        return tmpReferences;
     }
 
     public void setName(final String name) {

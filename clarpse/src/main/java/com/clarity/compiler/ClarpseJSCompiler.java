@@ -1,6 +1,6 @@
 package com.clarity.compiler;
 
-import com.clarity.CommonDir;
+import com.clarity.listener.JavaScriptExportsListener;
 import com.clarity.listener.JavaScriptListener;
 import com.clarity.sourcemodel.OOPSourceCodeModel;
 import com.google.javascript.jscomp.Compiler;
@@ -13,54 +13,50 @@ import com.google.javascript.rhino.Node;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClarpseJSCompiler implements ClarpseCompiler {
 
-    @SuppressWarnings("deprecation")
     private OOPSourceCodeModel compileFiles(List<RawFile> files, List<String> projectFileTypes) {
         OOPSourceCodeModel model = new OOPSourceCodeModel();
-        for (RawFile file : files) {
+        final Map<String, JavaScriptExportsListener.JSExport> exportsMap = new HashMap<>();
+        Compiler compiler = new Compiler();
+        CompilerOptions options = new CompilerOptions();
+        options.setIdeMode(true);
+        options.setParseJsDocDocumentation(JsDocParsing.INCLUDE_DESCRIPTIONS_WITH_WHITESPACE);
+        compiler.initOptions(options);
+        // Generate exports map on initial pass
+        files.forEach(file -> {
             try {
-                Compiler compiler = new Compiler();
-                CompilerOptions options = new CompilerOptions();
-                options.setIdeMode(true);
-                options.setParseJsDocDocumentation(JsDocParsing.INCLUDE_DESCRIPTIONS_WITH_WHITESPACE);
-                compiler.initOptions(options);
                 Node root = new JsAst(SourceFile.fromCode(file.name(), file.content())).getAstRoot(compiler);
-                JavaScriptListener jsListener = new JavaScriptListener(model, file, projectFileTypes);
-                NodeTraversal.traverseEs6(compiler, root, jsListener);
+                NodeTraversal.Callback jsListener = new JavaScriptExportsListener(file, projectFileTypes, exportsMap);
+                NodeTraversal.traverse(compiler, root, jsListener);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        });
+        // Parse JS files with populated export map
+        files.forEach(file -> {
+            try {
+                Node root = new JsAst(SourceFile.fromCode(file.name(), file.content())).getAstRoot(compiler);
+                NodeTraversal.Callback jsListener = new JavaScriptListener(model, file, projectFileTypes, files, exportsMap);
+                NodeTraversal.traverse(compiler, root, jsListener);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         return model;
     }
 
     private List<String> getProjectFileTypes(List<RawFile> files) throws Exception {
-        List<String> projectFileTypes = new ArrayList<String>();
-        String smallestCodeBaseContaininingDir = "";
-
-        for (int i = 1; i < files.size(); i++) {
-            smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir, files.get(i).name())
-                    .value();
-        }
-
-        if (smallestCodeBaseContaininingDir.startsWith("/")) {
-            smallestCodeBaseContaininingDir.substring(1);
-        }
-
+        List<String> projectFileTypes = new ArrayList<>();
         for (RawFile file : files) {
-            String modFileName = "";
-            if (file.name().contains("src/")) {
-                modFileName = (file.name().substring(file.name().indexOf("src/") + 4));
-            } else {
-                modFileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
-                if (modFileName.startsWith("/")) {
-                    modFileName = modFileName.substring(1);
-                }
+            String modFileName = file.name();
+            if (file.name().startsWith("/")) {
+                modFileName = file.name().substring(1);
             }
-
             if (modFileName.contains("/")) {
                 projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
             }
@@ -70,7 +66,6 @@ public class ClarpseJSCompiler implements ClarpseCompiler {
 
     @Override
     public OOPSourceCodeModel compile(SourceFiles rawData) throws Exception {
-
         OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
         final List<RawFile> files = rawData.getFiles();
         System.out.println(files.size());
