@@ -1,10 +1,13 @@
 language: java
-dist: trusty  
+dist: trusty
 jdk:
   - oraclejdk8
-script: 
-         - cd clarpse
-         - mvn clean package assembly:single
+cache:
+  directories:
+    - "$HOME/.cache"
+script:
+  - cd clarpse
+  - mvn clean package assembly:single
 after_success:
-         - mvn deploy --settings ../settings.xml -Dmaven.install.skip=true
-         - bash <(curl -s https://codecov.io/bash)
+  - mvn deploy --settings ../settings.xml -Dmaven.install.skip=true
+  - bash <(curl -s https://codecov.io/bash)

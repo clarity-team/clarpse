@@ -1,34 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd">
   <servers>
     <server>
-      <username>user</username>
-      <password>${ARTIFACTORYPASS}</password>
-      <id>central</id>
+      <id>ossrh</id>
+      <username>${env.SONATYPE_USERNAME}</username>
+      <password>${env.SONATYPE_PASSWORD}</password>
     </server>
     <server>
-      <username>user</username>
-      <password>${ARTIFACTORYPASS}</password>   
-      <id>snapshots</id>
+      <id>${env.GPG_KEYNAME}</id>
+      <passphrase>${env.GPG_PASSPHRASE}</passphrase>
     </server>
   </servers>
   <profiles>
     <profile>
-      <repositories>
-        <repository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>central</id>
-          <name>libs-release</name>
-          <url>http://artifactory.clarity-bot.com/artifactory/libs-release</url>
-        </repository>
-      </repositories>
-      <id>artifactory</id>
+      <id>ossrh</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <gpg.executable>gpg</gpg.executable>
+        <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+        <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
+      </properties>
     </profile>
   </profiles>
-  <activeProfiles>
-    <activeProfile>artifactory</activeProfile>
-  </activeProfiles>
 </settings>
