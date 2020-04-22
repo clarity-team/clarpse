@@ -185,7 +185,7 @@
 						</goals>
 						<configuration>
 							<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-							<excludes>com/clarity/test</excludes>
+							<excludes>com/hadii/test</excludes>
 							<failOnViolation>true</failOnViolation>
 							<configLocation>src/main/resources/clarpsecheckstyleconfig.xml</configLocation>
 							<violationSeverity>warning</violationSeverity>
