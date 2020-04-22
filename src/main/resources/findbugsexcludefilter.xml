@@ -1,5 +1,5 @@
 <FindBugsFilter>
 <Match>
-    <Package name="com.clarity.*"/>
+    <Package name="com.hadii.*"/>
 </Match>
 </FindBugsFilter>
