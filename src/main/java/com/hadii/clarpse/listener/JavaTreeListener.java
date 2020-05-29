@@ -1,6 +1,5 @@
 package com.hadii.clarpse.listener;
 
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -33,8 +32,6 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
-import com.github.javaparser.ast.validator.Java1_0Validator;
-import com.github.javaparser.ast.validator.Java9Validator;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.hadii.clarpse.compiler.File;
 import com.hadii.clarpse.reference.SimpleTypeReference;
