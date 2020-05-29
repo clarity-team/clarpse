@@ -45,7 +45,7 @@ public class CommentsParsingTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals("/**\n" +
                 " * A\n" +
-                " * comment\n" +
+                " *  comment\n" +
                 " */\n"));
     }
 
@@ -59,7 +59,7 @@ public class CommentsParsingTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals("/**\n" +
                 " * A\n" +
-                " * comment\n" +
+                " *  comment\n" +
                 " */\n"));
     }
 
@@ -73,7 +73,7 @@ public class CommentsParsingTest {
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Test.Base").get().comment().equals("/**\n" +
                 " * A\n" +
-                " * comment\n" +
+                " *  comment\n" +
                 " */\n"));
     }
 

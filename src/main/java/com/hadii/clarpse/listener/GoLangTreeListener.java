@@ -1,31 +1,14 @@
 package com.hadii.clarpse.listener;
 
+import com.hadii.antlr.golang.GoParser;
+import com.hadii.antlr.golang.GoParserBaseListener;
+import com.hadii.clarpse.compiler.File;
 import com.hadii.clarpse.reference.ComponentReference;
 import com.hadii.clarpse.reference.SimpleTypeReference;
 import com.hadii.clarpse.reference.TypeExtensionReference;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
-import com.hadii.antlr.golang.GolangBaseListener;
-import com.hadii.antlr.golang.GolangParser;
-import com.hadii.antlr.golang.GolangParser.ExpressionContext;
-import com.hadii.antlr.golang.GolangParser.FieldDeclContext;
-import com.hadii.antlr.golang.GolangParser.FunctionDeclContext;
-import com.hadii.antlr.golang.GolangParser.ImportSpecContext;
-import com.hadii.antlr.golang.GolangParser.InterfaceTypeContext;
-import com.hadii.antlr.golang.GolangParser.MethodDeclContext;
-import com.hadii.antlr.golang.GolangParser.MethodSpecContext;
-import com.hadii.antlr.golang.GolangParser.PackageClauseContext;
-import com.hadii.antlr.golang.GolangParser.ParameterDeclContext;
-import com.hadii.antlr.golang.GolangParser.ParametersContext;
-import com.hadii.antlr.golang.GolangParser.ReceiverContext;
-import com.hadii.antlr.golang.GolangParser.ResultContext;
-import com.hadii.antlr.golang.GolangParser.SourceFileContext;
-import com.hadii.antlr.golang.GolangParser.StructTypeContext;
-import com.hadii.antlr.golang.GolangParser.TypeNameContext;
-import com.hadii.antlr.golang.GolangParser.TypeSpecContext;
-import com.hadii.antlr.golang.GolangParser.VarSpecContext;
-import com.hadii.clarpse.compiler.File;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
@@ -36,29 +19,28 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 
 @SuppressWarnings("unchecked")
-public class GoLangTreeListener extends GolangBaseListener {
+public class GoLangTreeListener extends GoParserBaseListener {
 
-    private final Stack<Component> componentStack = new Stack<Component>();
-    private final ArrayList<String> currentImports = new ArrayList<String>();
+    private final Stack<Component> componentStack = new Stack<>();
+    private final ArrayList<String> currentImports = new ArrayList<>();
     private String currentPkg = "";
     private final OOPSourceCodeModel srcModel;
-    private final Map<String, String> currentImportsMap = new HashMap<String, String>();
+    private final Map<String, String> currentImportsMap = new HashMap<>();
     private final File file;
     private String lastParsedTypeIdentifier = null;
     /**
      * List of all type names in the project.
      */
-    private List<String> projectFileTypes;
+    private final List<String> projectFileTypes;
     private boolean inReceiverContext = false;
     private boolean inResultContext = false;
-    private List<Map.Entry<String, Component>> structWaitingList;
+    private final List<Map.Entry<String, Component>> structWaitingList;
     private int currCyclomaticComplexity = 0;
 
     public GoLangTreeListener(final OOPSourceCodeModel srcModel, List<String> projectFileTypes, File filetoProcess, List<Map.Entry<String, Component>> structWaitingList) {
@@ -85,9 +67,8 @@ public class GoLangTreeListener extends GolangBaseListener {
         if (completedComponent.componentType().isMethodComponent()
                 && srcModel.containsComponent(completedComponent.parentUniqueName())) {
             Component parentCmp = srcModel.getComponent(completedComponent.parentUniqueName()).get();
-            final Iterator<ComponentReference> invocationIterator = completedComponent.references().iterator();
-            while (invocationIterator.hasNext()) {
-                parentCmp.insertComponentRef(invocationIterator.next());
+            for (ComponentReference componentReference : completedComponent.references()) {
+                parentCmp.insertComponentRef(componentReference);
             }
         }
         ParseUtil.copyRefsToParents(completedComponent, componentStack);
@@ -103,7 +84,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     /**
      * Creates a new component based on the given ParseRuleContext.
      */
-    private Component createComponent(OOPSourceModelConstants.ComponentType componentType, int line, ParserRuleContext ctx) {
+    private Component createComponent(OOPSourceModelConstants.ComponentType componentType) {
         final Component newCmp = new Component();
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
@@ -112,12 +93,12 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public void enterSourceFile(SourceFileContext ctx) {
+    public void enterSourceFile(GoParser.SourceFileContext ctx) {
         super.enterSourceFile(ctx);
     }
 
     @Override
-    public final void enterPackageClause(PackageClauseContext ctx) {
+    public void enterPackageClause(GoParser.PackageClauseContext ctx) {
         currentPkg = ctx.IDENTIFIER().getText();
         if (this.file.name().contains("/")) {
             String modFileName = this.file.name().substring(0, this.file.name().lastIndexOf("/"));
@@ -138,7 +119,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void enterImportSpec(ImportSpecContext ctx) {
+    public final void enterImportSpec(GoParser.ImportSpecContext ctx) {
         String fullImportName = ctx.importPath().getText().replaceAll("\"", "");
         for (String s : projectFileTypes) {
             if (s.endsWith(fullImportName) || fullImportName.endsWith(s)) {
@@ -166,13 +147,13 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void enterStructType(StructTypeContext ctx) {
+    public final void enterStructType(GoParser.StructTypeContext ctx) {
         if (lastParsedTypeIdentifier != null) {
             if (componentStackContainsMethod()) {
                 // skip over structs defined within methods.
                 exitStructType(ctx);
             } else {
-                Component cmp = createComponent(OOPSourceModelConstants.ComponentType.STRUCT, ctx.getStart().getLine(), ctx);
+                Component cmp = createComponent(OOPSourceModelConstants.ComponentType.STRUCT);
                 String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                         Arrays.asList(file.content().split("\n")));
                 cmp.setComment(comments);
@@ -187,10 +168,10 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void enterInterfaceType(InterfaceTypeContext ctx) {
+    public final void enterInterfaceType(GoParser.InterfaceTypeContext ctx) {
         if (!componentStackContainsMethod()) {
             if (lastParsedTypeIdentifier != null) {
-                Component cmp = createComponent(OOPSourceModelConstants.ComponentType.INTERFACE, ctx.getStart().getLine(), ctx);
+                Component cmp = createComponent(OOPSourceModelConstants.ComponentType.INTERFACE);
                 String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                         Arrays.asList(file.content().split("\n")));
                 cmp.setComment(comments);
@@ -207,26 +188,26 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void enterMethodSpec(MethodSpecContext ctx) {
+    public final void enterMethodSpec(GoParser.MethodSpecContext ctx) {
         if (ctx.IDENTIFIER() != null) {
-            Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, ctx.getStart().getLine(), ctx);
+            Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD);
             String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
             cmp.setCodeFragment(cmp.name() + "(");
             cmp.insertAccessModifier(visibility(cmp.name()));
-            if (ctx.signature().parameters() != null) {
-                setCodeFragmentFromParameters(ctx.signature().parameters(), cmp);
+            if (ctx.parameters() != null) {
+                setCodeFragmentFromParameters(ctx.parameters(), cmp);
             }
-            if (ctx.signature().result() != null) {
-                processResult(ctx.signature().result(), cmp);
+            if (ctx.result() != null) {
+                processResult(ctx.result(), cmp);
             }
             cmp.setName(cmp.codeFragment());
             cmp.setComponentName(ParseUtil.generateComponentName(cmp.name(), componentStack));
             ParseUtil.pointParentsToGivenChild(cmp, componentStack);
             componentStack.push(cmp);
-            processParameters(ctx.signature().parameters(), cmp);
+            processParameters(ctx.parameters());
 
         } else if (ctx.typeName() != null) {
             insertExtensionIntoStackBaseComponent(ctx.typeName().getText());
@@ -246,29 +227,29 @@ public class GoLangTreeListener extends GolangBaseListener {
         if (ctx == null) {
             return "";
         }
-        if (ctx instanceof TypeNameContext) {
+        if (ctx instanceof GoParser.TypeNameContext) {
             return ctx.getText();
         }
 
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < ctx.getChildCount(); i++) {
             if (!(ctx.getChild(i) instanceof TerminalNodeImpl)) {
                 try {
                     String t = getChildTypeNameContextText((RuleContext) ctx.getChild(i));
                     if (!t.isEmpty()) {
-                        s += t + ",";
+                        s.append(t).append(",");
                     }
                 } catch (Exception e) {
                     // do nothing
                 }
             }
         }
-        return s.replaceAll(",$", "");
+        return s.toString().replaceAll(",$", "");
     }
 
-    private VarSpecContext findParentVarSpecContext(RuleContext ctx) {
-        if (ctx instanceof VarSpecContext) {
-            return (VarSpecContext) ctx;
+    private GoParser.VarSpecContext findParentVarSpecContext(RuleContext ctx) {
+        if (ctx instanceof GoParser.VarSpecContext) {
+            return (GoParser.VarSpecContext) ctx;
         } else if (ctx.getParent() != null) {
             return findParentVarSpecContext(ctx.getParent());
         } else {
@@ -277,9 +258,9 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void enterMethodDecl(MethodDeclContext ctx) {
-        if (ctx.IDENTIFIER() != null && ctx.function() != null) {
-            Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, ctx.getStart().getLine(), ctx);
+    public final void enterMethodDecl(GoParser.MethodDeclContext ctx) {
+        if (ctx.IDENTIFIER() != null && ctx.signature() != null) {
+            Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD);
             String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                     Arrays.asList(file.content().split("\n")));
             cmp.setComment(comments);
@@ -287,27 +268,27 @@ public class GoLangTreeListener extends GolangBaseListener {
             ParseUtil.pointParentsToGivenChild(cmp, componentStack);
             cmp.setCodeFragment(cmp.name() + "(");
             cmp.insertAccessModifier(visibility(cmp.name()));
-            if (ctx.function().signature().parameters() != null) {
-                setCodeFragmentFromParameters(ctx.function().signature().parameters(), cmp);
+            if (ctx.signature().parameters() != null) {
+                setCodeFragmentFromParameters(ctx.signature().parameters(), cmp);
             }
-            if (ctx.function().signature().result() != null) {
-                processResult(ctx.function().signature().result(), cmp);
+            if (ctx.signature().result() != null) {
+                processResult(ctx.signature().result(), cmp);
             }
             cmp.setName(cmp.codeFragment());
             cmp.setComponentName(ParseUtil.generateComponentName(cmp.name(), componentStack));
             currCyclomaticComplexity = 1 + countLogicalBinaryOperators(ctx);
             componentStack.push(cmp);
-            processParameters(ctx.function().signature().parameters(), cmp);
+            processParameters(ctx.signature().parameters());
         }
     }
 
     @Override
-    public final void enterFunctionDecl(FunctionDeclContext ctx) {
+    public final void enterFunctionDecl(GoParser.FunctionDeclContext ctx) {
         exitFunctionDecl(ctx);
     }
 
     @Override
-    public final void enterExpression(ExpressionContext ctx) {
+    public final void enterExpression(GoParser.ExpressionContext ctx) {
         String origText = ParseUtil.originalText(ctx);
         if (origText != null) {
         currCyclomaticComplexity += StringUtils.countMatches(origText, " && ");
@@ -316,11 +297,11 @@ public class GoLangTreeListener extends GolangBaseListener {
         }
     }
 
-    private void setCodeFragmentFromParameters(ParametersContext ctx, Component currMethodCmp) {
+    private void setCodeFragmentFromParameters(GoParser.ParametersContext ctx, Component currMethodCmp) {
 
-        if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
-            for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
-                String type = ParseUtil.originalText(paramCtx.type());
+        if (ctx.parameterDecl() != null) {
+            for (GoParser.ParameterDeclContext paramCtx : ctx.parameterDecl()) {
+                String type = ParseUtil.originalText(paramCtx.type_());
                 int interval = 1;
                 if (paramCtx.identifierList() != null) {
                     interval = paramCtx.identifierList().IDENTIFIER().size();
@@ -337,12 +318,12 @@ public class GoLangTreeListener extends GolangBaseListener {
         currMethodCmp.setCodeFragment(currMethodCmp.codeFragment() + ")");
     }
 
-    private void processParameters(ParametersContext ctx, Component currMethodCmp) {
-        if (ctx.parameterList() != null && ctx.parameterList().parameterDecl() != null) {
+    private void processParameters(GoParser.ParametersContext ctx) {
+        if (ctx.parameterDecl() != null) {
             LetterProvider letterProvider = new LetterProvider();
-            List<Component> paramCmps = new ArrayList<Component>();
+            List<Component> paramCmps = new ArrayList<>();
             if (!inReceiverContext && !inResultContext) {
-                for (ParameterDeclContext paramCtx : ctx.parameterList().parameterDecl()) {
+                for (GoParser.ParameterDeclContext paramCtx : ctx.parameterDecl()) {
                     String[] types = {};
                     for (int j = 0; j < paramCtx.children.size(); j++) {
                         String type = getChildTypeNameContextText(paramCtx);
@@ -359,7 +340,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                             }
                         }
                     }
-                    List<String> argumentNames = new ArrayList<String>();
+                    List<String> argumentNames = new ArrayList<>();
                     if (paramCtx.identifierList() == null) {
                         // no name provided for method arg, we have to name it ourselves.
                         argumentNames.add(letterProvider.getLetter());
@@ -367,7 +348,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                         paramCtx.identifierList().IDENTIFIER().forEach(nameCtx -> argumentNames.add(nameCtx.getText()));
                     }
                     for (String methodArgName : argumentNames) {
-                        Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT, ctx.getStart().getLine(), ctx);
+                        Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
                         cmp.setName(methodArgName);
                         cmp.setComponentName(ParseUtil.generateComponentName(cmp.name(), componentStack));
                         if (!componentStack.isEmpty()) {
@@ -375,8 +356,8 @@ public class GoLangTreeListener extends GolangBaseListener {
                             cmp.setPackageName(completedCmp.packageName());
                         }
                         ParseUtil.pointParentsToGivenChild(cmp, componentStack);
-                        for (int h = 0; h < types.length; h++) {
-                            cmp.insertComponentRef(new SimpleTypeReference(types[h]));
+                        for (String type : types) {
+                            cmp.insertComponentRef(new SimpleTypeReference(type));
                             paramCmps.add(cmp);
                         }
                     }
@@ -387,7 +368,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void exitMethodDecl(MethodDeclContext ctx) {
+    public final void exitMethodDecl(GoParser.MethodDeclContext ctx) {
         if (!componentStack.isEmpty()) {
             Component cmp = componentStack.peek();
             if (cmp.componentType().isMethodComponent()) {
@@ -413,7 +394,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void exitMethodSpec(MethodSpecContext ctx) {
+    public final void exitMethodSpec(GoParser.MethodSpecContext ctx) {
         if (!componentStack.isEmpty()) {
             Component cmp = componentStack.peek();
             if (cmp.componentType().isMethodComponent()) {
@@ -427,24 +408,24 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void enterResult(ResultContext ctx) {
+    public final void enterResult(GoParser.ResultContext ctx) {
         inResultContext = true;
     }
 
     @Override
-    public final void enterReceiver(ReceiverContext ctx) {
+    public final void enterReceiver(GoParser.ReceiverContext ctx) {
         inReceiverContext = true;
     }
 
     @Override
-    public final void enterTypeName(TypeNameContext ctx) {
+    public final void enterTypeName(GoParser.TypeNameContext ctx) {
         String resolvedType = resolveType(ctx.getText());
         if (!componentStack.isEmpty() && componentStack.peek().componentType().isMethodComponent()) {
             Component cmp = componentStack.pop();
             if (inResultContext) {
                 int vars = 1;
-                if (ctx.getParent().getParent() instanceof ParameterDeclContext) {
-                    ParameterDeclContext pctx = (ParameterDeclContext) ctx.getParent().getParent();
+                if (ctx.getParent().getParent() instanceof GoParser.ParameterDeclContext) {
+                    GoParser.ParameterDeclContext pctx = (GoParser.ParameterDeclContext) ctx.getParent().getParent();
                     if (pctx.identifierList() != null) {
                         vars = pctx.identifierList().IDENTIFIER().size();
                     }
@@ -462,14 +443,14 @@ public class GoLangTreeListener extends GolangBaseListener {
                     Optional<Component> structCmp = srcModel.getComponent(resolvedType);
                     structCmp.ifPresent(component -> udpateStructChild(component, cmp));
                 } else {
-                    structWaitingList.add(new AbstractMap.SimpleEntry<String, Component>(resolvedType, cmp));
+                    structWaitingList.add(new AbstractMap.SimpleEntry<>(resolvedType, cmp));
                 }
             }
             componentStack.push(cmp);
-            VarSpecContext tmpContext = findParentVarSpecContext(ctx);
+            GoParser.VarSpecContext tmpContext = findParentVarSpecContext(ctx);
             if (tmpContext != null) {
                 for (TerminalNode identifier : tmpContext.identifierList().IDENTIFIER()) {
-                    Component localVarCmp = createComponent(OOPSourceModelConstants.ComponentType.LOCAL, ctx.getStart().getLine(), ctx);
+                    Component localVarCmp = createComponent(OOPSourceModelConstants.ComponentType.LOCAL);
                     localVarCmp.setName(identifier.getText());
                     localVarCmp.setComponentName(ParseUtil.generateComponentName(identifier.getText(), componentStack));
                     localVarCmp.insertComponentRef(new SimpleTypeReference(resolvedType));
@@ -496,7 +477,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                 childCmp.get().setPackageName(structChildCmp.packageName());
                 childrenToBeAdded.add(childCmp.get().uniqueName());
             }
-            if (child != childCmp.get().uniqueName()) {
+            if (!child.equals(childCmp.get().uniqueName())) {
                 childrenToBeRemoved.add(child);
                 srcModel.removeComponent(child);
                 srcModel.insertComponent(childCmp.get());
@@ -508,21 +489,21 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void exitResult(ResultContext ctx) {
+    public final void exitResult(GoParser.ResultContext ctx) {
         inResultContext = false;
     }
 
-    private void processResult(ResultContext ctx, Component methodCmp) {
-        if ((ctx.parameters() != null && !ctx.parameters().isEmpty() && ctx.parameters().parameterList() != null) || ctx.type() != null && !ctx.type().getText().isEmpty()) {
+    private void processResult(GoParser.ResultContext ctx, Component methodCmp) {
+        if ((ctx.parameters() != null && !ctx.parameters().isEmpty() && ctx.parameters().parameterDecl() != null) || ctx.type_() != null && !ctx.type_().getText().isEmpty()) {
             if (!methodCmp.codeFragment().contains(":")) {
-                if (!methodCmp.codeFragment().endsWith(")") && !methodCmp.codeFragment().contains(":")) {
+                if (!methodCmp.codeFragment().endsWith(")")) {
                     methodCmp.setCodeFragment(methodCmp.codeFragment() + ") : (");
                 } else {
                     methodCmp.setCodeFragment(methodCmp.codeFragment() + " : (");
                 }
-                if (ctx.parameters() != null && ctx.parameters().parameterList() != null) {
-                    for (ParameterDeclContext paramCtx : ctx.parameters().parameterList().parameterDecl()) {
-                        String paramType = ParseUtil.originalText(paramCtx.type());
+                if (ctx.parameters() != null && ctx.parameters().parameterDecl() != null) {
+                    for (GoParser.ParameterDeclContext paramCtx : ctx.parameters().parameterDecl()) {
+                        String paramType = ParseUtil.originalText(paramCtx.type_());
                         int iterations = 1;
                         if (paramCtx.identifierList() != null) {
                             iterations = paramCtx.identifierList().IDENTIFIER().size();
@@ -535,8 +516,8 @@ public class GoLangTreeListener extends GolangBaseListener {
                             }
                         }
                     }
-                } else if (ctx.type() != null) {
-                    String type = ParseUtil.originalText(ctx.type());
+                } else if (ctx.type_() != null) {
+                    String type = ParseUtil.originalText(ctx.type_());
                     if (methodCmp.codeFragment().trim().endsWith("(")) {
                         methodCmp.setCodeFragment(methodCmp.codeFragment() + type);
                     } else {
@@ -549,38 +530,38 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void exitReceiver(ReceiverContext ctx) {
+    public final void exitReceiver(GoParser.ReceiverContext ctx) {
         inReceiverContext = false;
     }
 
     @Override
-    public final void enterForStmt(GolangParser.ForStmtContext ctx) {
+    public final void enterForStmt(GoParser.ForStmtContext ctx) {
         currCyclomaticComplexity += 1;
     }
 
     @Override
-    public final void enterExprSwitchCase(GolangParser.ExprSwitchCaseContext ctx) {
+    public final void enterExprSwitchCase(GoParser.ExprSwitchCaseContext ctx) {
         if (ctx.children != null && ctx.children.size() > 0 && ctx.children.get(0).toString().equals("case")) {
             currCyclomaticComplexity += 1;
         }
     }
 
     @Override
-    public final void enterTypeSwitchCase(GolangParser.TypeSwitchCaseContext ctx) {
+    public final void enterTypeSwitchCase(GoParser.TypeSwitchCaseContext ctx) {
         if (ctx.children != null && ctx.children.size() > 0 && ctx.children.get(0).toString().equals("case")) {
             currCyclomaticComplexity += 1;
         }
     }
 
     @Override
-    public final void enterCommCase(GolangParser.CommCaseContext ctx) {
+    public final void enterCommCase(GoParser.CommCaseContext ctx) {
         if (ctx.children != null && ctx.children.size() > 0 && ctx.children.get(0).toString().equals("case")) {
             currCyclomaticComplexity += 1;
         }
     }
 
     @Override
-    public final void enterIfStmt(GolangParser.IfStmtContext ctx) {
+    public final void enterIfStmt(GoParser.IfStmtContext ctx) {
         currCyclomaticComplexity += 1;
     }
 
@@ -595,32 +576,32 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void exitStructType(StructTypeContext ctx) {
+    public final void exitStructType(GoParser.StructTypeContext ctx) {
         if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
             popAndCompleteComponent();
         }
     }
 
     @Override
-    public final void exitInterfaceType(InterfaceTypeContext ctx) {
+    public final void exitInterfaceType(GoParser.InterfaceTypeContext ctx) {
         if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
             popAndCompleteComponent();
         }
     }
 
     @Override
-    public final void enterFieldDecl(FieldDeclContext ctx) {
+    public final void enterFieldDecl(GoParser.FieldDeclContext ctx) {
         if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
             if (ctx.identifierList() != null && !ctx.identifierList().isEmpty()) {
-                List<Component> fieldVars = new ArrayList<Component>();
+                List<Component> fieldVars = new ArrayList<>();
                 for (TerminalNode token : ctx.identifierList().IDENTIFIER()) {
-                    Component cmp = createComponent(OOPSourceModelConstants.ComponentType.FIELD, ctx.getStart().getLine(), ctx);
+                    Component cmp = createComponent(OOPSourceModelConstants.ComponentType.FIELD);
                     cmp.setName(token.getText());
                     cmp.setComment(
                             ParseUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
                     cmp.setComponentName(ParseUtil.generateComponentName(token.getText(), componentStack));
-                    if (ctx.type().getText().contains("func")) {
-                        String line = file.content().split("\n")[ctx.type().start.getLine() - 1];
+                    if (ctx.type_().getText().contains("func")) {
+                        String line = file.content().split("\n")[ctx.type_().start.getLine() - 1];
                         if (line.trim().endsWith("}")) {
                             line = line.substring(0, line.indexOf("}")).trim();
                         }
@@ -629,11 +610,11 @@ public class GoLangTreeListener extends GolangBaseListener {
                         }
                         cmp.setCodeFragment(cmp.name() + " : " + line.substring(line.indexOf("func")).trim());
                     } else {
-                        cmp.setCodeFragment(cmp.name() + " : " + ctx.type().getText());
+                        cmp.setCodeFragment(cmp.name() + " : " + ctx.type_().getText());
                     }
                     cmp.insertAccessModifier(visibility(cmp.name()));
                     ParseUtil.pointParentsToGivenChild(cmp, componentStack);
-                    String[] types = getChildTypeNameContextText(ctx.type()).split(",");
+                    String[] types = getChildTypeNameContextText(ctx.type_()).split(",");
                     for (String type : types) {
                         cmp.insertComponentRef(new SimpleTypeReference(resolveType(type)));
                     }
@@ -652,7 +633,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     private void insertExtensionIntoStackBaseComponent(String extendsComponent) {
-        List<Component> tmp = new ArrayList<Component>();
+        List<Component> tmp = new ArrayList<>();
         while (!componentStack.isEmpty()) {
             Component stackCmp = componentStack.pop();
             tmp.add(stackCmp);
@@ -661,7 +642,7 @@ public class GoLangTreeListener extends GolangBaseListener {
                 break;
             }
         }
-        tmp.forEach(item -> componentStack.push(item));
+        tmp.forEach(componentStack::push);
     }
 
     /**
@@ -675,9 +656,7 @@ public class GoLangTreeListener extends GolangBaseListener {
             return currentImportsMap.get(type).replaceAll("/", ".");
         }
 
-        final Iterator<?> it = currentImportsMap.entrySet().iterator();
-        while (it.hasNext()) {
-            @SuppressWarnings("rawtypes") final Map.Entry<String, String> pair = (Map.Entry<String, String>) it.next();
+        for (Map.Entry<String, String> pair : currentImportsMap.entrySet()) {
             if (type.startsWith(pair.getKey())) {
                 return ((pair.getValue()).replaceAll("/", ".")) + "." + type.replace(pair.getKey() + ".", "");
             }
@@ -701,7 +680,7 @@ public class GoLangTreeListener extends GolangBaseListener {
     }
 
     @Override
-    public final void enterTypeSpec(TypeSpecContext ctx) {
+    public final void enterTypeSpec(GoParser.TypeSpecContext ctx) {
         lastParsedTypeIdentifier = ctx.IDENTIFIER().getText();
     }
 
@@ -714,9 +693,9 @@ public class GoLangTreeListener extends GolangBaseListener {
         return false;
     }
 
-    class LetterProvider {
+    static class LetterProvider {
         private int count = -1;
-        private String[] letters = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+        private final String[] letters = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
 
         /**
          * Will hit array index out of bounds after 26 letters, but that should never happen.

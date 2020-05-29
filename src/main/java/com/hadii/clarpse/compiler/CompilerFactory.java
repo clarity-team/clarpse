@@ -5,7 +5,7 @@ package com.hadii.clarpse.compiler;
  */
 public class CompilerFactory {
 
-    public static final ClarpseCompiler getParsingTool(final String parseType) throws Exception {
+    public static ClarpseCompiler getParsingTool(final String parseType) throws Exception {
         switch (parseType.toLowerCase()) {
 
         case "java":

@@ -1,23 +1,19 @@
 package com.hadii.clarpse.compiler;
 
+import com.hadii.antlr.golang.GoLexer;
+import com.hadii.antlr.golang.GoParser;
+import com.hadii.antlr.golang.GoParserBaseListener;
+import com.hadii.clarpse.CommonDir;
 import com.hadii.clarpse.listener.GoLangTreeListener;
 import com.hadii.clarpse.reference.ComponentReference;
 import com.hadii.clarpse.reference.TypeImplementationReference;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
-import com.hadii.clarpse.CommonDir;
-import com.hadii.antlr.golang.GolangBaseListener;
-import com.hadii.antlr.golang.GolangLexer;
-import com.hadii.antlr.golang.GolangParser;
-import com.hadii.antlr.golang.GolangParser.SourceFileContext;
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.util.ArrayList;
@@ -60,7 +56,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         }
 
         for (File file : files) {
-            String modFileName = "";
+            String modFileName;
 
             modFileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
             if (modFileName.startsWith("/")) {
@@ -85,7 +81,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
             List<String> projectFileTypes = getProjectFileSymbols(files);
             // sort fileTypes by length in desc order so that the longest types are at the
             // top.
-            Collections.sort(projectFileTypes, new LengthComp());
+            projectFileTypes.sort(new LengthComp());
             // compile code based on number of workers.
             compileFiles(files, srcModel, projectFileTypes);
             /**
@@ -132,28 +128,22 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         for (File file : files) {
             try {
                 CharStream charStream = new ANTLRInputStream(file.content());
-                TokenStream tokens = new CommonTokenStream(new GolangLexer(charStream));
-                GolangParser parser = new GolangParser(tokens);
-                SourceFileContext sourceFileContext = parser.sourceFile();
-                parser.setErrorHandler(new BailErrorStrategy());
-                parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+                TokenStream tokens = new CommonTokenStream(new GoLexer(charStream));
+                GoParser parser = new GoParser(tokens);
+                GoParser.SourceFileContext sourceFileContext = parser.sourceFile();
                 ParseTreeWalker walker = new ParseTreeWalker();
-                GolangBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file, structWaitingList);
+                GoParserBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file, structWaitingList);
                 walker.walk(listener, sourceFileContext);
-            } catch (Exception e) {
+            } catch (Exception | StackOverflowError e) {
                 e.printStackTrace();
-                continue;
-            } catch (StackOverflowError error) {
-                error.printStackTrace();
-                continue;
             }
         }
     }
 }
 
 class ImplementedInterfaces {
-    private OOPSourceCodeModel model;
-    private Map<String, List<String>> interfaceMethodSpecsPairs;
+    private final OOPSourceCodeModel model;
+    private final Map<String, List<String>> interfaceMethodSpecsPairs;
 
     ImplementedInterfaces(OOPSourceCodeModel srcModel) throws Exception {
         model = srcModel;
@@ -233,21 +223,21 @@ class ImplementedInterfaces {
     }
 
     private String generateMethodSignature(Component methodComponent) {
-        String signature = methodComponent.name() + "(";
+        StringBuilder signature = new StringBuilder(methodComponent.name() + "(");
         for (String methodParam : methodComponent.children()) {
             Optional<Component> methodParamCmp = model.getComponent(methodParam);
             if (methodParamCmp.isPresent()
                     && methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() > 0) {
-                signature += methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
-                        .invokedComponent() + ",";
+                signature.append(methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
+                        .invokedComponent()).append(",");
             }
         }
-        signature = signature.replaceAll(",$", "");
-        signature += ")";
+        signature = new StringBuilder(signature.toString().replaceAll(",$", ""));
+        signature.append(")");
         if (methodComponent.value() != null) {
-            signature += methodComponent.value().replaceAll(" ", "");
+            signature.append(methodComponent.value().replaceAll(" ", ""));
         }
-        return signature;
+        return signature.toString();
     }
 }
 
