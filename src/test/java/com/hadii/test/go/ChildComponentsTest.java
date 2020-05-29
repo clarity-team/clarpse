@@ -25,7 +25,6 @@ public class ChildComponentsTest {
 
     @Test
     public void testInterfaceAnonymousTypeMethodParamsIsChildOfMethod() throws Exception {
-
         final String code = "package main \n type plain interface \n{ testMethodv2(x value, h int) (value, uintptr) {} }";
         final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new File("/src/main/plain.go", code));
@@ -48,13 +47,38 @@ public class ChildComponentsTest {
 
     @Test
     public void testParseGoStructMethodWithUnnamedParameters() throws Exception {
-        final String code = "package main\ntype person struct {} \n func (p person) x(string) () {}";
+        final String code = "package main\ntype person struct {} \n func (p person) x(string) {}";
         final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
         rawData.insertFile(new File("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.x(string)").get().children().size() == 1);
     }
+
+    @Test
+    public void testParseGoStructMethodWithEmptyReturnParenthesis() throws Exception {
+        final String code = "package main\ntype person struct {} \n func (p person) x() () {}";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new File("person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.containsComponent("main.person.x() : ()"));
+    }
+
+    @Test
+    public void testParseGoStructWithMultipleFields() throws Exception {
+        final String code = "package main\n type accountFile struct {\n" +
+                "        PrivateKeyId string `json:\"private_key_id\"`\n" +
+                "        PrivateKey   string `json:\"private_key\"`\n" +
+                "        ClientEmail  string `json:\"client_email\"`\n" +
+                "        ClientId     string `json:\"client_id\"`";
+        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
+        rawData.insertFile(new File("accountFile.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.accountFile").get().children().size() == 4);
+    }
+
 
     @Test
     public void testGoStructFIeldVarIsChildOfStruct() throws Exception {
