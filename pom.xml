@@ -35,7 +35,6 @@
 		<connection>scm:git:git://github.com/hadii-tech/clarpse.git</connection>
 		<developerConnection>scm:git:ssh://github.com/hadii-tech/clarpse.git</developerConnection>
 		<url>https://github.com/hadii-tech/clarpse.git</url>
-		<tag>5.0.4</tag>
 	</scm>
 
 	<dependencies>
