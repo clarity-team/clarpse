@@ -65,7 +65,7 @@ mainClassComponent.modifiers();      // --> ["public"]
 mainClassComponent.children();       // --> ["foo.java.SampleClass.sampleMethod(java.lang.String)"]
 mainClassComponent.sourceFile();     // --> "foo.java"
 // Fetch the the inner method component
-methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
+methodComponent = generatedSourceCodeModel.get(mainClassComponent.children().get(0));
 methodComponent.name();              // --> "sampleMethod"
 methodComponent.type();              // --> METHOD
 methodComponent.modifiers();         // --> ["public"]
