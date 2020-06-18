@@ -1,9 +1,14 @@
 # :rocket: Clarpse 
 [![maintained-by](https://img.shields.io/badge/Maintained%20by-Hadii%20Technologies-violet.svg)](https://hadii.ca) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.hadii-tech/clarpse/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.hadii-tech/clarpse) [![Build Status](https://travis-ci.com/hadii-tech/clarpse.svg?branch=master)](https://travis-ci.com/hadii-tech/clarpse) [![codecov](https://codecov.io/gh/hadii-tech/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/hadii-tech/clarpse) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2685a1fc39474c11bd882cd4bd738115)](https://www.codacy.com/app/clarity-bot-admin/clarpse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=clarity-org/clarpse&amp;utm_campaign=Badge_Grade)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
+
+![img](https://blog.upskillable.com/wp-content/uploads/2019/08/How-our-continuous-code-testing-culture-with-Codacy-helps-us-produce-outstanding-product11.png)
+
 Clarpse is a lightweight polyglot source code analysis tool designed to transform a code base into a collection of **language agnostic** components representing common source code constructs such as classes, methods, and fields. 
 
-Why? To facilitate the development of tools that operate over the higher level, architectural details of source code, which Clarpse exposes via an easy to use, object oriented API. This library was originally developed as a part of the [stiff-lib] (https://github.com/hadii-tech/stiff-lib) project, and then separated to its own library to support similar use cases in the open source community.
+Why? To facilitate the development of tools that operate over the higher level, architectural details of source code, which Clarpse exposes via an easy to use, object oriented API. 
+
+This library was originally developed as a part of the [stiff-lib project](https://github.com/hadii-tech/stiff-lib), and then separated to its own library to support similar use cases in the open source community.
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
