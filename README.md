@@ -1,13 +1,15 @@
 # :rocket: Clarpse 
 [![maintained-by](https://img.shields.io/badge/Maintained%20by-Hadii%20Technologies-violet.svg)](https://hadii.ca) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.hadii-tech/clarpse/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.hadii-tech/clarpse) [![Build Status](https://travis-ci.com/hadii-tech/clarpse.svg?branch=master)](https://travis-ci.com/hadii-tech/clarpse) [![codecov](https://codecov.io/gh/hadii-tech/clarpse/branch/master/graph/badge.svg)](https://codecov.io/gh/hadii-tech/clarpse) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2685a1fc39474c11bd882cd4bd738115)](https://www.codacy.com/app/clarity-bot-admin/clarpse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=clarity-org/clarpse&amp;utm_campaign=Badge_Grade)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Clarpse is a lightweight polyglot source code analysis tool designed to represent a codebase as a collection of language agnostic components representing common source code constructs such as classes, methods, and fields. Clarpse exposes these objects via an easy to use, object oriented API.
+Clarpse is a lightweight polyglot source code analysis tool designed to transform a code base into a collection of **language agnostic** components representing common source code constructs such as classes, methods, and fields. 
+
+Why? To facilitate the development of tools that operate over the higher level, architectural details of source code, which Clarpse exposes via an easy to use, object oriented API. This library was originally developed as a part of the [stiff-lib] (https://github.com/hadii-tech/stiff-lib) project, and then separated to its own library to support similar use cases in the open source community.
 
 If you have any questions or are interested in adding new functionality, feel free to create an issue to discuss your thoughts/plans.
 
 # Features
 
- - Supports **Java**, **GoLang** and **JavaScript(ES6 Syntax)**. 
+ - Supports **Java**. Alpha support for **GoLang** and **JavaScript(ES6 Syntax)**. 
  - Light weight
  - Performant
  - Easy to use
@@ -19,83 +21,68 @@ If you have any questions or are interested in adding new functionality, feel fr
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Component            | A language independent source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
 |  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
-| Component Reference | Any given component may contain a number of "Component References" which simply represent its dependency on those referenced components. These references typically exist through import statements, variable declarations, method calls, and so on. |
+| Component Reference | A reference between an original component to a target component, which typically exist in the form of import statements, variable declarations, method calls, and so on. |
 
 # Getting Started
-First execute `mvn generate-resources` to generate neccessary Antlr files. An excellent way to get familiar with Clarpse is to check out some unit tests.
+Execute `mvn generate-resources` to generate neccessary Antlr files. Execute `mvn clean package assembly:single` to compile and build the entire project.
+
+## Using The API
+As promised, Clarpse is designed to take transform source code into a model where this source code is represented at a higher level in a language agnostic way. This is the goal of `OOPSourceCodeModel` class, which we generate below.
 ```java
-   // Create a new ParseRequestContent Object representing a codebase
-   final String code =                       " package com.foo;  "
-                                               +  " public class SampleClass extends AbstractClass {                                                 "
-                                               +  "     /** Sample Doc Comment */                                              "
-                                               +  "     @SampleAnnotation                                                      "
-                                               +  "     public void sampleMethod(String sampleMethodParam) throws AnException {"   
-                                               +  "     SampleClassB.fooMethod();
-                                               +  "     }                                                                      "
-                                               +  " }                                                                          ";";
-    final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-    // insert a sample source file
-    rawData.insertFile(new RawFile("file2", code));
-    final ClarpseProject project = new ClarpseProject(rawData);
-    // get the parsed result.
-    OOPSourceCodeModel generatedSourceModel = project.result();
-   ```
-   The compiled `OOPSourceCodeModel` is the polygot representation of our project through a collection of `Component` objects.
-   ```java
-    // extract data from the OOPSourceCodeModel's components
-    // get the main class component
-    Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
-    mainclassComponent.name();           // --> "SampleClass"
-    mainClassComponent.type();           // --> CLASS
-    mainClassComponent.comment();        // --> "Sample Doc Comment"
-    mainClassComponent.modifiers();      // --> ["public"]
-    mainClassComponent.children();       // --> ["foo.java.SampleClass.sampleMethod(java.lang.String)"]
-    mainClassComponent.sourceFile();     // --> "foo.java"
-    // get the inner method component
-    methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
-    methodComponent.name();              // --> "sampleMethod"
-    methodComponent.type();              // --> METHOD
-    methodComponent.modifiers();         // --> ["public"]
-    methodComponent.children();          // --> ["com.foo.java.SampleClass.sampleMethod(String).sampleMethodParam"]
-    methodComopnent.codeFragment();      // --> "sampleMethod(String)"
-    methodComponent.sourceFile();        // --> "foo.java"
+final String code = " package com.foo;  "
+		       +  " public class SampleClass extends AbstractClass {                                                 "
+		       +  "     /** Sample Doc Comment */                                              "
+		       +  "     @SampleAnnotation                                                      "
+		       +  "     public void sampleMethod(String sampleMethodParam) throws AnException {"   
+		       +  "     SampleClassB.fooMethod();
+		       +  "     }                                                                      "
+		       +  " }                                                                          ";;
+final SourceFiles sourceFiles = new SourceFiles(Lang.JAVA);
+sourceFiles.insertFile(new File("SampleClass.java", code));
+final ClarpseProject project = new ClarpseProject(sourceFiles);
+OOPSourceCodeModel generatedSourceModel = project.result();
 ```
-
-# Compile Sources
-If you have checkout the project from GitHub you can build the project with maven using:
-
-    mvn clean package assembly:single
-
-# Latest Version 
-Clarpse can be pulled in via gradle or maven, and is served using [jitpack](https://jitpack.io/).
+The compiled `OOPSourceCodeModel` is the polygot representation of our project through a collection of `Component` objects. Details about these components can be fetched in the following way:
+```java
+generatedSourceModel.components().forEach(component -> {
+        System.out.println(component.name());
+	System.out.println(component.type());           
+	System.out.println(component.comment());        
+	System.out.println(component.modifiers());      
+	System.out.println(component.children());       
+	System.out.println(component.sourceFile());
+	...
+	// Check out the Component class for a full list of component attributes that can be retrieved
+    });
 ```
-<repositories>
-	<repository>
-		<id>jitpack.io</id>
-		<url>https://jitpack.io</url>
-	</repository>
-</repositories>
- 
- ...
-<dependencies>	 
-  	<dependency>
-		<groupId>com.github.clarity-org</groupId>
-		<artifactId>clarpse</artifactId>
-		<version>master</version>
-	</dependency>
-</dependencies> 
- ```
+We can also get specific components by their unique name:
+```java
+Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
+mainclassComponent.name();           // --> "SampleClass"
+mainClassComponent.type();           // --> CLASS
+mainClassComponent.comment();        // --> "Sample Doc Comment"
+mainClassComponent.modifiers();      // --> ["public"]
+mainClassComponent.children();       // --> ["foo.java.SampleClass.sampleMethod(java.lang.String)"]
+mainClassComponent.sourceFile();     // --> "foo.java"
+// Fetch the the inner method component
+methodComponent = generatedSourceCodeModel.get(mainClassComponent.getChildren().get(0));
+methodComponent.name();              // --> "sampleMethod"
+methodComponent.type();              // --> METHOD
+methodComponent.modifiers();         // --> ["public"]
+methodComponent.children();          // --> ["com.foo.java.SampleClass.sampleMethod(String).sampleMethodParam"]
+methodComopnent.codeFragment();      // --> "sampleMethod(String)"
+methodComponent.sourceFile();        // --> "foo.java"
+```
  
 # Contributing A Patch
 
-   -  Submit an issue describing your proposed change to the repo in question.
-    The repo owner will respond to your issue promptly.
-   - Fork the desired repo, develop and test your code changes.
-   - Run a local maven build using "clean package assembly:single" to ensure all tests pass and the jar is produced
-   - Update the versioning in the pom.xml and README.md using the x.y.z scheme:
-     - x = main version number, Increase if introducing API breaking changes.
-     - y = feature number, Increase this number if the change contains new features with or without bug fixes.
-     - z = hotfix number, Increase this number if the change only contains bug fixes.
-   -  Submit a pull request.
+- Submit an issue describing your proposed change.
+- Fork the repo, develop and test your code changes.
+- Run a local maven build using "clean package assembly:single" to ensure all tests pass and the jar is produced
+- Update the versioning in the pom.xml and README.md using the x.y.z scheme:
+	- x = main version number, Increase if introducing API breaking changes.
+	- y = feature number, Increase this number if the change contains new features with or without bug fixes.
+	- z = hotfix number, Increase this number if the change only contains bug fixes.
+-  Submit a pull request.
 
 
