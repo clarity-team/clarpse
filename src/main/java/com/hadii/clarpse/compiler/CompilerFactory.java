@@ -5,17 +5,17 @@ package com.hadii.clarpse.compiler;
  */
 public class CompilerFactory {
 
-    public static ClarpseCompiler getParsingTool(final String parseType) throws Exception {
-        switch (parseType.toLowerCase()) {
+    public static ClarpseCompiler getParsingTool(final Lang language) throws Exception {
+        switch (language) {
 
-        case "java":
+            case JAVA:
             return new ClarpseJavaCompiler();
-        case "javascript":
+            case JAVASCRIPT:
             return new ClarpseJSCompiler();
-        case "go":
+            case GOLANG:
             return new ClarpseGoCompiler();
         default:
-            throw new Exception("Could not find parsing tool for: " + parseType);
+            throw new Exception("Could not find parsing tool for: " + language.value());
         }
 
     }
