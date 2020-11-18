@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -15,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum Lang {
 
-    JAVA("Java", ".java"), JAVASCRIPT("javascript", ".js"), GOLANG("Go", ".go");
+    JAVA("java", ".java"), JAVASCRIPT("javascript", ".js"), GOLANG("golang", ".go");
 
     private static Map<String, Lang> namesMap = new HashMap<>();
 
@@ -43,7 +41,7 @@ public enum Lang {
 
     @JsonCreator
     public static Lang forValue(String value) {
-        return namesMap.get(StringUtils.lowerCase(value));
+        return namesMap.get(value);
     }
 
     @JsonValue

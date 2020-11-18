@@ -22,20 +22,19 @@ public class ClarpseProject {
      * The number of workers to use to compute the result.
      */
     public OOPSourceCodeModel result() throws Exception {
-
         if (!validateParseType(rawData.getLanguage())) {
             throw new IllegalArgumentException("The specified source language is not supported!");
         }
-        // parse the files!
-        final OOPSourceCodeModel srcModel = parseRawData(rawData);
-        return srcModel;
+        // parse the files
+        return parseRawData(rawData);
     }
 
-    private boolean validateParseType(final String parseType) throws IllegalArgumentException {
+    private boolean validateParseType(final Lang parseType) throws IllegalArgumentException {
         boolean isValidLang = false;
         for (Lang language : Lang.supportedLanguages()) {
-            if (language.value().equalsIgnoreCase(parseType)) {
+            if (language == parseType) {
                 isValidLang = true;
+                break;
             }
         }
         return isValidLang;

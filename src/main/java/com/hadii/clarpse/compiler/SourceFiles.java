@@ -14,20 +14,20 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class SourceFiles implements Serializable {
 
-    private final String language;
+    private final Lang language;
     private static final long serialVersionUID = 196237203663853669L;
     private List<File> files = new ArrayList<>();
 
     public SourceFiles(Lang language, File ... files) {
-        this.language = language.value();
+        this.language = language;
         this.files.addAll(Arrays.asList(files));
     }
 
     public SourceFiles(final Lang language) {
-        this.language = language.value();
+        this.language = language;
     }
 
-    public String getLanguage() {
+    public Lang getLanguage() {
         return language;
     }
 
