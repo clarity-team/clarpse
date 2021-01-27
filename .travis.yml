@@ -9,3 +9,4 @@ script:
   - mvn clean package assembly:single
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - fwejkfhwelkfjwlkfh
