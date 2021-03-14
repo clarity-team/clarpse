@@ -17,9 +17,9 @@ import java.util.Stack;
 /**
  * Contains utility operations shared amongst Clarpse Compilers.
  */
-class ParseUtil {
+public class ParseUtil {
 
-    static String goLangComments(int componentStartLine, List<String> sourceFile) {
+    public static String goLangComments(int componentStartLine, List<String> sourceFile) {
         String comment = "";
         int i = componentStartLine - 2;
         String currLine = sourceFile.get(i).trim();
@@ -34,11 +34,11 @@ class ParseUtil {
         return comment.trim();
     }
 
-    static void copyRefsToParents(Component originalCompoennt, Stack<Component> componentStack) {
+    public static void copyRefsToParents(Component originalComponent, Stack<Component> componentStack) {
         // bubble up the completing component's invocations to it's parent components
         // that are currently on the stack
         for (final Component parentCmp : componentStack) {
-            final Iterator<ComponentReference> invocationIterator = originalCompoennt.references().iterator();
+            final Iterator<ComponentReference> invocationIterator = originalComponent.references().iterator();
             while (invocationIterator.hasNext()) {
                 ComponentReference invocation = invocationIterator.next();
                 // We do not want to bubble up type implementations and
@@ -46,9 +46,7 @@ class ParseUtil {
                 // could extend its containing class component. Without this check
                 // this would cause the parent class to have a type extension to itself
                 // which will cause problems down the line.
-                if (!(originalCompoennt.componentType() == OOPSourceModelConstants.ComponentType.FIELD
-                        && parentCmp.componentType() == OOPSourceModelConstants.ComponentType.CONSTRUCTOR)
-                        && !(invocation instanceof TypeExtensionReference || invocation instanceof TypeImplementationReference)) {
+                if (!(invocation instanceof TypeExtensionReference || invocation instanceof TypeImplementationReference)) {
                     parentCmp.insertComponentRef(invocation);
                 }
             }
@@ -58,7 +56,7 @@ class ParseUtil {
     /**
      * Retrieves the most recently inserted base component on the stack.
      */
-    static Component newestBaseComponent(Stack<Component> componentStack) throws Exception {
+    public static Component newestBaseComponent(Stack<Component> componentStack) throws Exception {
         Component latestBaseCmp = null;
         for (Component cmp : componentStack) {
             if (cmp.componentType().isBaseComponent()) {
@@ -75,7 +73,7 @@ class ParseUtil {
     /**
      * Retrieves the most recently inserted base component on the stack.
      */
-    static Component newestMethodComponent(Stack<Component> componentStack) throws Exception {
+    public static Component newestMethodComponent(Stack<Component> componentStack) throws Exception {
         Component latestMethodCmp = null;
         for (Component cmp : componentStack) {
             if (cmp.componentType().isMethodComponent()) {
@@ -94,7 +92,7 @@ class ParseUtil {
      * Generates appropriate name for the component. Uses the current stack of
      * parents components as prefixes to the name.
      */
-    static String generateComponentName(final String identifier, Stack<Component> componentStack) {
+    public static String generateComponentName(final String identifier, Stack<Component> componentStack) {
         String componentName = "";
 
         if (!componentStack.isEmpty()) {
@@ -107,7 +105,7 @@ class ParseUtil {
     }
 
     // class component cyclo complexity is a weighted average of its method children complexities.
-    static int calculateClassCyclo(Component component, OOPSourceCodeModel srcModel) {
+    public static int calculateClassCyclo(Component component, OOPSourceCodeModel srcModel) {
         int childCount = 0;
         int complexityTotal = 0;
         for (String childrenName : component.children()) {
@@ -124,12 +122,11 @@ class ParseUtil {
         }
     }
 
-    static String originalText(ParserRuleContext ctx) {
+    public static String originalText(ParserRuleContext ctx) {
         return ctx.getStart().getInputStream().getText(Interval.of(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex()));
     }
 
-    static void pointParentsToGivenChild(Component childCmp, Stack<? extends Component> componentStack) {
-
+    public static void pointParentsToGivenChild(Component childCmp, Stack<? extends Component> componentStack) {
         if (!componentStack.isEmpty()) {
             final String parentName = childCmp.parentUniqueName();
             for (int i = componentStack.size() - 1; i >= 0; i--) {
@@ -141,12 +138,12 @@ class ParseUtil {
     }
 
 
-    static boolean componentStackContainsMethod(Stack<? extends Component> componentStack) {
+    public static boolean componentStackContainsMethod(Stack<? extends Component> componentStack) {
         return componentStackContainsComponentType(componentStack, OOPSourceModelConstants.ComponentType.METHOD,
                 OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
     }
 
-    static boolean componentStackContainsInterface(Stack<? extends Component> componentStack) {
+    public static boolean componentStackContainsInterface(Stack<? extends Component> componentStack) {
         return componentStackContainsComponentType(componentStack, OOPSourceModelConstants.ComponentType.INTERFACE);
     }
 

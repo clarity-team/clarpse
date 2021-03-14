@@ -1,9 +1,9 @@
 package com.hadii.test.go;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
@@ -14,8 +14,8 @@ public class CodeFragmentTest {
     @Test
     public void testInterfaceMethodSpecCodeFragment() throws Exception {
         final String code = "package main\ntype person interface { testMethod() int}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : (int)").get().codeFragment().equals("testMethod() : (int)"));
@@ -25,9 +25,9 @@ public class CodeFragmentTest {
     public void testGoReturnStructMethodComplexCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p main.Person) x(args []value, x,y map[value]value, v, u value) (j,i []value, map[value]value.test)  {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
-        rawData.insertFile(new File("/src/com/cakes/test.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
+        rawData.insertFile(new ProjectFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Person.x([]value, map[value]value, map[value]value, value, value) : ([]value, []value, map[value]value.test)").get().codeFragment());
@@ -42,9 +42,9 @@ public class CodeFragmentTest {
     public void testInterfaceComplexMethodSpecParamsExist() throws Exception {
         final String code = "package go\n import \"game/org\" \n type person interface { testMethod() org.Cake}";
         final String codeB = "package org\n type Cake struct {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("src/github/go/person.go", code));
-        rawData.insertFile(new File("src/github/game/org/cakes.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("src/github/go/person.go", code));
+        rawData.insertFile(new ProjectFile("src/github/game/org/cakes.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("go.person.testMethod() : (org.Cake)").get().codeFragment()
@@ -55,8 +55,8 @@ public class CodeFragmentTest {
     public void fieldVarCodeFragment() throws Exception {
 
         final String code = "package main\n import\"fmt\"\n type person struct {SuggestFor []value}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.SuggestFor").get().codeFragment()
@@ -67,8 +67,8 @@ public class CodeFragmentTest {
     public void structMethodCodeFragment() throws Exception {
 
         final String code = "package main\n import\"fmt\"\n type Command struct {} func (c *Command) SetHelpCommand(cmd *Command) {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Command.SetHelpCommand(*Command)")
@@ -83,8 +83,8 @@ public class CodeFragmentTest {
 
         final String code = "package main\n import\"fmt\"\n type person struct {usageFunc func(*Command) error" +
                 " // Usage can be defined by application\n}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.usageFunc").get().codeFragment()
@@ -95,8 +95,8 @@ public class CodeFragmentTest {
     public void fieldVarFuncTypeCodeFragment() throws Exception {
 
         final String code = "package main\n type person struct { PersistentPreRun func(cmd *Command, args []value) }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.person.PersistentPreRun").get()
@@ -109,8 +109,8 @@ public class CodeFragmentTest {
     public void fieldVarFuncTypeCodeFragmentWithComment() throws Exception {
 
         final String code = "package main\n type person struct { PersistentPreRun func(cmd *Command, args []value)//test \n}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.person.PersistentPreRun")
@@ -124,9 +124,9 @@ public class CodeFragmentTest {
         final String code = "package main \n type plain interface \n{ testMethodv2() (value, uintptr) {} }";
         final String codeB = "package main\n type Person struct {}";
 
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/plain.go", code));
-        rawData.insertFile(new File("/src/main/test.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/plain.go", code));
+        rawData.insertFile(new ProjectFile("/src/main/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2() : (value, uintptr)").get().codeFragment().equals("testMethodv2() : (value, uintptr)"));
@@ -137,8 +137,8 @@ public class CodeFragmentTest {
 
         final String code = "package main\n type person struct { globNormFunc func(f *flag.FlagSet, name value)" +
                 " flag.NormalizedName }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.person.globNormFunc").get()
@@ -151,9 +151,9 @@ public class CodeFragmentTest {
     public void testGoStructMethodCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() int {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
-        rawData.insertFile(new File("/src/com/cakes/test.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
+        rawData.insertFile(new ProjectFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Person.x() : (int)").get().codeFragment());
@@ -164,8 +164,8 @@ public class CodeFragmentTest {
     @Test
     public void testGoStructMethodSpecCodeFragment() throws Exception {
         final String code = "package main\ntype Person interface {  Get(key interface{}) (value interface{}, ok bool) }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Person.Get(interface{}) : (interface{}, bool)").get().codeFragment());
@@ -177,8 +177,8 @@ public class CodeFragmentTest {
     public void testGoStructMethodWithFuncAsParamCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {  func (c *Person) SetGlobalNormalizationFunc(n func(f " +
                 "*flag.FlagSet, name value)) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(func(f *flag.FlagSet, name value))").get().codeFragment());
@@ -189,8 +189,8 @@ public class CodeFragmentTest {
     @Test
     public void testGoInterfaceMethodWithFuncAsParamCodeFragment() throws Exception {
         final String code = "package main\ntype Person interface {  func SetGlobalNormalizationFunc(n func(f *flag.FlagSet, name value)) }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(func(f *flag.FlagSet, name value))").get().codeFragment());
@@ -204,8 +204,8 @@ public class CodeFragmentTest {
     @Test
     public void testGoStructMethodWithFuncAsReturnCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {  func (c *Person) SetGlobalNormalizationFunc(n int) (func(f *flag.FlagSet, name value)) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(int) : (func(f *flag.FlagSet, name value))").get().codeFragment().equals(
@@ -215,8 +215,8 @@ public class CodeFragmentTest {
     @Test
     public void testGoStructMethodWithFuncAsPartOfReturnCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {  func (c *Person) SetGlobalNormalizationFunc(n int) (x int, func(f *flag.FlagSet, name value)) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.Person.SetGlobalNormalizationFunc(int) : (int, func(f *flag.FlagSet, name value))").get().codeFragment().equals(
@@ -227,9 +227,9 @@ public class CodeFragmentTest {
     public void testGoStructMethodMultipleDeclarationReturnCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() (x,y int) {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
-        rawData.insertFile(new File("/src/com/cakes/test.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
+        rawData.insertFile(new ProjectFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.Person.x() : (int, int)").get().codeFragment().equals("x() : (int, int)"));
@@ -239,9 +239,9 @@ public class CodeFragmentTest {
     public void testGoStructMethodMultipleIndividualDeclarationReturnCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() (x uint8,y int) {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
-        rawData.insertFile(new File("/src/com/cakes/test.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
+        rawData.insertFile(new ProjectFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Person.x() : (uint8, int)").get().codeFragment());
@@ -252,9 +252,9 @@ public class CodeFragmentTest {
     public void testGoStructMethodMultipleComplexDeclarationReturnCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() (x,z uint8, y int) {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
-        rawData.insertFile(new File("/src/com/cakes/test.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
+        rawData.insertFile(new ProjectFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.Person.x() : (uint8, uint8, int)").get().codeFragment().equals("x() : (uint8, uint8, int)"));
@@ -264,9 +264,9 @@ public class CodeFragmentTest {
     public void testGoStructMethodMultipleReturnCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p tester.Person) x() (value, int) {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
-        rawData.insertFile(new File("/src/com/cakes/test.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
+        rawData.insertFile(new ProjectFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.Person.x() : (value, int)").get().codeFragment().equals("x() : (value, int)"));
@@ -276,9 +276,9 @@ public class CodeFragmentTest {
     public void testGoNoReturnStructMethodCodeFragmentIsNull() throws Exception {
         final String code = "package main\ntype Person struct {}";
         final String codeB = "package main\n import tester \"main\" \n func (p main.Person) x() {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/cherry.go", code));
-        rawData.insertFile(new File("/src/com/cakes/test.go", codeB));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
+        rawData.insertFile(new ProjectFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         System.out.println(generatedSourceModel.getComponent("main.Person.x()").get().codeFragment());

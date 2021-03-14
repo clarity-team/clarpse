@@ -1,9 +1,9 @@
-package com.hadii.test.javascript;
+package com.hadii.test.es6;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
@@ -14,8 +14,8 @@ public class AccessModifiersTest {
     @Test
     public void ES6StaticInstanceMethodAccessModifier() throws Exception {
         final String code = "class Polygon { static say() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().modifiers().contains("static"));
@@ -24,8 +24,8 @@ public class AccessModifiersTest {
     @Test
     public void ES6ClassAccessModifier() throws Exception {
         final String code = "class Polygon { }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon").get().modifiers().isEmpty());
@@ -34,8 +34,8 @@ public class AccessModifiersTest {
     @Test
     public void ES6InstanceMethodVarAccessModifier() throws Exception {
         final String code = "class Polygon { say() { let test = 4; } }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.test").get().modifiers().isEmpty());
@@ -44,8 +44,8 @@ public class AccessModifiersTest {
     @Test
     public void ES6ClassFieldAccessModifier() throws Exception {
         final String code = "class Polygon { constructor() {this.height = 4;} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().modifiers().contains("private"));
@@ -54,20 +54,10 @@ public class AccessModifiersTest {
     @Test
     public void ES6ClassConstructorAccessModifier() throws Exception {
         final String code = "class Polygon { constructor() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().modifiers().isEmpty());
-    }
-
-    @Test
-    public void ES6StaticConstantModifier() throws Exception {
-        final String code = "class Polygon { static constant1 = 33; }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.constant1").get().modifiers().contains("static"));
     }
 }

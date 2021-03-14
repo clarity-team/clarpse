@@ -28,8 +28,8 @@ public class CommonDir {
                 if (!commonDir.contains("/") || !dirs[i].contains("/")) {
                     return "";
                 } else {
-                    String dirAParts[] = commonDir.split("/");
-                    String dirBParts[] = dirs[i].split("/");
+                    String[] dirAParts = commonDir.split("/");
+                    String[] dirBParts = dirs[i].split("/");
                     List<String> matchingParts = new ArrayList<String>();
                     int j = 0;
                     while (j < dirAParts.length && j < dirBParts.length && dirAParts[j].equals(dirBParts[j])) {

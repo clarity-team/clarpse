@@ -1,9 +1,9 @@
 package com.hadii.test.go;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFile;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
 import org.junit.Test;
@@ -16,8 +16,8 @@ public class ChildComponentsTest {
     @Test
     public void testGoStructMethodSingleParamComponentIsChildOfMethod() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) lol(x int) {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.lol(int)").get().children().get(0).equals("main.person.lol(int).x"));
@@ -26,8 +26,8 @@ public class ChildComponentsTest {
     @Test
     public void testInterfaceAnonymousTypeMethodParamsIsChildOfMethod() throws Exception {
         final String code = "package main \n type plain interface \n{ testMethodv2(x value, h int) (value, uintptr) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/plain.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(value, int) : (value, uintptr)").get().children().size() == 2);
@@ -38,8 +38,8 @@ public class ChildComponentsTest {
     @Test
     public void testGoStructMethodIsChildofStruct() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").get().children().contains("main.person.x() : (int)"));
@@ -48,8 +48,8 @@ public class ChildComponentsTest {
     @Test
     public void testParseGoStructMethodWithUnnamedParameters() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x(string) {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.x(string)").get().children().size() == 1);
@@ -58,8 +58,8 @@ public class ChildComponentsTest {
     @Test
     public void testParseGoStructMethodWithEmptyReturnParenthesis() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() () {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("main.person.x() : ()"));
@@ -72,8 +72,8 @@ public class ChildComponentsTest {
                 "        PrivateKey   string `json:\"private_key\"`\n" +
                 "        ClientEmail  string `json:\"client_email\"`\n" +
                 "        ClientId     string `json:\"client_id\"`";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("accountFile.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("accountFile.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.accountFile").get().children().size() == 4);
@@ -83,8 +83,8 @@ public class ChildComponentsTest {
     @Test
     public void testGoStructFIeldVarIsChildOfStruct() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").get().children().get(0).equals("main.person.mathObj"));
@@ -93,8 +93,8 @@ public class ChildComponentsTest {
     @Test
     public void testGoStructLocalVarIsChildOfMethod() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() {\nvar b, c int = 1, 2\n}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.x()").get().children().size() == 2);
@@ -107,8 +107,8 @@ public class ChildComponentsTest {
     @Test
     public void testInterfaceMethodSpecComponentIsChildOfParentInterface() throws Exception {
         final String code = "package main\ntype person interface { \n//test\n testMethod() int}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").get().children().get(0).equals("main.person.testMethod() : (int)"));

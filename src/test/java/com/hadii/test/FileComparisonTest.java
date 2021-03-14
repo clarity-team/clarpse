@@ -1,26 +1,26 @@
 package com.hadii.test;
 import static org.junit.Assert.assertTrue;
 
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 
 public class FileComparisonTest {
 
-    private static File fileA;
+    private static ProjectFile fileA;
     private static String rawFileAName = "fileA";
     private static String rawFileAContent = "Ain't nobody got time for that";
 
-    private static File fileB;
+    private static ProjectFile fileB;
     private static String rawFileBName = "fileB";
     private static String rawFileBContent = "Ain't nobody got time for that";
 
     @BeforeClass
     public static void setup() {
 
-        fileA = new File(rawFileAName, rawFileAContent);
-        fileB = new File(rawFileBName, rawFileBContent);
+        fileA = new ProjectFile(rawFileAName, rawFileAContent);
+        fileB = new ProjectFile(rawFileBName, rawFileBContent);
 
     }
 

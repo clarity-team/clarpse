@@ -2,22 +2,24 @@ package com.hadii.clarpse.listener;
 
 import com.hadii.antlr.golang.GoParser;
 import com.hadii.antlr.golang.GoParserBaseListener;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.reference.ComponentReference;
 import com.hadii.clarpse.reference.SimpleTypeReference;
 import com.hadii.clarpse.reference.TypeExtensionReference;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,13 @@ import java.util.Stack;
 @SuppressWarnings("unchecked")
 public class GoLangTreeListener extends GoParserBaseListener {
 
+    private static final Logger logger = LogManager.getLogger(GoLangTreeListener.class);
     private final Stack<Component> componentStack = new Stack<>();
     private final ArrayList<String> currentImports = new ArrayList<>();
     private String currentPkg = "";
     private final OOPSourceCodeModel srcModel;
     private final Map<String, String> currentImportsMap = new HashMap<>();
-    private final File file;
+    private final ProjectFile ProjectFile;
     private String lastParsedTypeIdentifier = null;
     /**
      * List of all type names in the project.
@@ -43,9 +46,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
     private final List<Map.Entry<String, Component>> structWaitingList;
     private int currCyclomaticComplexity = 0;
 
-    public GoLangTreeListener(final OOPSourceCodeModel srcModel, List<String> projectFileTypes, File filetoProcess, List<Map.Entry<String, Component>> structWaitingList) {
+    public GoLangTreeListener(final OOPSourceCodeModel srcModel, List<String> projectFileTypes, ProjectFile filetoProcess, List<Map.Entry<String, Component>> structWaitingList) {
         this.srcModel = srcModel;
-        this.file = filetoProcess;
+        this.ProjectFile = filetoProcess;
         this.projectFileTypes = projectFileTypes;
         this.structWaitingList = structWaitingList;
     }
@@ -61,7 +64,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
         // check if the completed component is such a parent and update accordingly.
         structWaitingList.forEach(entry -> {
             if (entry.getKey().equals(completedComponent.uniqueName())) {
-                udpateStructChild(completedComponent, entry.getValue());
+                updateStructChild(completedComponent, entry.getValue());
             }
         });
         if (completedComponent.componentType().isMethodComponent()
@@ -88,7 +91,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
         final Component newCmp = new Component();
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
-        newCmp.setSourceFilePath(file.name());
+        newCmp.setSourceFilePath(ProjectFile.path());
         return newCmp;
     }
 
@@ -100,8 +103,8 @@ public class GoLangTreeListener extends GoParserBaseListener {
     @Override
     public void enterPackageClause(GoParser.PackageClauseContext ctx) {
         currentPkg = ctx.IDENTIFIER().getText();
-        if (this.file.name().contains("/")) {
-            String modFileName = this.file.name().substring(0, this.file.name().lastIndexOf("/"));
+        if (this.ProjectFile.path().contains("/")) {
+            String modFileName = this.ProjectFile.path().substring(0, this.ProjectFile.path().lastIndexOf("/"));
             for (String s : projectFileTypes) {
                 if (modFileName.endsWith(s)) {
                     currentPkg = s;
@@ -112,7 +115,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
         currentPkg = currentPkg.replaceAll("/", ".");
         currentImports.clear();
         if (!componentStack.isEmpty()) {
-            System.out.println(
+            logger.info(
                     "Clarpse GoLang Listener found new package declaration while component stack not empty! component stack size is: "
                             + componentStack.size());
         }
@@ -155,7 +158,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
             } else {
                 Component cmp = createComponent(OOPSourceModelConstants.ComponentType.STRUCT);
                 String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
-                        Arrays.asList(file.content().split("\n")));
+                                                           Arrays.asList(ProjectFile.content().split("\n")));
                 cmp.setComment(comments);
                 cmp.setName(lastParsedTypeIdentifier);
                 cmp.setComponentName(ParseUtil.generateComponentName(lastParsedTypeIdentifier, componentStack));
@@ -173,7 +176,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
             if (lastParsedTypeIdentifier != null) {
                 Component cmp = createComponent(OOPSourceModelConstants.ComponentType.INTERFACE);
                 String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
-                        Arrays.asList(file.content().split("\n")));
+                        Arrays.asList(ProjectFile.content().split("\n")));
                 cmp.setComment(comments);
                 cmp.setName(lastParsedTypeIdentifier);
                 cmp.setComponentName(ParseUtil.generateComponentName(lastParsedTypeIdentifier, componentStack));
@@ -192,7 +195,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
         if (ctx.IDENTIFIER() != null) {
             Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD);
             String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
-                    Arrays.asList(file.content().split("\n")));
+                    Arrays.asList(ProjectFile.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
             cmp.setCodeFragment(cmp.name() + "(");
@@ -262,7 +265,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
         if (ctx.IDENTIFIER() != null && ctx.signature() != null) {
             Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD);
             String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
-                    Arrays.asList(file.content().split("\n")));
+                    Arrays.asList(ProjectFile.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
             ParseUtil.pointParentsToGivenChild(cmp, componentStack);
@@ -328,10 +331,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
                     for (int j = 0; j < paramCtx.children.size(); j++) {
                         String type = getChildTypeNameContextText(paramCtx);
                         types = type.split(",");
-
                         if (types.length < 1) {
                             // without a type we really can't continue...
-                            System.out.println(
+                            logger.error(
                                     "Error! Did not find TypeNameContext for ParamDeclContext: " + paramCtx.getText());
                             return;
                         } else {
@@ -441,7 +443,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
             if (inReceiverContext) {
                 if (srcModel.containsComponent(resolvedType)) {
                     Optional<Component> structCmp = srcModel.getComponent(resolvedType);
-                    structCmp.ifPresent(component -> udpateStructChild(component, cmp));
+                    structCmp.ifPresent(component -> updateStructChild(component, cmp));
                 } else {
                     structWaitingList.add(new AbstractMap.SimpleEntry<>(resolvedType, cmp));
                 }
@@ -461,7 +463,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
         }
     }
 
-    private void udpateStructChild(Component structCmp, Component structChildCmp) {
+    private void updateStructChild(Component structCmp, Component structChildCmp) {
         if (srcModel.containsComponent(structChildCmp.uniqueName())) {
             srcModel.removeComponent(structChildCmp.uniqueName());
         }
@@ -598,10 +600,10 @@ public class GoLangTreeListener extends GoParserBaseListener {
                     Component cmp = createComponent(OOPSourceModelConstants.ComponentType.FIELD);
                     cmp.setName(token.getText());
                     cmp.setComment(
-                            ParseUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(file.content().split("\n"))));
+                            ParseUtil.goLangComments(ctx.getStart().getLine(), Arrays.asList(ProjectFile.content().split("\n"))));
                     cmp.setComponentName(ParseUtil.generateComponentName(token.getText(), componentStack));
                     if (ctx.type_().getText().contains("func")) {
-                        String line = file.content().split("\n")[ctx.type_().start.getLine() - 1];
+                        String line = ProjectFile.content().split("\n")[ctx.type_().start.getLine() - 1];
                         if (line.trim().endsWith("}")) {
                             line = line.substring(0, line.indexOf("}")).trim();
                         }
@@ -649,13 +651,10 @@ public class GoLangTreeListener extends GoParserBaseListener {
      * Tries to return the full, unique type name of the given type.
      */
     private String resolveType(String type) {
-
         type = type.replace("*", "");
-
         if (currentImportsMap.containsKey(type)) {
             return currentImportsMap.get(type).replaceAll("/", ".");
         }
-
         for (Map.Entry<String, String> pair : currentImportsMap.entrySet()) {
             if (type.startsWith(pair.getKey())) {
                 return ((pair.getValue()).replaceAll("/", ".")) + "." + type.replace(pair.getKey() + ".", "");

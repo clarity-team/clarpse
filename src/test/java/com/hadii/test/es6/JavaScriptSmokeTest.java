@@ -1,9 +1,9 @@
-package com.hadii.test.javascript;
+package com.hadii.test.es6;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences;
 import org.apache.commons.io.IOUtils;
@@ -20,8 +20,8 @@ public class JavaScriptSmokeTest {
 	public static void setup() throws Exception {
 		String code = IOUtils.toString(JavascriptParseTest.class.getClass().getResourceAsStream("/sample-es6.txt"),
 				"UTF-8");
-		final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-		rawData.insertFile(new File("polygon.js", code));
+		final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+		rawData.insertFile(new ProjectFile("polygon.js", code));
 		final ClarpseProject parseService = new ClarpseProject(rawData);
 		generatedSourceModel = parseService.result();
 	}
@@ -31,7 +31,7 @@ public class JavaScriptSmokeTest {
 		assertTrue(generatedSourceModel.containsComponent("Square"));
 		assertTrue(generatedSourceModel.containsComponent("Rectangle"));
 		assertTrue(generatedSourceModel.containsComponent("Polygon"));
-		assertTrue(generatedSourceModel.containsComponent("Poly"));
+		assertTrue(generatedSourceModel.containsComponent("MyPoly"));
 		assertTrue(generatedSourceModel.containsComponent("Triple"));
 		assertTrue(generatedSourceModel.containsComponent("BiggerTriple"));
 		assertTrue(generatedSourceModel.containsComponent("MyDate"));
@@ -48,7 +48,7 @@ public class JavaScriptSmokeTest {
 		assertTrue(generatedSourceModel.containsComponent("Polygon.constructor"));
 		assertTrue(generatedSourceModel.containsComponent("Polygon.sayName"));
 		assertTrue(generatedSourceModel.containsComponent("Polygon.sayHistory"));
-		assertTrue(generatedSourceModel.containsComponent("Poly.getPolyName"));
+		assertTrue(generatedSourceModel.containsComponent("MyPoly.getPolyName"));
 		assertTrue(generatedSourceModel.containsComponent("ExtendedUint8Array.constructor"));
 		assertTrue(generatedSourceModel.containsComponent("Square.constructor"));
 		assertTrue(generatedSourceModel.containsComponent("Rectangle.constructor"));

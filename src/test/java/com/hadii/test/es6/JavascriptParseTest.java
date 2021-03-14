@@ -1,9 +1,9 @@
-package com.hadii.test.javascript;
+package com.hadii.test.es6;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
@@ -14,8 +14,8 @@ public class JavascriptParseTest {
     @Test
     public void ES6ClassExists() throws Exception {
         final String code = "class Polygon extends Test {get prop() {return 'getter'; }}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon"));
@@ -24,8 +24,8 @@ public class JavascriptParseTest {
     @Test
     public void ClassesExists() throws Exception {
         final String code = "class Polygon {} class LolCakes{}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon")
@@ -35,18 +35,18 @@ public class JavascriptParseTest {
     @Test
     public void ClassExpressionComponentExists() throws Exception {
         final String code = "const test = class Polygon {};";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.containsComponent("Polygon"));
+        assertTrue(generatedSourceModel.containsComponent("test"));
     }
 
     @Test
     public void ConstructorFunctionExists() throws Exception {
         final String code = "class Polygon { constructor() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor"));
@@ -55,8 +55,8 @@ public class JavascriptParseTest {
     @Test
     public void ConstructorFunctionNameIsCorrect() throws Exception {
         final String code = "class Polygon { constructor() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().name().equals("constructor"));
@@ -65,8 +65,8 @@ public class JavascriptParseTest {
     @Test
     public void ConstructorParamComponentExists() throws Exception {
         final String code = "class Polygon { constructor(height) {call();} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.height"));
@@ -75,8 +75,8 @@ public class JavascriptParseTest {
     @Test
     public void ConstructorParamComponentsExists() throws Exception {
         final String code = "class Polygon { constructor(height, length, width) {call();} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.height"));
@@ -87,8 +87,8 @@ public class JavascriptParseTest {
     @Test
     public void InstanceMethodExists() throws Exception {
         final String code = "class Polygon { say() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say"));
@@ -97,8 +97,8 @@ public class JavascriptParseTest {
     @Test
     public void InstanceMethodNameIsCorrect() throws Exception {
         final String code = "class Polygon { say() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().name().equals("say"));
@@ -107,8 +107,8 @@ public class JavascriptParseTest {
     @Test
     public void StaticInstanceMethodExists() throws Exception {
         final String code = "class Polygon { static say() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say"));
@@ -117,8 +117,8 @@ public class JavascriptParseTest {
     @Test
     public void AsyncInstanceMethodExists() throws Exception {
         final String code = "class Polygon { static say() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say"));
@@ -127,8 +127,8 @@ public class JavascriptParseTest {
     @Test
     public void InstanceMethodParamComponentExists() throws Exception {
         final String code = "class Polygon { constructor() {} call(height) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.call.height"));
@@ -137,8 +137,8 @@ public class JavascriptParseTest {
     @Test
     public void InstanceMethodParamComponentsExists() throws Exception {
         final String code = "class Polygon { constructor() {} call(height, length, width) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.call.height"));
@@ -149,8 +149,8 @@ public class JavascriptParseTest {
     @Test
     public void GetterMethodExists() throws Exception {
         final String code = "class Polygon { get height() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.get_height"));
@@ -159,8 +159,8 @@ public class JavascriptParseTest {
     @Test
     public void SetterMethodExists() throws Exception {
         final String code = "class Polygon { set height(str) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.set_height"));
@@ -169,8 +169,8 @@ public class JavascriptParseTest {
     @Test
     public void FieldVariableComponentExists() throws Exception {
         final String code = "class Polygon { constructor() {this.height = 4;} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.height"));
@@ -179,8 +179,8 @@ public class JavascriptParseTest {
     @Test
     public void FieldVariableComponentName() throws Exception {
         final String code = "class Polygon { constructor() {this.height = 4;} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().name().equals("height"));
@@ -188,9 +188,9 @@ public class JavascriptParseTest {
 
     @Test
     public void LocalVariableExists() throws Exception {
-        final String code = "class React() {} class Polygon { say() { var test = new React(); }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final String code = "class React {} class Polygon { say() { var test = new React(); } }";
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say.test"));
@@ -198,9 +198,9 @@ public class JavascriptParseTest {
 
     @Test
     public void LocalLetVariableComponentExists() throws Exception {
-        final String code = "class Polygon { say() { let test = new React(); }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final String code = "class Polygon { say() { let test = new React(); } }";
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say.test"));
@@ -208,9 +208,9 @@ public class JavascriptParseTest {
 
     @Test
     public void MultipleLocalVariables() throws Exception {
-        final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final String code = "class Polygon { say() { var test = new React(); var lol = 4; } }";
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say.test")
@@ -220,8 +220,8 @@ public class JavascriptParseTest {
     @Test
     public void testDefaultExportClassHasCorrectUniqueName() throws Exception {
         final String code = "export default class { }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("/src/github/test.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("/src/github/test.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("src.github.test"));
@@ -230,8 +230,8 @@ public class JavascriptParseTest {
     @Test
     public void ConstructorLocalVar() throws Exception {
         final String code = "class Polygon { constructor() {  this.width = 4;  var test = new React(); } }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.test"));

@@ -1,9 +1,9 @@
 package com.hadii.test.java;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
@@ -15,8 +15,8 @@ public class CommentsParsingTest {
     public void testClassLevelComment() throws Exception {
 
         final String code = "package test; /** Licensing */ import lol; /**\n*A comment \n */ public class Test { }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals("/**\n" +
@@ -28,8 +28,8 @@ public class CommentsParsingTest {
     public void testClassLevelNoComment() throws Exception {
 
         final String code = "package test; import lol; public class Test { }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals(""));
@@ -39,8 +39,8 @@ public class CommentsParsingTest {
     public void testInterfaceLevelComment() throws Exception {
 
         final String code = "package test;  import lol; /**A \n comment*/ public class Test { }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals("/**\n" +
@@ -53,8 +53,8 @@ public class CommentsParsingTest {
     public void testEnumLevelComment() throws Exception {
 
         final String code = "package test;  import lol; /**A \n comment*/ public enum Test { }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Test").get().comment().equals("/**\n" +
@@ -67,8 +67,8 @@ public class CommentsParsingTest {
     public void testNestedClassLevelComment() throws Exception {
 
         final String code = "package test; /** Licensing */ import lol; public class Test { /**A \n comment*/  class Base{} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("test.Test.Base").get().comment().equals("/**\n" +
@@ -81,8 +81,8 @@ public class CommentsParsingTest {
     public void testMethodLevelComment() throws Exception {
 
         final String code = "public class Test { String fieldVar;\n /**\nlolcakes\n*/\n void test() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.test()").get().comment().equals("/**\n" +
@@ -94,8 +94,8 @@ public class CommentsParsingTest {
     public void testInterfaceMethodLevelComment() throws Exception {
 
         final String code = "public interface Test { /**lol cakes */ void test();}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.test()").get().comment().equals("/**\n" +
@@ -107,8 +107,8 @@ public class CommentsParsingTest {
     public void testFieldVarLevelComment() throws Exception {
 
         final String code = "/*lolcakesv2*/ public class Test { /**lolcakes*/ String fieldVar;}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.fieldVar").get().comment().equals("/**\n" +
@@ -120,8 +120,8 @@ public class CommentsParsingTest {
     public void testMethodParamLevelComment() throws Exception {
 
         final String code = "public class Test { void aMethod(/**lolcakes*/ String methodParam){}}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.aMethod(String).methodParam").get().comment().equals("Optional[/**\n" +

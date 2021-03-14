@@ -47,6 +47,18 @@ public class UtilsTest {
     }
 
     @Test
+    public void testResolvedDirv7() throws Exception {
+        ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/src/test/foo/lol.js", "../../");
+        assertTrue(resolvedPath.value().equals("/src"));
+    }
+
+    @Test
+    public void testResolvedDirv8() throws Exception {
+        ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/src/test", "./../../");
+        assertTrue(resolvedPath.value().equals("/"));
+    }
+
+    @Test
     public void cloneComponentInvocationCopyTest() throws Exception {
         Component aField = new Component();
         aField.setPackageName("com.test");

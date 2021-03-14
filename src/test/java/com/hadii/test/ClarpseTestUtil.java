@@ -11,12 +11,12 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.hadii.clarpse.compiler.ProjectFile;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import org.apache.commons.io.IOUtils;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
-import com.hadii.clarpse.compiler.File;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 
 public class ClarpseTestUtil {
@@ -29,28 +29,28 @@ public class ClarpseTestUtil {
         IOUtils.copy(new BufferedInputStream(conn.getInputStream(), 1024), baos);
         GitHubRepoInputStream repoStream = new GitHubRepoInputStream(githubRepoOwner, githubrepoName,
                 baos.toByteArray());
-        final SourceFiles sourceFiles = extractProjectFromArchive(
+        final ProjectFiles projectFiles = extractProjectFromArchive(
                 new ByteArrayInputStream(repoStream.getBaos()), null, Lang.GOLANG);
         System.out.println("Number of files in " + githubRepoOwner + "/" + githubrepoName + " is "
-                + sourceFiles.getFiles().size());
+                + projectFiles.getFiles().size());
         Date compileBeginDate = new Date();
-        OOPSourceCodeModel model = new ClarpseProject(sourceFiles).result();
+        OOPSourceCodeModel model = new ClarpseProject(projectFiles).result();
         System.out.println("Compiling " + githubRepoOwner + "/" + githubrepoName + " took: "
                 + ((new Date().getTime() - compileBeginDate.getTime()) / 1000) + " s");
         return model;
     }
 
     public static OOPSourceCodeModel sourceCodeModel(String testResourceZip, Lang language) throws Exception {
-        final SourceFiles sourceFiles = extractProjectFromArchive(
+        final ProjectFiles projectFiles = extractProjectFromArchive(
                 ClarpseTestUtil.class.getResourceAsStream(testResourceZip), null, language);
-        OOPSourceCodeModel model = new ClarpseProject(sourceFiles).result();
+        OOPSourceCodeModel model = new ClarpseProject(projectFiles).result();
         return model;
     }
 
-    public static SourceFiles extractProjectFromArchive(final InputStream is, String project, Lang language)
+    public static ProjectFiles extractProjectFromArchive(final InputStream is, String project, Lang language)
             throws Exception {
 
-        final SourceFiles sourceFiles = new SourceFiles(language);
+        final ProjectFiles projectFiles = new ProjectFiles(language);
         boolean currentlyExtractingProject = false;
         boolean finishedExtracting = false;
         ZipInputStream zis = null;
@@ -62,7 +62,7 @@ public class ClarpseTestUtil {
                 entry.getName().substring(entry.getName().lastIndexOf(".") + 1, entry.getName().length());
                 if (!entry.isDirectory() && (currentlyExtractingProject)
                         && entry.getName().endsWith(language.fileExt())) {
-                    sourceFiles.insertFile(new File(entry.getName().replace(" ", "_"),
+                    projectFiles.insertFile(new ProjectFile(entry.getName().replace(" ", "_"),
                             new String(IOUtils.toByteArray(zis), StandardCharsets.UTF_8)));
                 } else {
                     // if the project name is specified then keep extracting all
@@ -78,7 +78,7 @@ public class ClarpseTestUtil {
                     // if the project name is specified then stop extracting
                     // once the project has been extracted
                     else if ((project != null) && (!project.isEmpty()) && !entry.getName().contains(project)
-                            && (sourceFiles.getFiles().size() > 0)) {
+                            && (projectFiles.getFiles().size() > 0)) {
                         currentlyExtractingProject = false;
                         finishedExtracting = true;
                     }
@@ -89,7 +89,7 @@ public class ClarpseTestUtil {
             }
 
             // ensure we actually found some valid source files!
-            if ((sourceFiles.getFiles().size() < 1)) {
+            if ((projectFiles.getFiles().size() < 1)) {
                 System.out.println("No " + language.value() + " source files were found in the uploaded zip project!");
             }
         } catch (final Exception e) {
@@ -102,6 +102,6 @@ public class ClarpseTestUtil {
                 is.close();
             }
         }
-        return sourceFiles;
+        return projectFiles;
     }
 }

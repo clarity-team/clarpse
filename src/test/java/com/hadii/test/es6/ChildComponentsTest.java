@@ -1,9 +1,9 @@
-package com.hadii.test.javascript;
+package com.hadii.test.es6;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
@@ -15,8 +15,8 @@ public class ChildComponentsTest {
     @Test
     public void ES6InstanceMethodParamComponentIsChildOfInstanceMethod() throws Exception {
         final String code = "class Polygon { constructor() {} say(height, length) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().contains("Polygon.say.height"));
@@ -26,8 +26,8 @@ public class ChildComponentsTest {
     @Test
     public void ES6GetterIsChildOfParentClass() throws Exception {
         final String code = "class Polygon { get height() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.get_height"));
@@ -36,8 +36,8 @@ public class ChildComponentsTest {
     @Test
     public void ES6FieldVariableIsChildOfClass() throws Exception {
         final String code = "class Polygon { constructor() {this.height = 4;} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(1).equals("Polygon.height"));
@@ -46,8 +46,8 @@ public class ChildComponentsTest {
     @Test
     public void ES6ConstructorIsChildOfParentClass() throws Exception {
         final String code = "class Polygon { constructor() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.constructor"));
@@ -56,8 +56,8 @@ public class ChildComponentsTest {
     @Test
     public void ES6InstanceMethodIsChildOfParentClass() throws Exception {
         final String code = "class Polygon { say() {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.say"));
@@ -66,8 +66,8 @@ public class ChildComponentsTest {
     @Test
     public void ES6ConstructorParamComponentsIsChildOfConstructor() throws Exception {
         final String code = "class Polygon { constructor(height, length) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().children().get(0)
@@ -78,9 +78,9 @@ public class ChildComponentsTest {
 
     @Test
     public void ES6LocalVariableIsChildOfParentMethod() throws Exception {
-        final String code = "class Polygon { say() { var test = new React(); var lol = 4; }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new File("polygon.js", code));
+        final String code = "class Polygon { say() { var test = new React(); var lol = 4; } }";
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().size() == 2);

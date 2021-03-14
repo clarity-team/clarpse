@@ -11,7 +11,7 @@ public class CompilerFactory {
             case JAVA:
             return new ClarpseJavaCompiler();
             case JAVASCRIPT:
-            return new ClarpseJSCompiler();
+            return new ClarpseES6Compiler();
             case GOLANG:
             return new ClarpseGoCompiler();
         default:

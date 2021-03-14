@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
  * Antlr4 based GoLang compiler.
  */
 public class ClarpseGoCompiler implements ClarpseCompiler {
-
     private void resolveInterfaces(OOPSourceCodeModel srcModel) throws Exception {
         Set<Component> baseComponents = srcModel.components()
                 .filter(s -> (s.componentType().isBaseComponent())).collect(Collectors.toSet());
@@ -42,27 +41,22 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         }
     }
 
-    private List<String> getProjectFileSymbols(List<File> files) throws Exception {
+    private List<String> getProjectFileSymbols(List<ProjectFile> files) throws Exception {
         List<String> projectFileTypes = new ArrayList<>();
-        String smallestCodeBaseContaininingDir = files.get(0).name();
-
+        String smallestCodeBaseContaininingDir = files.get(0).path();
         for (int i = 1; i < files.size(); i++) {
-            smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir, files.get(i).name())
+            smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir, files.get(i).path())
                     .value();
         }
-
         if (smallestCodeBaseContaininingDir.startsWith("/")) {
             smallestCodeBaseContaininingDir = smallestCodeBaseContaininingDir.substring(1);
         }
-
-        for (File file : files) {
+        for (ProjectFile ProjectFile : files) {
             String modFileName;
-
-            modFileName = file.name().replaceAll(smallestCodeBaseContaininingDir, "");
+            modFileName = ProjectFile.path().replaceAll(smallestCodeBaseContaininingDir, "");
             if (modFileName.startsWith("/")) {
                 modFileName = modFileName.substring(1);
             }
-
             if (modFileName.contains("/")) {
                 projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
             }
@@ -71,9 +65,9 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
     }
 
     @Override
-    public OOPSourceCodeModel compile(SourceFiles sourceFiles) throws Exception {
+    public OOPSourceCodeModel compile(ProjectFiles projectFiles) throws Exception {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-        final List<File> files = sourceFiles.getFiles();
+        final List<ProjectFile> files = projectFiles.getFiles();
 
         if (files.size() < 1) {
             return srcModel;
@@ -121,18 +115,17 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         });
     }
 
-    private void compileFiles(List<File> files, OOPSourceCodeModel srcModel, List<String> projectFileTypes) {
-        // holds types that may be accessed by all the source file parsing operations...
+    private void compileFiles(List<ProjectFile> files, OOPSourceCodeModel srcModel, List<String> projectFileTypes) {
+        // holds types that may be accessed by all the source ProjectFile parsing operations...
         List<Map.Entry<String, Component>> structWaitingList = new ArrayList<>();
-
-        for (File file : files) {
+        for (ProjectFile projectFile : files) {
             try {
-                CharStream charStream = new ANTLRInputStream(file.content());
+                CharStream charStream = new ANTLRInputStream(projectFile.content());
                 TokenStream tokens = new CommonTokenStream(new GoLexer(charStream));
                 GoParser parser = new GoParser(tokens);
                 GoParser.SourceFileContext sourceFileContext = parser.sourceFile();
                 ParseTreeWalker walker = new ParseTreeWalker();
-                GoParserBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, file, structWaitingList);
+                GoParserBaseListener listener = new GoLangTreeListener(srcModel, projectFileTypes, projectFile, structWaitingList);
                 walker.walk(listener, sourceFileContext);
             } catch (Exception | StackOverflowError e) {
                 e.printStackTrace();
@@ -163,10 +156,8 @@ class ImplementedInterfaces {
      * by the given base {@linkplain Component}.
      */
     List<String> getImplementedInterfaces(Component baseComponent) {
-
         // holds all the implemented interfaces for the given component
         List<String> implementedInterfaces = new ArrayList<>();
-
         if (baseComponent.componentType().isBaseComponent()
                 && baseComponent.componentType() != OOPSourceModelConstants.ComponentType.INTERFACE) {
             // generate a list of method signatures for the given base component.
@@ -177,13 +168,11 @@ class ImplementedInterfaces {
                     baseComponentMethodSignatures.add(generateMethodSignature(childCmp.get()));
                 }
             }
-
             // check to see if the current component satisfies any of the collected
             // interfaces
             if (!baseComponentMethodSignatures.isEmpty()) {
                 for (Entry<String, List<String>> potentiallyImplementedInterface : interfaceMethodSpecsPairs
                         .entrySet()) {
-
                     if (baseComponentMethodSignatures.containsAll(potentiallyImplementedInterface.getValue())) {
                         // found a match!
                         implementedInterfaces.add(potentiallyImplementedInterface.getKey());
@@ -203,9 +192,7 @@ class ImplementedInterfaces {
         if (interfaceComponent.componentType() != OOPSourceModelConstants.ComponentType.INTERFACE) {
             throw new Exception("Cannot retrieve method specs for a non-interface component!");
         }
-
         ArrayList<String> methodSpecs = new ArrayList<>();
-
         for (ComponentReference extend : interfaceComponent.references(OOPSourceModelConstants.TypeReferences.EXTENSION)) {
             Optional<Component> cmp = model.getComponent(extend.invokedComponent());
             if (cmp.isPresent() && cmp.get().componentType() == OOPSourceModelConstants.ComponentType.INTERFACE
