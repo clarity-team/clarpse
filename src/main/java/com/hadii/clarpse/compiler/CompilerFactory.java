@@ -1,5 +1,7 @@
 package com.hadii.clarpse.compiler;
 
+import com.hadii.clarpse.compiler.go.ClarpseGoCompiler;
+
 /**
  * Factory to retrieve appropriate parsing tool for our projects.
  */
@@ -11,7 +13,7 @@ public class CompilerFactory {
             case JAVA:
             return new ClarpseJavaCompiler();
             case JAVASCRIPT:
-            return new ClarpseJSCompiler();
+            return new ClarpseES6Compiler();
             case GOLANG:
             return new ClarpseGoCompiler();
         default:

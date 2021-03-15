@@ -7,13 +7,13 @@ import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
  */
 public class ClarpseProject {
 
-    private final SourceFiles rawData;
+    private final ProjectFiles rawData;
 
-    public ClarpseProject(SourceFiles rawData) {
+    public ClarpseProject(ProjectFiles rawData) {
         this.rawData = rawData;
     }
 
-    private OOPSourceCodeModel parseRawData(final SourceFiles rawData) throws Exception {
+    private OOPSourceCodeModel parseRawData(final ProjectFiles rawData) throws Exception {
         final ClarpseCompiler parsingTool = CompilerFactory.getParsingTool(rawData.getLanguage());
         return parsingTool.compile(rawData);
     }

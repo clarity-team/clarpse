@@ -2,8 +2,8 @@ package com.hadii.test.go;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.File;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFile;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
@@ -17,8 +17,8 @@ public class PackageAttributeTest {
     @Test
     public void testGoStructMethodPackageName() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("src/main/person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("src/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").get().packageName()
@@ -28,8 +28,8 @@ public class PackageAttributeTest {
     @Test
     public void testGoStructMethodParamPackageName() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x(z int) int {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("src/main/person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("src/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.x(int) : (int).z").get().packageName().equals("main"));
@@ -38,8 +38,8 @@ public class PackageAttributeTest {
     @Test
     public void testGoStructMethodLocalVarPackageName() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {var z int}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("src/main/person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("src/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.x() : (int).z").get().packageName().equals("main"));
@@ -48,8 +48,8 @@ public class PackageAttributeTest {
     @Test
     public void testGoInterfacePackageName() throws Exception {
         final String code = "package main\ntype person interface {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("src/main/person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("src/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").get().packageName()
@@ -59,8 +59,8 @@ public class PackageAttributeTest {
     @Test
     public void testGoStructPackageName() throws Exception {
         final String code = "package main\ntype person struct {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").get().packageName().equals("main"));

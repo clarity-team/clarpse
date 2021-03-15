@@ -1,9 +1,9 @@
 package com.hadii.test.go;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
 import org.junit.Test;
@@ -18,8 +18,8 @@ public class ComponentTypeTest {
     public void testInterfaceAnonymousTypeMethodParamType() throws Exception {
 
         final String code = "package main \n type plain interface \n{ testMethodv2(x value, h int) (value, uintptr) {} }";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/plain.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(value, int) : (value, uintptr).x")
@@ -29,8 +29,8 @@ public class ComponentTypeTest {
     @Test
     public void testGoStructMethodSingleParamComponentType() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) lol(x int) {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.lol(int).x")
@@ -40,8 +40,8 @@ public class ComponentTypeTest {
     @Test
     public void testGoInterfaceComponentType() throws Exception {
         final String code = "package main\n type person interface {\n area() float64 \n} type teacher struct{}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").get()
@@ -51,8 +51,8 @@ public class ComponentTypeTest {
     @Test
     public void testGoStructMethodComponentType() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get()
@@ -62,8 +62,8 @@ public class ComponentTypeTest {
     @Test
     public void testGoStructFieldVarComponenType() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.mathObj").get()
@@ -73,8 +73,8 @@ public class ComponentTypeTest {
     @Test
     public void testGoStructHasCorrectComponentType() throws Exception {
         final String code = "package main\ntype person struct {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person").get()
@@ -86,8 +86,8 @@ public class ComponentTypeTest {
     public void testInterfaceMethodSpecComponentType() throws Exception {
 
         final String code = "package main\ntype person interface { \n//test\n testMethod() int}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : (int)").get()
@@ -98,8 +98,8 @@ public class ComponentTypeTest {
     public void localVarComponentType() throws Exception {
 
         final String code = "package main \n type plain struct \n{} \n func (t plain) testMethodv2 () {\n var i int  = 2;\n}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("/src/main/plain.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(

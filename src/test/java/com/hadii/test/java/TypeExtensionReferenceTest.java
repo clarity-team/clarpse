@@ -1,9 +1,9 @@
 package com.hadii.test.java;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.reference.ComponentReference;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Assert;
@@ -16,10 +16,12 @@ public class TypeExtensionReferenceTest {
 
     @Test
     public void testAccurateExtendedTypes() throws Exception {
-        final String code = "package com; \n public class ClassA extends ClassD<?> { }";
+        final String code = "package com; \n public class ClassA extends ClassD { }";
+        final String codeD = "package com; \n public class ClassD { public void test() { } }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         Assert.assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA").get().references()
@@ -29,9 +31,11 @@ public class TypeExtensionReferenceTest {
     @Test
     public void testAccurateExtendedTypesSize() throws Exception {
         final String code = "package com; \n public class ClassA extends ClassD { }";
+        final String codeD = "package com; \n public class ClassD { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").get().references().size() == 1);
@@ -39,10 +43,12 @@ public class TypeExtensionReferenceTest {
 
     @Test
     public void testAccurateExtendedTypesForNestedClass() throws Exception {
-        final String code = "package com; \n public class ClassA { public class ClassB extends ClassD{} }";
+        final String code = "package com; \n public class ClassA { public class ClassB extends ClassD { } }";
+        final String codeD = "package com; \n public class ClassD { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         Assert.assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA.ClassB")
@@ -53,10 +59,12 @@ public class TypeExtensionReferenceTest {
 
     @Test
     public void testAccurateExtendedTypesSizeForNestedClass() throws Exception {
-        final String code = "package com; \n public class ClassA { public class ClassB extends ClassD{} }";
+        final String code = "package com; \n public class ClassA { public class ClassB extends ClassD { } }";
+        final String codeD = "package com; \n public class ClassD { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").get().references().size() == 1);

@@ -1,12 +1,12 @@
 package com.hadii.clarpse;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Represents a resolved relative path.
+ * Represents a resolved relative directory path.
  */
 public class ResolvedRelativePath {
 
@@ -14,24 +14,29 @@ public class ResolvedRelativePath {
     private String absPath;
 
     /**
-     * @param absolutePath
-     *            An absolute Path.
-     * @param unresolvedRelativePath
-     *            A relative Path to the absolutePath for which an absolute Path is
+     * @param absoluteDir
+     *            An absolute directory path.
+     * @param relativeFilePath
+     *            A relative file path from the absolute dir for which another absolute Path is
      *            required.
      */
-    public ResolvedRelativePath(String absolutePath, String unresolvedRelativePath) throws Exception {
-        this.absPath = absolutePath;
-        this.unresolvedRelativePath = unresolvedRelativePath;
+    public ResolvedRelativePath(String absoluteDir, String relativeFilePath) throws Exception {
+        this.absPath = absoluteDir;
+        this.unresolvedRelativePath = relativeFilePath;
 
-        if (unresolvedRelativePath.startsWith("/")) {
-            throw new Exception("The given unresolved path cannnot be an absolute path!");
+        if (relativeFilePath.startsWith("/")) {
+            throw new Exception("The given relative file path cannot be an absolute path!");
         }
     }
 
-    private String preprocessedPath(String path) throws Exception {
+    private String preprocessedAbsPath(String path) throws Exception {
         // pre-processing...
-        String processedPath = new TrimmedString(path, "/").value();
+        path = new TrimmedString(path, "/").value();
+        return commonPathPreprocess(path);
+    }
+
+    private String commonPathPreprocess(String path) {
+        String processedPath = path;
         if (processedPath.contains("/") && processedPath.substring(processedPath.lastIndexOf("/")).contains(".")) {
             // path contains a filename, get the containing dir instead.
             processedPath = processedPath.substring(0, processedPath.lastIndexOf("/"));
@@ -41,9 +46,13 @@ public class ResolvedRelativePath {
         return processedPath;
     }
 
+    private String preprocessedRelativePath(String path) throws Exception {
+        return commonPathPreprocess(path);
+    }
+
     public String value() throws Exception {
-        String absolutePath = preprocessedPath(this.absPath);
-        String relativePath = preprocessedPath(this.unresolvedRelativePath);
+        String absolutePath = preprocessedAbsPath(this.absPath);
+        String relativePath = preprocessedRelativePath(this.unresolvedRelativePath);
         // build absolute path representing the given relative path
         @SuppressWarnings("unchecked") List<String> absoluteParts = new ArrayList<String>(Arrays.asList(absolutePath.split("/", -1)));
         String[] relativeParts = relativePath.split("/");

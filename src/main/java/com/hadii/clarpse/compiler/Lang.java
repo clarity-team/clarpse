@@ -1,47 +1,48 @@
 package com.hadii.clarpse.compiler;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Indicates Clarpse's currently supported languages.
  */
 public enum Lang {
 
-    JAVA("java", ".java"), JAVASCRIPT("javascript", ".js"), GOLANG("golang", ".go");
+    JAVA("java", new String[]{".java"}), JAVASCRIPT("javascript", new String[]{".js"}),
+    GOLANG("golang", new String[]{".go", ".mod"});
 
-    private static Map<String, Lang> namesMap = new HashMap<>();
+    private static final Map<String, Lang> NAMES_MAP = new HashMap<>();
 
     static {
-        namesMap.put(JAVA.value, JAVA);
-        namesMap.put(JAVASCRIPT.value, JAVASCRIPT);
-        namesMap.put(GOLANG.value, GOLANG);
+        NAMES_MAP.put(JAVA.value, JAVA);
+        NAMES_MAP.put(JAVASCRIPT.value, JAVASCRIPT);
+        NAMES_MAP.put(GOLANG.value, GOLANG);
+    }
+
+    private final String value;
+    private final String[] fileExtensions;
+
+    Lang(final String value, final String[] extensions) {
+        this.value = value;
+        fileExtensions = extensions;
     }
 
     public static List<Lang> supportedLanguages() {
-        List<Lang> langs = new ArrayList<>();
-        for (Map.Entry<String, Lang> entry : namesMap.entrySet()) {
+        final List<Lang> langs = new ArrayList<>();
+        for (final Map.Entry<String, Lang> entry : NAMES_MAP.entrySet()) {
             langs.add(entry.getValue());
         }
         return langs;
     }
 
-    private String value;
-    private String fileExt;
-
-    Lang(final String value, final String extension) {
-        this.value = value;
-        fileExt = extension;
-    }
-
     @JsonCreator
-    public static Lang forValue(String value) {
-        return namesMap.get(value);
+    public static Lang forValue(final String value) {
+        return NAMES_MAP.get(value);
     }
 
     @JsonValue
@@ -49,7 +50,7 @@ public enum Lang {
         return value;
     }
 
-    public String fileExt() {
-        return fileExt;
+    public String[] fileExtensions() {
+        return fileExtensions;
     }
 }

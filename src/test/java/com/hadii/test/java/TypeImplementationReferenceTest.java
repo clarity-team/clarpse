@@ -1,9 +1,9 @@
 package com.hadii.test.java;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.reference.ComponentReference;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences;
@@ -18,11 +18,12 @@ public class TypeImplementationReferenceTest {
 
     @Test
     public void testAccurateImplementedTypes() throws Exception {
-
         final String code = "package com; \n public class ClassA implements ClassD { }";
+        final String codeD = "package com; \n public interface ClassD  { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA").get().references()
@@ -32,11 +33,14 @@ public class TypeImplementationReferenceTest {
 
     @Test
     public void testAccurateMultipleImplementedTypes() throws Exception {
-
         final String code = "package com; \n public class ClassA implements ClassD, ClassE { }";
+        final String codeD = "package com; \n public interface ClassD  { }";
+        final String codeE = "package com; \n public interface ClassE { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
+        rawData.insertFile(new ProjectFile("com/ClassE.java", codeE));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA")
@@ -49,11 +53,12 @@ public class TypeImplementationReferenceTest {
 
     @Test
     public void testAccurateImplementedTypesSize() throws Exception {
-
         final String code = "package com; \n public class ClassA implements ClassD { }";
+        final String codeD = "package com; \n public interface ClassD  { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("com.ClassA").get().references().size() == 1);
@@ -61,11 +66,14 @@ public class TypeImplementationReferenceTest {
 
     @Test
     public void testAccurateMultipleImplementedTypesSize() throws Exception {
-
         final String code = "package com; \n public class ClassA implements ClassD, ClassE { }";
+        final String codeD = "package com; \n public interface ClassD  { }";
+        final String codeE = "package com; \n public interface ClassE { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
+        rawData.insertFile(new ProjectFile("com/ClassE.java", codeE));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("com.ClassA").get().references().size() == 2);
@@ -73,11 +81,12 @@ public class TypeImplementationReferenceTest {
 
     @Test
     public void testAccurateImplementedTypesForNestedClass() throws Exception {
-
         final String code = "package com; \n public class ClassA {  class ClassB implements ClassD{} }";
+        final String codeD = "package com; \n public interface ClassD { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA.ClassB")
@@ -88,11 +97,12 @@ public class TypeImplementationReferenceTest {
 
     @Test
     public void testAccurateImplementedTypesSizeForNestedClass() throws Exception {
-
-        final String code = "package com; \n public class ClassA { public class ClassB implements ClassD{} }";
+        final String code = "package com; \n public class ClassA { class ClassB implements ClassD { } }";
+        final String codeD = "package com; \n public interface ClassD  { }";
         OOPSourceCodeModel generatedSourceModel;
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").get().references().size() == 1);

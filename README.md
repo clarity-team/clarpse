@@ -37,9 +37,9 @@ final String code = " package com.foo;  "
 		       +  "     SampleClassB.fooMethod();
 		       +  "     }                                                                      "
 		       +  " }                                                                          ";;
-final SourceFiles sourceFiles = new SourceFiles(Lang.JAVA);
-sourceFiles.insertFile(new File("SampleClass.java", code));
-final ClarpseProject project = new ClarpseProject(sourceFiles);
+final SourceFiles projectFiles = new SourceFiles(Lang.JAVA);
+projectFiles.insertFile(new File("SampleClass.java", code));
+final ClarpseProject project = new ClarpseProject(projectFiles);
 OOPSourceCodeModel generatedSourceModel = project.result();
 ```
 The compiled `OOPSourceCodeModel` is the polygot representation of our project through a collection of `Component` objects. Details about these components can be fetched in the following way:

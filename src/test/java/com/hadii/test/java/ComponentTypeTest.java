@@ -2,9 +2,9 @@ package com.hadii.test.java;
 
 import com.hadii.clarpse.ClarpseUtil;
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
@@ -99,11 +99,10 @@ public class ComponentTypeTest {
 
     @BeforeClass
     public static final void parseJavaSourceFile() throws Exception {
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file1", codeString));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        System.out.println(ClarpseUtil.fromJavaToJson(generatedSourceModel));
     }
 
     @Test

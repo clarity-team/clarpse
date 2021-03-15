@@ -1,9 +1,9 @@
 package com.hadii.test.java;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
@@ -15,8 +15,8 @@ public class AccessModifiersTest {
     public void testClassLevelModifier() throws Exception {
 
         final String code = " public class Test { }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(((String) generatedSourceModel.getComponent("Test").get().modifiers().toArray()[0])
@@ -27,8 +27,8 @@ public class AccessModifiersTest {
     public void testInterfaceLevelModifier() throws Exception {
 
         final String code = " public interface Test { }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(((String) generatedSourceModel.getComponent("Test").get().modifiers().toArray()[0])
@@ -39,8 +39,8 @@ public class AccessModifiersTest {
     public void testEnumLevelModifier() throws Exception {
 
         final String code = "class Tester {private enum Test { }}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(((String) generatedSourceModel.getComponent("Tester.Test").get().modifiers().toArray()[0])
@@ -51,8 +51,8 @@ public class AccessModifiersTest {
     public void testClassMethodLevelModifier() throws Exception {
 
         final String code = "class Tester { private class Test { static boolean lolcakes(){} }}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(((String) generatedSourceModel.getComponent("Tester.Test.lolcakes()").get().modifiers().toArray()[0])
@@ -63,8 +63,8 @@ public class AccessModifiersTest {
     public void testClassConstructorLevelModifier() throws Exception {
 
         final String code = "class Tester { private class Test { test(){} }}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Tester.Test.test()").get().modifiers().isEmpty());
@@ -74,8 +74,8 @@ public class AccessModifiersTest {
     public void testInterfaceMethodLevelModifier() throws Exception {
 
         final String code = "class Tester { private interface Test { abstract boolean lolcakes(); }}";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(((String) generatedSourceModel.getComponent("Tester.Test.lolcakes()").get().modifiers().toArray()[0])
@@ -86,8 +86,8 @@ public class AccessModifiersTest {
     public void testFieldVarLevelModifier() throws Exception {
 
         final String code = "public class Test { public static int fieldVar; }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(((String) generatedSourceModel.getComponent("Test.fieldVar").get().modifiers().toArray()[0])
@@ -100,8 +100,8 @@ public class AccessModifiersTest {
     public void testMethodParamLevelModifier() throws Exception {
 
         final String code = "public class Test { Test(final String str){} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(
@@ -113,8 +113,8 @@ public class AccessModifiersTest {
     public void testMethodLocalVarLevelModifier() throws Exception {
 
         final String code = "public class Test { Test(){ final String str;} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(
@@ -125,8 +125,8 @@ public class AccessModifiersTest {
     public void testMethodLocalVarLevelNoModifier() throws Exception {
 
         final String code = "public class Test { Test(){ String str;} }";
-        final SourceFiles rawData = new SourceFiles(Lang.JAVA);
-        rawData.insertFile(new File("file2.java", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("file2.java", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(

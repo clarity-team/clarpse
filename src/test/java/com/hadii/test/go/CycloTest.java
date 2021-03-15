@@ -1,9 +1,9 @@
 package com.hadii.test.go;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.File;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.SourceFiles;
+import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.Component;
 import org.junit.Assert;
@@ -19,8 +19,8 @@ public class CycloTest {
     @Test
     public void testGoInterfaceMethodComplexity() throws Exception {
         final String code = "package main\n type person interface {\n area() float64 \n} type teacher struct{}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.area() : (float64)")
@@ -41,8 +41,8 @@ public class CycloTest {
                 "    } \n " +
                 "   }" +
                 "}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 5);
@@ -52,8 +52,8 @@ public class CycloTest {
     public void testEmptyGoMethodComplexity() throws Exception {
         final String code = "package main\ntype person struct {} \n " +
                 "func (p person) x() int {}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 1);
@@ -74,8 +74,8 @@ public class CycloTest {
                 "fmt.Printf(\"%s.\", os)\n" +
                 "}" +
                 "}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 3);
@@ -93,8 +93,8 @@ public class CycloTest {
                 "fmt.Printf(\"I don't know about type %T!\\n\", v)\n" +
                 "}" +
                 "}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 3);
@@ -120,8 +120,8 @@ public class CycloTest {
                 "        fmt.Println(\"7 is odd\")\n" +
                 "    } " +
                 "}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person").get().cyclo() == 3);
@@ -131,8 +131,8 @@ public class CycloTest {
     public void testGoEmptyStructComplexity() throws Exception {
         final String code = "package main\nimport \"fmt\"\ntype person struct {} \n " +
                 "}";
-        final SourceFiles rawData = new SourceFiles(Lang.GOLANG);
-        rawData.insertFile(new File("person.go", code));
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person").get().cyclo() == 0);

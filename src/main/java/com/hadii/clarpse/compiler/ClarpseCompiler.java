@@ -3,15 +3,15 @@ package com.hadii.clarpse.compiler;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 
 /**
- * Compiles {@link SourceFiles source code} into
+ * Compiles {@link ProjectFiles source code} into
  * {@link OOPSourceCodeModel Object Oriented representations}.
  */
 public interface ClarpseCompiler {
 
     /**
      * Compiles source code.
-     * @param sourceFiles Files to compile.
+     * @param projectFiles Files to compile.
      * @return See {@link OOPSourceCodeModel}
      */
-    OOPSourceCodeModel compile(SourceFiles sourceFiles) throws Exception;
+    OOPSourceCodeModel compile(ProjectFiles projectFiles) throws Exception;
 }

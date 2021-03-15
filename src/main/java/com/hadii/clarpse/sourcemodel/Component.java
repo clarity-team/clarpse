@@ -16,22 +16,14 @@ import java.util.Set;
  * Representation of the individual code level components (classes,
  * methodComponents, fieldComponents, etc..) that are used to create a code
  * base.
- *
- * @author Muntazir Fadhel
  */
-
 public final class Component implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Value of the component if applicable.
-     */
     private String value;
     private String packageName;
     private int cyclo;
     private String name;
-    private Component parent;
     private String comment = "";
     private String sourceFile;
     @JsonInclude(Include.NON_EMPTY)
@@ -54,7 +46,6 @@ public final class Component implements Serializable {
         componentName = component.componentName();
         packageName = component.packageName();
         value = component.value();
-        parent = component.parent();
         sourceFile = component.sourceFile();
         comment = component.comment();
         children.addAll(component.children);
@@ -86,16 +77,7 @@ public final class Component implements Serializable {
         this.cyclo = cyclo;
     }
 
-    public Component parent() {
-        return (this.parent);
-    }
-
-    public void setParent(Component parent) {
-        this.parent = parent;
-    }
-
     public String name() {
-
         return name;
     }
 
@@ -193,9 +175,7 @@ public final class Component implements Serializable {
     }
 
     public String parentUniqueName() {
-
         final int lastOpeningBracket = uniqueName().indexOf("(");
-
         if (lastOpeningBracket == -1 || !type.isMethodComponent()) {
             if (uniqueName().contains(".")) {
                 final int lastPeriod = uniqueName().lastIndexOf(".");
@@ -205,9 +185,9 @@ public final class Component implements Serializable {
                 throw new IllegalArgumentException("Cannot get parent of component: " + uniqueName());
             }
         } else {
-            final String methodComponentUniqueNameMinusParameters = uniqueName().substring(0, lastOpeningBracket);
-            final int lastPeriod = methodComponentUniqueNameMinusParameters.lastIndexOf(".");
-            final String currParentClassName = methodComponentUniqueNameMinusParameters.substring(0, lastPeriod);
+            final String methodComponentName = uniqueName().substring(0, lastOpeningBracket);
+            final int lastPeriod = methodComponentName.lastIndexOf(".");
+            final String currParentClassName = methodComponentName.substring(0, lastPeriod);
             return currParentClassName;
         }
     }

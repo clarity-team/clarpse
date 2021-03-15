@@ -14,18 +14,18 @@ class Polygon {
     this.width = width;
   }
 
-  // Simple class instance methods using short-hand method
-  // declaration
-  sayName() {
-    ChromeSamples.log('Hi, I am a ', this.name + '.');
-  }
 
   sayHistory() {
     ChromeSamples.log('"Polygon" is derived from the Greek polus (many) ' +
       'and gonia (angle).');
   }
 
-  // We will look at static and subclassed methods shortly
+
+  // Simple class instance methods using short-hand method
+  // declaration
+  sayName() {
+    ChromeSamples.log('Hi, I am a  this.name');
+  }
 }
 
 // Classes are used just like ES5 constructor functions:
@@ -59,27 +59,19 @@ inst.getPolyName();
 // called Square.
 class Square extends Polygon {
   constructor(length) {
-    // The reserved 'super' keyword is for making super-constructor
-    // calls and allows access to parent methods.
-    //
-    // Here, it will call the parent class' constructor with lengths
-    // provided for the Polygon's width and height
-    super(length, length);
-    // Note: In derived classes, super() must be called before you
-    // can use 'this'. Leaving this out will cause a reference error.
     this.name = 'Square';
   }
+      set area(value) {
+        this.area = value;
+      }
 
-  // Getter/setter methods are supported in classes,
-  // similar to their ES5 equivalents
-  get area() {
-    return this.height * this.width;
-  }
+      // Getter/setter methods are supported in classes,
+      // similar to their ES5 equivalents
+      get area() {
+        return this.height + this.width;
+      }
 
-  set area(value) {
-    this.area = value;
   }
-}
 
 let s = new Square(5);
 
