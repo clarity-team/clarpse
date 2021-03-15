@@ -3,6 +3,7 @@ package com.hadii.clarpse.compiler;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class ProjectFile {
@@ -34,6 +35,10 @@ public class ProjectFile {
         final Scanner scanner = new Scanner(file, "UTF-8");
         content = scanner.useDelimiter("\\A").next();
         path = file.getName();
+    }
+
+    public String dir() {
+        return Paths.get(this.path()).getParent().toString();
     }
 
     public String shortName() {

@@ -5,8 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,42 +13,42 @@ import java.util.Set;
  */
 public class PersistedProjectFiles {
 
-    private ProjectFiles projectFiles;
-    private String rootDir;
-    private Set<String> dirs;
+    private final ProjectFiles projectFiles;
+    private final String rootDir;
+    private final Set<String> dirs;
 
-    public PersistedProjectFiles(ProjectFiles projectFiles, String rootDir) throws IOException {
+    PersistedProjectFiles(final ProjectFiles projectFiles, final String rootDir) throws IOException {
         this.projectFiles = projectFiles;
         this.rootDir = rootDir;
-        this.dirs = new HashSet<>();
+        dirs = new HashSet<>();
         persist();
     }
 
     private void persist() throws IOException {
-        this.dirs.add(rootDir);
-        for (ProjectFile projectFile : this.projectFiles.getFiles()) {
-            String filePath = this.rootDir + File.separator + projectFile.path();
-            File file = new File(filePath);
+        dirs.add(rootDir);
+        for (final ProjectFile projectFile : projectFiles.files()) {
+            final String filePath = rootDir + File.separator + projectFile.path();
+            final File file = new File(filePath);
             File parent = new File(file.getParent());
             if (!parent.exists()) {
                 Files.createDirectories(parent.toPath());
             }
-            while (!this.dirs.contains(parent.getPath())) {
-                this.dirs.add(parent.getPath());
+            while (!dirs.contains(parent.getPath())) {
+                dirs.add(parent.getPath());
                 parent = new File(parent.getParent());
             }
-            FileWriter fileWriter = new FileWriter(filePath);
-            PrintWriter printWriter = new PrintWriter(fileWriter);
+            final FileWriter fileWriter = new FileWriter(filePath);
+            final PrintWriter printWriter = new PrintWriter(fileWriter);
             printWriter.print(projectFile.content());
             printWriter.close();
         }
     }
 
-    public Set<String> dirs() {
-        return this.dirs;
+    Set<String> dirs() {
+        return dirs;
     }
 
     public String rootDir() {
-        return this.rootDir;
+        return rootDir;
     }
 }

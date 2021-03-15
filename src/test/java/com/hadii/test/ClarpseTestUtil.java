@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -32,12 +33,16 @@ public class ClarpseTestUtil {
         final ProjectFiles projectFiles = extractProjectFromArchive(
                 new ByteArrayInputStream(repoStream.getBaos()), null, Lang.GOLANG);
         System.out.println("Number of files in " + githubRepoOwner + "/" + githubrepoName + " is "
-                + projectFiles.getFiles().size());
+                + projectFiles.files().size());
         Date compileBeginDate = new Date();
         OOPSourceCodeModel model = new ClarpseProject(projectFiles).result();
         System.out.println("Compiling " + githubRepoOwner + "/" + githubrepoName + " took: "
                 + ((new Date().getTime() - compileBeginDate.getTime()) / 1000) + " s");
         return model;
+    }
+
+    public static boolean checkIfFileHasExtension(String s, String[] extn) {
+        return Arrays.stream(extn).anyMatch(entry -> s.endsWith(entry));
     }
 
     public static OOPSourceCodeModel sourceCodeModel(String testResourceZip, Lang language) throws Exception {
@@ -49,7 +54,6 @@ public class ClarpseTestUtil {
 
     public static ProjectFiles extractProjectFromArchive(final InputStream is, String project, Lang language)
             throws Exception {
-
         final ProjectFiles projectFiles = new ProjectFiles(language);
         boolean currentlyExtractingProject = false;
         boolean finishedExtracting = false;
@@ -61,7 +65,7 @@ public class ClarpseTestUtil {
             while ((entry != null) && !finishedExtracting) {
                 entry.getName().substring(entry.getName().lastIndexOf(".") + 1, entry.getName().length());
                 if (!entry.isDirectory() && (currentlyExtractingProject)
-                        && entry.getName().endsWith(language.fileExt())) {
+                        && checkIfFileHasExtension(entry.getName(), language.fileExtensions())) {
                     projectFiles.insertFile(new ProjectFile(entry.getName().replace(" ", "_"),
                             new String(IOUtils.toByteArray(zis), StandardCharsets.UTF_8)));
                 } else {
@@ -78,7 +82,7 @@ public class ClarpseTestUtil {
                     // if the project name is specified then stop extracting
                     // once the project has been extracted
                     else if ((project != null) && (!project.isEmpty()) && !entry.getName().contains(project)
-                            && (projectFiles.getFiles().size() > 0)) {
+                            && (projectFiles.files().size() > 0)) {
                         currentlyExtractingProject = false;
                         finishedExtracting = true;
                     }
@@ -89,7 +93,7 @@ public class ClarpseTestUtil {
             }
 
             // ensure we actually found some valid source files!
-            if ((projectFiles.getFiles().size() < 1)) {
+            if ((projectFiles.files().size() < 1)) {
                 System.out.println("No " + language.value() + " source files were found in the uploaded zip project!");
             }
         } catch (final Exception e) {

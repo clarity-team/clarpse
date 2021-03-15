@@ -15,57 +15,57 @@ import java.util.stream.Collectors;
 
 public class ES6Module {
 
-    private static final Logger logger = LogManager.getLogger(ES6Module.class);
+    private static final Logger LOGGER = LogManager.getLogger(ES6Module.class);
     private final String name;
     private final ArrayList<Node> moduleExportNodes;
     private final ArrayList<Node> moduleImportNodes;
     private final String modulePath;
     private final String modulePkg;
-    private List<String> declaredClasses;
-    private List<ES6ClassExport> classExports;
-    private List<ES6ClassImport> classImports;
-    private String pkgPath;
+    private final List<String> declaredClasses;
+    private final List<ES6ClassExport> classExports;
+    private final List<ES6ClassImport> classImports;
+    private final String pkgPath;
 
-    public ES6Module(String modulePath) {
-        this.pkgPath = generatePackagePath(modulePath);
-        this.modulePkg = StringUtils.strip(FilenameUtils.removeExtension(
-                this.pkgPath.replaceAll("/$", ""))
-                .replace("/", "."), ".");
-        this.name = FilenameUtils.getBaseName(modulePath);
+    ES6Module(final String modulePath) {
+        pkgPath = generatePackagePath(modulePath);
+        modulePkg = StringUtils.strip(FilenameUtils.removeExtension(
+                pkgPath.replaceAll("/$", ""))
+                                                   .replace("/", "."), ".");
+        name = FilenameUtils.getBaseName(modulePath);
         this.modulePath = FilenameUtils.removeExtension(modulePath);
-        this.classExports = new ArrayList<>();
-        this.classImports = new ArrayList<>();
-        this.moduleExportNodes = new ArrayList<Node>();
-        this.moduleImportNodes = new ArrayList<Node>();
-        this.declaredClasses = new ArrayList<>();
+        classExports = new ArrayList<>();
+        classImports = new ArrayList<>();
+        moduleExportNodes = new ArrayList<Node>();
+        moduleImportNodes = new ArrayList<Node>();
+        declaredClasses = new ArrayList<>();
     }
 
     public List<String> declaredClasses() {
-        return this.declaredClasses;
+        return declaredClasses;
     }
-
 
     public ArrayList<Node> moduleImportNodes() {
         return moduleImportNodes;
     }
 
-    public void insertDeclaredClass(String declaredClass) {
-        this.declaredClasses.add(declaredClass);
+    void insertDeclaredClass(final String declaredClass) {
+        declaredClasses.add(declaredClass);
     }
+
     public String name() {
-        return this.name;
+        return name;
     }
 
     public String modulePkg() {
-        return this.modulePkg;
+        return modulePkg;
     }
 
-    public void insertModuleExportNode(Node n) {
-        this.moduleExportNodes.add(n);
+    void insertModuleExportNode(final Node n) {
+        moduleExportNodes.add(n);
     }
 
     public List<Node> moduleExportNodes() {
-        return this.moduleExportNodes;
+        return moduleExportNodes;
     }
 
     public List<ES6ClassExport> classExports() {
@@ -73,80 +73,80 @@ public class ES6Module {
     }
 
     public String modulePath() {
-        return this.modulePath;
+        return modulePath;
     }
 
-    public void insertClassExport(ES6ClassExport eS6ClassExport) {
-        logger.info("Inserting class export into module " + this.modulePath + ":\n" + eS6ClassExport.asText());
-        this.classExports.add(eS6ClassExport);
+    public void insertClassExport(final ES6ClassExport eS6ClassExport) {
+        LOGGER.info("Inserting class export into module " + modulePath + ":\n" + eS6ClassExport.asText());
+        classExports.add(eS6ClassExport);
     }
 
-    public List<ES6ClassExport> matchingExportsByName(String namedExportValue) {
-        return this.classExports.stream().filter(classExport -> classExport.namedExportValue().equals(namedExportValue)).collect(Collectors.toList());
+    public List<ES6ClassExport> matchingExportsByName(final String namedExportValue) {
+        return classExports.stream().filter(classExport -> classExport.namedExportValue().equals(namedExportValue)).collect(Collectors.toList());
     }
 
-    public List<ES6ClassImport> matchingImportsByName(String namedImportValue) {
-        return this.classImports.stream().filter(es6ClassImport -> es6ClassImport
+    public List<ES6ClassImport> matchingImportsByName(final String namedImportValue) {
+        return classImports.stream().filter(es6ClassImport -> es6ClassImport
                 .namedImportValue().equals(namedImportValue)).collect(Collectors.toList());
     }
 
     /**
      * Sets the given import as an export in the current module.
      */
-    public void exportClassImport(ES6ClassImport classImport, String exportAlias, boolean isDefault) {
-        this.classExports().add(new ES6ClassExport(classImport.qualifiedClassName(), exportAlias, isDefault));
+    public void exportClassImport(final ES6ClassImport classImport, final String exportAlias, final boolean isDefault) {
+        classExports().add(new ES6ClassExport(classImport.qualifiedClassName(), exportAlias, isDefault));
     }
 
     /**
      * Re-exports the given export in the current module.
      */
-    public void exportClassExport(ES6ClassExport classExport, String exportAlias, boolean isDefault) {
-        this.classExports().add(new ES6ClassExport(classExport.qualifiedClassName(), exportAlias, isDefault));
+    public void exportClassExport(final ES6ClassExport classExport, final String exportAlias, final boolean isDefault) {
+        classExports().add(new ES6ClassExport(classExport.qualifiedClassName(), exportAlias, isDefault));
     }
 
-    public void insertClassImport(ES6ClassImport es6ClassImport) {
-        logger.info("Inserting class import into module " + this.modulePath + "\n:" + es6ClassImport.asText());
-        this.classImports.add(es6ClassImport);
+    public void insertClassImport(final ES6ClassImport es6ClassImport) {
+        LOGGER.info("Inserting class import into module " + modulePath + "\n:" + es6ClassImport.asText());
+        classImports.add(es6ClassImport);
     }
 
-    public List<ES6ClassImport> getClassImports() {
+    List<ES6ClassImport> getClassImports() {
         return classImports;
     }
 
     /**
-     * Given a file/module path (e.g. ./test.js or foo/bar/test.js, this method returns the corresponding package name
-     * (e.g. ./test.js returns "/" and /bar/lol/test.js --> "bar.lol". It is assumed that the given module Path is
-     * an absolute path.
+     * Given a file/module path (e.g. ./test.js or foo/bar/test.js, this method returns the
+     * corresponding package name (e.g. ./test.js returns "/" and /bar/lol/test.js --> "bar.lol".
+     * It is assumed that the given module Path is an absolute path.
      */
-    public String generatePackagePath(String modulePath) {
+    private String generatePackagePath(final String modulePath) {
         if (!modulePath.contains("/")) {
             return "/";
         } else {
-            Path f = Paths.get(modulePath);
+            final Path f = Paths.get(modulePath);
             return f.getParent().toString();
         }
     }
 
     public String pkgPath() {
-        return this.pkgPath;
+        return pkgPath;
     }
 
-    public void insertClassExports(List<ES6ClassExport> classExports) {
-        classExports.forEach(classExport -> this.insertClassExport(classExport));
+    public void insertClassExports(final List<ES6ClassExport> classExports) {
+        classExports.forEach(classExport -> insertClassExport(classExport));
     }
 
     public ES6ClassExport getDefaultClassExport() {
-        ES6ClassExport defaultExport = this.classExports.stream().filter(classExport -> classExport.isDefault())
-            .collect(ClarpseUtil.toSingleton());
+        final ES6ClassExport defaultExport = classExports.stream().filter(classExport -> classExport.isDefault())
+                                                         .collect(ClarpseUtil.toSingleton());
         return defaultExport;
     }
 
-    public void insertModuleImportNode(Node n) {
-        this.moduleImportNodes.add(n);
+    void insertModuleImportNode(final Node n) {
+        moduleImportNodes.add(n);
     }
 
-    public void insertClassImports(List<ES6ClassExport> classExports, String importedModuleAlias) {
-        classExports.stream().forEach(export -> this.insertClassImport(
+    public void insertClassImports(final List<ES6ClassExport> classExports, final String importedModuleAlias) {
+        classExports.stream().forEach(export -> insertClassImport(
                 new ES6ClassImport(export.qualifiedClassName(), importedModuleAlias, false)
         ));
     }

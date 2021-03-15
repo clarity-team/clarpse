@@ -1,7 +1,6 @@
 package com.hadii.clarpse.compiler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,9 +11,9 @@ public class ProjectFiles {
     private final Lang language;
     private List<ProjectFile> files = new ArrayList<>();
 
-    public ProjectFiles(Lang language, ProjectFile... files) {
+    public ProjectFiles(final Lang language, final List<ProjectFile> files) {
         this.language = language;
-        this.files.addAll(Arrays.asList(files));
+        this.files.addAll(files);
     }
 
     public ProjectFiles(final Lang language) {
@@ -29,7 +28,7 @@ public class ProjectFiles {
         files.add(file);
     }
 
-    public final List<ProjectFile> getFiles() {
+    public final List<ProjectFile> files() {
         return files;
     }
 

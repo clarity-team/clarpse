@@ -1,5 +1,7 @@
 package com.hadii.clarpse.compiler;
 
+import com.hadii.clarpse.compiler.go.ClarpseGoCompiler;
+
 /**
  * Factory to retrieve appropriate parsing tool for our projects.
  */
