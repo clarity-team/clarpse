@@ -1,6 +1,5 @@
 package com.hadii.test.java;
 
-import com.hadii.clarpse.ClarpseUtil;
 import com.hadii.clarpse.compiler.ClarpseProject;
 import com.hadii.clarpse.compiler.Lang;
 import com.hadii.clarpse.compiler.ProjectFile;
@@ -36,21 +35,24 @@ public class ComponentExistTest {
     private static String sampleJavaEnumClassConstructor = "sampleJavaEnumClass";
     private static String sampleJavaEnumClassConstructurKey = "sampleJavaEnumClass(String)";
 
-    private static String codeString = "package " + sampleJavaPackageName + ";"
-            + "                              class " + sampleJavaClassComponentName  + " {"
-            + "                                 private String " + sampleJavaClassFieldComponentName + ";"
-            + "                                 private void " + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName+ ") { "
-            + "                                     String cakes = localVar(" + sampleJavaMethodParamComponentName + ");"
-            + "                                 } "
-            + "                                 public void testMethod(String test) { } "
-            + "                                 interface " + sampleJavaInterfaceComponentName + " { "
-            + "                                     public void " + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName + " );"
-            + "                                 }"
-            + "                                 public enum " + sampleJavaEnumComponent + " { " + "  "
-            +                                       sampleJavaEnumClassConstant + "(\"\");" + "  "
-            +                                       sampleJavaEnumClassConstructor + "(final String " + sampleJavaEnumMethodParam + ") {}"
-            + "                                 }"
-            + "                              }";
+    private static String codeString =
+            "package " + sampleJavaPackageName + ";"
+                    + "class " + sampleJavaClassComponentName  + " {"
+                    + "  private String " + sampleJavaClassFieldComponentName + ";"
+                    + "  private void " + sampleJavaMethodComponentName + " (final String " + sampleJavaMethodParamComponentName+ ") { "
+                    + "      String cakes = testMethod(" + sampleJavaMethodParamComponentName +
+                    ");"
+                    + "  } "
+                    + "  public void testMethod(String test) { } "
+                    + "  interface " + sampleJavaInterfaceComponentName + " { "
+                    + "      public void " + sampleJavaInterfaceMethodComponentName + "(String " + sampleJavaInterfaceMethodParamComponentName + " );"
+                    + "  }"
+                    + "  public enum " + sampleJavaEnumComponent + " { " + "  "
+                    +      sampleJavaEnumClassConstant + "(\"\");" + "  "
+                    +       sampleJavaEnumClassConstructor + "(final String " + sampleJavaEnumMethodParam + ") {}"
+                    + "  }"
+                    + " }";
+
 
     private static OOPSourceCodeModel generatedSourceModel;
 
@@ -87,7 +89,7 @@ public class ComponentExistTest {
     @Test
     public final void testSampleJavaEnumClassComponentExists() throws Exception {
         Assert.assertTrue(generatedSourceModel.containsComponent(
-                String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+                String.valueOf(sampleJavaPackageName) + "."  + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent));
     }
 

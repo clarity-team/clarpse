@@ -7,6 +7,11 @@ public final class TypeExtensionReference extends ComponentReference implements 
     private static final long serialVersionUID = 6641497827060470449L;
     public final String type = "extension";
 
+    @Override
+    public int priority() {
+        return 1;
+    }
+
     public TypeExtensionReference() {
         super();
     }

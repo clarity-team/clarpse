@@ -1,10 +1,10 @@
 package com.hadii.clarpse.sourcemodel;
 
-import com.hadii.clarpse.reference.ComponentReference;
-import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences;
-import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.ComponentType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.hadii.clarpse.reference.ComponentReference;
+import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.ComponentType;
+import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,6 +20,8 @@ import java.util.Set;
 public final class Component implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JsonInclude(Include.NON_EMPTY)
+    private final ArrayList<String> children = new ArrayList<String>();
     private String value;
     private String packageName;
     private int cyclo;
@@ -34,8 +36,6 @@ public final class Component implements Serializable {
     @JsonInclude(Include.NON_EMPTY)
     private Set<ComponentReference> references = new LinkedHashSet<ComponentReference>();
     private String componentName;
-    @JsonInclude(Include.NON_EMPTY)
-    private final ArrayList<String> children = new ArrayList<String>();
     private String codeFragment;
 
     public Component(final Component component) throws Exception {
@@ -49,7 +49,7 @@ public final class Component implements Serializable {
         sourceFile = component.sourceFile();
         comment = component.comment();
         children.addAll(component.children);
-        for (ComponentReference ref : component.references()) {
+        for (final ComponentReference ref : component.references()) {
             references.add((ComponentReference) ref.clone());
         }
     }
@@ -70,10 +70,10 @@ public final class Component implements Serializable {
     }
 
     public int cyclo() {
-        return this.cyclo;
+        return cyclo;
     }
 
-    public void setCyclo(int cyclo) {
+    public void setCyclo(final int cyclo) {
         this.cyclo = cyclo;
     }
 
@@ -100,11 +100,6 @@ public final class Component implements Serializable {
     }
 
     public void insertComponentRef(final ComponentReference ref) {
-        for (final ComponentReference reference : references) {
-            if (reference.invokedComponent().equals(ref.invokedComponent()) && reference.getClass().isInstance(ref)) {
-                return;
-            }
-        }
         references.add(ref);
     }
 
@@ -220,19 +215,19 @@ public final class Component implements Serializable {
         sourceFile = sourceFilePath;
     }
 
-    public void setAccessModifiers(List<String> list) {
+    public void setAccessModifiers(final List<String> list) {
         for (final String modifier : list) {
             modifiers.add(modifier.toLowerCase());
         }
     }
 
     @Override
-    public boolean equals(Object o) {
-        return (((Component) o).uniqueName().equals(this.uniqueName()));
+    public boolean equals(final Object o) {
+        return (((Component) o).uniqueName().equals(uniqueName()));
     }
 
     @Override
     public int hashCode() {
-        return this.uniqueName().hashCode();
+        return uniqueName().hashCode();
     }
 }

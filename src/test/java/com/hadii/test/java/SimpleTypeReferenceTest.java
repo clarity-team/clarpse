@@ -29,25 +29,12 @@ public class SimpleTypeReferenceTest {
 
     @Test
     public void testFieldVarImportTypeDeclaration() throws Exception {
-        final String codeA = "package com; \n import org.ClassB; \n class Test { ClassB fieldVar; }";
+        final String codeA = "package com; \n import org.ClassB; \n" +
+                " class Test { \n ClassB fieldVar; \n }";
         final String codeB = "package org; \n class ClassB { }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("src/main/com/Test.java", codeA));
         rawData.insertFile(new ProjectFile("src/main/org/ClassB.java", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        final ComponentReference invocation = (generatedSourceModel.getComponent("com.Test.fieldVar")
-                .get().references(TypeReferences.SIMPLE).get(0));
-        assertTrue(invocation.invokedComponent().equals("org.ClassB"));
-    }
-
-    @Test
-    public void testFieldVarWildCardImportTypeDeclaration() throws Exception {
-        final String codeA = "package com; \n import org.*; \n class Test { ClassB fieldVar; }";
-        final String codeB = "package org; \n public class ClassB { }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("src/com/Test.java", codeA));
-        rawData.insertFile(new ProjectFile("src/org/ClassB.java", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         final ComponentReference invocation = (generatedSourceModel.getComponent("com.Test.fieldVar")
@@ -67,14 +54,14 @@ public class SimpleTypeReferenceTest {
     }
 
     @Test
-    public void testClassExpressionsNotCountedAsTypeDeclaration() throws Exception {
+    public void testResolveImportInFieldType() throws Exception {
         final String code = "import some.maven.pkg.Logger; \n class Test { Logger log = new Logger(Lol.class); }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.log").get().references(TypeReferences.SIMPLE)
-                .size() == 0);
+                .size() == 1);
     }
 
     @Test
@@ -99,7 +86,7 @@ public class SimpleTypeReferenceTest {
         assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s1")
                 .get().references(TypeReferences.SIMPLE).size() == 1);
         assertTrue(generatedSourceModel.getComponent("Test.method(String, int).s2")
-                .get().references(TypeReferences.SIMPLE).size() == 0);
+                .get().references(TypeReferences.SIMPLE).size() == 1);
     }
 
     @Test
@@ -115,29 +102,21 @@ public class SimpleTypeReferenceTest {
     }
 
     @Test
-    public void testMethodDirectTypeCall() throws Exception {
-        final String code = "class Test { void method(){ String.valueOf(1); } }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("Test.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method()")
-                .get().references(TypeReferences.SIMPLE).get(0).invokedComponent()
-                .equals("java.lang.String"));
-    }
-
-    @Test
-    public void testMethodCallReturnTypeReference() throws Exception {
+    public void testMethodCallStaticTypeReference() throws Exception {
         final String code = "class Test { void test() { Cake.method(); } }";
-        final String codeD = "import java.util.List;  public class Cake { public static List<String> method() { return null; } }";
+        final String codeD = "import java.util.List;  public class Cake { public " +
+                "static List<String> method() { return null; } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("Test.java", code));
         rawData.insertFile(new ProjectFile("Cake.java", codeD));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.test()")
+                                       .get().references(TypeReferences.SIMPLE).get(0).invokedComponent()
+                                       .equals("Cake"));
+        assertTrue(generatedSourceModel.getComponent("Test.test()")
                 .get().references(TypeReferences.SIMPLE).get(0).invokedComponent()
-                .equals("java.util.List"));
+                .equals("Cake"));
     }
 
     @Test
@@ -165,7 +144,8 @@ public class SimpleTypeReferenceTest {
 
     @Test
     public void TypeDeclarationArrayList() throws Exception {
-        final ProjectFile ProjectFile = new ProjectFile("src/com/sample/ClassA.java", "package com.sample;"
+        final ProjectFile ProjectFile = new ProjectFile("src/com/sample/ClassA.java",
+                                                        "package com.sample;"
                 + "import java.util.ArrayList; import java.util.Map;"
                 + " \n public class ClassA {  private Map<String, ArrayList<String>> b,c;}");
         final ProjectFiles reqCon = new ProjectFiles(Lang.JAVA);
@@ -173,7 +153,9 @@ public class SimpleTypeReferenceTest {
         reqCon.insertFile(ProjectFile);
         reqCons.add(reqCon);
         final OOPSourceCodeModel codeModel = new ClarpseProject(reqCon).result();
-        assertTrue(codeModel.getComponent("com.sample.ClassA.b").get().references().size() == 3);
-        assertTrue(codeModel.getComponent("com.sample.ClassA.c").get().references().size() == 3);
+        assertTrue(codeModel.getComponent("com.sample.ClassA.b").get()
+                            .references().size() == 3);
+        assertTrue(codeModel.getComponent("com.sample.ClassA.c").get()
+                            .references().size() == 3);
     }
 }

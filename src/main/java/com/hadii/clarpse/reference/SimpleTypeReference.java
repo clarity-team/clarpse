@@ -11,6 +11,12 @@ public class SimpleTypeReference extends ComponentReference implements Serializa
         super(invocationComponentName);
     }
 
+
+    @Override
+    public int priority() {
+        return 2;
+    }
+
     public SimpleTypeReference() {
         super();
     }

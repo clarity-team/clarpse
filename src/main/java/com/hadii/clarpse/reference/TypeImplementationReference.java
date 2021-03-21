@@ -7,6 +7,11 @@ public class TypeImplementationReference extends ComponentReference implements S
     private static final long serialVersionUID = 7807962152246261233L;
     public final String type = "implementation";
 
+    @Override
+    public int priority() {
+        return 1;
+    }
+
     public TypeImplementationReference() {
         super();
     }

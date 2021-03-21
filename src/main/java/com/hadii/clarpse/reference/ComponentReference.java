@@ -27,6 +27,8 @@ public abstract class ComponentReference implements Serializable, Cloneable {
         invokedComponent = invocation.invokedComponent();
     }
 
+    public abstract int priority();
+
     public ComponentReference() {
     }
 
@@ -47,4 +49,20 @@ public abstract class ComponentReference implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        ComponentReference ref = (ComponentReference) obj;
+        if (this.invokedComponent.equals(ref.invokedComponent)
+        && getClass() == obj.getClass()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.invokedComponent().hashCode() + getClass().hashCode();
+    }
+
 }

@@ -32,12 +32,11 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
             final PersistedProjectFiles persistedProjectFiles = new PersistedProjectFiles(projectFiles, persistDir);
             final CombinedTypeSolver typeSolver = new CombinedTypeSolver();
             typeSolver.add(new ReflectionTypeSolver());
-            persistedProjectFiles.dirs().forEach(dir -> {
-                typeSolver.add(new JavaParserTypeSolver(dir));
-            });
+            typeSolver.add(new JavaParserTypeSolver(persistDir));
             final ParserConfiguration parserConfiguration = new ParserConfiguration();
-            parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.BLEEDING_EDGE);
+            parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_8);
             parserConfiguration.setSymbolResolver(new JavaSymbolSolver(typeSolver));
+            parserConfiguration.setIgnoreAnnotationsWhenAttributingComments(true);
             for (final ProjectFile file : projectFiles.files()) {
                 try {
                     final ByteArrayInputStream in = new ByteArrayInputStream(file.content().getBytes(StandardCharsets.UTF_8));
