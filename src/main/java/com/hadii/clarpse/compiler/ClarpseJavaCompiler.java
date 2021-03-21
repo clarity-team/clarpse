@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 /**
  * JavaParser based compiler.
@@ -29,7 +30,8 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
         final String persistDir = System.getProperty("java.io.tmpdir")
                 + File.separator + RandomStringUtils.randomAlphanumeric(16);
         try {
-            final PersistedProjectFiles persistedProjectFiles = new PersistedProjectFiles(projectFiles, persistDir);
+            final PersistedProjectFiles persistedProjectFiles =
+                    new PersistedProjectFiles(projectFiles, persistDir);
             final CombinedTypeSolver typeSolver = new CombinedTypeSolver();
             typeSolver.add(new ReflectionTypeSolver());
             typeSolver.add(new JavaParserTypeSolver(persistDir));
@@ -39,9 +41,11 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
             parserConfiguration.setIgnoreAnnotationsWhenAttributingComments(true);
             for (final ProjectFile file : projectFiles.files()) {
                 try {
-                    final ByteArrayInputStream in = new ByteArrayInputStream(file.content().getBytes(StandardCharsets.UTF_8));
+                    final ByteArrayInputStream in =
+                            new ByteArrayInputStream(file.content().getBytes(StandardCharsets.UTF_8));
                     final CompilationUnit cu = new JavaParser(parserConfiguration)
-                            .parse(ParseStart.COMPILATION_UNIT, new StringProvider(file.content())).getResult().get();
+                            .parse(ParseStart.COMPILATION_UNIT,
+                                   new StringProvider(file.content())).getResult().get();
                     new JavaTreeListener(srcModel, file, typeSolver).visit(cu, null);
                 } catch (final Exception e) {
                     e.printStackTrace();
@@ -53,6 +57,20 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
         } finally {
             FileUtils.deleteQuietly(new File(persistDir));
         }
+        // Remove incorrect/invalid component references
+        srcModel.components().forEach(component -> {
+            component.setExternalTypeReferences(component.references().stream().filter(
+                    componentReference -> {
+                        if (componentReference.invokedComponent().startsWith("java.")
+                                || (srcModel.containsComponent(componentReference.invokedComponent())
+                                && srcModel.getComponent(
+                                componentReference.invokedComponent())
+                                           .get().componentType().isBaseComponent())) {
+                            return true;
+                        }
+                        return false;
+                    }).collect(Collectors.toSet()));
+        });
         return srcModel;
     }
 }

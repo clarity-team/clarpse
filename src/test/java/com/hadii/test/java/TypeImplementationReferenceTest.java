@@ -5,6 +5,7 @@ import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
 import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.reference.ComponentReference;
+import com.hadii.clarpse.reference.TypeImplementationReference;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences;
 import org.junit.Test;
@@ -43,12 +44,17 @@ public class TypeImplementationReferenceTest {
         rawData.insertFile(new ProjectFile("com/ClassE.java", codeE));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
-        assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA")
-                .get().references(TypeReferences.IMPLEMENTATION).toArray()[0]).invokedComponent()
-                        .equals("com.ClassD"));
-        assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA")
-                .get().references(TypeReferences.IMPLEMENTATION).toArray()[1]).invokedComponent()
-                        .equals("com.ClassE"));
+        assertTrue(generatedSourceModel.getComponent(
+                "com.ClassA")
+                                       .get().references(
+                                               TypeReferences.IMPLEMENTATION)
+                                       .contains(new TypeImplementationReference("com.ClassD")));
+        assertTrue(generatedSourceModel.getComponent("com.ClassA")
+                .get().references(
+                        TypeReferences.IMPLEMENTATION)
+                                       .contains(
+                                               new TypeImplementationReference(
+                                                       "com.ClassE")));
     }
 
     @Test

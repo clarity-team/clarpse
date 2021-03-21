@@ -55,9 +55,11 @@ public class SimpleTypeReferenceTest {
 
     @Test
     public void testResolveImportInFieldType() throws Exception {
+        final String codeB = "package some.maven.pkg; \n class Logger { }";
         final String code = "import some.maven.pkg.Logger; \n class Test { Logger log = new Logger(Lol.class); }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
+        rawData.insertFile(new ProjectFile("Logger.java", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         assertTrue(generatedSourceModel.getComponent("Test.log").get().references(TypeReferences.SIMPLE)
