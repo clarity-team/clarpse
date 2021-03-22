@@ -63,6 +63,12 @@ public class JavaScriptSmokeTest {
 	}
 
 	@Test
+	public void testExtendedUint8ArrayComment() {
+		assertTrue(generatedSourceModel.getComponent(
+			"ExtendedUint8Array").hashCode() == -899427564);
+	}
+
+	@Test
 	public void testStaticMethodWasParsed() {
 		assertTrue(generatedSourceModel.getComponent("Triple.triple").get().modifiers().iterator().next().equals("static"));
 	}

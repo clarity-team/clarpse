@@ -86,11 +86,13 @@ public class GoLangTreeListener extends GoParserBaseListener {
     /**
      * Creates a new component based on the given ParseRuleContext.
      */
-    private Component createComponent(final OOPSourceModelConstants.ComponentType componentType) {
+    private Component createComponent(final OOPSourceModelConstants.ComponentType componentType,
+                                      ParserRuleContext ctx) {
         final Component newCmp = new Component();
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
         newCmp.setSourceFilePath(projectFile.path());
+        newCmp.setCodeHash(ParseUtil.originalText(ctx).hashCode());
         return newCmp;
     }
 
@@ -155,7 +157,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
                 // skip over structs defined within methods.
                 exitStructType(ctx);
             } else {
-                final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.STRUCT);
+                final Component cmp =
+                    createComponent(OOPSourceModelConstants.ComponentType.STRUCT,
+                                    ctx);
                 final String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                                                                  Arrays.asList(projectFile.content().split("\n")));
                 cmp.setComment(comments);
@@ -173,7 +177,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
     public final void enterInterfaceType(final GoParser.InterfaceTypeContext ctx) {
         if (!componentStackContainsMethod()) {
             if (lastParsedTypeIdentifier != null) {
-                final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.INTERFACE);
+                final Component cmp =
+                    createComponent(OOPSourceModelConstants.ComponentType.INTERFACE,
+                                    ctx);
                 final String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                                                                  Arrays.asList(projectFile.content().split("\n")));
                 cmp.setComment(comments);
@@ -192,7 +198,8 @@ public class GoLangTreeListener extends GoParserBaseListener {
     @Override
     public final void enterMethodSpec(final GoParser.MethodSpecContext ctx) {
         if (ctx.IDENTIFIER() != null) {
-            final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD);
+            final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD,
+                                                  ctx);
             final String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                                                              Arrays.asList(projectFile.content().split("\n")));
             cmp.setComment(comments);
@@ -262,7 +269,8 @@ public class GoLangTreeListener extends GoParserBaseListener {
     @Override
     public final void enterMethodDecl(final GoParser.MethodDeclContext ctx) {
         if (ctx.IDENTIFIER() != null && ctx.signature() != null) {
-            final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD);
+            final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD,
+                                                  ctx);
             final String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
                                                              Arrays.asList(projectFile.content().split("\n")));
             cmp.setComment(comments);
@@ -350,7 +358,8 @@ public class GoLangTreeListener extends GoParserBaseListener {
                     }
                     for (final String methodArgName : argumentNames) {
                         final Component cmp =
-                                createComponent(OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
+                                createComponent(OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT,
+                                                ctx);
                         cmp.setName(methodArgName);
                         cmp.setComponentName(ParseUtil.generateComponentName(cmp.name(), componentStack));
                         if (!componentStack.isEmpty()) {
@@ -453,7 +462,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
             final GoParser.VarSpecContext tmpContext = findParentVarSpecContext(ctx);
             if (tmpContext != null) {
                 for (final TerminalNode identifier : tmpContext.identifierList().IDENTIFIER()) {
-                    final Component localVarCmp = createComponent(OOPSourceModelConstants.ComponentType.LOCAL);
+                    final Component localVarCmp = createComponent(
+                        OOPSourceModelConstants.ComponentType.LOCAL,
+                        ctx);
                     localVarCmp.setName(identifier.getText());
                     localVarCmp.setComponentName(ParseUtil.generateComponentName(identifier.getText(), componentStack));
                     localVarCmp.insertComponentRef(new SimpleTypeReference(resolvedType));
@@ -597,7 +608,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
             if (ctx.identifierList() != null && !ctx.identifierList().isEmpty()) {
                 final List<Component> fieldVars = new ArrayList<>();
                 for (final TerminalNode token : ctx.identifierList().IDENTIFIER()) {
-                    final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.FIELD);
+                    final Component cmp =
+                        createComponent(OOPSourceModelConstants.ComponentType.FIELD,
+                                        ctx);
                     cmp.setName(token.getText());
                     cmp.setComment(
                             ParseUtil.goLangComments(ctx.getStart().getLine(),

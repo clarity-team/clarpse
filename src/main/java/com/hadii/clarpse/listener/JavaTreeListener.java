@@ -110,6 +110,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         if (node.getComment().isPresent()) {
             newCmp.setComment(node.getComment().toString());
         }
+        newCmp.setCodeHash(node.toString().hashCode());
         newCmp.setSourceFilePath(file.path());
         return newCmp;
     }

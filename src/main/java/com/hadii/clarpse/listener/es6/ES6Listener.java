@@ -118,7 +118,8 @@ public class ES6Listener implements Callback {
     }
 
     @Override
-    public boolean shouldTraverse(final NodeTraversal nodeTraversal, final Node n, final Node parent) {
+    public boolean shouldTraverse(final NodeTraversal nodeTraversal, final Node n,
+                                  final Node parent) {
         try {
             return shouldTraverse(n, parent);
         } catch (final Exception e) {
@@ -178,15 +179,16 @@ public class ES6Listener implements Callback {
 
     private boolean isLocalVar(final Node n) throws Exception {
         return !componentStack.isEmpty() && (n.isVar() || n.isLet())
-                && (ParseUtil.newestMethodComponent(componentStack).componentType() == OOPSourceModelConstants.ComponentType.METHOD
-                || ParseUtil.newestMethodComponent(componentStack).componentType() == OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
+            && (ParseUtil.newestMethodComponent(componentStack).componentType() == OOPSourceModelConstants.ComponentType.METHOD
+            || ParseUtil.newestMethodComponent(componentStack).componentType() == OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
     }
 
     private void processFieldVar(final Node n) throws Exception {
         if (n.getFirstChild().getSecondChild().isString()) {
             final String fieldVarname = n.getFirstChild().getSecondChild().getString();
             final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.FIELD, n);
-            cmp.setComponentName(generateComponentName(fieldVarname, OOPSourceModelConstants.ComponentType.FIELD));
+            cmp.setComponentName(generateComponentName(fieldVarname,
+                                                       OOPSourceModelConstants.ComponentType.FIELD));
             cmp.setName(fieldVarname);
             cmp.setPackageName(module.modulePkg());
             cmp.insertAccessModifier("private");
@@ -200,18 +202,20 @@ public class ES6Listener implements Callback {
 
     private boolean isFieldVar(final Node n) throws Exception {
         return n.isAssign() && n.getFirstChild().hasChildren() && n.getFirstChild().getFirstChild().isThis()
-                && !componentStack.isEmpty() && ParseUtil.newestMethodComponent(
-                componentStack).componentType() == OOPSourceModelConstants.ComponentType.CONSTRUCTOR;
+            && !componentStack.isEmpty() && ParseUtil.newestMethodComponent(
+            componentStack).componentType() == OOPSourceModelConstants.ComponentType.CONSTRUCTOR;
     }
 
     private void processParams(final Node n) throws Exception {
         Component cmp;
         final List<Component> generatedParamComponents = new ArrayList<>();
-        // determine type of param component to create based on type of current component at the top of stack
+        // determine type of param component to create based on type of current component at the
+        // top of stack
         OOPSourceModelConstants.ComponentType paramComponentType =
-                OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT;
+            OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT;
         if (componentStack.peek().componentType() == OOPSourceModelConstants.ComponentType.CONSTRUCTOR) {
-            paramComponentType = OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT;
+            paramComponentType =
+                OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT;
         }
         for (final Node param : n.children()) {
             String paramName = null;
@@ -232,7 +236,8 @@ public class ES6Listener implements Callback {
         // Set parent method code Fragment using param list
         final Component parentMethod = componentStack.peek();
         parentMethod.setCodeFragment(parentMethod.name() + generateCodeFragment(generatedParamComponents));
-        LOGGER.info("Generated code fragment: " + parentMethod.codeFragment() + " for component: " + parentMethod.componentName());
+        LOGGER.info("Generated code fragment: " + parentMethod.codeFragment() + " for component: "
+                        + parentMethod.componentName());
         // Complete method param components
         for (final Component paramCmp : generatedParamComponents) {
             componentStack.push(paramCmp);
@@ -248,7 +253,7 @@ public class ES6Listener implements Callback {
         currCyclomaticComplexity = 1;
         final String cmpName = "set_" + n.getString();
         LOGGER.info("Found setter definition: " + cmpName);
-        cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n);
+        cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n.getFirstChild());
         cmp.setComponentName(ParseUtil.generateComponentName(cmpName, componentStack));
         cmp.setName(cmpName);
         cmp.setPackageName(module.modulePkg());
@@ -265,7 +270,7 @@ public class ES6Listener implements Callback {
         currCyclomaticComplexity = 1;
         final String cmpName = "get_" + n.getString();
         LOGGER.info("Found getter definition: " + cmpName);
-        cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n);
+        cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n.getFirstChild());
         cmp.setComponentName(ParseUtil.generateComponentName(cmpName, componentStack));
         cmp.setName(cmpName);
         cmp.setPackageName(module.modulePkg());
@@ -306,7 +311,8 @@ public class ES6Listener implements Callback {
         currCyclomaticComplexity = 1;
         if (n.hasOneChild() && NodeUtil.isEs6Constructor(n.getFirstChild())) {
             LOGGER.info("Found constructor");
-            cmp = createComponent(OOPSourceModelConstants.ComponentType.CONSTRUCTOR, n);
+            cmp = createComponent(OOPSourceModelConstants.ComponentType.CONSTRUCTOR,
+                                  n.getFirstChild());
             cmp.setComponentName(ParseUtil.generateComponentName("constructor", componentStack));
             cmp.setName("constructor");
             cmp.setPackageName(module.modulePkg());
@@ -314,7 +320,7 @@ public class ES6Listener implements Callback {
             componentStack.push(cmp);
         } else {
             LOGGER.info("Found instance method: " + n.getString());
-            cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n);
+            cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n.getFirstChild());
             cmp.setComponentName(ParseUtil.generateComponentName(n.getString(), componentStack));
             cmp.setName(n.getString());
             cmp.setPackageName(module.modulePkg());
@@ -331,7 +337,7 @@ public class ES6Listener implements Callback {
         if (assignmentNode != null && NodeUtil.isLiteralValue(assignmentNode, false)) {
             cmp.setCodeFragment(cmp.name() + " : " + declarationSnippet(assignmentNode.getToken()));
         } else if (assignmentNode != null && assignmentNode.hasChildren() && assignmentNode.isNew()
-                && (assignmentNode.getFirstChild().isName() || assignmentNode.getFirstChild().isGetProp())) {
+            && (assignmentNode.getFirstChild().isName() || assignmentNode.getFirstChild().isGetProp())) {
             final String invokedType;
             if (assignmentNode.getFirstChild().isGetProp()) {
                 invokedType = assignmentNode.getFirstChild().getFirstChild().getString();
@@ -357,7 +363,7 @@ public class ES6Listener implements Callback {
             ParseUtil.copyRefsToParents(completedCmp, componentStack);
             // update cyclomatic complexity if component is a method
             if (completedCmp.componentType().isMethodComponent()
-                    && !ParseUtil.componentStackContainsInterface(componentStack)) {
+                && !ParseUtil.componentStackContainsInterface(componentStack)) {
                 completedCmp.setCyclo(currCyclomaticComplexity);
             } else if (completedCmp.componentType() == OOPSourceModelConstants.ComponentType.CLASS) {
                 completedCmp.setCyclo(ParseUtil.calculateClassCyclo(completedCmp, srcModel));
@@ -382,10 +388,13 @@ public class ES6Listener implements Callback {
      * Creates a new component representing the given node object, see
      * {@link Component}.
      */
-    private Component createComponent(final OOPSourceModelConstants.ComponentType componentType, final Node n) {
+    private Component createComponent(final OOPSourceModelConstants.ComponentType componentType,
+                                      final Node n) {
         final Component newCmp = new Component();
         newCmp.setComponentType(componentType);
         newCmp.setSourceFilePath(file.path());
+        newCmp.setCodeHash(file.content().substring(
+            n.getSourceOffset(), n.getSourceOffset() + n.getLength()).hashCode());
         if (NodeUtil.getBestJSDocInfo(n) != null) {
             final String doc = NodeUtil.getBestJSDocInfo(n).getOriginalCommentString();
             if (doc != null) {
@@ -396,7 +405,8 @@ public class ES6Listener implements Callback {
     }
 
     /**
-     * Updates the parent's list of children to include the given child component for parent components of the given
+     * Updates the parent's list of children to include the given child component for parent
+     * components of the given
      * component if they exist.
      */
     private void updateParentChildrenData(final Component childCmp) throws Exception {

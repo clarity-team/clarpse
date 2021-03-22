@@ -36,6 +36,7 @@ public final class Component implements Serializable {
     @JsonInclude(Include.NON_EMPTY)
     private Set<ComponentReference> references = new LinkedHashSet<ComponentReference>();
     private String componentName;
+    private int codeHash;
     private String codeFragment;
 
     public Component(final Component component) throws Exception {
@@ -48,6 +49,7 @@ public final class Component implements Serializable {
         value = component.value();
         sourceFile = component.sourceFile();
         comment = component.comment();
+        codeHash = component.codeHash();
         children.addAll(component.children);
         for (final ComponentReference ref : component.references()) {
             references.add((ComponentReference) ref.clone());
@@ -229,5 +231,13 @@ public final class Component implements Serializable {
     @Override
     public int hashCode() {
         return uniqueName().hashCode();
+    }
+
+    public int codeHash() {
+        return codeHash;
+    }
+
+    public void setCodeHash(int codeHash) {
+        this.codeHash = codeHash;
     }
 }
