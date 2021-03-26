@@ -24,6 +24,15 @@ public class ChildComponentsTest {
     }
 
     @Test
+    public void noGoFilesParsedTest() throws Exception {
+        final String code = "package main\n";
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.components().count() == 0);
+    }
+
+    @Test
     public void testInterfaceAnonymousTypeMethodParamsIsChildOfMethod() throws Exception {
         final String code = "package main \n type plain interface \n{ testMethodv2(x value, h int) (value, uintptr) {} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);

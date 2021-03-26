@@ -9,6 +9,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Basic tests to ensure components are being recognized and parsed.
  *
@@ -62,6 +64,14 @@ public class ComponentExistTest {
         rawData.insertFile(new ProjectFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         generatedSourceModel = parseService.result();
+    }
+
+    @Test
+    public void noJavaFilesParsedTest() throws Exception {
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.components().count() == 0);
     }
 
     @Test
