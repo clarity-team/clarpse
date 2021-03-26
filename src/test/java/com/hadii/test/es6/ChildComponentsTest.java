@@ -24,6 +24,14 @@ public class ChildComponentsTest {
     }
 
     @Test
+    public void noJsFilesParsedTest() throws Exception {
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.components().count() == 0);
+    }
+
+    @Test
     public void ES6GetterIsChildOfParentClass() throws Exception {
         final String code = "class Polygon { get height() {} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);

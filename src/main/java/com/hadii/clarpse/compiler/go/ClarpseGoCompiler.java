@@ -57,22 +57,24 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
 
     private List<String> getProjectFileTypes(final List<ProjectFile> files) throws Exception {
         final List<String> projectFileTypes = new ArrayList<>();
-        String smallestCodeBaseContaininingDir = files.get(0).path();
-        for (int i = 1; i < files.size(); i++) {
-            smallestCodeBaseContaininingDir = new CommonDir(smallestCodeBaseContaininingDir,
-                                                            files.get(i).path()).value();
-        }
-        if (smallestCodeBaseContaininingDir.startsWith("/")) {
-            smallestCodeBaseContaininingDir = smallestCodeBaseContaininingDir.substring(1);
-        }
-        for (final ProjectFile projectFile : files) {
-            String modFileName;
-            modFileName = projectFile.path().replaceAll(smallestCodeBaseContaininingDir, "");
-            if (modFileName.startsWith("/")) {
-                modFileName = modFileName.substring(1);
+        if (files.size() > 0) {
+            String smallestCodeParentDir = files.get(0).path();
+            for (int i = 1; i < files.size(); i++) {
+                smallestCodeParentDir = new CommonDir(
+                    smallestCodeParentDir, files.get(i).path()).value();
             }
-            if (modFileName.contains("/")) {
-                projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
+            if (smallestCodeParentDir.startsWith("/")) {
+                smallestCodeParentDir = smallestCodeParentDir.substring(1);
+            }
+            for (final ProjectFile projectFile : files) {
+                String modFileName;
+                modFileName = projectFile.path().replaceAll(smallestCodeParentDir, "");
+                if (modFileName.startsWith("/")) {
+                    modFileName = modFileName.substring(1);
+                }
+                if (modFileName.contains("/")) {
+                    projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
+                }
             }
         }
         return projectFileTypes;
