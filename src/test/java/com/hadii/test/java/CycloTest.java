@@ -78,8 +78,9 @@ public class CycloTest {
     @Test
     public void ignoreOperatorsInComments() throws Exception {
         final String code = "public class test {\n" +
+                "    /** test comment  && || */\n" +
                 "    boolean aMethod() {\n" +
-                "        while (2 > 4) { // && || \n" +
+                "        while (2 > 4) {\n" +
                 "        }\n" +
                 "        return true;" +
                 "    }\n" +
