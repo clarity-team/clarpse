@@ -108,9 +108,12 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         newCmp.setPackageName(currentPkg);
         newCmp.setComponentType(componentType);
         if (node.getComment().isPresent()) {
-            newCmp.setComment(node.getComment().toString());
+            newCmp.setComment(node.getComment().get().toString());
         }
-        newCmp.setCodeHash(node.toString().hashCode());
+        StringBuffer codeBuffer = new StringBuffer();
+        node.removeComment().getTokenRange().get().iterator().forEachRemaining(
+            javaToken -> codeBuffer.append(javaToken.asString().replaceAll("\\s+", "")));
+        newCmp.setCodeHash(codeBuffer.hashCode());
         newCmp.setSourceFilePath(file.path());
         return newCmp;
     }
@@ -238,14 +241,12 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     private int countLogicalBinaryOperators(final Node n) {
         int logicalBinaryOperators = 0;
-        final String[] codeLines = n.removeComment().toString().split("\\r?\\n");
-        for (final String codeLine : codeLines) {
-            if (!codeLine.trim().startsWith("/")) {
-                logicalBinaryOperators += StringUtils.countMatches(codeLine, " && ");
-                logicalBinaryOperators += StringUtils.countMatches(codeLine, " || ");
-                logicalBinaryOperators += StringUtils.countMatches(codeLine, " ? ");
-            }
-        }
+        StringBuffer codeBuffer = new StringBuffer();
+        n.removeComment().getTokenRange().get().iterator().forEachRemaining(
+            javaToken -> codeBuffer.append(javaToken.asString() + " "));
+        logicalBinaryOperators += StringUtils.countMatches(codeBuffer, " && ");
+        logicalBinaryOperators += StringUtils.countMatches(codeBuffer, " || ");
+        logicalBinaryOperators += StringUtils.countMatches(codeBuffer, " ? ");
         return logicalBinaryOperators;
     }
 
