@@ -15,7 +15,6 @@ jobs:
       - name: "Run tests and package"
         run: "mvn clean package assembly:single"
       - name: "Codecov report"
-        if: ${{ github.ref == 'refs/heads/master' }}
         run: bash <(curl -s https://codecov.io/bash)
       - name: Cache Maven dependencies
         uses: actions/cache@v2
