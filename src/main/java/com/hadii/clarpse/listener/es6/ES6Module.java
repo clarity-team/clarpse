@@ -56,6 +56,10 @@ public class ES6Module {
         return name;
     }
 
+    public String pkgName() {
+        return this.pkgPath.substring(this.pkgPath.lastIndexOf('/') + 1);
+    }
+
     public String modulePkg() {
         return modulePkg;
     }

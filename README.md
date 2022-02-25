@@ -9,7 +9,7 @@ Clarpse facilitates the development of tools that operate over the higher level,
 
 # Features
 
- - Supports **Java**. Alpha support for **GoLang** and **JavaScript(ES6 Syntax)**. 
+ - Supports **Java** and **GoLang**. Development is currently underway for **JavaScript**(ES6 Syntax), **Python**, and **C#** support. 
  - Light weight
  - Performant
  - Easy to use
@@ -17,10 +17,10 @@ Clarpse facilitates the development of tools that operate over the higher level,
  - Support of comments
 
 # Terminology
-| Term                 | Definition                                                                                                                                                                  |
-|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Component            | A language independent source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
-|  OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
+| Term                | Definition                                                                                                                                                                  |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Component           | A language independent source unit of the code, typically represented by a class, method, interface, field variable, local variable, enum, etc ..                                                       |
+| OOPSourceCodeModel  |                                                  A representation of a codebase through a collection of Component objects.                                                  |
 | Component Reference | A reference between an original component to a target component, which typically exist in the form of import statements, variable declarations, method calls, and so on. |
 
 # Getting Started

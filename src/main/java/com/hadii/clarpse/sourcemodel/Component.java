@@ -23,7 +23,7 @@ public final class Component implements Serializable {
     @JsonInclude(Include.NON_EMPTY)
     private final ArrayList<String> children = new ArrayList<String>();
     private String value;
-    private String packageName;
+    private Package pkg;
     private int cyclo;
     private String name;
     private String comment = "";
@@ -45,7 +45,7 @@ public final class Component implements Serializable {
         codeFragment = component.codeFragment();
         imports = component.imports();
         componentName = component.componentName();
-        packageName = component.packageName();
+        pkg = component.pkg();
         value = component.value();
         sourceFile = component.sourceFile();
         comment = component.comment();
@@ -64,10 +64,12 @@ public final class Component implements Serializable {
     }
 
     public String uniqueName() {
-        if (packageName != null && !packageName.isEmpty()) {
-            return packageName + "." + componentName;
+        if (this.pkg != null && !this.pkg.ellipsisSeparatedPkgPath().isEmpty()) {
+            return this.pkg.ellipsisSeparatedPkgPath() + "." + componentName;
+        } else if (this.pkg != null && !this.pkg.name().isEmpty()) {
+            return this.pkg.name() + "." + componentName;
         } else {
-            return componentName;
+            return this.componentName;
         }
     }
 
@@ -147,12 +149,12 @@ public final class Component implements Serializable {
         type = componentType;
     }
 
-    public String packageName() {
-        return packageName;
+    public Package pkg() {
+        return this.pkg;
     }
 
-    public void setPackageName(final String packageName) {
-        this.packageName = packageName;
+    public void setPkg(final Package pkg) {
+        this.pkg = pkg;
     }
 
     public String value() {

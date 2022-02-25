@@ -13,7 +13,6 @@ public class AccessModifiersTest {
 
     @Test
     public void testParseGoStructPrivateVisibility() throws Exception {
-
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {} type Teacher struct{}";
         final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
         rawData.insertFile(new ProjectFile("person.go", code));
@@ -34,7 +33,6 @@ public class AccessModifiersTest {
 
     @Test
     public void testParseGoStructPublicVisibility() throws Exception {
-
         final String code = "package main\n import \"fmt\"\n /*test*/ \n type person struct {} type Teacher struct{}";
         final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
         rawData.insertFile(new ProjectFile("person.go", code));
@@ -55,7 +53,6 @@ public class AccessModifiersTest {
 
     @Test
     public void testParseGoInterfacePublicVisibility() throws Exception {
-
         final String code = "package main\n import \"fmt\"\n /*test*/ type Person interface {} type Teacher struct{}";
         final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
         rawData.insertFile(new ProjectFile("person.go", code));
@@ -66,7 +63,6 @@ public class AccessModifiersTest {
 
     @Test
     public void testParseGoInterfacePrivateVisibility() throws Exception {
-
         final String code = "package main\n import \"fmt\"\n /*test*/ type person interface {}";
         final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
         rawData.insertFile(new ProjectFile("person.go", code));

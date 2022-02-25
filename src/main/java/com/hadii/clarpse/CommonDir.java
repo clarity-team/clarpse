@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a common directory.
@@ -14,33 +15,33 @@ public class CommonDir {
 
     public CommonDir(String... dirs) {
         this.dirs = dirs;
+        for (int i = 0; i < dirs.length; i++) {
+            if (!dirs[i].contains("/")) {
+                throw new IllegalArgumentException("Directory path: " + dirs[i] + " is invalid!");
+            }
+        }
     }
 
     public String value() throws Exception {
         if (dirs.length < 1) {
             throw new Exception("No dirs were supplied!");
-        } else if (dirs.length < 2) {
-            return dirs[0];
         } else {
             String commonDir = dirs[0];
-
-            for (int i = 1; i < dirs.length; i++) {
-                if (!commonDir.contains("/") || !dirs[i].contains("/")) {
-                    return "";
-                } else {
-                    String[] dirAParts = commonDir.split("/");
-                    String[] dirBParts = dirs[i].split("/");
-                    List<String> matchingParts = new ArrayList<String>();
-                    int j = 0;
-                    while (j < dirAParts.length && j < dirBParts.length && dirAParts[j].equals(dirBParts[j])) {
-                        matchingParts.add(dirAParts[j]);
-                        j++;
-                    }
-                    commonDir = StringUtils.join(matchingParts, "/");
+            for (int i = 0; i < dirs.length; i++) {
+                String[] dirAParts = commonDir.split("/");
+                String[] dirBParts = dirs[i].split("/");
+                List<String> matchingParts = new ArrayList<String>();
+                int j = 0;
+                while (j < dirAParts.length && j < dirBParts.length && dirAParts[j].equals(dirBParts[j])) {
+                    matchingParts.add(dirAParts[j]);
+                    j++;
                 }
+                List<String> filteredMatchingParts =
+                    matchingParts.stream().filter(s -> !s.contains(".")).collect(Collectors.toList());
+                commonDir = StringUtils.join(filteredMatchingParts, "/");
             }
-            if (!commonDir.endsWith("/")) {
-                commonDir += "/";
+            if (commonDir.isEmpty()) {
+                commonDir = "/";
             }
             return commonDir;
         }

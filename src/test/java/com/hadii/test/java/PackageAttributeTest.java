@@ -23,7 +23,7 @@ public class PackageAttributeTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass").get();
-        Assert.assertTrue(cmp.packageName().equals(pkgName));
+        Assert.assertTrue(cmp.pkg().path().equals(pkgName));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class PackageAttributeTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.sampleClassField").get();
-        Assert.assertTrue(cmp.packageName().equals(pkgName));
+        Assert.assertTrue(cmp.pkg().path().equals(pkgName));
     }
 
     @Test
@@ -47,6 +47,6 @@ public class PackageAttributeTest {
         final ClarpseProject parseService = new ClarpseProject(rawData);
         OOPSourceCodeModel generatedSourceModel = parseService.result();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.method()").get();
-        Assert.assertTrue(cmp.packageName().equals(pkgName));
+        Assert.assertTrue(cmp.pkg().name().equals(pkgName));
     }
 }

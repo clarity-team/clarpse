@@ -20,10 +20,18 @@ public class GoModule {
         this.projectFiles = new ProjectFiles(Lang.GOLANG);
         files.files().stream().forEach(file -> {
             if (file.path().endsWith(".go")) {
-                this.projectFiles.insertFile(new ProjectFile(
+                if (moduleFile.dir().equals("/")) {
+                    this.projectFiles.insertFile(new ProjectFile(
+                        file.path(),
+                        file.content().replaceAll(this.moduleName + "/", "")
+                            .replaceAll(this.moduleName, "")));
+                } else {
+                    // Non-root level module, transform file path to relative path
+                    this.projectFiles.insertFile(new ProjectFile(
                         file.path().replace(moduleFile.dir(), ""),
                         file.content().replaceAll(this.moduleName + "/", "")
                             .replaceAll(this.moduleName, "")));
+                }
             }
         });
     }

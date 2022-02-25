@@ -19,108 +19,199 @@ public class GoLangSmokeTest {
     }
 
     @Test
-    public void spotCheckInteface() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.Component"));
+    public void spotCheckStruct() {
+        assertTrue(generatedSourceModel.containsComponent("tests.integration.operator" +
+                                                              ".operatorDumper"));
     }
 
     @Test
-    public void spotCheckIntefacev2() {
-        assertTrue(generatedSourceModel.containsComponent("pilot.model.ServiceAccounts"));
+    public void spotCheckInterface() {
+        assertTrue(generatedSourceModel.containsComponent("pilot.pkg.server.Instance"));
     }
 
     @Test
     public void spotCheckStructImplementsInterface() {
-        assertTrue(generatedSourceModel.getComponent("pilot.platform.eureka.serviceAccounts")
-                .get().references(TypeReferences.IMPLEMENTATION).get(0).invokedComponent()
-                .equals("pilot.model.ServiceAccounts"));
+        assertTrue(generatedSourceModel.getComponent("tests.integration.operator.operatorDumper")
+                                       .get().references(TypeReferences.IMPLEMENTATION).stream().anyMatch(reference -> reference.invokedComponent()
+                                                                                                                                .equals("pkg.test.framework.resource.Dumper")));
     }
 
-    /**
-     * func (sa *serviceAccounts) GetIstioServiceAccounts(hostname value, ports []value) []value {
-     * return nil
-     * }
-     */
     @Test
     public void spotCheckStructMethodv2() {
         assertTrue(generatedSourceModel
-                .containsComponent("pilot.platform.eureka.serviceAccounts.GetIstioServiceAccounts(string, []string) : ([]string)"));
+                       .containsComponent("istioctl.pkg.multicluster.KubeOptions.prepare(*pflag" +
+                                              ".FlagSet)"));
     }
 
-    /**
-     * Start() error
-     */
     @Test
     public void spotCheckInterfaceMethod() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.Component.Start() : (error)"));
-    }
-
-    @Test
-    public void spotCheckStruct() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.IstioTestFramework"));
+        assertTrue(generatedSourceModel.containsComponent("pilot.pkg.server.Instance.Start(<-chan" +
+                                                              " struct{}) : (error)"));
     }
 
     @Test
     public void spotCheckStructField() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.IstioTestFramework.Components"));
+        assertTrue(generatedSourceModel.containsComponent("tests.integration.operator" +
+                                                              ".operatorDumper.ns"));
+        assertTrue(generatedSourceModel.containsComponent("tests.integration.operator" +
+                                                              ".operatorDumper.rev"));
     }
 
     @Test
     public void spotCheckStructMethod() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.framework.IstioTestFramework.SetUp() : (error)"));
+        assertTrue(generatedSourceModel.containsComponent("pilot.pkg.status.Resource.String() : " +
+                                                              "(string)"));
     }
 
     @Test
     public void spotCheckStructv2() {
-        assertTrue(generatedSourceModel.containsComponent("tests.integration.environment.AppOnlyEnv"));
+        assertTrue(generatedSourceModel.containsComponent("operator.pkg.compare.YAMLCmpReporter"));
     }
 
     @Test
-    public void spotCheckStructExtension() {
-        assertTrue(generatedSourceModel.getComponent("tests.integration.environment.AppOnlyEnv")
-                .get().references(TypeReferences.EXTENSION).get(0).invokedComponent()
-                .equals("tests.integration.framework.TestEnv"));
+    public void spotCheckStructExternalTypeExtension() {
+        assertTrue(generatedSourceModel.getComponent("pilot.pkg.status.Resource")
+                                       .get().references(TypeReferences.EXTENSION).get(0).invokedComponent()
+                                       .equals("k8s.io.apimachinery.pkg.runtime.schema" +
+                                                   ".GroupVersionResource"));
+    }
+
+    @Test
+    public void spotCheckStructInternalTypeExtension() {
+        assertTrue(generatedSourceModel.getComponent("pkg.proxy.sidecarSyncStatus")
+                                       .get().references(TypeReferences.EXTENSION).get(0).invokedComponent()
+                                       .equals("pilot.pkg.xds.SyncStatus"));
     }
 
     @Test
     public void spotCheckStructcomponentReferences() {
-        assertTrue(generatedSourceModel.getComponent("mixer.pkg.pool.GoroutinePool").get().references().toString().equals(
-                "[SimpleTypeReference:mixer.pkg.pool.WorkFunc, SimpleTypeReference:sync.WaitGroup, SimpleTypeReference:bool, SimpleTypeReference:int]"));
+        assertTrue(generatedSourceModel
+                       .getComponent("tests.integration.operator.operatorDumper")
+                       .get()
+                       .references()
+                       .toString()
+                       .equals(
+                           "[SimpleTypeReference:string, SimpleTypeReference:pkg.test.framework" +
+                               ".resource.Context, TypeImplementationReference:pkg.test.framework" +
+                               ".resource.Dumper, TypeImplementationReference:pkg.test.framework" +
+                               ".resource.Resource, TypeImplementationReference:pkg.test" +
+                               ".framework.components.opentelemetry.Instance]"
+                       )
+        );
     }
 
     @Test
     public void spotCheckStructcomponentReferencesv2() {
-        assertTrue(generatedSourceModel.getComponent("mixer.pkg.aspect.quotasExecutor").get().references().toString().equals(
-                "[SimpleTypeReference:mixer.pkg.aspect.quotasManager, SimpleTypeReference:mixer.pkg.adapter.QuotasAspect, SimpleTypeReference:string, SimpleTypeReference:mixer.pkg.aspect.quotaInfo, SimpleTypeReference:mixer.pkg.attribute.Bag, SimpleTypeReference:mixer.pkg.expr.Evaluator, SimpleTypeReference:mixer.pkg.aspect.QuotaMethodArgs, SimpleTypeReference:mixer.pkg.adapter.QuotaResultLegacy]"));
+        assertTrue(generatedSourceModel.getComponent("security.pkg.pki.ca.IstioCA").get().references().toString().equals(
+            "[SimpleTypeReference:time.Duration, SimpleTypeReference:int, " +
+                "SimpleTypeReference:security.pkg.pki.util.KeyCertBundle, " +
+                "SimpleTypeReference:security.pkg.pki.ca.SelfSignedCARootCertRotator, " +
+                "SimpleTypeReference:byte, SimpleTypeReference:security.pkg.pki.ca.CertOpts, " +
+                "SimpleTypeReference:string, SimpleTypeReference:bool]"));
     }
 
     @Test
-    public void spotCheckStructModifier() {
-        assertTrue(generatedSourceModel.getComponent("mixer.pkg.aspect.quotasExecutor").get().modifiers().size() == 1
-                && generatedSourceModel.getComponent("mixer.pkg.aspect.quotasExecutor").get().modifiers()
-                        .contains("private"));
+    public void spotCheckStructPublicFieldVars() {
+        assertTrue(generatedSourceModel.getComponent("security.pkg.pki.ca.CertOpts.SubjectIDs").get().modifiers().size() == 1
+                       && generatedSourceModel.getComponent("security.pkg.pki.ca.CertOpts" +
+                                                                ".SubjectIDs").get().modifiers()
+                                              .contains("public"));
+    }
+
+    @Test
+    public void spotCheckStructPrivateFieldVars() {
+        assertTrue(generatedSourceModel.getComponent("pilot.pkg.controller.workloadentry" +
+                                                         ".workItem.entryName").get().modifiers().size() == 1
+                       && generatedSourceModel.getComponent("pilot.pkg.controller.workloadentry" +
+                                                                ".workItem.entryName").get().modifiers()
+                                              .contains("private"));
+    }
+
+    @Test
+    public void spotCheckStructMethodParam() {
+        assertTrue(generatedSourceModel.containsComponent("pkg.queue.queueImpl.pushRetryTask" +
+                                                              "(*BackoffTask)"));
+    }
+
+    @Test
+    public void spotCheckStructMethodParamTypeReference() {
+        assertTrue(generatedSourceModel.getComponent("pkg.queue.queueImpl.pushRetryTask" +
+                                                         "(*BackoffTask)").get().references(TypeReferences.SIMPLE)
+                                       .get(0).invokedComponent().equals("pkg.queue.BackoffTask"));
+    }
+
+    @Test
+    public void spotCheckStructMethodLocalVar() {
+        assertTrue(generatedSourceModel.containsComponent("pkg.queue.delayQueue.Run(<-chan " +
+                                                              "struct{}).task"));
+    }
+
+    @Test
+    public void spotCheckStructMethodLocalVarReference() {
+        assertTrue(generatedSourceModel.getComponent("pkg.queue.delayQueue.Run(<-chan struct{})" +
+                                                         ".task").get().references(TypeReferences.SIMPLE)
+                                       .get(0).invokedComponent().equals("pkg.queue.delayTask"));
+    }
+
+    @Test
+    public void spotCheckStructPrivateStruct() {
+        assertTrue(generatedSourceModel.getComponent("pilot.pkg.controller.workloadentry" +
+                                                         ".workItem").get().modifiers().size() == 1
+                       && generatedSourceModel.getComponent("pilot.pkg.controller.workloadentry" +
+                                                                ".workItem").get().modifiers()
+                                              .contains("private"));
     }
 
     @Test
     public void spotCheckInterfaceImports() {
-        assertTrue(generatedSourceModel.getComponent("broker.pkg.platform.kube.crd.IstioObject").get().imports().toString()
-                .equals("[fmt, os, mixer.pkg.il.runtime, github.com.golang.glog, github.com.hashicorp.go-multierror, k8s.io.apiextensions-apiserver.pkg.apis.apiextensions.v1beta1, k8s.io.apiextensions-apiserver.pkg.client.clientset.clientset, k8s.io.apimachinery.pkg.api.errors, k8s.io.apimachinery.pkg.apis.meta.v1, k8s.io.apimachinery.pkg.runtime, k8s.io.apimachinery.pkg.runtime.schema, k8s.io.apimachinery.pkg.runtime.serializer, k8s.io.apimachinery.pkg.util.wait, k8s.io.client-go.plugin.pkg.client.auth.gcp, k8s.io.client-go.plugin.pkg.client.auth.oidc, k8s.io.client-go.rest, k8s.io.client-go.tools.clientcmd, broker.pkg.model.config]"));
+        assertTrue(generatedSourceModel.getComponent("pkg.kube.inject.Injector").get().imports().toString()
+                                       .equals("[bufio, bytes, encoding.json, fmt, io, math, " +
+                                                   "reflect, sort, strconv, strings, text" +
+                                                   ".template, github.com.Masterminds.sprig.v3, " +
+                                                   "github.com.evanphx.json-patch.v5, github.com" +
+                                                   ".hashicorp.go-multierror, k8s.io.api.apps.v1," +
+                                                   " k8s.io.api.batch.v1, k8s.io.api.core.v1, k8s" +
+                                                   ".io.apimachinery.pkg.api.resource, k8s.io" +
+                                                   ".apimachinery.pkg.apis.meta.v1, k8s.io" +
+                                                   ".apimachinery.pkg.labels, k8s.io.apimachinery" +
+                                                   ".pkg.runtime, k8s.io.apimachinery.pkg.runtime" +
+                                                   ".schema, k8s.io.apimachinery.pkg.util.yaml, " +
+                                                   "sigs.k8s.io.yaml, istio.io.api.annotation, " +
+                                                   "istio.io.api.label, istio.io.api.mesh" +
+                                                   ".v1alpha1, istio.io.api.networking.v1beta1, " +
+                                                   "operator.pkg.apis.istio.v1alpha1, pkg.config" +
+                                                   ".mesh, pkg.util.gogoprotomarshal, istio.io" +
+                                                   ".pkg.log]"));
     }
 
     @Test
     public void spotCheckStructDoc() {
-        assertTrue(generatedSourceModel.getComponent("broker.pkg.platform.kube.crd.Client").get().comment().trim()
-                .equals("Client is a basic REST client for CRDs implementing config store"));
+        assertTrue(generatedSourceModel.getComponent("pilot.pkg.controller.workloadentry" +
+                                                         ".workItem").get().comment().trim()
+                                       .equals("workItem contains the state of a \"disconnect\" " +
+                                                   "event used to unregister a workload."));
     }
 
     @Test
     public void spotCheckStructFieldDoc() {
-        assertTrue(generatedSourceModel.getComponent("broker.pkg.platform.kube.crd.Client.restconfig").get().comment().trim()
-                .equals("restconfig for REST type descriptors"));
+        assertTrue(generatedSourceModel.getComponent("pilot.pkg.controller.workloadentry" +
+                                                         ".Controller.queue").get().comment().trim()
+                                       .equals("Note: unregister is to update the workload entry " +
+                                                   "status: like setting " +
+                                                   "`DisconnectedAtAnnotation` and make the " +
+                                                   "workload entry enqueue `cleanupQueue` cleanup" +
+                                                   " is to delete the workload entry queue " +
+                                                   "contains workloadEntry that need to be " +
+                                                   "unregistered"));
     }
 
     @Test
     public void spotCheckStructFuncDoc() {
-        assertTrue(generatedSourceModel.getComponent("broker.pkg.platform.kube.crd.Client.RegisterResources() : (error)").get().comment()
-                .trim().equals("RegisterResources sends a request to create CRDs and waits for them to initialize"));
+        assertTrue(generatedSourceModel.getComponent("pilot.pkg.controller.workloadentry" +
+                                                         ".Controller.QueueWorkloadEntryHealth" +
+                                                         "(*model.Proxy, HealthEvent)").get().comment()
+                                       .trim().equals("QueueWorkloadEntryHealth enqueues the " +
+                                                          "associated WorkloadEntries health " +
+                                                          "status."));
     }
 }

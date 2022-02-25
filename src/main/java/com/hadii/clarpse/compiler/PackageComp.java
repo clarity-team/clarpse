@@ -1,0 +1,18 @@
+package com.hadii.clarpse.compiler;
+
+import com.hadii.clarpse.sourcemodel.Package;
+
+import java.util.Comparator;
+
+public class PackageComp implements Comparator<Package> {
+    @Override
+    public int compare(Package o1, Package o2) {
+        if (o1.equals(o2)) {
+            return 0;
+        } else if (o2.path().length() <= o1.path().length()) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+}

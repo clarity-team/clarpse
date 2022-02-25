@@ -21,7 +21,9 @@ public class PackageAttributeTest {
         rawData.insertFile(new ProjectFile("/github/http/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().packageName().equals("github.http"));
+        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().path().equals("/github/http"));
+        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().ellipsisSeparatedPkgPath().equals("github.http"));
+        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().name().equals("http"));
     }
 
     @Test
@@ -31,7 +33,9 @@ public class PackageAttributeTest {
         rawData.insertFile(new ProjectFile("/github/http/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon").get().packageName().equals("github.http"));
+        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().path().equals("/github/http"));
+        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().ellipsisSeparatedPkgPath().equals("github.http"));
+        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().name().equals("http"));
     }
 
     @Test
@@ -41,7 +45,12 @@ public class PackageAttributeTest {
         rawData.insertFile(new ProjectFile("src/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().packageName().equals("src"));
+        assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().path().equals(
+            "/src"));
+        assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().name().equals(
+            "src"));
+        assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().ellipsisSeparatedPkgPath().equals(
+            "src"));
     }
 
     @Test
@@ -51,7 +60,9 @@ public class PackageAttributeTest {
         rawData.insertFile(new ProjectFile("src/cupcake/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().packageName().equals("src.cupcake"));
+        assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().path().equals("/src/cupcake"));
+        assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().name().equals("cupcake"));
+        assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().ellipsisSeparatedPkgPath().equals("src.cupcake"));
     }
 
     @Test
@@ -61,6 +72,8 @@ public class PackageAttributeTest {
         rawData.insertFile(new ProjectFile("/github/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().packageName().equals("github"));
+        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().path().equals("/github"));
+        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().name().equals("github"));
+        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().ellipsisSeparatedPkgPath().equals("github"));
     }
 }

@@ -24,13 +24,15 @@ public class CodeFragmentTest {
     @Test
     public void testGoReturnStructMethodComplexCodeFragment() throws Exception {
         final String code = "package main\ntype Person struct {}";
-        final String codeB = "package main\n import tester \"main\" \n func (p main.Person) x(args []value, x,y map[value]value, v, u value) (j,i []value, map[value]value.test)  {}";
+        final String codeB = "package main\n import \"main\" \n func (p main.Person)" +
+            " x(args []value, x,y map[value]value, v, u value) (j,i []value, map[value]value.test)  {}";
         final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
         rawData.insertFile(new ProjectFile("/src/main/cherry.go", code));
         rawData.insertFile(new ProjectFile("/src/com/cakes/test.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        System.out.println(generatedSourceModel.getComponent("main.Person.x([]value, map[value]value, map[value]value, value, value) : ([]value, []value, map[value]value.test)").get().codeFragment());
+        System.out.println(generatedSourceModel.getComponent("main.Person.x([]value, " +
+                                                                 "map[value]value, map[value]value, value, value) : ([]value, []value, map[value]value.test)").get().codeFragment());
         assertTrue(generatedSourceModel.getComponent("main.Person.x([]value, map[value]value, map[value]value, value, value) : ([]value, []value, map[value]value.test)").get().codeFragment().equals("x([]value, map[value]value, map[value]value, value, value) : ([]value, []value, map[value]value.test)"));
         assertTrue(generatedSourceModel.getComponent("main.Person.x([]value, map[value]value, map[value]value, value, value) : ([]value, []value, map[value]value.test).u")
                 .get().parentUniqueName().equals("main.Person.x([]value, map[value]value, map[value]value, value, value) : ([]value, []value, map[value]value.test)"));
@@ -47,7 +49,7 @@ public class CodeFragmentTest {
         rawData.insertFile(new ProjectFile("src/github/game/org/cakes.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("go.person.testMethod() : (org.Cake)").get().codeFragment()
+        assertTrue(generatedSourceModel.getComponent("github.go.person.testMethod() : (org.Cake)").get().codeFragment()
                 .equals("testMethod() : (org.Cake)"));
     }
 

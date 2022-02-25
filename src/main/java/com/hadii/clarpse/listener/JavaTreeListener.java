@@ -44,6 +44,7 @@ import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.ComponentType;
+import com.hadii.clarpse.sourcemodel.Package;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,7 +71,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
     private final OOPSourceCodeModel srcModel;
     private final Map<String, String> currentImportsMap = new HashMap<>();
     private final ProjectFile file;
-    private String currentPkg = "";
+    private Package currentPkg;
     private int currCyclomaticComplexity = 0;
 
     /**
@@ -105,7 +106,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
      */
     private Component createComponent(final Node node, final ComponentType componentType) {
         final Component newCmp = new Component();
-        newCmp.setPackageName(currentPkg);
+        newCmp.setPkg(currentPkg);
         newCmp.setComponentType(componentType);
         if (node.getComment().isPresent()) {
             newCmp.setComment(node.getComment().get().toString());
@@ -120,8 +121,9 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     @Override
     public final void visit(final PackageDeclaration ctx, final Object arg) {
-        currentPkg = ctx.getNameAsString();
-        currentImports.clear();
+        String pkgPath = ctx.getNameAsString();
+        String pkgName = pkgPath;
+        currentPkg = new Package(pkgName, pkgPath);
         if (!componentStack.isEmpty()) {
             LOGGER.error(
                     "New package declaration found while component stack not empty! component "
@@ -136,9 +138,6 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         final String shortImportName = ctx.getName().getId().trim().replaceAll(";", "");
         currentImports.add(fullImportName);
         currentImportsMap.put(shortImportName, fullImportName);
-        if (currentPkg.isEmpty()) {
-            currentPkg = "";
-        }
         super.visit(ctx, arg);
     }
 
@@ -567,9 +566,10 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
             resolvedType = OOPSourceModelConstants.getJavaDefaultClasses().get(type);
         } else if (symbol.isSolved()) {
             resolvedType = symbol.getCorrespondingDeclaration().getQualifiedName();
-        } else if (resolvedType.isEmpty()) {
-            if (currentPkg != null && !currentPkg.isEmpty()) {
-                resolvedType = currentPkg + "." + type;
+        }
+        if (resolvedType.isEmpty()) {
+            if (currentPkg != null) {
+                resolvedType = currentPkg.path() + "." + type;
             } else {
                 resolvedType = type;
             }
