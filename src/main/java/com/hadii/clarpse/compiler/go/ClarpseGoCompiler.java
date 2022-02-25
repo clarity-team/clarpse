@@ -6,7 +6,7 @@ import com.hadii.antlr.golang.GoParserBaseListener;
 import com.hadii.clarpse.CommonDir;
 import com.hadii.clarpse.compiler.ClarpseCompiler;
 import com.hadii.clarpse.compiler.ClarpseES6Compiler;
-import com.hadii.clarpse.compiler.LengthComp;
+import com.hadii.clarpse.compiler.PackageComp;
 import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.listener.GoLangTreeListener;
@@ -15,11 +15,13 @@ import com.hadii.clarpse.reference.TypeImplementationReference;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
+import com.hadii.clarpse.sourcemodel.Package;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,6 +32,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -55,29 +60,60 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         }
     }
 
-    private List<String> getProjectFileTypes(final List<ProjectFile> files) throws Exception {
-        final List<String> projectFileTypes = new ArrayList<>();
+    /**
+     * Returns all the Go packages contained in the given code sorted by package path
+     * length from smallest to greatest.
+     */
+    private TreeSet<Package> sourcePkgs(final List<ProjectFile> files, boolean isModule) throws Exception {
+        TreeSet<Package> sortedSet = new TreeSet<>(new PackageComp());
         if (files.size() > 0) {
-            String smallestCodeParentDir = files.get(0).path();
-            for (int i = 1; i < files.size(); i++) {
-                smallestCodeParentDir = new CommonDir(
-                    smallestCodeParentDir, files.get(i).path()).value();
-            }
-            if (smallestCodeParentDir.startsWith("/")) {
-                smallestCodeParentDir = smallestCodeParentDir.substring(1);
-            }
+            String redundantPkgPathPrefix = calculateRedundantPathPrefix(files, isModule);
             for (final ProjectFile projectFile : files) {
-                String modFileName;
-                modFileName = projectFile.path().replaceAll(smallestCodeParentDir, "");
-                if (modFileName.startsWith("/")) {
-                    modFileName = modFileName.substring(1);
-                }
-                if (modFileName.contains("/")) {
-                    projectFileTypes.add(modFileName.substring(0, modFileName.lastIndexOf("/")));
-                }
+                sortedSet.add(extractPackageMetadata(redundantPkgPathPrefix, projectFile));
             }
         }
-        return projectFileTypes;
+        return sortedSet;
+    }
+
+    private Package extractPackageMetadata(String redundantPkgPathPrefix, ProjectFile projectFile) {
+        Pattern p = Pattern.compile("package +([a-zA-Z_]+)", Pattern.MULTILINE);
+        String pkgPath = projectFile.path().substring(0, projectFile.path().lastIndexOf(
+            "/"));
+        pkgPath = pkgPath.replaceAll(redundantPkgPathPrefix, "");
+        Matcher m = p.matcher(projectFile.content());
+        if (m.find()) {
+            return new Package(m.group(1), pkgPath);
+        } else {
+            throw new IllegalArgumentException("No package declaration found in " + projectFile.path());
+        }
+    }
+
+    /**
+     * To avoid unnecessarily long file paths, this method returns a string representing a
+     * prefix that can be safely removed from all the given files.
+     */
+    private String calculateRedundantPathPrefix(List<ProjectFile> files, boolean isModule) throws Exception {
+        if (!isModule) {
+            int maxDirLevels  = StringUtils.countMatches(files.get(0).dir(), "/");
+            String redundantPathPrefix = files.get(0).dir();
+            for (int i = 1; i < files.size(); i++) {
+                int currDirLevel = StringUtils.countMatches(files.get(i).dir(), "/");
+                if (currDirLevel > maxDirLevels) {
+                    maxDirLevels = currDirLevel;
+                }
+                redundantPathPrefix = new CommonDir(
+                    redundantPathPrefix, files.get(i).dir()).value();
+            }
+            if (maxDirLevels < 2) {
+                redundantPathPrefix = "";
+            } else if (StringUtils.countMatches(redundantPathPrefix, "/") > 1) {
+                redundantPathPrefix = redundantPathPrefix.substring(
+                    0, redundantPathPrefix.lastIndexOf("/"));
+            }
+            return redundantPathPrefix;
+        } else {
+            return "";
+        }
     }
 
     @Override
@@ -86,20 +122,20 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         final List<ProjectFile> files = projectFiles.files();
         final List<GoModule> modules = new GoModules(projectFiles).list();
         if (modules.isEmpty()) {
-            compileGoModule(srcModel, files);
+            compileGoCode(srcModel, files, false);
         } else {
             for (GoModule module : modules) {
-                compileGoModule(srcModel, module.getProjectFiles().files());
+                compileGoCode(srcModel, module.getProjectFiles().files(), true);
             }
         }
         return srcModel;
     }
 
-    private void compileGoModule(OOPSourceCodeModel srcModel, List<ProjectFile> files) throws Exception {
-        final List<String> projectFileTypes = getProjectFileTypes(files);
-        // sort fileTypes by length in desc order, helps with type resolution.
-        projectFileTypes.sort(new LengthComp());
-        parseGoFiles(files, srcModel, projectFileTypes);
+    private void compileGoCode(OOPSourceCodeModel srcModel, List<ProjectFile> files,
+                               boolean isModule) throws Exception {
+
+        TreeSet<Package> sortedSet = sourcePkgs(files, isModule);
+        parseGoFiles(files, srcModel, sortedSet);
         /**
          * In GoLang, interfaces are implemented implicitly. As a result, we handle
          * their detection in the following way: Once we have parsed the entire code
@@ -136,19 +172,19 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         });
     }
 
-    private void parseGoFiles(final List<ProjectFile> files, final OOPSourceCodeModel srcModel,
-                              final List<String> projectFileTypes) {
-        // holds types that may be accessed by all the source ProjectFile parsing operations...
+    private void parseGoFiles(final List<ProjectFile> moduleFiles, final OOPSourceCodeModel srcModel,
+                              final TreeSet<Package> modulePkgs) {
+        // Holds types that may be accessed by all the source ProjectFile parsing operations...
         final List<Map.Entry<String, Component>> structWaitingList = new ArrayList<>();
-        for (final ProjectFile projectFile : files) {
+        for (final ProjectFile moduleFile : moduleFiles) {
             try {
-                final CharStream charStream = new ANTLRInputStream(projectFile.content());
+                final CharStream charStream = new ANTLRInputStream(moduleFile.content());
                 final TokenStream tokens = new CommonTokenStream(new GoLexer(charStream));
                 final GoParser parser = new GoParser(tokens);
                 final GoParser.SourceFileContext sourceFileContext = parser.sourceFile();
                 final ParseTreeWalker walker = new ParseTreeWalker();
                 final GoParserBaseListener listener = new GoLangTreeListener(
-                        srcModel, projectFileTypes, projectFile, structWaitingList);
+                        srcModel, modulePkgs, moduleFile, structWaitingList);
                 walker.walk(listener, sourceFileContext);
             } catch (final Exception | StackOverflowError e) {
                 e.printStackTrace();
@@ -175,7 +211,7 @@ class ImplementedInterfaces {
     }
 
     /**
-     * Retrieves a list of Strings corresponding to the the interfaces implemented
+     * Retrieves a list of Strings corresponding to the interfaces implemented
      * by the given base {@linkplain Component}.
      */
     List<String> getImplementedInterfaces(final Component baseComponent) {
@@ -191,8 +227,7 @@ class ImplementedInterfaces {
                     baseComponentMethodSignatures.add(generateMethodSignature(childCmp.get()));
                 }
             }
-            // check to see if the current component satisfies any of the collected
-            // interfaces
+            // check to see if the current component satisfies any of the collected interfaces
             if (!baseComponentMethodSignatures.isEmpty()) {
                 for (final Entry<String, List<String>> potentiallyImplementedInterface : interfaceMethodSpecsPairs
                         .entrySet()) {

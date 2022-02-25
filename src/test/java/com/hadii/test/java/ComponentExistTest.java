@@ -13,8 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic tests to ensure components are being recognized and parsed.
- *
- * @author Muntazir Fadhel
  */
 public class ComponentExistTest {
 

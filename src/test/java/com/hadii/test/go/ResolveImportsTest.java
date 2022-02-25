@@ -32,7 +32,7 @@ public class ResolveImportsTest {
 
     @Test
     public void testImportUsesFullUniquePathIfPossible() throws Exception {
-        final String code = "package main\n import g \"github\"\n type person struct {}";
+        final String code = "package main\n import g \"http/cakes/github\"\n type person struct {}";
         final String codeB = "package github";
         final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
         rawData.insertFile(new ProjectFile("/src/main/main.go", code));

@@ -9,6 +9,7 @@ import com.hadii.clarpse.reference.TypeExtensionReference;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
+import com.hadii.clarpse.sourcemodel.Package;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -21,10 +22,14 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 @SuppressWarnings("unchecked")
 public class GoLangTreeListener extends GoParserBaseListener {
@@ -34,31 +39,29 @@ public class GoLangTreeListener extends GoParserBaseListener {
     private final ArrayList<String> currentImports = new ArrayList<>();
     private final OOPSourceCodeModel srcModel;
     private final Map<String, String> currentImportsMap = new HashMap<>();
-    private final ProjectFile projectFile;
-    private final List<String> projectFileTypes;
+    private final ProjectFile sourceFile;
+    private final TreeSet<Package> modulePkgs;
     private final List<Map.Entry<String, Component>> structWaitingList;
-    private String currentPkg = "";
+    private Package currPkg;
     private String lastParsedTypeIdentifier = null;
     private boolean inReceiverContext = false;
     private boolean inResultContext = false;
     private int currCyclomaticComplexity = 0;
 
-    public GoLangTreeListener(final OOPSourceCodeModel srcModel, final List<String> projectFileTypes,
-                              final ProjectFile filetoProcess,
+    public GoLangTreeListener(final OOPSourceCodeModel srcModel,
+                              final TreeSet<Package> modulePkgs, final ProjectFile sourceFile,
                               final List<Map.Entry<String, Component>> structWaitingList) {
         this.srcModel = srcModel;
-        projectFile = filetoProcess;
-        this.projectFileTypes = projectFileTypes;
+        this.sourceFile = sourceFile;
+        this.modulePkgs = modulePkgs;
         this.structWaitingList = structWaitingList;
     }
 
     private void completeComponent(final Component completedComponent) {
         // update cyclomatic complexity if component is a method
-        if (completedComponent.componentType().isMethodComponent()
-                && !ParseUtil.componentStackContainsInterface(componentStack)) {
+        if (completedComponent.componentType().isMethodComponent() && !ParseUtil.componentStackContainsInterface(componentStack)) {
             completedComponent.setCyclo(currCyclomaticComplexity);
         }
-
         // To handle the case where struct methods are parsed before their parent struct were,
         // check if the completed component is such a parent and update accordingly.
         structWaitingList.forEach(entry -> {
@@ -66,9 +69,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
                 updateStructChild(completedComponent, entry.getValue());
             }
         });
-        if (completedComponent.componentType().isMethodComponent()
-                && srcModel.containsComponent(completedComponent.parentUniqueName())) {
-            final Component parentCmp = srcModel.getComponent(completedComponent.parentUniqueName()).get();
+        if (completedComponent.componentType().isMethodComponent() && srcModel.containsComponent(completedComponent.parentUniqueName())) {
+            final Component parentCmp =
+                srcModel.getComponent(completedComponent.parentUniqueName()).get();
             for (final ComponentReference componentReference : completedComponent.references()) {
                 parentCmp.insertComponentRef(componentReference);
             }
@@ -89,9 +92,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
     private Component createComponent(final OOPSourceModelConstants.ComponentType componentType,
                                       ParserRuleContext ctx) {
         final Component newCmp = new Component();
-        newCmp.setPackageName(currentPkg);
+        newCmp.setPkg(currPkg);
         newCmp.setComponentType(componentType);
-        newCmp.setSourceFilePath(projectFile.path());
+        newCmp.setSourceFilePath(sourceFile.path());
         newCmp.setCodeHash(ParseUtil.originalText(ctx).hashCode());
         return newCmp;
     }
@@ -103,51 +106,57 @@ public class GoLangTreeListener extends GoParserBaseListener {
 
     @Override
     public void enterPackageClause(final GoParser.PackageClauseContext ctx) {
-        currentPkg = ctx.IDENTIFIER().getText();
-        if (projectFile.path().contains("/")) {
-            final String modFileName = projectFile.path().substring(0, projectFile.path().lastIndexOf("/"));
-            for (final String s : projectFileTypes) {
-                if (modFileName.endsWith(s)) {
-                    currentPkg = s;
+        String pkgName = ctx.IDENTIFIER().getText();
+        String sourceFileBasePath = pkgName;
+        if (sourceFile.path().contains("/")) {
+            sourceFileBasePath = sourceFile.path().substring(0, sourceFile.path().lastIndexOf("/"));
+            Iterator<Package> iterator = this.modulePkgs.iterator();
+            while (iterator.hasNext()) {
+                Package tmpPkg = iterator.next();
+                if (sourceFileBasePath.endsWith(tmpPkg.path())) {
+                    sourceFileBasePath = tmpPkg.path();
                     break;
                 }
             }
         }
-        currentPkg = currentPkg.replaceAll("/", ".");
+        this.currPkg = new Package(pkgName, sourceFileBasePath);
         currentImports.clear();
         if (!componentStack.isEmpty()) {
-            LOGGER.info(
-                    "Clarpse GoLang Listener found new package declaration while component stack not empty! "
+            LOGGER.info("Found new package declaration while component stack not empty! "
                             + "component stack size is: " + componentStack.size());
         }
     }
 
     @Override
     public final void enterImportSpec(final GoParser.ImportSpecContext ctx) {
-        String fullImportName = ctx.importPath().getText().replaceAll("\"", "");
-        for (final String s : projectFileTypes) {
-            if (s.endsWith(fullImportName) || fullImportName.endsWith(s)) {
-                fullImportName = s;
-                break;
+        String fullImportPath = ctx.importPath().getText().replaceAll("\"", "");
+        String shortImportName = null;
+        Iterator<Package> iterator = this.modulePkgs.iterator();
+        // Attempt to find a local package that matches the import statement ..
+        while (iterator.hasNext()) {
+            Package tmpPkg = iterator.next();
+            if (!tmpPkg.path().isEmpty()) {
+                String modPkgPath = StringUtils.strip(tmpPkg.path(), "/");
+                if (modPkgPath.equalsIgnoreCase(fullImportPath)) {
+                    fullImportPath = modPkgPath;
+                    shortImportName = tmpPkg.name();
+                    break;
+                }
             }
         }
-
-        currentImports.add(fullImportName.replaceAll("/", "."));
-        final String shortImportName;
+        currentImports.add(fullImportPath.replaceAll("/", "."));
         if (ctx.IDENTIFIER() != null && ctx.IDENTIFIER().getText() != null) {
             shortImportName = ctx.IDENTIFIER().getText();
-        } else {
+        } else if (shortImportName == null) {
             if (ctx.importPath().getText().contains("/")) {
-                shortImportName = ctx.importPath().getText().substring(ctx.importPath().getText().lastIndexOf("/") + 1)
-                                     .replace("\"", "");
+                shortImportName =
+                    ctx.importPath().getText().substring(ctx.importPath().getText().lastIndexOf(
+                        "/") + 1).replace("\"", "");
             } else {
                 shortImportName = ctx.importPath().getText().replaceAll("\"", "");
             }
         }
-        currentImportsMap.put(shortImportName, fullImportName);
-        if (currentPkg.isEmpty()) {
-            currentPkg = "";
-        }
+        currentImportsMap.put(shortImportName, fullImportPath);
     }
 
     @Override
@@ -158,13 +167,13 @@ public class GoLangTreeListener extends GoParserBaseListener {
                 exitStructType(ctx);
             } else {
                 final Component cmp =
-                    createComponent(OOPSourceModelConstants.ComponentType.STRUCT,
-                                    ctx);
+                    createComponent(OOPSourceModelConstants.ComponentType.STRUCT, ctx);
                 final String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
-                                                                 Arrays.asList(projectFile.content().split("\n")));
+                                                                 Arrays.asList(sourceFile.content().split("\n")));
                 cmp.setComment(comments);
                 cmp.setName(lastParsedTypeIdentifier);
-                cmp.setComponentName(ParseUtil.generateComponentName(lastParsedTypeIdentifier, componentStack));
+                cmp.setComponentName(ParseUtil.generateComponentName(lastParsedTypeIdentifier,
+                                                                     componentStack));
                 cmp.setImports(currentImports);
                 ParseUtil.pointParentsToGivenChild(cmp, componentStack);
                 cmp.insertAccessModifier(visibility(cmp.name()));
@@ -178,13 +187,13 @@ public class GoLangTreeListener extends GoParserBaseListener {
         if (!componentStackContainsMethod()) {
             if (lastParsedTypeIdentifier != null) {
                 final Component cmp =
-                    createComponent(OOPSourceModelConstants.ComponentType.INTERFACE,
-                                    ctx);
+                    createComponent(OOPSourceModelConstants.ComponentType.INTERFACE, ctx);
                 final String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
-                                                                 Arrays.asList(projectFile.content().split("\n")));
+                                                                 Arrays.asList(sourceFile.content().split("\n")));
                 cmp.setComment(comments);
                 cmp.setName(lastParsedTypeIdentifier);
-                cmp.setComponentName(ParseUtil.generateComponentName(lastParsedTypeIdentifier, componentStack));
+                cmp.setComponentName(ParseUtil.generateComponentName(lastParsedTypeIdentifier,
+                                                                     componentStack));
                 cmp.setImports(currentImports);
                 ParseUtil.pointParentsToGivenChild(cmp, componentStack);
                 cmp.insertAccessModifier(visibility(cmp.name()));
@@ -201,7 +210,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
             final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD,
                                                   ctx);
             final String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
-                                                             Arrays.asList(projectFile.content().split("\n")));
+                                                             Arrays.asList(sourceFile.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
             cmp.setCodeFragment(cmp.name() + "(");
@@ -225,35 +234,23 @@ public class GoLangTreeListener extends GoParserBaseListener {
 
     /**
      * Searches the children of the given context for a TypeNameContext
-     * and returns its Text Value. If there are multiple relevant child nodes,
-     * we will return the text value for one of them at random.
+     * and returns its resolved type value. If there are multiple relevant child nodes,
+     * we will return the resolved types for all of them.
      *
-     * @param ctx Given context in which to search
-     * @return Text corresponding to the type names found.
+     * @param ctx            Given context in which to search
+     * @param containedTypes Initially empty Set used to return retrieved type values.
      */
-    private String getChildTypeNameContextText(final RuleContext ctx) {
-
-        if (ctx == null) {
-            return "";
-        }
-        if (ctx instanceof GoParser.TypeNameContext) {
-            return ctx.getText();
-        }
-
-        final StringBuilder s = new StringBuilder();
-        for (int i = 0; i < ctx.getChildCount(); i++) {
-            if (!(ctx.getChild(i) instanceof TerminalNodeImpl)) {
-                try {
-                    final String t = getChildTypeNameContextText((RuleContext) ctx.getChild(i));
-                    if (!t.isEmpty()) {
-                        s.append(t).append(",");
-                    }
-                } catch (final Exception e) {
-                    // do nothing
+    private void fetchContainedTypes(final RuleContext ctx, Set<String> containedTypes) {
+        if (ctx != null) {
+            if (ctx instanceof GoParser.TypeNameContext) {
+                containedTypes.add(resolveType(ctx.getText()));
+            }
+            for (int i = 0; i < ctx.getChildCount(); i++) {
+                if (!(ctx.getChild(i) instanceof TerminalNodeImpl)) {
+                    fetchContainedTypes((RuleContext) ctx.getChild(i), containedTypes);
                 }
             }
         }
-        return s.toString().replaceAll(",$", "");
     }
 
     private GoParser.VarSpecContext findParentVarSpecContext(final RuleContext ctx) {
@@ -272,7 +269,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
             final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD,
                                                   ctx);
             final String comments = ParseUtil.goLangComments(ctx.getStart().getLine(),
-                                                             Arrays.asList(projectFile.content().split("\n")));
+                                                             Arrays.asList(sourceFile.content().split("\n")));
             cmp.setComment(comments);
             cmp.setName(ctx.IDENTIFIER().getText());
             ParseUtil.pointParentsToGivenChild(cmp, componentStack);
@@ -307,8 +304,8 @@ public class GoLangTreeListener extends GoParserBaseListener {
         }
     }
 
-    private void setCodeFragmentFromParameters(final GoParser.ParametersContext ctx, final Component currMethodCmp) {
-
+    private void setCodeFragmentFromParameters(final GoParser.ParametersContext ctx,
+                                               final Component currMethodCmp) {
         if (ctx.parameterDecl() != null) {
             for (final GoParser.ParameterDeclContext paramCtx : ctx.parameterDecl()) {
                 final String type = ParseUtil.originalText(paramCtx.type_());
@@ -329,26 +326,13 @@ public class GoLangTreeListener extends GoParserBaseListener {
     }
 
     private void processParameters(final GoParser.ParametersContext ctx) {
-        if (ctx.parameterDecl() != null) {
+        if (ctx != null && ctx.parameterDecl() != null) {
             final LetterProvider letterProvider = new LetterProvider();
             final List<Component> paramCmps = new ArrayList<>();
             if (!inReceiverContext && !inResultContext) {
                 for (final GoParser.ParameterDeclContext paramCtx : ctx.parameterDecl()) {
-                    String[] types = {};
-                    for (int j = 0; j < paramCtx.children.size(); j++) {
-                        final String type = getChildTypeNameContextText(paramCtx);
-                        types = type.split(",");
-                        if (types.length < 1) {
-                            // without a type we really can't continue...
-                            LOGGER.error(
-                                    "Error! Did not find TypeNameContext for ParamDeclContext: " + paramCtx.getText());
-                            return;
-                        } else {
-                            for (int g = 0; g < types.length; g++) {
-                                types[g] = resolveType(types[g]);
-                            }
-                        }
-                    }
+                    Set<String> discoveredTypes = new HashSet<>();
+                    fetchContainedTypes(paramCtx, discoveredTypes);
                     final List<String> argumentNames = new ArrayList<>();
                     if (paramCtx.identifierList() == null) {
                         // no name provided for method arg, we have to name it ourselves.
@@ -358,19 +342,19 @@ public class GoLangTreeListener extends GoParserBaseListener {
                     }
                     for (final String methodArgName : argumentNames) {
                         final Component cmp =
-                                createComponent(OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT,
-                                                ctx);
+                            createComponent(OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT, ctx);
                         cmp.setName(methodArgName);
-                        cmp.setComponentName(ParseUtil.generateComponentName(cmp.name(), componentStack));
+                        cmp.setComponentName(ParseUtil.generateComponentName(cmp.name(),
+                                                                             componentStack));
                         if (!componentStack.isEmpty()) {
                             final Component completedCmp = componentStack.peek();
-                            cmp.setPackageName(completedCmp.packageName());
+                            cmp.setPkg(completedCmp.pkg());
                         }
                         ParseUtil.pointParentsToGivenChild(cmp, componentStack);
-                        for (final String type : types) {
-                            cmp.insertComponentRef(new SimpleTypeReference(type));
-                            paramCmps.add(cmp);
+                        for (final String discoveredType : discoveredTypes) {
+                            cmp.insertComponentRef(new SimpleTypeReference(discoveredType));
                         }
+                        paramCmps.add(cmp);
                     }
                 }
             }
@@ -390,6 +374,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
                 popAndCompleteComponent();
             }
         }
+        lastParsedTypeIdentifier = null;
     }
 
     private int countLogicalBinaryOperators(final ParserRuleContext ctx) {
@@ -437,7 +422,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
                 int vars = 1;
                 if (ctx.getParent().getParent() instanceof GoParser.ParameterDeclContext) {
                     final GoParser.ParameterDeclContext pctx =
-                            (GoParser.ParameterDeclContext) ctx.getParent().getParent();
+                        (GoParser.ParameterDeclContext) ctx.getParent().getParent();
                     if (pctx.identifierList() != null) {
                         vars = pctx.identifierList().IDENTIFIER().size();
                     }
@@ -462,9 +447,8 @@ public class GoLangTreeListener extends GoParserBaseListener {
             final GoParser.VarSpecContext tmpContext = findParentVarSpecContext(ctx);
             if (tmpContext != null) {
                 for (final TerminalNode identifier : tmpContext.identifierList().IDENTIFIER()) {
-                    final Component localVarCmp = createComponent(
-                        OOPSourceModelConstants.ComponentType.LOCAL,
-                        ctx);
+                    final Component localVarCmp =
+                        createComponent(OOPSourceModelConstants.ComponentType.LOCAL, ctx);
                     localVarCmp.setName(identifier.getText());
                     localVarCmp.setComponentName(ParseUtil.generateComponentName(identifier.getText(), componentStack));
                     localVarCmp.insertComponentRef(new SimpleTypeReference(resolvedType));
@@ -480,21 +464,22 @@ public class GoLangTreeListener extends GoParserBaseListener {
             srcModel.removeComponent(structChildCmp.uniqueName());
         }
         structChildCmp.setComponentName(structCmp.componentName() + "." + structChildCmp.codeFragment());
-        structChildCmp.setPackageName(structCmp.packageName());
+        structChildCmp.setPkg(structCmp.pkg());
         srcModel.insertComponent(structChildCmp);
         final List<String> childrenToBeRemoved = new ArrayList<>();
         final List<String> childrenToBeAdded = new ArrayList<>();
         for (final String child : structChildCmp.children()) {
-            final Optional<Component> childCmp = srcModel.getComponent(child);
-            if (childCmp.isPresent()) {
-                childCmp.get().setComponentName(structChildCmp.componentName() + "." + childCmp.get().name());
-                childCmp.get().setPackageName(structChildCmp.packageName());
-                childrenToBeAdded.add(childCmp.get().uniqueName());
-            }
-            if (!child.equals(childCmp.get().uniqueName())) {
-                childrenToBeRemoved.add(child);
-                srcModel.removeComponent(child);
-                srcModel.insertComponent(childCmp.get());
+            final Optional<Component> childCmpOptional = srcModel.getComponent(child);
+            if (childCmpOptional.isPresent()) {
+                Component childCmp = childCmpOptional.get();
+                childCmp.setComponentName(structChildCmp.componentName() + "." + childCmp.name());
+                childCmp.setPkg(structChildCmp.pkg());
+                childrenToBeAdded.add(childCmp.uniqueName());
+                if (!child.equals(childCmp.uniqueName())) {
+                    childrenToBeRemoved.add(child);
+                    srcModel.removeComponent(child);
+                    srcModel.insertComponent(childCmp);
+                }
             }
         }
         childrenToBeRemoved.forEach(item -> structChildCmp.children().remove(item));
@@ -516,7 +501,8 @@ public class GoLangTreeListener extends GoParserBaseListener {
                     methodCmp.setCodeFragment(methodCmp.codeFragment() + " : (");
                 }
                 if (ctx.parameters() != null && ctx.parameters().parameterDecl() != null) {
-                    for (final GoParser.ParameterDeclContext paramCtx : ctx.parameters().parameterDecl()) {
+                    for (final GoParser.ParameterDeclContext paramCtx
+                        : ctx.parameters().parameterDecl()) {
                         final String paramType = ParseUtil.originalText(paramCtx.type_());
                         int iterations = 1;
                         if (paramCtx.identifierList() != null) {
@@ -593,6 +579,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
         if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
             popAndCompleteComponent();
         }
+        lastParsedTypeIdentifier = null;
     }
 
     @Override
@@ -600,6 +587,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
         if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
             popAndCompleteComponent();
         }
+        lastParsedTypeIdentifier = null;
     }
 
     @Override
@@ -609,42 +597,52 @@ public class GoLangTreeListener extends GoParserBaseListener {
                 final List<Component> fieldVars = new ArrayList<>();
                 for (final TerminalNode token : ctx.identifierList().IDENTIFIER()) {
                     final Component cmp =
-                        createComponent(OOPSourceModelConstants.ComponentType.FIELD,
-                                        ctx);
+                        createComponent(OOPSourceModelConstants.ComponentType.FIELD, ctx);
                     cmp.setName(token.getText());
-                    cmp.setComment(
-                            ParseUtil.goLangComments(ctx.getStart().getLine(),
-                                                     Arrays.asList(projectFile.content().split("\n"))));
-                    cmp.setComponentName(ParseUtil.generateComponentName(token.getText(), componentStack));
+                    cmp.setComment(ParseUtil.goLangComments(ctx.getStart().getLine(),
+                                                            Arrays.asList(sourceFile.content().split("\n"))));
+                    cmp.setComponentName(ParseUtil.generateComponentName(token.getText(),
+                                                                         componentStack));
                     if (ctx.type_().getText().contains("func")) {
-                        String line = projectFile.content().split("\n")[ctx.type_().start.getLine() - 1];
+                        String line =
+                            sourceFile.content().split("\n")[ctx.type_().start.getLine() - 1];
                         if (line.trim().endsWith("}")) {
                             line = line.substring(0, line.indexOf("}")).trim();
                         }
                         if (line.contains("//")) {
                             line = line.substring(0, line.lastIndexOf("//"));
                         }
-                        cmp.setCodeFragment(cmp.name() + " : " + line.substring(line.indexOf("func")).trim());
+                        cmp.setCodeFragment(cmp.name() + " : " + line.substring(line.indexOf(
+                            "func")).trim());
                     } else {
                         cmp.setCodeFragment(cmp.name() + " : " + ctx.type_().getText());
                     }
                     cmp.insertAccessModifier(visibility(cmp.name()));
                     ParseUtil.pointParentsToGivenChild(cmp, componentStack);
-                    final String[] types = getChildTypeNameContextText(ctx.type_()).split(",");
-                    for (final String type : types) {
-                        cmp.insertComponentRef(new SimpleTypeReference(resolveType(type)));
+                    Set<String> discoveredTypes = new HashSet<>();
+                    fetchContainedTypes(ctx.type_(), discoveredTypes);
+                    for (final String discoveredType : discoveredTypes) {
+                        cmp.insertComponentRef(new SimpleTypeReference(resolveType(discoveredType)));
                     }
                     fieldVars.add(cmp);
                 }
                 fieldVars.forEach(this::completeComponent);
             } else if (ctx.anonymousField() != null) {
-                final String[] types = getChildTypeNameContextText(ctx.anonymousField()).split(",");
-                for (final String type : types) {
-                    insertExtensionIntoStackBaseComponent(type);
+                Set<String> discoveredTypes = new HashSet<>();
+                fetchContainedTypes(ctx.anonymousField(), discoveredTypes);
+                for (final String discoveredType : discoveredTypes) {
+                    insertExtensionIntoStackBaseComponent(discoveredType);
                 }
             }
         } else {
             exitFieldDecl(ctx);
+        }
+    }
+
+    @Override
+    public final void enterVarDecl(final GoParser.VarDeclContext ctx) {
+        if (componentStack.isEmpty() || !componentStack.peek().componentType().isMethodComponent()) {
+            exitVarDecl(ctx);
         }
     }
 
@@ -665,6 +663,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
      * Tries to return the full, unique type name of the given type.
      */
     private String resolveType(String type) {
+        if (type == null || type.isEmpty()) {
+            throw new IllegalArgumentException("Type to be resolved cannot be empty!");
+        }
         type = type.replace("*", "");
         if (currentImportsMap.containsKey(type)) {
             return currentImportsMap.get(type).replaceAll("/", ".");
@@ -680,16 +681,16 @@ public class GoLangTreeListener extends GoParserBaseListener {
             return type;
         } else {
             // must be a local type...
-            return currentPkg + "." + type;
+            if (currPkg.path() != null && !currPkg.path().isEmpty()) {
+                return currPkg.ellipsisSeparatedPkgPath() + "." + type;
+            } else {
+                return currPkg.name() + "." + type;
+            }
         }
     }
 
     private boolean baseType(final String type) {
-        return (type.equals("string") || type.equals("int") || type.equals("int8") || type.equals("int16")
-                || type.equals("int32") || type.equals("int64") || type.equals("uint") || type.equals("uint8")
-                || type.equals("uint16") || type.equals("uint32") || type.equals("uint64") || type.equals("uintptr")
-                || type.equals("byte") || type.equals("rune") || type.equals("float32") || type.equals("float64")
-                || type.equals("complex64") || type.equals("complex128") || type.equals("bool"));
+        return (type.equals("string") || type.equals("int") || type.equals("int8") || type.equals("int16") || type.equals("int32") || type.equals("int64") || type.equals("uint") || type.equals("uint8") || type.equals("uint16") || type.equals("uint32") || type.equals("uint64") || type.equals("uintptr") || type.equals("byte") || type.equals("rune") || type.equals("float32") || type.equals("float64") || type.equals("complex64") || type.equals("complex128") || type.equals("bool"));
     }
 
     @Override
@@ -707,8 +708,9 @@ public class GoLangTreeListener extends GoParserBaseListener {
     }
 
     static class LetterProvider {
-        private final String[] letters = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-                "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+        private final String[] letters = new String[]{"a", "b", "c", "d", "e", "f", "g", "h",
+            "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y",
+            "z"};
         private int count = -1;
 
         /**

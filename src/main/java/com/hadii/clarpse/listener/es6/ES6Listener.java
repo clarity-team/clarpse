@@ -12,6 +12,7 @@ import com.hadii.clarpse.reference.TypeExtensionReference;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
+import com.hadii.clarpse.sourcemodel.Package;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,7 @@ public class ES6Listener implements Callback {
     private final ES6Module module;
     private final OOPSourceCodeModel srcModel;
     private final ProjectFile file;
+    private final Package currPkg;
     private int currCyclomaticComplexity = 0;
 
     public ES6Listener(final OOPSourceCodeModel srcModel, final ProjectFile file,
@@ -41,6 +43,7 @@ public class ES6Listener implements Callback {
         this.file = file;
         this.modulesMap = modulesMap;
         module = modulesMap.module(FilenameUtils.removeExtension(this.file.path()));
+        this.currPkg = new Package(module.pkgName(), module.pkgPath());
         LOGGER.info("Parsing New JS File: " + file.path());
     }
 
@@ -171,7 +174,6 @@ public class ES6Listener implements Callback {
         cmp = createComponent(OOPSourceModelConstants.ComponentType.LOCAL, n);
         cmp.setComponentName(ParseUtil.generateComponentName(localVarName, componentStack));
         cmp.setName(localVarName);
-        cmp.setPackageName(module.modulePkg());
         processVariableAssignment(cmp, n.getFirstChild().getFirstChild());
         updateParentChildrenData(cmp);
         componentStack.push(cmp);
@@ -190,7 +192,6 @@ public class ES6Listener implements Callback {
             cmp.setComponentName(generateComponentName(fieldVarname,
                                                        OOPSourceModelConstants.ComponentType.FIELD));
             cmp.setName(fieldVarname);
-            cmp.setPackageName(module.modulePkg());
             cmp.insertAccessModifier("private");
             processVariableAssignment(cmp, n.getSecondChild());
             updateParentChildrenData(cmp);
@@ -229,7 +230,6 @@ public class ES6Listener implements Callback {
             cmp = createComponent(paramComponentType, n);
             cmp.setComponentName(ParseUtil.generateComponentName(paramName, componentStack));
             cmp.setName(paramName);
-            cmp.setPackageName(module.modulePkg());
             updateParentChildrenData(cmp);
             generatedParamComponents.add(cmp);
         }
@@ -256,7 +256,6 @@ public class ES6Listener implements Callback {
         cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n.getFirstChild());
         cmp.setComponentName(ParseUtil.generateComponentName(cmpName, componentStack));
         cmp.setName(cmpName);
-        cmp.setPackageName(module.modulePkg());
         cmp.insertAccessModifier("public");
         if (n.isStaticMember()) {
             cmp.insertAccessModifier("static");
@@ -273,7 +272,6 @@ public class ES6Listener implements Callback {
         cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n.getFirstChild());
         cmp.setComponentName(ParseUtil.generateComponentName(cmpName, componentStack));
         cmp.setName(cmpName);
-        cmp.setPackageName(module.modulePkg());
         updateParentChildrenData(cmp);
         if (n.isStaticMember()) {
             cmp.insertAccessModifier("static");
@@ -295,7 +293,6 @@ public class ES6Listener implements Callback {
         }
         cmp.setComponentName(ParseUtil.generateComponentName(name, componentStack));
         cmp.setName(name);
-        cmp.setPackageName(module.modulePkg());
         updateParentChildrenData(cmp);
         if (n.getSecondChild().isName()) {
             // this class extends another class
@@ -315,7 +312,6 @@ public class ES6Listener implements Callback {
                                   n.getFirstChild());
             cmp.setComponentName(ParseUtil.generateComponentName("constructor", componentStack));
             cmp.setName("constructor");
-            cmp.setPackageName(module.modulePkg());
             updateParentChildrenData(cmp);
             componentStack.push(cmp);
         } else {
@@ -323,7 +319,6 @@ public class ES6Listener implements Callback {
             cmp = createComponent(OOPSourceModelConstants.ComponentType.METHOD, n.getFirstChild());
             cmp.setComponentName(ParseUtil.generateComponentName(n.getString(), componentStack));
             cmp.setName(n.getString());
-            cmp.setPackageName(module.modulePkg());
             if (n.isStaticMember()) {
                 cmp.insertAccessModifier("static");
             }
@@ -395,6 +390,7 @@ public class ES6Listener implements Callback {
         newCmp.setSourceFilePath(file.path());
         newCmp.setCodeHash(file.content().substring(
             n.getSourceOffset(), n.getSourceOffset() + n.getLength()).hashCode());
+        newCmp.setPkg(this.currPkg);
         if (NodeUtil.getBestJSDocInfo(n) != null) {
             final String doc = NodeUtil.getBestJSDocInfo(n).getOriginalCommentString();
             if (doc != null) {

@@ -66,7 +66,7 @@ public class ClarpseTestUtil {
                 entry.getName().substring(entry.getName().lastIndexOf(".") + 1, entry.getName().length());
                 if (!entry.isDirectory() && (currentlyExtractingProject)
                         && checkIfFileHasExtension(entry.getName(), language.fileExtensions())) {
-                    projectFiles.insertFile(new ProjectFile(entry.getName().replace(" ", "_"),
+                    projectFiles.insertFile(new ProjectFile("/" + entry.getName().replace(" ", "_"),
                             new String(IOUtils.toByteArray(zis), StandardCharsets.UTF_8)));
                 } else {
                     // if the project name is specified then keep extracting all

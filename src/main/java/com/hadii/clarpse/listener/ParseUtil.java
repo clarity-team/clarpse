@@ -35,7 +35,7 @@ public class ParseUtil {
     }
 
     public static void copyRefsToParents(Component originalComponent, Stack<Component> componentStack) {
-        // bubble up the completing component's invocations to it's parent components
+        // bubble up the completing component's invocations to its parent components
         // that are currently on the stack
         for (final Component parentCmp : componentStack) {
             final Iterator<ComponentReference> invocationIterator = originalComponent.references().iterator();

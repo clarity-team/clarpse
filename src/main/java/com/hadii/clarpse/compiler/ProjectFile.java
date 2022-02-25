@@ -15,7 +15,9 @@ public class ProjectFile {
 
     public ProjectFile(final String path, final String fileContent) {
         content = fileContent;
-        if (!path.startsWith("/")) {
+        if (path.startsWith(".")) {
+            throw new IllegalArgumentException(("Project files must use an absolute path!"));
+        } else if (!path.startsWith("/")) {
             this.path = "/" + path;
         } else {
             this.path = path;

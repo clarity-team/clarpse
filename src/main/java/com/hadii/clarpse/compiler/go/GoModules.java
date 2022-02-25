@@ -22,22 +22,22 @@ public class GoModules {
 
     private List<GoModule> generateModules(final ProjectFiles projectFiles) {
         List<GoModule> goModules = new ArrayList<>();
+        // Collected all go.mod files from the given list of all project files.
         final Map<ProjectFile, List> moduletoFilesMap = projectFiles.files().stream().filter(
-                projectFile -> projectFile.path().endsWith("go.mod")
+            projectFile -> projectFile.path().endsWith("go.mod")
         ).collect(Collectors.toMap(projectFile -> projectFile, projectFile -> new ArrayList()));
-        projectFiles.files().stream().forEach(projectFile -> {
+        // Group associated source files and modules together.
+        projectFiles.files().forEach(projectFile -> {
             for (final ProjectFile moduleFile : moduletoFilesMap.keySet()) {
-                if (projectFile.path().startsWith(moduleFile.dir())) {
-                    moduletoFilesMap.get(moduleFile).add(new ProjectFile(
-                            projectFile.path().replace(moduleFile.dir(), ""),
-                            projectFile.content()));
+                if (moduleFile.dir().equals("/") || projectFile.path().startsWith(moduleFile.dir())) {
+                    moduletoFilesMap.get(moduleFile).add(projectFile);
                 }
             }
         });
         moduletoFilesMap.keySet().stream().forEach(moduleFile -> {
             goModules.add(new GoModule(
-                    new ProjectFiles(
-                            Lang.GOLANG, moduletoFilesMap.get(moduleFile)), moduleFile));
+                new ProjectFiles(
+                    Lang.GOLANG, moduletoFilesMap.get(moduleFile)), moduleFile));
         });
         return goModules;
     }

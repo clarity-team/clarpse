@@ -13,109 +13,193 @@ import org.junit.Test;
 
 public class SmokeTest {
 
-    private static OOPSourceCodeModel generatedSourceModel;
+    private static OOPSourceCodeModel junit5Model;
+    private static OOPSourceCodeModel clarpseCodeModel;
 
     @BeforeClass
     public static void setup() throws Exception {
-        generatedSourceModel = ClarpseTestUtil.sourceCodeModel(
-                "/junit5-main.zip", Lang.JAVA);
+        junit5Model = ClarpseTestUtil.sourceCodeModel(
+            "/junit5-main.zip", Lang.JAVA);
+        clarpseCodeModel = ClarpseTestUtil.sourceCodeModel(
+            "/clarpse.zip", Lang.JAVA);
     }
 
     @Test
     public void spotCheckClass() {
-        Assert.assertTrue(generatedSourceModel.containsComponent(
-                "org.junit.jupiter.api.AssertNotNull"));
+        Assert.assertTrue(junit5Model.containsComponent(
+            "org.junit.jupiter.api.AssertNotNull"));
     }
 
     @Test
     public void spotCheckClassExtension() {
-        Assert.assertTrue(generatedSourceModel.getComponent(
-                "org.junit.platform.engine.discovery.ExcludeClassNameFilter")
-                                              .get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
-                                              .contains(new TypeExtensionReference(
-                                                      "org.junit.platform.engine.discovery" +
-                                                              ".AbstractClassNameFilter")));
+        Assert.assertTrue(junit5Model.getComponent(
+                                         "org.junit.platform.engine.discovery" +
+                                             ".ExcludeClassNameFilter")
+                                     .get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                                     .contains(new TypeExtensionReference(
+                                         "org.junit.platform.engine.discovery" +
+                                             ".AbstractClassNameFilter")));
     }
 
     @Test
     public void spotCheckClassDocs() {
-        Assert.assertTrue(generatedSourceModel.getComponent(
-                "org.junit.platform.launcher.LauncherDiscoveryListener")
-                                              .get().comment().equals(
-                                                      "/**\n" +
-                                                              " * Register a concrete " +
-                                                              "implementation of this interface " +
-                                                              "with a\n" +
-                                                              " * {@link org.junit.platform" +
-                                                              ".launcher.core" +
-                                                              ".LauncherDiscoveryRequestBuilder} " +
-                                                              "or\n" +
-                                                              " * {@link Launcher} to be notified" +
-                                                              " of events that occur during test " +
-                                                              "discovery.\n" +
-                                                              " *\n" +
-                                                              " * <p>All methods in this " +
-                                                              "interface have empty " +
-                                                              "<em>default</em> implementations" +
-                                                              ".\n" +
-                                                              " * Concrete implementations may " +
-                                                              "therefore override one or more of " +
-                                                              "these methods\n" +
-                                                              " * to be notified of the selected " +
-                                                              "events.\n" +
-                                                              " *\n" +
-                                                              " * <p>JUnit provides default " +
-                                                              "implementations that are created " +
-                                                              "via the factory\n" +
-                                                              " * methods in\n" +
-                                                              " * {@link org.junit.platform" +
-                                                              ".launcher.listeners.discovery" +
-                                                              ".LauncherDiscoveryListeners}.\n" +
-                                                              " *\n" +
-                                                              " * <p>The methods declared in this" +
-                                                              " interface are called by the " +
-                                                              "{@link Launcher}\n" +
-                                                              " * created via the {@link org" +
-                                                              ".junit.platform.launcher.core" +
-                                                              ".LauncherFactory}\n" +
-                                                              " * during test discovery.\n" +
-                                                              " *\n" +
-                                                              " * @see org.junit.platform" +
-                                                              ".launcher.listeners.discovery" +
-                                                              ".LauncherDiscoveryListeners\n" +
-                                                              " * @see LauncherDiscoveryRequest" +
-                                                              "#getDiscoveryListener()\n" +
-                                                              " * @see org.junit.platform" +
-                                                              ".launcher.core.LauncherConfig" +
-                                                              ".Builder" +
-                                                              "#addLauncherDiscoveryListeners\n" +
-                                                              " * @since 1.6\n" +
-                                                              " */\n"
-                ));
+        Assert.assertTrue(junit5Model.getComponent(
+                                         "org.junit.platform.launcher.LauncherDiscoveryListener")
+                                     .get().comment().equals(
+                "/**\n" +
+                    " * Register a concrete " +
+                    "implementation of this interface " +
+                    "with a\n" +
+                    " * {@link org.junit.platform" +
+                    ".launcher.core" +
+                    ".LauncherDiscoveryRequestBuilder} " +
+                    "or\n" +
+                    " * {@link Launcher} to be notified" +
+                    " of events that occur during test " +
+                    "discovery.\n" +
+                    " *\n" +
+                    " * <p>All methods in this " +
+                    "interface have empty " +
+                    "<em>default</em> implementations" +
+                    ".\n" +
+                    " * Concrete implementations may " +
+                    "therefore override one or more of " +
+                    "these methods\n" +
+                    " * to be notified of the selected " +
+                    "events.\n" +
+                    " *\n" +
+                    " * <p>JUnit provides default " +
+                    "implementations that are created " +
+                    "via the factory\n" +
+                    " * methods in\n" +
+                    " * {@link org.junit.platform" +
+                    ".launcher.listeners.discovery" +
+                    ".LauncherDiscoveryListeners}.\n" +
+                    " *\n" +
+                    " * <p>The methods declared in this" +
+                    " interface are called by the " +
+                    "{@link Launcher}\n" +
+                    " * created via the {@link org" +
+                    ".junit.platform.launcher.core" +
+                    ".LauncherFactory}\n" +
+                    " * during test discovery.\n" +
+                    " *\n" +
+                    " * @see org.junit.platform" +
+                    ".launcher.listeners.discovery" +
+                    ".LauncherDiscoveryListeners\n" +
+                    " * @see LauncherDiscoveryRequest" +
+                    "#getDiscoveryListener()\n" +
+                    " * @see org.junit.platform" +
+                    ".launcher.core.LauncherConfig" +
+                    ".Builder" +
+                    "#addLauncherDiscoveryListeners\n" +
+                    " * @since 1.6\n" +
+                    " */\n"
+            ));
     }
 
     @Test
     public void spotCheckClassImplementation() {
-        Assert.assertTrue(generatedSourceModel.getComponent(
-                "org.junit.platform.engine.discovery.ExcludePackageNameFilter")
-                                              .get().references(OOPSourceModelConstants.TypeReferences.IMPLEMENTATION)
-                                              .contains(new TypeImplementationReference(
-                                                      "org.junit.platform.engine.discovery" +
-                                                              ".PackageNameFilter")));
+        Assert.assertTrue(junit5Model.getComponent(
+                                         "org.junit.platform.engine.discovery" +
+                                             ".ExcludePackageNameFilter")
+                                     .get().references(OOPSourceModelConstants.TypeReferences.IMPLEMENTATION)
+                                     .contains(new TypeImplementationReference(
+                                         "org.junit.platform.engine.discovery" +
+                                             ".PackageNameFilter")));
     }
 
     @Test
     public void spotCheckMethod() {
-        Assert.assertTrue(generatedSourceModel.containsComponent(
-                "org.junit.platform.engine.FilterResult.included(String)"));
+        Assert.assertTrue(junit5Model.containsComponent(
+            "org.junit.platform.engine.FilterResult.included(String)"));
     }
 
     @Test
     public void spotCheckSingletonListOriginalClassTypeReference() {
-        Assert.assertTrue(generatedSourceModel.getComponent(
-                "example.util.ListWriter").get()
-                                              .references(OOPSourceModelConstants.TypeReferences.SIMPLE)
-                                              .contains(new SimpleTypeReference("java.util.Collections"))
+        Assert.assertTrue(junit5Model.getComponent(
+                                         "example.util.ListWriter").get()
+                                     .references(OOPSourceModelConstants.TypeReferences.SIMPLE)
+                                     .contains(new SimpleTypeReference("java.util.Collections"))
         );
     }
+
+    @Test
+    public void spotCheckClarpseClassExtension() {
+        Assert.assertTrue(clarpseCodeModel.getComponent(
+                                              "com.hadii.clarpse.reference.SimpleTypeReference")
+                                          .get()
+                                          .references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                                          .get(0)
+                                          .invokedComponent()
+                                          .equals("com.hadii.clarpse.reference" +
+                                                      ".ComponentReference"));
+    }
+
+    @Test
+    public void spotCheckClarpseLocalVarsExists() {
+        Assert.assertTrue(clarpseCodeModel.getComponent(
+                                              "com.hadii.clarpse.compiler.ClarpseES6Compiler" +
+                                                  ".parseAllSourceCode(List<ProjectFile>, " +
+                                                  "OOPSourceCodeModel, Compiler, ModulesMap)")
+                                          .get()
+                                          .children().size() == 6);
+    }
+
+
+    @Test
+    public void spotCheckClarpseInterfaceImplementation() {
+        Assert.assertTrue(clarpseCodeModel.getComponent(
+                                              "com.hadii.clarpse.compiler.go.ClarpseGoCompiler")
+                                          .get()
+                                          .references(OOPSourceModelConstants.TypeReferences.IMPLEMENTATION)
+                                          .get(0)
+                                          .invokedComponent()
+                                          .equals("com.hadii.clarpse.compiler.ClarpseCompiler"));
+    }
+
+    @Test
+    public void spotCheckClarpseMethodDoc() {
+        Assert.assertTrue(clarpseCodeModel.getComponent(
+                                              "com.hadii.clarpse.compiler.go.ClarpseGoCompiler" +
+                                                  ".sourcePkgs(List<ProjectFile>, boolean)")
+                                          .get()
+                                          .comment()
+                                          .equals("/**\n" +
+                                                      " * Returns all the Go packages contained " +
+                                                      "in the given " +
+                                                      "code sorted by package path\n" +
+                                                      " * length from smallest to greatest.\n" +
+                                                      " */\n"));
+    }
+
+    @Test
+    public void spotCheckClarpseClassDoc() {
+        Assert.assertTrue(clarpseCodeModel.getComponent("com.hadii.clarpse.compiler.go.GoModule")
+                                          .get()
+                                          .comment()
+                                          .equals("/**\n" +
+                                                      " * Represents source files to be parsed.\n" +
+                                                      " */\n"));
+    }
+
+    @Test
+    public void spotCheckClarpseClassImports() {
+        Assert.assertTrue(clarpseCodeModel.getComponent("com.hadii.clarpse.sourcemodel.Component")
+                                          .get()
+                                          .imports().toString().equals("[com.fasterxml.jackson" +
+                                                                           ".annotation" +
+                                                                           ".JsonInclude, com" +
+                                                                           ".fasterxml.jackson" +
+                                                                           ".annotation" +
+                                                                           ".JsonInclude.Include," +
+                                                                           " com.hadii.clarpse" +
+                                                                           ".reference" +
+                                                                           ".ComponentReference, " +
+                                                                           "com.hadii.clarpse" +
+                                                                           ".sourcemodel" +
+                                                                           ".OOPSourceModelConstants.ComponentType, com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences, java.io.Serializable, java.util.ArrayList, java.util.LinkedHashSet, java.util.List, java.util.Set]"));
+    }
+
+
 }
