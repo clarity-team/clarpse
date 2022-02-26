@@ -37,7 +37,7 @@ public class GoModule {
     }
 
     private String extractModuleName(ProjectFile moduleFile) {
-        Pattern p = Pattern.compile(".*module *(.*)\n.*");
+        Pattern p = Pattern.compile(".*module *(.*) *$");
         Matcher m = p.matcher(moduleFile.content());
         if (m.find()) {
             return m.group(1);

@@ -289,6 +289,30 @@ public class ComponentReferenceTest {
     }
 
     @Test
+    public void testParseGoStructExtensionThroughLocalStruct() throws Exception {
+        final String code = "package main\n type Importable struct { \n Import string \n In " +
+            "[]interface{} \n } \n type person struct { Importable }";
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/main.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.person").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                                       .get(0).invokedComponent().equals("main.Importable"));
+    }
+
+    @Test
+    public void goStructFieldExtensionAfterMapInterface() throws Exception {
+        final String code = "package main\n type Importable struct { } \n type person struct { "
+            + "\n test  map[string]interface{} \n Importable }";
+        final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
+        rawData.insertFile(new ProjectFile("/main.go", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        assertTrue(generatedSourceModel.getComponent("main.person").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                                       .get(0).invokedComponent().equals("main.Importable"));
+    }
+
+    @Test
     public void testInterfaceAnonymousTypeExtends() throws Exception {
         final String code = "package main \n type plain interface \n{testMethod() int\n Person\n testMethodv2() (string, uintptr) {} }";
         final String codeB = "package main\n type Person struct {}";

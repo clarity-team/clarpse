@@ -162,7 +162,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
     @Override
     public final void enterStructType(final GoParser.StructTypeContext ctx) {
         if (lastParsedTypeIdentifier != null) {
-            if (componentStackContainsMethod()) {
+            if (stackContainsMethod()) {
                 // skip over structs defined within methods.
                 exitStructType(ctx);
             } else {
@@ -184,7 +184,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
 
     @Override
     public final void enterInterfaceType(final GoParser.InterfaceTypeContext ctx) {
-        if (!componentStackContainsMethod()) {
+        if (!stackContainsMethod() && !stackContainsStructOrInterface()) {
             if (lastParsedTypeIdentifier != null) {
                 final Component cmp =
                     createComponent(OOPSourceModelConstants.ComponentType.INTERFACE, ctx);
@@ -584,7 +584,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
 
     @Override
     public final void exitInterfaceType(final GoParser.InterfaceTypeContext ctx) {
-        if (!componentStack.isEmpty() && componentStack.peek().componentType().isBaseComponent()) {
+        if (!componentStack.isEmpty() && componentStack.peek().componentType() == OOPSourceModelConstants.ComponentType.INTERFACE) {
             popAndCompleteComponent();
         }
         lastParsedTypeIdentifier = null;
@@ -698,9 +698,18 @@ public class GoLangTreeListener extends GoParserBaseListener {
         lastParsedTypeIdentifier = ctx.IDENTIFIER().getText();
     }
 
-    private boolean componentStackContainsMethod() {
+    private boolean stackContainsMethod() {
         for (final Component cmp : componentStack) {
             if (cmp.componentType().isMethodComponent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean stackContainsStructOrInterface() {
+        for (final Component cmp : componentStack) {
+            if (cmp.componentType().isBaseComponent()) {
                 return true;
             }
         }

@@ -50,10 +50,11 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
                                                       .filter(s -> (s.componentType().isBaseComponent()))
                                                       .collect(Collectors.toSet());
         LOGGER.info("Detected " + baseComponents.size() + " interfaces to resolve.");
-        final ImplementedInterfaces implementedInterfacesGatherer = new ImplementedInterfaces(srcModel);
+        final ImplementedInterfaces implementedInterfacesGatherer =
+            new ImplementedInterfaces(srcModel);
         for (final Component baseCmp : baseComponents) {
             final List<String> implementedInterfaces = implementedInterfacesGatherer
-                    .getImplementedInterfaces(baseCmp);
+                .getImplementedInterfaces(baseCmp);
             for (final String implementedInterface : implementedInterfaces) {
                 baseCmp.insertComponentRef(new TypeImplementationReference(implementedInterface));
             }
@@ -94,7 +95,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
      */
     private String calculateRedundantPathPrefix(List<ProjectFile> files, boolean isModule) throws Exception {
         if (!isModule) {
-            int maxDirLevels  = StringUtils.countMatches(files.get(0).dir(), "/");
+            int maxDirLevels = StringUtils.countMatches(files.get(0).dir(), "/");
             String redundantPathPrefix = files.get(0).dir();
             for (int i = 1; i < files.size(); i++) {
                 int currDirLevel = StringUtils.countMatches(files.get(i).dir(), "/");
@@ -172,7 +173,8 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         });
     }
 
-    private void parseGoFiles(final List<ProjectFile> moduleFiles, final OOPSourceCodeModel srcModel,
+    private void parseGoFiles(final List<ProjectFile> moduleFiles,
+                              final OOPSourceCodeModel srcModel,
                               final TreeSet<Package> modulePkgs) {
         // Holds types that may be accessed by all the source ProjectFile parsing operations...
         final List<Map.Entry<String, Component>> structWaitingList = new ArrayList<>();
@@ -184,7 +186,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
                 final GoParser.SourceFileContext sourceFileContext = parser.sourceFile();
                 final ParseTreeWalker walker = new ParseTreeWalker();
                 final GoParserBaseListener listener = new GoLangTreeListener(
-                        srcModel, modulePkgs, moduleFile, structWaitingList);
+                    srcModel, modulePkgs, moduleFile, structWaitingList);
                 walker.walk(listener, sourceFileContext);
             } catch (final Exception | StackOverflowError e) {
                 e.printStackTrace();
@@ -218,7 +220,7 @@ class ImplementedInterfaces {
         // holds all the implemented interfaces for the given component
         final List<String> implementedInterfaces = new ArrayList<>();
         if (baseComponent.componentType().isBaseComponent()
-                && baseComponent.componentType() != OOPSourceModelConstants.ComponentType.INTERFACE) {
+            && baseComponent.componentType() != OOPSourceModelConstants.ComponentType.INTERFACE) {
             // generate a list of method signatures for the given base component.
             final List<String> baseComponentMethodSignatures = new ArrayList<>();
             for (final String baseComponentChild : baseComponent.children()) {
@@ -229,8 +231,9 @@ class ImplementedInterfaces {
             }
             // check to see if the current component satisfies any of the collected interfaces
             if (!baseComponentMethodSignatures.isEmpty()) {
-                for (final Entry<String, List<String>> potentiallyImplementedInterface : interfaceMethodSpecsPairs
-                        .entrySet()) {
+                for (final Entry<String, List<String>> potentiallyImplementedInterface :
+                    interfaceMethodSpecsPairs
+                    .entrySet()) {
                     if (baseComponentMethodSignatures.containsAll(potentiallyImplementedInterface.getValue())) {
                         // found a match!
                         implementedInterfaces.add(potentiallyImplementedInterface.getKey());
@@ -252,10 +255,10 @@ class ImplementedInterfaces {
         }
         final ArrayList<String> methodSpecs = new ArrayList<>();
         for (final ComponentReference extend
-                :interfaceComponent.references(OOPSourceModelConstants.TypeReferences.EXTENSION)) {
+            : interfaceComponent.references(OOPSourceModelConstants.TypeReferences.EXTENSION)) {
             final Optional<Component> cmp = model.getComponent(extend.invokedComponent());
             if (cmp.isPresent() && cmp.get().componentType() == OOPSourceModelConstants.ComponentType.INTERFACE
-                    && !cmp.get().equals(interfaceComponent)) {
+                && !cmp.get().equals(interfaceComponent)) {
                 methodSpecs.addAll(getListOfMethodSpecs(cmp.get()));
             }
         }
@@ -273,7 +276,7 @@ class ImplementedInterfaces {
         for (final String methodParam : methodComponent.children()) {
             final Optional<Component> methodParamCmp = model.getComponent(methodParam);
             if (methodParamCmp.isPresent()
-                    && methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() > 0) {
+                && methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() > 0) {
                 signature.append(methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
                                                .invokedComponent()).append(",");
             }
