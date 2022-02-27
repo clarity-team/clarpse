@@ -10,6 +10,7 @@ public interface ClarpseCompiler {
 
     /**
      * Compiles source code.
+     *
      * @param projectFiles Files to compile.
      * @return See {@link OOPSourceCodeModel}
      */

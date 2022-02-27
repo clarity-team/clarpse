@@ -17,6 +17,9 @@ public class GoModule {
 
     public GoModule(ProjectFiles files, ProjectFile moduleFile) {
         this.moduleName = this.extractModuleName(moduleFile);
+        if (this.moduleName.isEmpty()) {
+            throw new IllegalArgumentException("Module name cannot be empty!");
+        }
         this.projectFiles = new ProjectFiles(Lang.GOLANG);
         files.files().stream().forEach(file -> {
             if (file.path().endsWith(".go")) {
@@ -37,7 +40,7 @@ public class GoModule {
     }
 
     private String extractModuleName(ProjectFile moduleFile) {
-        Pattern p = Pattern.compile(".*module *(.*)\n.*");
+        Pattern p = Pattern.compile("^ *module *(.*) *$", Pattern.MULTILINE);
         Matcher m = p.matcher(moduleFile.content());
         if (m.find()) {
             return m.group(1);

@@ -3,9 +3,7 @@ package com.hadii.clarpse.compiler.go;
 import com.hadii.antlr.golang.GoLexer;
 import com.hadii.antlr.golang.GoParser;
 import com.hadii.antlr.golang.GoParserBaseListener;
-import com.hadii.clarpse.CommonDir;
 import com.hadii.clarpse.compiler.ClarpseCompiler;
-import com.hadii.clarpse.compiler.ClarpseES6Compiler;
 import com.hadii.clarpse.compiler.PackageComp;
 import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
@@ -21,7 +19,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,20 +37,19 @@ import java.util.stream.Collectors;
 /**
  * Antlr4 based GoLang compiler.
  */
-
 public class ClarpseGoCompiler implements ClarpseCompiler {
 
-    private static final Logger LOGGER = LogManager.getLogger(ClarpseES6Compiler.class);
+    private static final Logger LOGGER = LogManager.getLogger(ClarpseGoCompiler.class);
 
     private void resolveInterfaces(final OOPSourceCodeModel srcModel) throws Exception {
-        final Set<Component> baseComponents = srcModel.components()
-                                                      .filter(s -> (s.componentType().isBaseComponent()))
-                                                      .collect(Collectors.toSet());
+        final Set<Component> baseComponents =
+            srcModel.components().filter(s -> (s.componentType().isBaseComponent())).collect(Collectors.toSet());
         LOGGER.info("Detected " + baseComponents.size() + " interfaces to resolve.");
-        final ImplementedInterfaces implementedInterfacesGatherer = new ImplementedInterfaces(srcModel);
+        final ImplementedInterfaces implementedInterfacesGatherer =
+            new ImplementedInterfaces(srcModel);
         for (final Component baseCmp : baseComponents) {
-            final List<String> implementedInterfaces = implementedInterfacesGatherer
-                    .getImplementedInterfaces(baseCmp);
+            final List<String> implementedInterfaces =
+                implementedInterfacesGatherer.getImplementedInterfaces(baseCmp);
             for (final String implementedInterface : implementedInterfaces) {
                 baseCmp.insertComponentRef(new TypeImplementationReference(implementedInterface));
             }
@@ -64,55 +60,24 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
      * Returns all the Go packages contained in the given code sorted by package path
      * length from smallest to greatest.
      */
-    private TreeSet<Package> sourcePkgs(final List<ProjectFile> files, boolean isModule) throws Exception {
+    private TreeSet<Package> sourcePkgs(final List<ProjectFile> files) {
         TreeSet<Package> sortedSet = new TreeSet<>(new PackageComp());
         if (files.size() > 0) {
-            String redundantPkgPathPrefix = calculateRedundantPathPrefix(files, isModule);
             for (final ProjectFile projectFile : files) {
-                sortedSet.add(extractPackageMetadata(redundantPkgPathPrefix, projectFile));
+                sortedSet.add(extractPackageMetadata(projectFile));
             }
         }
         return sortedSet;
     }
 
-    private Package extractPackageMetadata(String redundantPkgPathPrefix, ProjectFile projectFile) {
+    private Package extractPackageMetadata(ProjectFile projectFile) {
         Pattern p = Pattern.compile("package +([a-zA-Z_]+)", Pattern.MULTILINE);
-        String pkgPath = projectFile.path().substring(0, projectFile.path().lastIndexOf(
-            "/"));
-        pkgPath = pkgPath.replaceAll(redundantPkgPathPrefix, "");
+        String pkgPath = projectFile.path().substring(0, projectFile.path().lastIndexOf("/"));
         Matcher m = p.matcher(projectFile.content());
         if (m.find()) {
             return new Package(m.group(1), pkgPath);
         } else {
             throw new IllegalArgumentException("No package declaration found in " + projectFile.path());
-        }
-    }
-
-    /**
-     * To avoid unnecessarily long file paths, this method returns a string representing a
-     * prefix that can be safely removed from all the given files.
-     */
-    private String calculateRedundantPathPrefix(List<ProjectFile> files, boolean isModule) throws Exception {
-        if (!isModule) {
-            int maxDirLevels  = StringUtils.countMatches(files.get(0).dir(), "/");
-            String redundantPathPrefix = files.get(0).dir();
-            for (int i = 1; i < files.size(); i++) {
-                int currDirLevel = StringUtils.countMatches(files.get(i).dir(), "/");
-                if (currDirLevel > maxDirLevels) {
-                    maxDirLevels = currDirLevel;
-                }
-                redundantPathPrefix = new CommonDir(
-                    redundantPathPrefix, files.get(i).dir()).value();
-            }
-            if (maxDirLevels < 2) {
-                redundantPathPrefix = "";
-            } else if (StringUtils.countMatches(redundantPathPrefix, "/") > 1) {
-                redundantPathPrefix = redundantPathPrefix.substring(
-                    0, redundantPathPrefix.lastIndexOf("/"));
-            }
-            return redundantPathPrefix;
-        } else {
-            return "";
         }
     }
 
@@ -122,7 +87,8 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         final List<ProjectFile> files = projectFiles.files();
         final List<GoModule> modules = new GoModules(projectFiles).list();
         if (modules.isEmpty()) {
-            compileGoCode(srcModel, files, false);
+            throw new IllegalArgumentException("No Go modules were detected, please ensure a "
+                                                   + "valid go.mod file exists!");
         } else {
             for (GoModule module : modules) {
                 compileGoCode(srcModel, module.getProjectFiles().files(), true);
@@ -134,7 +100,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
     private void compileGoCode(OOPSourceCodeModel srcModel, List<ProjectFile> files,
                                boolean isModule) throws Exception {
 
-        TreeSet<Package> sortedSet = sourcePkgs(files, isModule);
+        TreeSet<Package> sortedSet = sourcePkgs(files);
         parseGoFiles(files, srcModel, sortedSet);
         /**
          * In GoLang, interfaces are implemented implicitly. As a result, we handle
@@ -172,7 +138,8 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         });
     }
 
-    private void parseGoFiles(final List<ProjectFile> moduleFiles, final OOPSourceCodeModel srcModel,
+    private void parseGoFiles(final List<ProjectFile> moduleFiles,
+                              final OOPSourceCodeModel srcModel,
                               final TreeSet<Package> modulePkgs) {
         // Holds types that may be accessed by all the source ProjectFile parsing operations...
         final List<Map.Entry<String, Component>> structWaitingList = new ArrayList<>();
@@ -183,8 +150,8 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
                 final GoParser parser = new GoParser(tokens);
                 final GoParser.SourceFileContext sourceFileContext = parser.sourceFile();
                 final ParseTreeWalker walker = new ParseTreeWalker();
-                final GoParserBaseListener listener = new GoLangTreeListener(
-                        srcModel, modulePkgs, moduleFile, structWaitingList);
+                final GoParserBaseListener listener = new GoLangTreeListener(srcModel, modulePkgs,
+                                                                             moduleFile, structWaitingList);
                 walker.walk(listener, sourceFileContext);
             } catch (final Exception | StackOverflowError e) {
                 e.printStackTrace();
@@ -199,8 +166,8 @@ class ImplementedInterfaces {
 
     ImplementedInterfaces(final OOPSourceCodeModel srcModel) throws Exception {
         model = srcModel;
-        final Set<Component> allInterfaceComponents = srcModel.components()
-                                                              .filter(s -> (s.componentType() == OOPSourceModelConstants.ComponentType.INTERFACE)).collect(Collectors.toSet());
+        final Set<Component> allInterfaceComponents =
+            srcModel.components().filter(s -> (s.componentType() == OOPSourceModelConstants.ComponentType.INTERFACE)).collect(Collectors.toSet());
         interfaceMethodSpecsPairs = new HashMap<>();
         for (final Component interfaceCmp : allInterfaceComponents) {
             final List<String> interfaceMethodSpecs = getListOfMethodSpecs(interfaceCmp);
@@ -217,8 +184,7 @@ class ImplementedInterfaces {
     List<String> getImplementedInterfaces(final Component baseComponent) {
         // holds all the implemented interfaces for the given component
         final List<String> implementedInterfaces = new ArrayList<>();
-        if (baseComponent.componentType().isBaseComponent()
-                && baseComponent.componentType() != OOPSourceModelConstants.ComponentType.INTERFACE) {
+        if (baseComponent.componentType().isBaseComponent() && baseComponent.componentType() != OOPSourceModelConstants.ComponentType.INTERFACE) {
             // generate a list of method signatures for the given base component.
             final List<String> baseComponentMethodSignatures = new ArrayList<>();
             for (final String baseComponentChild : baseComponent.children()) {
@@ -229,8 +195,8 @@ class ImplementedInterfaces {
             }
             // check to see if the current component satisfies any of the collected interfaces
             if (!baseComponentMethodSignatures.isEmpty()) {
-                for (final Entry<String, List<String>> potentiallyImplementedInterface : interfaceMethodSpecsPairs
-                        .entrySet()) {
+                for (final Entry<String, List<String>> potentiallyImplementedInterface
+                    : interfaceMethodSpecsPairs.entrySet()) {
                     if (baseComponentMethodSignatures.containsAll(potentiallyImplementedInterface.getValue())) {
                         // found a match!
                         implementedInterfaces.add(potentiallyImplementedInterface.getKey());
@@ -252,10 +218,9 @@ class ImplementedInterfaces {
         }
         final ArrayList<String> methodSpecs = new ArrayList<>();
         for (final ComponentReference extend
-                :interfaceComponent.references(OOPSourceModelConstants.TypeReferences.EXTENSION)) {
+            : interfaceComponent.references(OOPSourceModelConstants.TypeReferences.EXTENSION)) {
             final Optional<Component> cmp = model.getComponent(extend.invokedComponent());
-            if (cmp.isPresent() && cmp.get().componentType() == OOPSourceModelConstants.ComponentType.INTERFACE
-                    && !cmp.get().equals(interfaceComponent)) {
+            if (cmp.isPresent() && cmp.get().componentType() == OOPSourceModelConstants.ComponentType.INTERFACE && !cmp.get().equals(interfaceComponent)) {
                 methodSpecs.addAll(getListOfMethodSpecs(cmp.get()));
             }
         }
@@ -272,10 +237,8 @@ class ImplementedInterfaces {
         StringBuilder signature = new StringBuilder(methodComponent.name() + "(");
         for (final String methodParam : methodComponent.children()) {
             final Optional<Component> methodParamCmp = model.getComponent(methodParam);
-            if (methodParamCmp.isPresent()
-                    && methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() > 0) {
-                signature.append(methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
-                                               .invokedComponent()).append(",");
+            if (methodParamCmp.isPresent() && methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() > 0) {
+                signature.append(methodParamCmp.get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()).append(",");
             }
         }
         signature = new StringBuilder(signature.toString().replaceAll(",$", ""));
