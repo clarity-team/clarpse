@@ -9,12 +9,12 @@ Clarpse facilitates the development of tools that operate over the higher level,
 
 # Features
 
- - Supports **Java** and **GoLang**. Development is currently underway for **JavaScript**(ES6 Syntax), **Python**, and **C#** support. 
+ - Supports **Java** and **GoLang**. Development is currently underway for **JavaScript**(ES6 Syntax), **Python**, and **C#**. 
  - Light weight
  - Performant
  - Easy to use
  - Clean API built on top of AST
- - Support of comments
+ - Support for parsing comments
 
 # Terminology
 | Term                | Definition                                                                                                                                                                  |
@@ -24,10 +24,13 @@ Clarpse facilitates the development of tools that operate over the higher level,
 | Component Reference | A reference between an original component to a target component, which typically exist in the form of import statements, variable declarations, method calls, and so on. |
 
 # Getting Started
-Execute `mvn generate-resources` to generate neccessary Antlr files. Execute `mvn clean package assembly:single` to compile and build the entire project.
+Execute `mvn generate-resources` to generate necessary Antlr files. Execute `mvn clean package assembly:single` to compile and build the entire project.
 
 ## Using The API
-As promised, Clarpse is designed to take transform source code into a model where this source code is represented at a higher level in a language agnostic way. This is the goal of `OOPSourceCodeModel` class, which we generate below.
+Clarpse abstracts source code into a higher level model in a **language-agnostic** way. This 
+model focuses on the architectural properties of the original code. The code snippet below 
+illustrates how this model can be generated from a `ProjectFiles` object which represents the 
+source code to be analyzed.
 ```java
 final String code = " package com.foo;  "
 		       +  " public class SampleClass extends AbstractClass {                                                 "
@@ -37,12 +40,16 @@ final String code = " package com.foo;  "
 		       +  "     SampleClassB.fooMethod();
 		       +  "     }                                                                      "
 		       +  " }                                                                          ";;
-final SourceFiles projectFiles = new SourceFiles(Lang.JAVA);
-projectFiles.insertFile(new File("SampleClass.java", code));
+final ProjectFiles projectFiles = new ProjectFiles(Lang.JAVA);
+projectFiles.insertFile(new ProjectFile("SampleClass.java", code));
 final ClarpseProject project = new ClarpseProject(projectFiles);
 OOPSourceCodeModel generatedSourceModel = project.result();
 ```
-The compiled `OOPSourceCodeModel` is the polygot representation of our project through a collection of `Component` objects. Details about these components can be fetched in the following way:
+Note, the `ProjectFiles` object can be initialized from a local directory, a local zip file, or an 
+input stream to a zip file - see `ProjectFilesTest.java` for more information. Next, the compiled 
+`OOPSourceCodeModel` is the polygot representation of our source code through a 
+collection of `Component` objects. Details about these components and the relationships 
+between them can be fetched in the following way:
 ```java
 generatedSourceModel.components().forEach(component -> {
         System.out.println(component.name());
@@ -64,6 +71,7 @@ mainClassComponent.comment();        // --> "Sample Doc Comment"
 mainClassComponent.modifiers();      // --> ["public"]
 mainClassComponent.children();       // --> ["foo.java.SampleClass.sampleMethod(java.lang.String)"]
 mainClassComponent.sourceFile();     // --> "foo.java"
+mainClassComponent.references();     // --> ["SimpleTypeReference: String", "TypeExtensionReference: com.foo.AbstractClass", "SimpleTypeReference: com.foo.SampleClassB"]
 // Fetch the the inner method component
 methodComponent = generatedSourceCodeModel.get(mainClassComponent.children().get(0));
 methodComponent.name();              // --> "sampleMethod"
@@ -72,8 +80,8 @@ methodComponent.modifiers();         // --> ["public"]
 methodComponent.children();          // --> ["com.foo.java.SampleClass.sampleMethod(String).sampleMethodParam"]
 methodComopnent.codeFragment();      // --> "sampleMethod(String)"
 methodComponent.sourceFile();        // --> "foo.java"
+methodComponent.references();		 // --> ["SimpleTypeReference: String"]
 ```
- 
 # Contributing A Patch
 
 - Submit an issue describing your proposed change.

@@ -380,7 +380,7 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
     }
 
     @Override
-    public OOPSourceCodeModel compile(final ProjectFiles projectFiles) throws Exception {
+    public OOPSourceCodeModel compile(final ProjectFiles projectFiles) {
         final OOPSourceCodeModel srcModel;
         final List<ProjectFile> files = projectFiles.files();
         srcModel = compileFiles(files);
