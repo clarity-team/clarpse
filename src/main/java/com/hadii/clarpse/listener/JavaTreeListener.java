@@ -114,7 +114,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
         StringBuffer codeBuffer = new StringBuffer();
         node.removeComment().getTokenRange().get().iterator().forEachRemaining(
             javaToken -> codeBuffer.append(javaToken.asString().replaceAll("\\s+", "")));
-        newCmp.setCodeHash(codeBuffer.hashCode());
+        newCmp.setCodeHash(codeBuffer.toString().hashCode());
         newCmp.setSourceFilePath(file.path());
         return newCmp;
     }
