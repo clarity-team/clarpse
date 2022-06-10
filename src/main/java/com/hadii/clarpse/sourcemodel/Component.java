@@ -136,7 +136,7 @@ public final class Component implements Serializable {
     }
 
     public void insertAccessModifier(final String modifier) {
-        if (OOPSourceModelConstants.getJavaAccessModifierMap().containsValue(modifier)) {
+        if (OOPSourceModelConstants.getJavaAccessModifierMap().containsValue(modifier.toLowerCase())) {
             modifiers.add(modifier.toLowerCase());
         } else {
             throw new IllegalArgumentException(modifier + " is an invalid modifier!");
