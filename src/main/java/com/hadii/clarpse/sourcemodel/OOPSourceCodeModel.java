@@ -31,7 +31,6 @@ public class OOPSourceCodeModel implements Serializable {
         return components.size();
     }
     public void insertComponent(final Component component) {
-
         components.put(component.uniqueName(), component);
     }
 
@@ -44,7 +43,6 @@ public class OOPSourceCodeModel implements Serializable {
     }
 
     public void insertComponents(final Map<String, Component> newCmps) {
-
         for (final Map.Entry<String, Component> entry : newCmps.entrySet()) {
             insertComponent(entry.getValue());
         }
