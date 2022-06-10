@@ -2,8 +2,6 @@ package com.hadii.test.go;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
 import com.hadii.clarpse.compiler.ProjectFile;
-import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
 import org.junit.Test;
@@ -11,13 +9,12 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Ensure component invocations for a given component are inherited by its
- * parents.
+ * Ensure component references are inherited by its parents.
  */
-public class InheritanceReferenceTest extends GoTestBase {
+public class ReferenceInheritanceTest extends GoTestBase {
 
     @Test
-    public void StructInheritsFieldVarInvocations() throws Exception {
+    public void StructInheritsFieldVarReferences() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
@@ -29,7 +26,7 @@ public class InheritanceReferenceTest extends GoTestBase {
     }
 
     @Test
-    public void StructMethodInheritsLocalVarInvocations() throws Exception {
+    public void StructMethodInheritsLocalVarReferences() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {} func (p person) x() int {var mathObj math.Person}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
@@ -41,7 +38,7 @@ public class InheritanceReferenceTest extends GoTestBase {
     }
 
     @Test
-    public void StructMethodInheritsMethodParamInvocations() throws Exception {
+    public void StructMethodInheritsMethodParamReferences() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {} func (p person) x(mathObj math.Person) int {}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
@@ -53,7 +50,7 @@ public class InheritanceReferenceTest extends GoTestBase {
     }
 
     @Test
-    public void StructInheritsLocalVarInvocations() throws Exception {
+    public void StructInheritsLocalVarReferences() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {} func (p person) x() int {var mathObj math.Person}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
@@ -65,7 +62,7 @@ public class InheritanceReferenceTest extends GoTestBase {
     }
 
     @Test
-    public void StructInheritsMethodParamInvocations() throws Exception {
+    public void StructInheritsMethodParamReferences() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {} func (p person) x(mathObj math.Person) int {}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));

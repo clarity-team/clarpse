@@ -11,13 +11,12 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Ensure component invocations for a given component are inherited by its
- * parents.
+ * Ensure component references are inherited by its parents.
  */
-public class InvocationReferenceTest {
+public class ReferenceInheritanceTest {
 
     @Test
-    public void testClassInheritsFieldInvocations() throws Exception {
+    public void testClassInheritsFieldReferences() throws Exception {
         final String code = "class Test { String fieldVar; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -28,7 +27,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testClassInheritsMethodInvocations() throws Exception {
+    public void testClassInheritsMethodReferences() throws Exception {
         final String code = "class Test { public String aMethod() { return \"\"; } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("Test.java", code));
@@ -39,7 +38,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testClassInheritsLocalVarsInvocations() throws Exception {
+    public void testClassInheritsLocalVarsReferences() throws Exception {
         final String code = "class Test { public void fieldVar() { String test; } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -50,7 +49,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testClassInheritsMethodParamsInvocations() throws Exception {
+    public void testClassInheritsMethodParamsReferences() throws Exception {
         final String code = "class Test { public void fieldVar(String test) { } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -61,7 +60,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testClassInheritsNestedClassInvocations() throws Exception {
+    public void testClassInheritsNestedClassReferences() throws Exception {
         final String code = "class Test { class NestedClass { public void fieldVar(String test) { } } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -72,7 +71,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testClassDoesNotInheritExtendsAndImplementsInvocations() throws Exception {
+    public void testClassDoesNotInheritExtendsAndImplementsReferences() throws Exception {
         final String code = "class Test { class NestedClass extends String implements Integer { } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -82,7 +81,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testInterfaceInheritsFieldInvocations() throws Exception {
+    public void testInterfaceInheritsFieldReferences() throws Exception {
         final String code = "interface Test { String localVar; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -93,7 +92,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testInterfaceInheritsMethodInvocations() throws Exception {
+    public void testInterfaceInheritsMethodReferences() throws Exception {
         final String code = "interface Test { abstract String aMethod(); }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -104,7 +103,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testInterfaceInheritsMethodParamsInvocations() throws Exception {
+    public void testInterfaceInheritsMethodParamsReferences() throws Exception {
         final String code = "interface Test { abstract void aMethod(String test); }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -115,7 +114,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testMethodInheritsLocalVarsInvocations() throws Exception {
+    public void testMethodInheritsLocalVarsReferences() throws Exception {
         final String code = "class Test { public void aMethod(){String test;} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
@@ -127,7 +126,7 @@ public class InvocationReferenceTest {
     }
 
     @Test
-    public void testMethodInheritsMethodParamsInvocations() throws Exception {
+    public void testMethodInheritsMethodParamsReferences() throws Exception {
         final String code = "class Test { public void aMethod(String test){} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
