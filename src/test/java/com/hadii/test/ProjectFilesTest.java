@@ -65,4 +65,19 @@ public class ProjectFilesTest {
         assertTrue(new ClarpseProject(filesFromSourceDirectory).result().getComponent(
             "com.hadii.clarpse.listener.GoLangTreeListener.currPkg").isPresent());
     }
+
+    @Test
+    public void testParseEmptyJavaProjectFiles() throws Exception {
+        assertEquals(0, new ClarpseProject(new ProjectFiles(Lang.JAVA)).result().size());
+    }
+
+    @Test
+    public void testParseEmptyGoLangProjectFiles() throws Exception {
+        assertEquals(0, new ClarpseProject(new ProjectFiles(Lang.GOLANG)).result().size());
+    }
+
+    @Test
+    public void testParseEmptyJavascriptProjectFiles() throws Exception {
+        assertEquals(0, new ClarpseProject(new ProjectFiles(Lang.JAVASCRIPT)).result().size());
+    }
 }

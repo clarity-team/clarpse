@@ -86,10 +86,10 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
         final List<ProjectFile> files = projectFiles.files();
         final List<GoModule> modules = new GoModules(projectFiles).list();
-        if (modules.isEmpty()) {
+        if (modules.isEmpty() && !files.isEmpty()) {
             throw new IllegalArgumentException("No Go modules were detected, please ensure a "
                                                    + "valid go.mod file exists!");
-        } else {
+        } else if (!modules.isEmpty()) {
             for (GoModule module : modules) {
                 compileGoCode(srcModel, module.getProjectFiles().files(), true);
             }

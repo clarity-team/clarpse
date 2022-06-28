@@ -27,50 +27,54 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
     @Override
     public OOPSourceCodeModel compile(final ProjectFiles projectFiles) throws IOException {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-        final String persistDir = System.getProperty("java.io.tmpdir")
+        if (projectFiles.files().size() > 0) {
+            final String persistDir = System.getProperty("java.io.tmpdir")
                 + File.separator + RandomStringUtils.randomAlphanumeric(16);
-        try {
-            final PersistedProjectFiles persistedProjectFiles =
+            try {
+                final PersistedProjectFiles persistedProjectFiles =
                     new PersistedProjectFiles(projectFiles, persistDir);
-            final CombinedTypeSolver typeSolver = new CombinedTypeSolver();
-            typeSolver.add(new ReflectionTypeSolver());
-            typeSolver.add(new JavaParserTypeSolver(persistDir));
-            final ParserConfiguration parserConfiguration = new ParserConfiguration();
-            parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_8);
-            parserConfiguration.setSymbolResolver(new JavaSymbolSolver(typeSolver));
-            parserConfiguration.setIgnoreAnnotationsWhenAttributingComments(true);
-            for (final ProjectFile file : projectFiles.files()) {
-                try {
-                    final ByteArrayInputStream in =
-                            new ByteArrayInputStream(file.content().getBytes(StandardCharsets.UTF_8));
-                    final CompilationUnit cu = new JavaParser(parserConfiguration)
+                final CombinedTypeSolver typeSolver = setupTypeSolver(persistDir);
+                final ParserConfiguration parserConfiguration = setupParserConfig(typeSolver);
+                for (final ProjectFile file : projectFiles.files()) {
+                    try {
+                        final CompilationUnit cu = new JavaParser(parserConfiguration)
                             .parse(ParseStart.COMPILATION_UNIT,
                                    new StringProvider(file.content())).getResult().get();
-                    new JavaTreeListener(srcModel, file, typeSolver).visit(cu, null);
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                    continue;
+                        new JavaTreeListener(srcModel, file, typeSolver).visit(cu, null);
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+            } finally {
+                FileUtils.deleteQuietly(new File(persistDir));
             }
-        } catch (final Exception e) {
-            throw e;
-        } finally {
-            FileUtils.deleteQuietly(new File(persistDir));
+            // Remove incorrect/invalid component references
+            removeInvalidRefs(srcModel);
         }
-        // Remove incorrect/invalid component references
-        srcModel.components().forEach(component -> {
-            component.setExternalTypeReferences(component.references().stream().filter(
-                    componentReference -> {
-                        if (componentReference.invokedComponent().startsWith("java.")
-                                || (srcModel.containsComponent(componentReference.invokedComponent())
-                                && srcModel.getComponent(
-                                componentReference.invokedComponent())
-                                           .get().componentType().isBaseComponent())) {
-                            return true;
-                        }
-                        return false;
-                    }).collect(Collectors.toSet()));
-        });
         return srcModel;
+    }
+
+    private void removeInvalidRefs(OOPSourceCodeModel srcModel) {
+        srcModel.components().forEach(component -> component.setExternalTypeReferences(component.references().stream().filter(
+            componentReference -> componentReference.invokedComponent().startsWith("java.")
+                || (srcModel.containsComponent(componentReference.invokedComponent())
+                && srcModel.getComponent(
+                               componentReference.invokedComponent())
+                           .get().componentType().isBaseComponent())).collect(Collectors.toSet())));
+    }
+
+    private CombinedTypeSolver setupTypeSolver(String persistDir) {
+        final CombinedTypeSolver typeSolver = new CombinedTypeSolver();
+        typeSolver.add(new ReflectionTypeSolver());
+        typeSolver.add(new JavaParserTypeSolver(persistDir));
+        return typeSolver;
+    }
+
+    private ParserConfiguration setupParserConfig(CombinedTypeSolver typeSolver) {
+        final ParserConfiguration parserConfiguration = new ParserConfiguration();
+        parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_8);
+        parserConfiguration.setSymbolResolver(new JavaSymbolSolver(typeSolver));
+        parserConfiguration.setIgnoreAnnotationsWhenAttributingComments(true);
+        return parserConfiguration;
     }
 }
