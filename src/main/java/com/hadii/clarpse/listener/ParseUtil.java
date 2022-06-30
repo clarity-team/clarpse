@@ -139,12 +139,14 @@ public class ParseUtil {
 
 
     public static boolean componentStackContainsMethod(Stack<? extends Component> componentStack) {
-        return componentStackContainsComponentType(componentStack, OOPSourceModelConstants.ComponentType.METHOD,
+        return componentStackContainsComponentType(componentStack,
+                                                   OOPSourceModelConstants.ComponentType.METHOD,
                 OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
     }
 
     public static boolean componentStackContainsInterface(Stack<? extends Component> componentStack) {
-        return componentStackContainsComponentType(componentStack, OOPSourceModelConstants.ComponentType.INTERFACE);
+        return componentStackContainsComponentType(componentStack,
+                                                   OOPSourceModelConstants.ComponentType.INTERFACE);
     }
 
     private static boolean componentStackContainsComponentType(Stack<? extends Component> componentStack,

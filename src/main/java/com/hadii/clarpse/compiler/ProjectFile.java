@@ -1,6 +1,9 @@
 package com.hadii.clarpse.compiler;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -76,7 +79,6 @@ public class ProjectFile {
     }
 
     public ProjectFile copy() {
-        final ProjectFile file = new ProjectFile(path(), content());
-        return file;
+        return new ProjectFile(path(), content());
     }
 }

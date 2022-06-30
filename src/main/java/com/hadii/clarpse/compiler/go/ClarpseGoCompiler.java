@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -91,14 +92,13 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
                                                    + "valid go.mod file exists!");
         } else if (!modules.isEmpty()) {
             for (GoModule module : modules) {
-                compileGoCode(srcModel, module.getProjectFiles().files(), true);
+                compileGoCode(srcModel, module.getProjectFiles().files());
             }
         }
         return srcModel;
     }
 
-    private void compileGoCode(OOPSourceCodeModel srcModel, List<ProjectFile> files,
-                               boolean isModule) throws Exception {
+    private void compileGoCode(OOPSourceCodeModel srcModel, List<ProjectFile> files) throws Exception {
 
         TreeSet<Package> sortedSet = sourcePkgs(files);
         parseGoFiles(files, srcModel, sortedSet);
@@ -197,7 +197,7 @@ class ImplementedInterfaces {
             if (!baseComponentMethodSignatures.isEmpty()) {
                 for (final Entry<String, List<String>> potentiallyImplementedInterface
                     : interfaceMethodSpecsPairs.entrySet()) {
-                    if (baseComponentMethodSignatures.containsAll(potentiallyImplementedInterface.getValue())) {
+                    if (new HashSet<>(baseComponentMethodSignatures).containsAll(potentiallyImplementedInterface.getValue())) {
                         // found a match!
                         implementedInterfaces.add(potentiallyImplementedInterface.getKey());
                     }
