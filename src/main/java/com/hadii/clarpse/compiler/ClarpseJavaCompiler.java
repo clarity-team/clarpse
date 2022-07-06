@@ -14,10 +14,8 @@ import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 /**
