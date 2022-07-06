@@ -90,7 +90,7 @@ public class ProjectFiles {
         while (it.hasNext()) {
             File nextFile = (File) it.next();
             if (nextFile.isFile() && anyMatchExtensions(
-                nextFile.getName(), language.fileExtensions())) {
+                nextFile.getName(), language.fileExtns())) {
                 this.files.add(new ProjectFile(
                     nextFile.getPath(),
                     FileUtils.readFileToString(nextFile, StandardCharsets.US_ASCII))
@@ -114,13 +114,11 @@ public class ProjectFiles {
         try (ZipInputStream zis = new ZipInputStream(is)) {
             ZipEntry entry = zis.getNextEntry();
             while (entry != null) {
-                entry.getName().substring(entry.getName().lastIndexOf(".") + 1
-                );
-                if (!entry.isDirectory() && anyMatchExtensions(entry.getName(),
-                                                               language.fileExtensions())) {
-                    projectFiles.add(new ProjectFile(File.separator + entry.getName().replace(" ", "_"),
-                                                     new String(IOUtils.toByteArray(zis),
-                                                                StandardCharsets.UTF_8)));
+                if (!entry.isDirectory()
+                    && anyMatchExtensions(entry.getName(), language.fileExtns())) {
+                    projectFiles.add(new ProjectFile(
+                        File.separator + entry.getName().replace(" ", "_"),
+                        new String(IOUtils.toByteArray(zis), StandardCharsets.UTF_8)));
                 }
                 zis.closeEntry();
                 entry = zis.getNextEntry();
