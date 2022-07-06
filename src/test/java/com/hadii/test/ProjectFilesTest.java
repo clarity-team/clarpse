@@ -93,6 +93,15 @@ public class ProjectFilesTest {
         assertEquals("/lol/cakes.go", projectFiles.files().get(0).path());
     }
 
+    @Test
+    public void testShiftSubDirsv2() throws Exception {
+        ProjectFiles projectFiles = new ProjectFiles(Lang.GOLANG);
+        ProjectFile projectFile = new ProjectFile("/test/lol.go", "{}");
+        projectFiles.insertFile(projectFile);
+        projectFiles.shiftSubDirsLeft();
+        assertEquals("/lol.go", projectFiles.files().get(0).path());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testShiftSubDirsInvalid() throws Exception {
         ProjectFiles projectFiles = new ProjectFiles(Lang.GOLANG);
