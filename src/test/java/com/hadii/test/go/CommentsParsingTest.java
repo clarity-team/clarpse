@@ -16,7 +16,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\n //test struct doc\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().comment().equals("test struct doc"));
     }
 
@@ -25,7 +25,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\n //test struct\n// doc\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().comment().equals("test struct doc"));
     }
 
@@ -34,7 +34,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\n //test interface\n// doc\n type person interface {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().comment().equals("test interface doc"));
     }
 
@@ -43,7 +43,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\ntype person struct {}\n\n //test \n //test\n\nfunc (p person) x() int {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().comment().equals("test test"));
     }
 
@@ -52,7 +52,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\ntype person struct {}\n\n //test \n //test\n\nfunc (p person) x() int {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().comment().equals("test test"));
     }
 
@@ -61,7 +61,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\n//test struct doc\n\n\n\ntype person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().comment().equals("test struct doc"));
     }
 
@@ -70,7 +70,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\n type animal struct {}\n//test struct\n// doc\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().comment().equals("test struct doc"));
     }
 
@@ -79,7 +79,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\n//test struct\n// doc\n\n\ntype person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().comment().equals("test struct doc"));
     }
 
@@ -88,7 +88,7 @@ public class CommentsParsingTest extends GoTestBase {
         final String code = "package main\ntype person interface { \n//test\n testMethod() int}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : (int)").get().comment().equals("test"));
     }
 }

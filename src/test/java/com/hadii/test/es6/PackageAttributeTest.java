@@ -20,7 +20,7 @@ public class PackageAttributeTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/github/http/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().path().equals("/github/http"));
         assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().ellipsisSeparatedPkgPath().equals("github.http"));
         assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().name().equals("http"));
@@ -32,7 +32,7 @@ public class PackageAttributeTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/github/http/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().path().equals("/github/http"));
         assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().ellipsisSeparatedPkgPath().equals("github.http"));
         assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().name().equals("http"));
@@ -44,7 +44,7 @@ public class PackageAttributeTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("src/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().path().equals(
             "/src"));
         assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().name().equals(
@@ -59,7 +59,7 @@ public class PackageAttributeTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("src/cupcake/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().path().equals("/src/cupcake"));
         assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().name().equals("cupcake"));
         assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().ellipsisSeparatedPkgPath().equals("src.cupcake"));
@@ -71,7 +71,7 @@ public class PackageAttributeTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/github/polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().path().equals("/github"));
         assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().name().equals("github"));
         assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().ellipsisSeparatedPkgPath().equals("github"));

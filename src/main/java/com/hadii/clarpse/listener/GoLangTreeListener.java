@@ -36,7 +36,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
 
     private static final Logger LOGGER = LogManager.getLogger(GoLangTreeListener.class);
     private final Stack<Component> componentStack = new Stack<>();
-    private final ArrayList<String> currentImports = new ArrayList<>();
+    private final Set<String> currentImports = new HashSet<>();
     private final OOPSourceCodeModel srcModel;
     private final Map<String, String> currentImportsMap = new HashMap<>();
     private final ProjectFile sourceFile;
@@ -73,7 +73,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
             final Component parentCmp =
                 srcModel.getComponent(completedComponent.parentUniqueName()).get();
             for (final ComponentReference componentReference : completedComponent.references()) {
-                parentCmp.insertComponentRef(componentReference);
+                parentCmp.insertCmpRef(componentReference);
             }
         }
         ParseUtil.copyRefsToParents(completedComponent, componentStack);
@@ -352,7 +352,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
                         }
                         ParseUtil.pointParentsToGivenChild(cmp, componentStack);
                         for (final String discoveredType : discoveredTypes) {
-                            cmp.insertComponentRef(new SimpleTypeReference(discoveredType));
+                            cmp.insertCmpRef(new SimpleTypeReference(discoveredType));
                         }
                         paramCmps.add(cmp);
                     }
@@ -451,7 +451,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
                         createComponent(OOPSourceModelConstants.ComponentType.LOCAL, ctx);
                     localVarCmp.setName(identifier.getText());
                     localVarCmp.setComponentName(ParseUtil.generateComponentName(identifier.getText(), componentStack));
-                    localVarCmp.insertComponentRef(new SimpleTypeReference(resolvedType));
+                    localVarCmp.insertCmpRef(new SimpleTypeReference(resolvedType));
                     ParseUtil.pointParentsToGivenChild(localVarCmp, componentStack);
                     completeComponent(localVarCmp);
                 }
@@ -622,7 +622,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
                     Set<String> discoveredTypes = new HashSet<>();
                     fetchContainedTypes(ctx.type_(), discoveredTypes);
                     for (final String discoveredType : discoveredTypes) {
-                        cmp.insertComponentRef(new SimpleTypeReference(resolveType(discoveredType)));
+                        cmp.insertCmpRef(new SimpleTypeReference(resolveType(discoveredType)));
                     }
                     fieldVars.add(cmp);
                 }
@@ -652,7 +652,7 @@ public class GoLangTreeListener extends GoParserBaseListener {
             final Component stackCmp = componentStack.pop();
             tmp.add(stackCmp);
             if (stackCmp.componentType().isBaseComponent()) {
-                stackCmp.insertComponentRef(new TypeExtensionReference(resolveType(extendsComponent)));
+                stackCmp.insertCmpRef(new TypeExtensionReference(resolveType(extendsComponent)));
                 break;
             }
         }

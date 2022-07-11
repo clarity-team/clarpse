@@ -3,6 +3,8 @@ package com.hadii.clarpse.compiler.go;
 import com.hadii.clarpse.compiler.Lang;
 import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +14,7 @@ import java.util.regex.Pattern;
  */
 public class GoModule {
 
+    private static final Logger LOGGER = LogManager.getLogger(GoModule.class);
     private final ProjectFiles projectFiles;
     private final String moduleName;
 
@@ -21,7 +24,7 @@ public class GoModule {
             throw new IllegalArgumentException("Module name cannot be empty!");
         }
         this.projectFiles = new ProjectFiles(Lang.GOLANG);
-        files.files().stream().forEach(file -> {
+        files.files().forEach(file -> {
             if (file.path().endsWith(".go")) {
                 if (moduleFile.dir().equals("/")) {
                     this.projectFiles.insertFile(new ProjectFile(
@@ -37,6 +40,8 @@ public class GoModule {
                 }
             }
         });
+        LOGGER.info("Go module " + this.moduleName + " contains " + projectFiles.size() + " files" +
+                        ".");
     }
 
     private String extractModuleName(ProjectFile moduleFile) {

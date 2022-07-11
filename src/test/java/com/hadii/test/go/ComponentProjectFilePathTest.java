@@ -20,7 +20,7 @@ public class ComponentProjectFilePathTest extends GoTestBase {
         final String code = "package main\ntype person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().sourceFile().equals("/person.go"));
     }
 
@@ -29,7 +29,7 @@ public class ComponentProjectFilePathTest extends GoTestBase {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
         projectFiles.insertFile(new ProjectFile("/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().sourceFile().equals("/person.go"));
     }
 
@@ -38,7 +38,7 @@ public class ComponentProjectFilePathTest extends GoTestBase {
         final String code = "package main\n type person interface {\n area() float64 \n} type teacher struct{}";
         projectFiles.insertFile(new ProjectFile("/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.area() : (float64)")
                 .get().sourceFile().equals("/person.go"));
     }
@@ -48,7 +48,7 @@ public class ComponentProjectFilePathTest extends GoTestBase {
         final String code = "package main\n type person interface {\n area() float64 \n} type teacher struct{}";
         projectFiles.insertFile(new ProjectFile("/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                 .get().sourceFile().equals("/person.go"));
     }

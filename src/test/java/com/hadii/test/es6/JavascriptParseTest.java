@@ -17,7 +17,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon"));
     }
 
@@ -27,7 +27,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon")
                 && generatedSourceModel.containsComponent("LolCakes"));
     }
@@ -38,7 +38,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("test"));
     }
 
@@ -48,7 +48,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor"));
     }
 
@@ -58,7 +58,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().name().equals("constructor"));
     }
 
@@ -68,7 +68,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.height"));
     }
 
@@ -78,7 +78,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.height"));
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.length"));
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.width"));
@@ -90,7 +90,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say"));
     }
 
@@ -100,7 +100,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().name().equals("say"));
     }
 
@@ -110,7 +110,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say"));
     }
 
@@ -120,7 +120,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say"));
     }
 
@@ -130,7 +130,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.call.height"));
     }
 
@@ -140,7 +140,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.call.height"));
         assertTrue(generatedSourceModel.containsComponent("Polygon.call.length"));
         assertTrue(generatedSourceModel.containsComponent("Polygon.call.width"));
@@ -152,7 +152,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.get_height"));
     }
 
@@ -162,7 +162,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.set_height"));
     }
 
@@ -172,7 +172,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.height"));
     }
 
@@ -182,7 +182,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().name().equals("height"));
     }
 
@@ -192,7 +192,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say.test"));
     }
 
@@ -202,7 +202,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say.test"));
     }
 
@@ -212,7 +212,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.say.test")
                 && generatedSourceModel.containsComponent("Polygon.say.lol"));
     }
@@ -223,7 +223,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/github/test.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("src.github.test"));
     }
 
@@ -233,7 +233,7 @@ public class JavascriptParseTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.constructor.test"));
     }
 }

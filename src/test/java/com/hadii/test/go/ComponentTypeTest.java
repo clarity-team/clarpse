@@ -20,7 +20,7 @@ public class ComponentTypeTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(value, int) : (value, uintptr).x")
                 .get().componentType() == OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
     }
@@ -30,7 +30,7 @@ public class ComponentTypeTest extends GoTestBase {
         final String code = "package main\ntype person struct {} \n func (p person) lol(x int) {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.lol(int).x")
                 .get().componentType() == OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
     }
@@ -40,7 +40,7 @@ public class ComponentTypeTest extends GoTestBase {
         final String code = "package main\n type person interface {\n area() float64 \n} type teacher struct{}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get()
                 .componentType() == OOPSourceModelConstants.ComponentType.INTERFACE);
     }
@@ -50,7 +50,7 @@ public class ComponentTypeTest extends GoTestBase {
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get()
                 .componentType() == OOPSourceModelConstants.ComponentType.METHOD);
     }
@@ -60,7 +60,7 @@ public class ComponentTypeTest extends GoTestBase {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.mathObj").get()
                 .componentType() == OOPSourceModelConstants.ComponentType.FIELD);
     }
@@ -70,7 +70,7 @@ public class ComponentTypeTest extends GoTestBase {
         final String code = "package main\ntype person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get()
                 .componentType() == OOPSourceModelConstants.ComponentType.STRUCT);
     }
@@ -82,7 +82,7 @@ public class ComponentTypeTest extends GoTestBase {
         final String code = "package main\ntype person interface { \n//test\n testMethod() int}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.testMethod() : (int)").get()
                 .componentType() == OOPSourceModelConstants.ComponentType.METHOD);
     }
@@ -94,7 +94,7 @@ public class ComponentTypeTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(
                 generatedSourceModel.getComponent("main.plain.testMethodv2().i").get()
                         .componentType() == OOPSourceModelConstants.ComponentType.LOCAL);

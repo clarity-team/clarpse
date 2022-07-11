@@ -5,9 +5,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.hadii.clarpse.reference.ComponentReference;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.ComponentType;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,9 +23,10 @@ import java.util.Set;
  */
 public final class Component implements Serializable {
 
+    private static final Logger LOGGER = LogManager.getLogger(Component.class);
     private static final long serialVersionUID = 1L;
     @JsonInclude(Include.NON_EMPTY)
-    private final ArrayList<String> children = new ArrayList<String>();
+    private final List<String> children = new ArrayList<>();
     private String value;
     private Package pkg;
     private int cyclo;
@@ -29,12 +34,12 @@ public final class Component implements Serializable {
     private String comment = "";
     private String sourceFile;
     @JsonInclude(Include.NON_EMPTY)
-    private List<String> imports = new ArrayList<String>();
+    private Set<String> imports = new HashSet<>();
     @JsonInclude(Include.NON_EMPTY)
-    private Set<String> modifiers = new LinkedHashSet<String>();
+    private Set<String> modifiers = new LinkedHashSet<>();
     private ComponentType type;
     @JsonInclude(Include.NON_EMPTY)
-    private Set<ComponentReference> references = new LinkedHashSet<ComponentReference>();
+    private Set<ComponentReference> references = new LinkedHashSet<>();
     private String componentName;
     private int codeHash;
     private String codeFragment;
@@ -50,16 +55,18 @@ public final class Component implements Serializable {
         sourceFile = component.sourceFile();
         comment = component.comment();
         codeHash = component.codeHash();
+        cyclo = component.cyclo();
+        name = component.name();
         children.addAll(component.children);
         for (final ComponentReference ref : component.references()) {
-            references.add((ComponentReference) ref.clone());
+            this.insertCmpRef((ComponentReference) ref.clone());
         }
     }
 
     public Component() {
     }
 
-    public ArrayList<String> children() {
+    public List<String> children() {
         return children;
     }
 
@@ -79,6 +86,7 @@ public final class Component implements Serializable {
 
     public void setCyclo(final int cyclo) {
         this.cyclo = cyclo;
+        LOGGER.debug("Set cyclo of " + cyclo + " for " + this + ".");
     }
 
     public String name() {
@@ -86,9 +94,7 @@ public final class Component implements Serializable {
     }
 
     public void insertChildComponent(final String childComponentName) {
-        if (!children.contains(childComponentName)) {
-            children.add(childComponentName);
-        }
+        children.add(childComponentName);
     }
 
     public void addImports(final String importStmt) {
@@ -103,11 +109,12 @@ public final class Component implements Serializable {
         return references;
     }
 
-    public void insertComponentRef(final ComponentReference ref) {
+    public void insertCmpRef(final ComponentReference ref) {
         references.add(ref);
+        LOGGER.debug("Inserted " + ref + " for " + this);
     }
 
-    public List<String> imports() {
+    public Set<String> imports() {
         return imports;
     }
 
@@ -123,7 +130,7 @@ public final class Component implements Serializable {
         references = externalReferences;
     }
 
-    public void setImports(final List<String> currentImports) {
+    public void setImports(final Set<String> currentImports) {
         imports = currentImports;
     }
 
@@ -159,6 +166,10 @@ public final class Component implements Serializable {
         this.pkg = pkg;
     }
 
+    @Override
+    public String toString() {
+        return this.uniqueName();
+    }
     public String value() {
         return value;
     }
@@ -180,27 +191,25 @@ public final class Component implements Serializable {
         if (lastOpeningBracket == -1 || !type.isMethodComponent()) {
             if (uniqueName().contains(".")) {
                 final int lastPeriod = uniqueName().lastIndexOf(".");
-                final String currParentClassName = uniqueName().substring(0, lastPeriod);
-                return currParentClassName;
+                return uniqueName().substring(0, lastPeriod);
             } else {
                 throw new IllegalArgumentException("Cannot get parent of component: " + uniqueName());
             }
         } else {
             final String methodComponentName = uniqueName().substring(0, lastOpeningBracket);
             final int lastPeriod = methodComponentName.lastIndexOf(".");
-            final String currParentClassName = methodComponentName.substring(0, lastPeriod);
-            return currParentClassName;
+            return methodComponentName.substring(0, lastPeriod);
         }
     }
 
-    public void insertComponentReferences(final List<ComponentReference> externalClassTypeReferenceList) {
-        for (final ComponentReference typeRef : externalClassTypeReferenceList) {
-            insertComponentRef(typeRef);
+    public void insertCmpRefs(final Collection<ComponentReference> cmpRefs) {
+        for (final ComponentReference typeRef : cmpRefs) {
+            insertCmpRef(typeRef);
         }
     }
 
     public List<ComponentReference> references(final TypeReferences type) {
-        final List<ComponentReference> tmpReferences = new ArrayList<ComponentReference>();
+        final List<ComponentReference> tmpReferences = new ArrayList<>();
         for (final ComponentReference compReference : references) {
             if (type.getMatchingClass().isAssignableFrom(compReference.getClass())) {
                 tmpReferences.add(compReference);

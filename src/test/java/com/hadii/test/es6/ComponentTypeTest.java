@@ -21,7 +21,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon").get()
                                        .componentType() == OOPSourceModelConstants.ComponentType.CLASS);
     }
@@ -34,7 +34,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.set_area").get()
                                        .componentType() == OOPSourceModelConstants.ComponentType.METHOD);
         assertTrue(generatedSourceModel.getComponent("Polygon.get_area").get()
@@ -47,7 +47,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.height")
                                        .get().componentType() == OOPSourceModelConstants.ComponentType.METHOD_PARAMETER_COMPONENT);
     }
@@ -58,7 +58,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(
                 generatedSourceModel.getComponent("Polygon.constructor").get()
                                     .componentType() == OOPSourceModelConstants.ComponentType.CONSTRUCTOR);
@@ -70,7 +70,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.test").get()
                                        .componentType() == OOPSourceModelConstants.ComponentType.LOCAL);
     }
@@ -81,7 +81,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.test")
                                        .get().componentType() == OOPSourceModelConstants.ComponentType.LOCAL);
     }
@@ -92,7 +92,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height")
                                        .get().componentType() == OOPSourceModelConstants.ComponentType.FIELD);
     }
@@ -103,7 +103,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.set_height").get()
                                        .componentType() == OOPSourceModelConstants.ComponentType.METHOD);
     }
@@ -114,7 +114,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor.height")
                                        .get().componentType() == OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT);
     }
@@ -125,7 +125,7 @@ public class ComponentTypeTest {
         ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get()
                                        .componentType() == OOPSourceModelConstants.ComponentType.METHOD);
     }

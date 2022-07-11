@@ -25,7 +25,7 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake").get().references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));
     }
@@ -40,7 +40,7 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake.constructor").get()
                                        .references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));
@@ -56,7 +56,7 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake.muffin").get().references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));
     }
@@ -71,7 +71,7 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake.constructor").get()
                                        .references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() == 1);
     }
@@ -85,7 +85,7 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake.test").get().references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));
     }
@@ -99,7 +99,7 @@ public class InvocationInheritanceTest {
         rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
         ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake").get().references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));
     }

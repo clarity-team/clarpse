@@ -1,38 +1,45 @@
 package com.hadii.clarpse.compiler;
 
-import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Represents a source code project.
  */
 public class ClarpseProject {
 
-    private final ProjectFiles rawData;
+    private static final Logger LOGGER = LogManager.getLogger(ClarpseProject.class);
+    private final ProjectFiles projectFiles;
 
-    public ClarpseProject(ProjectFiles rawData) {
-        this.rawData = rawData;
+    public ClarpseProject(ProjectFiles projectFiles) {
+        this.projectFiles = projectFiles;
     }
 
-    private OOPSourceCodeModel parseRawData(final ProjectFiles rawData) throws Exception {
-        final ClarpseCompiler parsingTool = CompilerFactory.getParsingTool(rawData.getLanguage());
-        return parsingTool.compile(rawData);
+    private CompileResult parseFiles(final ProjectFiles sourceFiles) throws Exception {
+        LOGGER.info("Parsing " + sourceFiles.files().size() + " " + sourceFiles.getLanguage().name()
+                        + " source files..");
+        long startTime = System.nanoTime();
+        final ClarpseCompiler parsingTool = CompilerFactory.getParsingTool(sourceFiles.getLanguage());
+        CompileResult compileResult = parsingTool.compile(sourceFiles);
+        long duration = (System.nanoTime() - startTime) / 1000000;
+        LOGGER.info("Parsed " + compileResult.model().size() + " components from "
+                        + sourceFiles.size() + " " + sourceFiles.getLanguage().name() + " files in "
+                        + duration + " ms.");
+        return compileResult;
     }
 
-    /**
-     * The number of workers to use to compute the result.
-     */
-    public OOPSourceCodeModel result() throws Exception {
-        if (!validateParseType(rawData.getLanguage())) {
+    public CompileResult result() throws Exception {
+        if (!supportedLang(projectFiles.getLanguage())) {
             throw new IllegalArgumentException("The specified source language is not supported!");
         }
         // parse the files
-        return parseRawData(rawData);
+        return parseFiles(projectFiles);
     }
 
-    private boolean validateParseType(final Lang parseType) throws IllegalArgumentException {
+    private boolean supportedLang(final Lang language) throws IllegalArgumentException {
         boolean isValidLang = false;
-        for (Lang language : Lang.supportedLanguages()) {
-            if (language == parseType) {
+        for (Lang tmpLang : Lang.supportedLanguages()) {
+            if (language == tmpLang) {
                 isValidLang = true;
                 break;
             }

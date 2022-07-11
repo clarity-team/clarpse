@@ -16,7 +16,7 @@ public class AccessModifiersTest extends GoTestBase {
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {} type Teacher struct{}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().modifiers().contains("private"));
     }
 
@@ -25,7 +25,7 @@ public class AccessModifiersTest extends GoTestBase {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.mathObj").get().modifiers().contains("private"));
     }
 
@@ -34,7 +34,7 @@ public class AccessModifiersTest extends GoTestBase {
         final String code = "package main\n import \"fmt\"\n /*test*/ \n type person struct {} type Teacher struct{}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.Teacher").get().modifiers().contains("public"));
     }
 
@@ -43,7 +43,7 @@ public class AccessModifiersTest extends GoTestBase {
         final String code = "package main\nimport \"test/math\"\ntype person struct {MathObj math.Person}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.MathObj").get().modifiers().contains("public"));
     }
 
@@ -52,7 +52,7 @@ public class AccessModifiersTest extends GoTestBase {
         final String code = "package main\n import \"fmt\"\n /*test*/ type Person interface {} type Teacher struct{}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.Person").get().modifiers().contains("public"));
     }
 
@@ -61,7 +61,7 @@ public class AccessModifiersTest extends GoTestBase {
         final String code = "package main\n import \"fmt\"\n /*test*/ type person interface {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().modifiers().contains("private"));
     }
 }

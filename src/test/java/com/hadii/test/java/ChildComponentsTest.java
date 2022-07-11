@@ -9,7 +9,10 @@ import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ChildComponentsTest {
@@ -20,8 +23,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").get().children().toArray()[0].equals("Test.method()"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("Test.method()",
+                     generatedSourceModel.getComponent("Test").get().children().toArray()[0]);
     }
 
     @Test
@@ -30,8 +34,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").get().children().toArray()[0].equals("Test.fieldVar"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("Test.fieldVar",
+                     generatedSourceModel.getComponent("Test").get().children().toArray()[0]);
     }
 
     @Test
@@ -40,9 +45,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertFalse(generatedSourceModel.getComponent("Test.method().Tester").isPresent());
-        assertTrue(generatedSourceModel.size() == 2);
+        assertEquals(2, generatedSourceModel.size());
     }
 
     @Test
@@ -51,8 +56,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").get().children().toArray()[0].equals("Test.method()"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("Test.method()",
+                     generatedSourceModel.getComponent("Test").get().children().toArray()[0]);
     }
 
     @Test
@@ -61,9 +67,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.method(String)").get().children().toArray()[0]
-                .equals("Test.method(String).str"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("Test.method(String).str", generatedSourceModel.getComponent("Test.method" +
+                                                                                      "(String)").get().children().toArray()[0]);
     }
 
     @Test
@@ -72,8 +78,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").get().children().toArray()[0].equals("Test.NEAR_TO_QUERY"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("Test.NEAR_TO_QUERY",
+                     generatedSourceModel.getComponent("Test").get().children().toArray()[0]);
     }
 
     @Test
@@ -82,8 +89,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("TestA").get().children().toArray()[0].equals("TestA.TestB"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("TestA.TestB",
+                     generatedSourceModel.getComponent("TestA").get().children().toArray()[0]);
     }
 
     @Test
@@ -92,8 +100,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("TestA").get().children().toArray()[0].equals("TestA.TestB"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("TestA.TestB",
+                     generatedSourceModel.getComponent("TestA").get().children().toArray()[0]);
     }
 
     @Test
@@ -102,10 +111,10 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("TestA").get().children().toArray()[0].equals("TestA.A"));
-        assertTrue(generatedSourceModel.getComponent("TestA").get().children().toArray()[1].equals("TestA.B"));
-        assertTrue(generatedSourceModel.getComponent("TestA").get().children().toArray()[2].equals("TestA.C"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertTrue(generatedSourceModel.getComponent("TestA").get().children().contains("TestA.A"));
+        assertTrue(generatedSourceModel.getComponent("TestA").get().children().contains("TestA.B"));
+        assertTrue(generatedSourceModel.getComponent("TestA").get().children().contains("TestA.C"));
     }
 
     @Test
@@ -116,9 +125,9 @@ public class ChildComponentsTest {
         rawData.insertFile(new ProjectFile("src/main/com/Test.java", codeA));
         rawData.insertFile(new ProjectFile("src/main/org/ClassB.java", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("com.Test.fieldVar")
-                .get().parentUniqueName().equals("com.Test"));
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("com.Test", generatedSourceModel.getComponent("com.Test.fieldVar")
+                                                     .get().parentUniqueName());
     }
 
     @Test
@@ -127,9 +136,12 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("TestA").get().children().toArray()[0].equals("TestA.fieldVar"));
-        assertTrue(generatedSourceModel.getComponent("TestA").get().children().toArray()[1].equals("TestA.method()"));
-        assertTrue(generatedSourceModel.getComponent("TestA").get().children().toArray()[2].equals("TestA.TestB"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertTrue(Arrays.asList(generatedSourceModel.getComponent("TestA").get().children()
+                                                     .toArray()).contains("TestA.fieldVar"));
+        assertTrue(Arrays.asList(generatedSourceModel.getComponent("TestA").get().children()
+                                                     .toArray()).contains("TestA.method()"));
+        assertTrue(Arrays.asList(generatedSourceModel.getComponent("TestA").get().children()
+                                                     .toArray()).contains("TestA.TestB"));
     }
 }

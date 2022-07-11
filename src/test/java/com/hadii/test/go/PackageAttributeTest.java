@@ -21,7 +21,7 @@ public class PackageAttributeTest extends GoTestBase{
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals(generatedSourceModel.getComponent("main.person").get().pkg().path(),
                      generatedSourceModel.getComponent("main.person.x() : (int)").get().pkg().path());
     }
@@ -32,7 +32,7 @@ public class PackageAttributeTest extends GoTestBase{
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("/main",
                      generatedSourceModel.getComponent("main.person.x(int) : (int).z").get().pkg().path());
     }
@@ -43,7 +43,7 @@ public class PackageAttributeTest extends GoTestBase{
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("/main",
                      generatedSourceModel.getComponent("main.person.x() : (int).z").get().pkg().path());
     }
@@ -53,7 +53,7 @@ public class PackageAttributeTest extends GoTestBase{
         final String code = "package main\ntype person interface {}";
         projectFiles.insertFile(new ProjectFile("/src/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("main",
                      generatedSourceModel.getComponent("src.person").get().pkg().name());
         assertEquals("/src",
@@ -67,7 +67,7 @@ public class PackageAttributeTest extends GoTestBase{
         final String code = "package main\ntype person struct {}";
         projectFiles.insertFile(new ProjectFile("/src/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("main", generatedSourceModel.getComponent("src.person").get().pkg().name());
     }
 
@@ -77,7 +77,7 @@ public class PackageAttributeTest extends GoTestBase{
         projectFiles = goLangProjectFilesFixture("/pkg");
         projectFiles.insertFile(new ProjectFile("/pkg/cukpcakes/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("/cukpcakes",
                      generatedSourceModel.getComponent("cukpcakes.person").get().pkg().path());
         assertEquals("strawbs",
@@ -89,7 +89,7 @@ public class PackageAttributeTest extends GoTestBase{
         final String code = "package strawbs\ntype person struct {}";
         projectFiles.insertFile(new ProjectFile("/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("",
                      generatedSourceModel.getComponent("strawbs.person").get().pkg().path());
         assertEquals("strawbs",

@@ -19,7 +19,7 @@ public class ReferenceInheritanceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
                 .invokedComponent().equals("test.math.Person"));
@@ -31,7 +31,7 @@ public class ReferenceInheritanceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
                 .invokedComponent().equals("test.math.Person"));
@@ -43,7 +43,7 @@ public class ReferenceInheritanceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.x(math.Person) : (int)")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
                 .invokedComponent().equals("test.math.Person"));
@@ -55,7 +55,7 @@ public class ReferenceInheritanceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
                 .invokedComponent().equals("test.math.Person"));
@@ -67,7 +67,7 @@ public class ReferenceInheritanceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0)
                 .invokedComponent().equals("test.math.Person"));

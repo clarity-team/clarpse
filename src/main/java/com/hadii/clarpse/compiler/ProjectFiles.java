@@ -3,6 +3,8 @@ package com.hadii.clarpse.compiler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +12,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,18 +24,19 @@ import java.util.zip.ZipInputStream;
  */
 public class ProjectFiles {
 
-    private final Lang language;
+    private static final Logger LOGGER = LogManager.getLogger(ProjectFiles.class);
+    private Lang language;
     private List<ProjectFile> files = new ArrayList<>();
 
     /**
-     * Constructs a ProjectFiles instance from either a path to a local directory or a
-     * path to a local zip file.
+     * Constructs a ProjectFiles instance from a path to a local directory or zip file.
      */
     public ProjectFiles(final Lang language, final String projectPath) throws Exception {
-        this.language = language;
+        setLang(language);
         File projectFiles = new File(projectPath);
+        LOGGER.info("Project source files location: " + projectFiles.getPath());
         if (!projectFiles.exists()) {
-            throw new IllegalArgumentException("The given path does not exist! " + projectPath);
+            throw new IllegalArgumentException("The given path does not exist!");
         } else if (projectFiles.isFile()
             && anyMatchExtensions(projectFiles.getName(), new String[]{".zip"})) {
             initFilesFromZipPath(language, projectFiles);
@@ -46,23 +50,29 @@ public class ProjectFiles {
         validateFiles();
     }
 
-    public ProjectFiles(Lang language, InputStream zipFileInputStream) throws Exception {
+    private void setLang(Lang language) {
+        LOGGER.info("Setting language to " + language.name() + ".");
         this.language = language;
-        this.files = extractProjectFilesFromZip(zipFileInputStream, language);
+    }
+
+    public ProjectFiles(Lang language, InputStream zipFileInputStream) throws Exception {
+        setLang(language);
+        this.files = extractProjectFilesFromStream(zipFileInputStream, language);
     }
 
     public ProjectFiles(final Lang language, final List<ProjectFile> files) {
-        this.language = language;
+        setLang(language);
         this.files.addAll(files);
     }
 
     public ProjectFiles(final Lang language) {
-        this.language = language;
+        setLang(language);
     }
 
     private void initFilesFromZipPath(Lang language, File projectFiles) throws Exception {
         InputStream io = FileUtils.openInputStream(projectFiles);
-        this.files = extractProjectFilesFromZip(io, language);
+        LOGGER.info("Converted zip path to an input stream..");
+        this.files = extractProjectFilesFromStream(io, language);
     }
 
     /**
@@ -70,10 +80,11 @@ public class ProjectFiles {
      * deleted and all remaining subdirectories are shifted over in its place. If there are any
      * files within the current root directory which will get deleted as a result, an exception
      * is thrown.
-     *
+     * <p>
      * Sample transformation: /test/foo/cakes/lol.txt  ---> /foo/cakes/lol.txt
      */
     public void shiftSubDirsLeft() {
+        LOGGER.info("Shifting all source files sub-dirs left..");
         this.files = this.files.stream().map(file -> {
             if (StringUtils.countMatches(file.path(), File.separator) > 1) {
                 return new ProjectFile(file.path().substring(
@@ -85,7 +96,12 @@ public class ProjectFiles {
         }).collect(Collectors.toList());
     }
 
+    public int size() {
+        return this.files.size();
+    }
+
     private void initFilesFromDir(Lang language, File projectFiles) throws IOException {
+        LOGGER.info("Reading source files from dir: " + projectFiles.getPath());
         Iterator<File> it = FileUtils.iterateFiles(projectFiles, null, true);
         while (it.hasNext()) {
             File nextFile = (File) it.next();
@@ -97,6 +113,7 @@ public class ProjectFiles {
                 );
             }
         }
+        LOGGER.info("Read " + this.files.size() + "files.");
     }
 
     private void validateFiles() {
@@ -108,17 +125,20 @@ public class ProjectFiles {
         }
     }
 
-    private List<ProjectFile> extractProjectFilesFromZip(final InputStream is, Lang language)
+    private List<ProjectFile> extractProjectFilesFromStream(final InputStream is, Lang language)
         throws Exception {
+        LOGGER.info("Extracting source files from input stream..");
         List<ProjectFile> projectFiles = new ArrayList<>();
         try (ZipInputStream zis = new ZipInputStream(is)) {
             ZipEntry entry = zis.getNextEntry();
             while (entry != null) {
                 if (!entry.isDirectory()
                     && anyMatchExtensions(entry.getName(), language.fileExtns())) {
-                    projectFiles.add(new ProjectFile(
+                    ProjectFile newFile = new ProjectFile(
                         File.separator + entry.getName().replace(" ", "_"),
-                        new String(IOUtils.toByteArray(zis), StandardCharsets.UTF_8)));
+                        new String(IOUtils.toByteArray(zis), StandardCharsets.UTF_8));
+                    LOGGER.debug("Extracted project file " + newFile + ".");
+                    projectFiles.add(newFile);
                 }
                 zis.closeEntry();
                 entry = zis.getNextEntry();
@@ -131,6 +151,7 @@ public class ProjectFiles {
                 is.close();
             }
         }
+        LOGGER.info("Extracted " + projectFiles.size() + " files.");
         return projectFiles;
     }
 
@@ -144,9 +165,10 @@ public class ProjectFiles {
 
     public final void insertFile(final ProjectFile file) {
         files.add(file);
+        LOGGER.debug("Inserted file " + file + ".");
     }
 
-    public final List<ProjectFile> files() {
+    public final Collection<ProjectFile> files() {
         return files;
     }
 

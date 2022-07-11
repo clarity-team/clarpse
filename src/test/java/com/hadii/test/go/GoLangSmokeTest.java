@@ -94,11 +94,11 @@ public class GoLangSmokeTest {
                        .references()
                        .toString()
                        .equals(
-                           "[SimpleTypeReference:string, SimpleTypeReference:pkg.test.framework" +
-                               ".resource.Context, TypeImplementationReference:pkg.test.framework" +
-                               ".resource.Dumper, TypeImplementationReference:pkg.test.framework" +
-                               ".resource.Resource, TypeImplementationReference:pkg.test" +
-                               ".framework.components.opentelemetry.Instance]"
+                           "[SimpleTypeReference[string], SimpleTypeReference[pkg.test.framework" +
+                               ".resource.Context], TypeImplementationReference[pkg.test" +
+                               ".framework.resource.Dumper], TypeImplementationReference[pkg.test" +
+                               ".framework.resource.Resource], TypeImplementationReference[pkg" +
+                               ".test.framework.components.opentelemetry.Instance]]"
                        )
         );
     }
@@ -106,11 +106,11 @@ public class GoLangSmokeTest {
     @Test
     public void spotCheckStructcomponentReferencesv2() {
         assertTrue(generatedSourceModel.getComponent("security.pkg.pki.ca.IstioCA").get().references().toString().equals(
-            "[SimpleTypeReference:time.Duration, SimpleTypeReference:int, " +
-                "SimpleTypeReference:security.pkg.pki.util.KeyCertBundle, " +
-                "SimpleTypeReference:security.pkg.pki.ca.SelfSignedCARootCertRotator, " +
-                "SimpleTypeReference:byte, SimpleTypeReference:security.pkg.pki.ca.CertOpts, " +
-                "SimpleTypeReference:string, SimpleTypeReference:bool]"));
+            "[SimpleTypeReference[time.Duration], SimpleTypeReference[int], " +
+                "SimpleTypeReference[security.pkg.pki.util.KeyCertBundle], " +
+                "SimpleTypeReference[security.pkg.pki.ca.SelfSignedCARootCertRotator], " +
+                "SimpleTypeReference[byte], SimpleTypeReference[security.pkg.pki.ca.CertOpts], " +
+                "SimpleTypeReference[string], SimpleTypeReference[bool]]"));
     }
 
     @Test
@@ -168,23 +168,22 @@ public class GoLangSmokeTest {
     @Test
     public void spotCheckInterfaceImports() {
         assertTrue(generatedSourceModel.getComponent("pkg.kube.inject.Injector").get().imports().toString()
-                                       .equals("[bufio, bytes, encoding.json, fmt, io, math, " +
-                                                   "reflect, sort, strconv, strings, text" +
-                                                   ".template, github.com.Masterminds.sprig.v3, " +
-                                                   "github.com.evanphx.json-patch.v5, github.com" +
-                                                   ".hashicorp.go-multierror, k8s.io.api.apps.v1," +
-                                                   " k8s.io.api.batch.v1, k8s.io.api.core.v1, k8s" +
-                                                   ".io.apimachinery.pkg.api.resource, k8s.io" +
-                                                   ".apimachinery.pkg.apis.meta.v1, k8s.io" +
-                                                   ".apimachinery.pkg.labels, k8s.io.apimachinery" +
-                                                   ".pkg.runtime, k8s.io.apimachinery.pkg.runtime" +
-                                                   ".schema, k8s.io.apimachinery.pkg.util.yaml, " +
-                                                   "sigs.k8s.io.yaml, istio.io.api.annotation, " +
-                                                   "istio.io.api.label, istio.io.api.mesh" +
-                                                   ".v1alpha1, istio.io.api.networking.v1beta1, " +
-                                                   "operator.pkg.apis.istio.v1alpha1, pkg.config" +
-                                                   ".mesh, pkg.util.gogoprotomarshal, istio.io" +
-                                                   ".pkg.log]"));
+                                       .equals("[bufio, sigs.k8s.io.yaml, k8s.io.apimachinery.pkg" +
+                                                   ".api.resource, fmt, istio.io.pkg.log, istio" +
+                                                   ".io.api.mesh.v1alpha1, github.com.Masterminds" +
+                                                   ".sprig.v3, reflect, strings, k8s.io.api.core" +
+                                                   ".v1, k8s.io.apimachinery.pkg.runtime, pkg" +
+                                                   ".config.mesh, k8s.io.apimachinery.pkg.runtime" +
+                                                   ".schema, k8s.io.api.batch.v1, operator.pkg" +
+                                                   ".apis.istio.v1alpha1, io, istio.io.api" +
+                                                   ".annotation, github.com.evanphx.json-patch" +
+                                                   ".v5, k8s.io.apimachinery.pkg.apis.meta.v1, " +
+                                                   "istio.io.api.networking.v1beta1, sort, github" +
+                                                   ".com.hashicorp.go-multierror, text.template, " +
+                                                   "encoding.json, k8s.io.apimachinery.pkg.util" +
+                                                   ".yaml, k8s.io.apimachinery.pkg.labels, bytes," +
+                                                   " strconv, k8s.io.api.apps.v1, pkg.util" +
+                                                   ".gogoprotomarshal, math, istio.io.api.label]"));
     }
 
     @Test

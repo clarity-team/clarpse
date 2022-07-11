@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class ResolvedRelativePath {
 
-    private String unresolvedRelativePath;
-    private String absPath;
+    private final String unresolvedRelativePath;
+    private final String absPath;
 
     /**
      * @param absoluteDir
@@ -23,7 +23,6 @@ public class ResolvedRelativePath {
     public ResolvedRelativePath(String absoluteDir, String relativeFilePath) throws Exception {
         this.absPath = absoluteDir;
         this.unresolvedRelativePath = relativeFilePath;
-
         if (relativeFilePath.startsWith("/")) {
             throw new Exception("The given relative file path cannot be an absolute path!");
         }
@@ -54,17 +53,16 @@ public class ResolvedRelativePath {
         String absolutePath = preprocessedAbsPath(this.absPath);
         String relativePath = preprocessedRelativePath(this.unresolvedRelativePath);
         // build absolute path representing the given relative path
-        @SuppressWarnings("unchecked") List<String> absoluteParts = new ArrayList<String>(Arrays.asList(absolutePath.split("/", -1)));
+        List<String> absoluteParts = new ArrayList<String>(Arrays.asList(absolutePath.split("/", -1)));
         String[] relativeParts = relativePath.split("/");
         for (String relativePart : relativeParts) {
-            if (relativePart.equals(".")) {
-                // means current directory, do nothing
-                continue;
-            } else if (relativePart.equalsIgnoreCase("..")) {
-                // mean move up a level
-                absoluteParts.remove(absoluteParts.size() - 1);
-            } else {
-                absoluteParts.add(relativePart);
+            if (!relativePart.equals(".")) {
+                if (relativePart.equalsIgnoreCase("..")) {
+                    // move up a level
+                    absoluteParts.remove(absoluteParts.size() - 1);
+                } else {
+                    absoluteParts.add(relativePart);
+                }
             }
         }
         absoluteParts.removeIf(String::isEmpty);

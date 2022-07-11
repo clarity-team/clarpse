@@ -48,7 +48,7 @@ public class ComponentProjectFilePathTest {
         rawData.insertFile(file1);
         rawData.insertFile(file2);
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        sourceCodeModel = parseService.result();
+        sourceCodeModel = parseService.result().model();
     }
 
     @Test

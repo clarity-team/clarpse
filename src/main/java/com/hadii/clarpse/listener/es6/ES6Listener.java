@@ -18,6 +18,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -30,7 +32,6 @@ public class ES6Listener implements Callback {
 
     private static final Logger LOGGER = LogManager.getLogger(ES6Listener.class);
     private final Stack<Component> componentStack = new Stack<>();
-    private final ModulesMap modulesMap;
     private final ES6Module module;
     private final OOPSourceCodeModel srcModel;
     private final ProjectFile file;
@@ -38,10 +39,9 @@ public class ES6Listener implements Callback {
     private int currCyclomaticComplexity = 0;
 
     public ES6Listener(final OOPSourceCodeModel srcModel, final ProjectFile file,
-                       final List<ProjectFile> files, final ModulesMap modulesMap) throws Exception {
+                       final Collection<ProjectFile> files, final ModulesMap modulesMap) throws Exception {
         this.srcModel = srcModel;
         this.file = file;
-        this.modulesMap = modulesMap;
         module = modulesMap.module(FilenameUtils.removeExtension(this.file.path()));
         this.currPkg = new Package(module.pkgName(), module.pkgPath());
         LOGGER.info("Parsing New JS File: " + file.path());
@@ -72,16 +72,16 @@ public class ES6Listener implements Callback {
     }
 
     private static String generateCodeFragment(final List<Component> components) {
-        String codeFragment = "(";
+        StringBuilder codeFragment = new StringBuilder("(");
         for (final Component cmp : components) {
-            codeFragment += cmp.name() + ", ";
+            codeFragment.append(cmp.name()).append(", ");
         }
-        codeFragment = codeFragment.trim();
-        if (codeFragment.endsWith(",")) {
-            codeFragment = codeFragment.substring(0, codeFragment.length() - 1);
+        codeFragment = new StringBuilder(codeFragment.toString().trim());
+        if (codeFragment.toString().endsWith(",")) {
+            codeFragment = new StringBuilder(codeFragment.substring(0, codeFragment.length() - 1));
         }
-        codeFragment += ")";
-        return codeFragment;
+        codeFragment.append(")");
+        return codeFragment.toString();
     }
 
     @Override
@@ -124,19 +124,18 @@ public class ES6Listener implements Callback {
     public boolean shouldTraverse(final NodeTraversal nodeTraversal, final Node n,
                                   final Node parent) {
         try {
-            return shouldTraverse(n, parent);
+            return shouldTraverse(n);
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Error while determining whether to traverse node " + n + ".", e);
             return true;
         }
     }
 
-    private boolean shouldTraverse(final Node n, final Node parent) throws Exception {
-        final Component cmp = null;
+    private boolean shouldTraverse(final Node n) throws Exception {
         if (n.isClass()) {
-            processClass(cmp, n);
+            processClass(n);
         } else if (n.isMemberFunctionDef()) {
-            processMemberFunctionDef(cmp, n);
+            processMemberFunctionDef(n);
         } else if (n.isGetterDef()) {
             processGetterDef(n);
         } else if (n.isSetterDef()) {
@@ -160,7 +159,7 @@ public class ES6Listener implements Callback {
             final Component latestCmp = componentStack.peek();
             final String cmpType = resolveType(n.getString());
             if (cmpType != null && !cmpType.equals(latestCmp.uniqueName())) {
-                latestCmp.insertComponentRef(new SimpleTypeReference(cmpType));
+                latestCmp.insertCmpRef(new SimpleTypeReference(cmpType));
                 updateParentChildrenData(latestCmp);
                 LOGGER.info("Associated type reference: " + cmpType + " with component: " + latestCmp.componentName());
             }
@@ -189,8 +188,8 @@ public class ES6Listener implements Callback {
         if (n.getFirstChild().getSecondChild().isString()) {
             final String fieldVarname = n.getFirstChild().getSecondChild().getString();
             final Component cmp = createComponent(OOPSourceModelConstants.ComponentType.FIELD, n);
-            cmp.setComponentName(generateComponentName(fieldVarname,
-                                                       OOPSourceModelConstants.ComponentType.FIELD));
+            cmp.setComponentName(generateComponentName(fieldVarname
+            ));
             cmp.setName(fieldVarname);
             cmp.insertAccessModifier("private");
             processVariableAssignment(cmp, n.getSecondChild());
@@ -219,7 +218,7 @@ public class ES6Listener implements Callback {
                 OOPSourceModelConstants.ComponentType.CONSTRUCTOR_PARAMETER_COMPONENT;
         }
         for (final Node param : n.children()) {
-            String paramName = null;
+            String paramName;
             if (param.isString() || param.isName()) {
                 paramName = param.getString();
             } else if (param.isDefaultValue()) {
@@ -279,8 +278,8 @@ public class ES6Listener implements Callback {
         componentStack.push(cmp);
     }
 
-    private void processClass(Component cmp, final Node n) throws Exception {
-        cmp = createComponent(OOPSourceModelConstants.ComponentType.CLASS, n);
+    private void processClass(final Node n) throws Exception {
+        Component cmp = createComponent(OOPSourceModelConstants.ComponentType.CLASS, n);
         String name = null;
         if (NodeUtil.isNameDeclaration(n.getParent().getParent())) {
             if (n.getParent().isName()) {
@@ -298,14 +297,15 @@ public class ES6Listener implements Callback {
             // this class extends another class
             LOGGER.info("this class extends " + n.getSecondChild().getString());
             if (resolveType(n.getSecondChild().getString()) != null) {
-                cmp.insertComponentRef(new TypeExtensionReference(resolveType(n.getSecondChild().getString())));
+                cmp.insertCmpRef(new TypeExtensionReference(resolveType(n.getSecondChild().getString())));
             }
         }
         componentStack.push(cmp);
     }
 
-    private void processMemberFunctionDef(Component cmp, final Node n) throws Exception {
+    private void processMemberFunctionDef(final Node n) throws Exception {
         currCyclomaticComplexity = 1;
+        Component cmp;
         if (n.hasOneChild() && NodeUtil.isEs6Constructor(n.getFirstChild())) {
             LOGGER.info("Found constructor");
             cmp = createComponent(OOPSourceModelConstants.ComponentType.CONSTRUCTOR,
@@ -337,12 +337,12 @@ public class ES6Listener implements Callback {
             if (assignmentNode.getFirstChild().isGetProp()) {
                 invokedType = assignmentNode.getFirstChild().getFirstChild().getString();
                 if (resolveType(invokedType) != null) {
-                    cmp.insertComponentRef(new SimpleTypeReference(resolveType(invokedType)));
+                    cmp.insertCmpRef(new SimpleTypeReference(resolveType(invokedType)));
                 }
             } else {
                 invokedType = assignmentNode.getFirstChild().getString();
                 if (resolveType(invokedType) != null) {
-                    cmp.insertComponentRef(new SimpleTypeReference(resolveType(invokedType)));
+                    cmp.insertCmpRef(new SimpleTypeReference(resolveType(invokedType)));
                 }
             }
             cmp.setCodeFragment(cmp.name() + " : " + invokedType);
@@ -362,21 +362,17 @@ public class ES6Listener implements Callback {
                 completedCmp.setCyclo(currCyclomaticComplexity);
             } else if (completedCmp.componentType() == OOPSourceModelConstants.ComponentType.CLASS) {
                 completedCmp.setCyclo(ParseUtil.calculateClassCyclo(completedCmp, srcModel));
-                completedCmp.setImports(new ArrayList<>(module.getClassImports().stream()
-                                                              .map(ES6ClassImport::qualifiedClassName)
-                                                              .collect(Collectors.toList())));
+                completedCmp.setImports(
+                    new HashSet<String>(module.getClassImports().stream().map(
+                        ES6ClassImport::qualifiedClassName).collect(Collectors.toSet())) {
+                });
             }
             srcModel.insertComponent(completedCmp);
         }
     }
 
-    private String generateComponentName(final String identifier,
-                                         final OOPSourceModelConstants.ComponentType componentType) throws Exception {
-        if (componentType == OOPSourceModelConstants.ComponentType.FIELD) {
-            return ParseUtil.newestBaseComponent(componentStack).componentName() + "." + identifier;
-        } else {
-            return ParseUtil.generateComponentName(identifier, componentStack);
-        }
+    private String generateComponentName(final String identifier) throws Exception {
+        return ParseUtil.newestBaseComponent(componentStack).componentName() + "." + identifier;
     }
 
     /**

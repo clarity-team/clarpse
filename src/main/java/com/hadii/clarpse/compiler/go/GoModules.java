@@ -3,6 +3,8 @@ package com.hadii.clarpse.compiler.go;
 import com.hadii.clarpse.compiler.Lang;
 import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +16,13 @@ import java.util.stream.Collectors;
  */
 public class GoModules {
 
+    private static final Logger LOGGER = LogManager.getLogger(GoModules.class);
+
     private List<GoModule> goModules = new ArrayList<>();
 
     public GoModules(final ProjectFiles projectFiles) {
         this.goModules = generateModules(projectFiles);
+        LOGGER.info(this.goModules.size() + " Go modules were detected.");
     }
 
     private List<GoModule> generateModules(final ProjectFiles projectFiles) {
@@ -34,7 +39,7 @@ public class GoModules {
                 }
             }
         });
-        moduletoFilesMap.keySet().stream().forEach(moduleFile -> {
+        moduletoFilesMap.keySet().forEach(moduleFile -> {
             goModules.add(new GoModule(
                 new ProjectFiles(
                     Lang.GOLANG, moduletoFilesMap.get(moduleFile)), moduleFile));

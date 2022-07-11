@@ -27,7 +27,7 @@ public class ES6ModulesListener implements Callback {
         try {
             return shouldTraverse(n);
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to determine whether to traverse node " + n + ".", e);
             return true;
         }
     }

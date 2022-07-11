@@ -32,7 +32,7 @@ public class CycloTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test.Test()").get().cyclo() == 6);
     }
 
@@ -51,7 +51,7 @@ public class CycloTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test.Test()").get().cyclo() == 3);
     }
 
@@ -71,7 +71,7 @@ public class CycloTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 6);
     }
 
@@ -88,7 +88,7 @@ public class CycloTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 2);
     }
 
@@ -101,7 +101,7 @@ public class CycloTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 0);
     }
 
@@ -130,7 +130,7 @@ public class CycloTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test").get().cyclo() == 5);
     }
 
@@ -142,7 +142,7 @@ public class CycloTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test").get().cyclo() == 0);
     }
 }

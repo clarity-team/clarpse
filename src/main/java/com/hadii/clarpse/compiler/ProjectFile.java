@@ -1,5 +1,8 @@
 package com.hadii.clarpse.compiler;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -8,10 +11,11 @@ import java.util.Scanner;
 
 public class ProjectFile {
 
+    private static final Logger LOGGER = LogManager.getLogger(ProjectFile.class);
     private String content;
     private String path;
 
-    public ProjectFile() { }
+    public ProjectFile() {}
 
     public ProjectFile(final String path, final String fileContent) {
         content = fileContent;
@@ -22,6 +26,7 @@ public class ProjectFile {
         } else {
             this.path = path;
         }
+        LOGGER.info("Created new file with path " + this.path + ".");
     }
 
     public void path(final String path) {
@@ -33,8 +38,7 @@ public class ProjectFile {
     }
 
     public ProjectFile(final java.io.File file) throws FileNotFoundException {
-        @SuppressWarnings("resource")
-        final Scanner scanner = new Scanner(file, "UTF-8");
+        @SuppressWarnings("resource") final Scanner scanner = new Scanner(file, "UTF-8");
         content = scanner.useDelimiter("\\A").next();
         path = file.getName();
     }
@@ -46,7 +50,8 @@ public class ProjectFile {
     public String shortName() {
         String shortName = path;
         if (shortName.contains("/")) {
-            shortName = shortName.substring(shortName.lastIndexOf("/") + 1, shortName.lastIndexOf('.'));
+            shortName = shortName.substring(shortName.lastIndexOf("/") + 1,
+                                            shortName.lastIndexOf('.'));
         }
         return shortName;
     }
@@ -63,7 +68,7 @@ public class ProjectFile {
     public final boolean equals(final Object obj) {
         final ProjectFile file = (ProjectFile) obj;
         return content().equals(file.content())
-                && path().equals(file.path());
+            && path().equals(file.path());
     }
 
     public String path() {
@@ -77,5 +82,10 @@ public class ProjectFile {
 
     public ProjectFile copy() {
         return new ProjectFile(path(), content());
+    }
+
+    @Override
+    public String toString() {
+        return this.path;
     }
 }

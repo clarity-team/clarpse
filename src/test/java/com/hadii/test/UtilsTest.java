@@ -73,7 +73,7 @@ public class UtilsTest {
         aField.setComponentType(OOPSourceModelConstants.ComponentType.FIELD);
         aField.setName("aField");
         Component bField = new Component(aField);
-        bField.insertComponentRef(new SimpleTypeReference("com.test.classB"));
+        bField.insertCmpRef(new SimpleTypeReference("com.test.classB"));
         assert (aField.references().size() == 0);
     }
 
@@ -84,7 +84,7 @@ public class UtilsTest {
         aField.setComponentName("classA.aField");
         aField.setComponentType(OOPSourceModelConstants.ComponentType.FIELD);
         aField.setName("aField");
-        aField.insertComponentRef(new SimpleTypeReference("com.test.classB"));
+        aField.insertCmpRef(new SimpleTypeReference("com.test.classB"));
         Component bField = new Component(aField);
         assert (bField.references().size() == 1);
     }

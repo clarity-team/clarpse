@@ -7,7 +7,7 @@ import org.junit.Before;
 
 public class GoTestBase {
 
-    ProjectFiles projectFiles;
+    public ProjectFiles projectFiles;
 
     @Before
     public void setUp() {

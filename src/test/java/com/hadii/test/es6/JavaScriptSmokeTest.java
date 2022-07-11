@@ -23,7 +23,7 @@ public class JavaScriptSmokeTest {
 		final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
 		rawData.insertFile(new ProjectFile("polygon.js", code));
 		final ClarpseProject parseService = new ClarpseProject(rawData);
-		generatedSourceModel = parseService.result();
+		generatedSourceModel = parseService.result().model();
 	}
 
 	@Test

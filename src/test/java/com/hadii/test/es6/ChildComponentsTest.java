@@ -7,7 +7,10 @@ import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ChildComponentsTest {
@@ -18,7 +21,7 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().contains("Polygon.say.height"));
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().contains("Polygon.say.length"));
     }
@@ -27,8 +30,8 @@ public class ChildComponentsTest {
     public void noJsFilesParsedTest() throws Exception {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.components().count() == 0);
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals(0, generatedSourceModel.components().count());
     }
 
     @Test
@@ -37,8 +40,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.get_height"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertTrue(new ArrayList<>(generatedSourceModel.getComponent(
+            "Polygon").get().children()).contains("Polygon.get_height"));
     }
 
     @Test
@@ -47,8 +51,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(1).equals("Polygon.height"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertTrue(new ArrayList<>(generatedSourceModel.getComponent("Polygon"
+        ).get().children()).contains("Polygon.height"));
     }
 
     @Test
@@ -57,8 +62,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.constructor"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("Polygon.constructor", new ArrayList<>(generatedSourceModel.getComponent(
+            "Polygon").get().children()).get(0));
     }
 
     @Test
@@ -67,8 +73,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().children().get(0).equals("Polygon.say"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("Polygon.say",
+                     new ArrayList<>(generatedSourceModel.getComponent("Polygon").get().children()).get(0));
     }
 
     @Test
@@ -77,11 +84,11 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().children().get(0)
-                .equals("Polygon.constructor.height"));
-        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().children().get(1)
-                .equals("Polygon.constructor.length"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertTrue(new ArrayList<>(generatedSourceModel.getComponent("Polygon.constructor").get()
+                                                       .children()).contains("Polygon.constructor.height"));
+        assertTrue(new ArrayList<>(generatedSourceModel.getComponent("Polygon.constructor").get().children())
+                .contains("Polygon.constructor.length"));
     }
 
     @Test
@@ -90,8 +97,9 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().size() == 2);
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().children().get(1).equals("Polygon.say.lol"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals(2, generatedSourceModel.getComponent("Polygon.say").get().children().size());
+        assertTrue(new ArrayList<>(generatedSourceModel.getComponent(
+            "Polygon.say").get().children()).contains("Polygon.say.lol"));
     }
 }

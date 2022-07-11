@@ -22,6 +22,6 @@ public class ModuleInfoTest {
         rawData.insertFile(new ProjectFile("test.java", code));
         rawData.insertFile(new ProjectFile("module-info.java", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
     }
 }

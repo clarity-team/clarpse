@@ -17,7 +17,7 @@ public class AccessModifiersTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().modifiers().contains("static"));
     }
 
@@ -27,7 +27,7 @@ public class AccessModifiersTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon").get().modifiers().isEmpty());
     }
 
@@ -37,7 +37,7 @@ public class AccessModifiersTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.test").get().modifiers().isEmpty());
     }
 
@@ -47,7 +47,7 @@ public class AccessModifiersTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().modifiers().contains("private"));
     }
 
@@ -57,7 +57,7 @@ public class AccessModifiersTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().modifiers().isEmpty());
     }
 }

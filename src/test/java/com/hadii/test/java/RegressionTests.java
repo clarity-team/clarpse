@@ -23,7 +23,7 @@ public class RegressionTests {
                 "/ParameterizedTestIntegrationTests.java")), StandardCharsets.UTF_8.name());
         rawData.insertFile(new ProjectFile("ParameterizedTestIntegrationTests.java", javaCode));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("ParameterizedTestIntegrationTests"));
     }
 }

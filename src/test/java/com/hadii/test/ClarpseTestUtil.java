@@ -61,6 +61,6 @@ public class ClarpseTestUtil {
     public static OOPSourceCodeModel sourceCodeModel(String testResourceZip, Lang language) throws Exception {
         final ProjectFiles projectFiles = new ProjectFiles(
             language, ClarpseTestUtil.class.getResourceAsStream(testResourceZip));
-        return new ClarpseProject(projectFiles).result();
+        return new ClarpseProject(projectFiles).result().model();
     }
 }

@@ -20,38 +20,38 @@ import java.util.Optional;
 public class ComponentTypeTest {
 
     private static OOPSourceCodeModel generatedSourceModel;
-    private static String sampleJavaClassComponentName;
-    private static OOPSourceModelConstants.ComponentType sampleJavaClassComponentType;
-    private static String sampleJavaClassFieldComponentName;
-    private static OOPSourceModelConstants.ComponentType sampleJavaClassFieldComponentType;
-    private static String sampleJavaMethodComponentName;
-    private static String sampleJavaMethodComponentKeyName;
-    private static OOPSourceModelConstants.ComponentType sampleJavaMethodComponentType;
-    private static String sampleJavaConstructorComponentName;
-    private static String sampleJavaConstructorComponentKeyName;
-    private static OOPSourceModelConstants.ComponentType sampleJavaConstructorComponentType;
-    private static String sampleJavaMethodParamComponentName;
-    private static OOPSourceModelConstants.ComponentType sampleJavaMethodParamComponentNameType;
-    private static String sampleJavaMethodParamComponent2Name;
-    private static OOPSourceModelConstants.ComponentType sampleJavaMethodParamComponent2NameType;
-    private static String sampleJavaInterfaceComponentName;
-    private static OOPSourceModelConstants.ComponentType sampleJavaInterfaceComponentType;
-    private static String sampleJavaInterfaceMethodComponentName;
-    private static String sampleJavaInterfaceMethodComponentKeyName;
-    private static OOPSourceModelConstants.ComponentType sampleJavaInterfaceMethodComponentType;
-    private static String sampleJavaInterfaceMethodParamComponentName;
-    private static OOPSourceModelConstants.ComponentType sampleJavaInterfaceMethodParamComponentType;
-    private static String sampleJavaEnumComponent;
-    private static OOPSourceModelConstants.ComponentType sampleJavaEnumComponentType;
-    private static String sampleJavaEnumClassConstant;
-    private static OOPSourceModelConstants.ComponentType sampleJavaEnumClassConstantType;
-    private static String sampleJavaEnumClassConstructor;
-    private static String sampleJavaEnumClassConstructorKey;
-    private static OOPSourceModelConstants.ComponentType sampleJavaEnumClassConstructorType;
-    private static String sampleJavaEnumMethodParam;
-    private static OOPSourceModelConstants.ComponentType sampleJavaEnumMethodParamType;
-    private static String sampleJavaPackageName;
-    private static String codeString;
+    private static final String sampleJavaClassComponentName;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaClassComponentType;
+    private static final String sampleJavaClassFieldComponentName;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaClassFieldComponentType;
+    private static final String sampleJavaMethodComponentName;
+    private static final String sampleJavaMethodComponentKeyName;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaMethodComponentType;
+    private static final String sampleJavaConstructorComponentName;
+    private static final String sampleJavaConstructorComponentKeyName;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaConstructorComponentType;
+    private static final String sampleJavaMethodParamComponentName;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaMethodParamComponentNameType;
+    private static final String sampleJavaMethodParamComponent2Name;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaMethodParamComponent2NameType;
+    private static final String sampleJavaInterfaceComponentName;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaInterfaceComponentType;
+    private static final String sampleJavaInterfaceMethodComponentName;
+    private static final String sampleJavaInterfaceMethodComponentKeyName;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaInterfaceMethodComponentType;
+    private static final String sampleJavaInterfaceMethodParamComponentName;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaInterfaceMethodParamComponentType;
+    private static final String sampleJavaEnumComponent;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaEnumComponentType;
+    private static final String sampleJavaEnumClassConstant;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaEnumClassConstantType;
+    private static final String sampleJavaEnumClassConstructor;
+    private static final String sampleJavaEnumClassConstructorKey;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaEnumClassConstructorType;
+    private static final String sampleJavaEnumMethodParam;
+    private static final OOPSourceModelConstants.ComponentType sampleJavaEnumMethodParamType;
+    private static final String sampleJavaPackageName;
+    private static final String codeString;
 
     static {
         sampleJavaClassComponentName = "SampleJavaClass";
@@ -98,104 +98,114 @@ public class ComponentTypeTest {
     }
 
     @BeforeClass
-    public static final void parseJavaSourceFile() throws Exception {
+    public static void parseJavaSourceFile() throws Exception {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        generatedSourceModel = parseService.result();
+        generatedSourceModel = parseService.result().model();
     }
 
     @Test
     public final void testSampleJavaClassMethodParamComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "." + sampleJavaClassComponentName + "."
                         + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponentName);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaMethodParamComponentNameType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaMethodParamComponentNameType.toString());
     }
 
     @Test
     public final void testSampleJavaClassMethodParam2ComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "." + sampleJavaClassComponentName + "."
                         + sampleJavaMethodComponentKeyName + "." + sampleJavaMethodParamComponent2Name);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaMethodParamComponent2NameType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaMethodParamComponent2NameType.toString());
     }
 
     @Test
     public final void testSampleJavaClassConstructorComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "."
                 + sampleJavaClassComponentName + "." + sampleJavaConstructorComponentKeyName);
         Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaConstructorComponentType.toString()));
     }
 
     @Test
     public final void testSampleJavaClassMethodComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "."
                 + sampleJavaClassComponentName + "." + sampleJavaMethodComponentKeyName);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaMethodComponentType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaMethodComponentType.toString());
     }
 
     @Test
     public final void testSampleJavaClassFieldComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "."
                 + sampleJavaClassComponentName + "." + sampleJavaClassFieldComponentName);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaClassFieldComponentType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaClassFieldComponentType.toString());
     }
 
     @Test
     public final void testSampleJavaClassComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaClassComponentType.toString()));
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "." + sampleJavaClassComponentName);
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaClassComponentType.toString());
     }
 
     @Test
     public final void testSampleJavaInterfaceMethodParamComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "." + sampleJavaClassComponentName + "."
                         + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentKeyName + "."
                         + sampleJavaInterfaceMethodParamComponentName);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(
-
-                sampleJavaInterfaceMethodParamComponentType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaInterfaceMethodParamComponentType.toString());
     }
 
     @Test
     public final void testSampleJavaInterfaceMethodComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "." + sampleJavaClassComponentName + "."
                         + sampleJavaInterfaceComponentName + "." + sampleJavaInterfaceMethodComponentKeyName);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaInterfaceMethodComponentType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaInterfaceMethodComponentType.toString());
     }
 
     @Test
     public final void testSampleJavaInterfaceComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "."
                 + sampleJavaClassComponentName + "." + sampleJavaInterfaceComponentName);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaInterfaceComponentType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaInterfaceComponentType.toString());
     }
 
     @Test
     public final void testSampleJavaEnumClassComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "."
                 + sampleJavaClassComponentName + "." + sampleJavaEnumComponent);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaEnumComponentType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaEnumComponentType.toString());
     }
 
     @Test
     public final void testSampleJavaEnumClassConstantComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "."
                 + sampleJavaClassComponentName + "." + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstant);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaEnumClassConstantType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaEnumClassConstantType.toString());
     }
 
     @Test
     public final void testSampleJavaEnumClassMethodComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructorKey);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaEnumClassConstructorType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaEnumClassConstructorType.toString());
     }
 
     @Test
     public final void testSampleJavaEnumClassMethodParamComponentType() throws Exception {
-        final Optional<Component> tmp = generatedSourceModel.getComponent(String.valueOf(sampleJavaPackageName) + "." + sampleJavaClassComponentName + "."
+        final Optional<Component> tmp = generatedSourceModel.getComponent(sampleJavaPackageName + "." + sampleJavaClassComponentName + "."
                         + sampleJavaEnumComponent + "." + sampleJavaEnumClassConstructorKey + "."
                         + sampleJavaEnumMethodParam);
-        Assert.assertTrue(tmp.get().componentType().toString().equals(sampleJavaEnumMethodParamType.toString()));
+        Assert.assertEquals(tmp.get().componentType().toString(),
+                            sampleJavaEnumMethodParamType.toString());
     }
 }

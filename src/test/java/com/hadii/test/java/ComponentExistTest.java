@@ -4,6 +4,7 @@ import com.hadii.clarpse.compiler.ClarpseProject;
 import com.hadii.clarpse.compiler.Lang;
 import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
+import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -61,14 +62,14 @@ public class ComponentExistTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file1", codeString));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        generatedSourceModel = parseService.result();
+        generatedSourceModel = parseService.result().model();
     }
 
     @Test
     public void noJavaFilesParsedTest() throws Exception {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.components().count() == 0);
     }
 

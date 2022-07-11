@@ -34,7 +34,7 @@ public abstract class ComponentReference implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ":" + invokedComponent;
+        return getClass().getSimpleName() + "[" + invokedComponent + "]";
     }
 
     public ComponentReference(String invokedComponent2) {

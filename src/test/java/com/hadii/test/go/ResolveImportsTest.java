@@ -7,6 +7,9 @@ import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ResolveImportsTest extends GoTestBase {
@@ -15,8 +18,10 @@ public class ResolveImportsTest extends GoTestBase {
         final String code = "package main\n import\"fmt\"\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person").get().imports().get(0).equals("fmt"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("fmt",
+                     new ArrayList<>(generatedSourceModel.getComponent("main.person").get().imports())
+                         .get(0));
     }
 
     @Test
@@ -24,8 +29,10 @@ public class ResolveImportsTest extends GoTestBase {
         final String code = "package main\n import m \"fmt\"\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person").get().imports().get(0).equals("fmt"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("fmt",
+                     new ArrayList<>(generatedSourceModel.getComponent("main.person").get().imports())
+                         .get(0));
     }
 
     @Test
@@ -36,8 +43,9 @@ public class ResolveImportsTest extends GoTestBase {
         projectFiles.insertFile(new ProjectFile("/src/main/main.go", code));
         projectFiles.insertFile(new ProjectFile("/src/http/cakes/github/person.go", codeB));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person").get().imports().get(0).equals("http.cakes.github"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("http.cakes.github", new ArrayList<>(generatedSourceModel.getComponent("main.person").get().imports())
+            .get(0));
     }
 
     @Test
@@ -45,7 +53,9 @@ public class ResolveImportsTest extends GoTestBase {
         final String code = "package main\n import . \"fmt\"\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("main.person").get().imports().get(0).equals("fmt"));
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("fmt",
+                     new ArrayList<>(generatedSourceModel.getComponent("main.person").get().imports())
+                         .get(0));
     }
 }

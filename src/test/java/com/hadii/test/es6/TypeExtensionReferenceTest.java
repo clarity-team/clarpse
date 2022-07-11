@@ -21,7 +21,7 @@ public class TypeExtensionReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation
         assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
@@ -39,7 +39,7 @@ public class TypeExtensionReferenceTest {
         rawData.insertFile(new ProjectFile("/test/shape.js", codea));
         rawData.insertFile(new ProjectFile("polygon.js", codeb));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation
         assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
@@ -58,7 +58,7 @@ public class TypeExtensionReferenceTest {
         rawData.insertFile(new ProjectFile("/test/shape.js", codea));
         rawData.insertFile(new ProjectFile("polygon.js", codeb));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation
         assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)

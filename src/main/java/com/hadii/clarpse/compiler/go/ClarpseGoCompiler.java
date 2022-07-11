@@ -4,6 +4,7 @@ import com.hadii.antlr.golang.GoLexer;
 import com.hadii.antlr.golang.GoParser;
 import com.hadii.antlr.golang.GoParserBaseListener;
 import com.hadii.clarpse.compiler.ClarpseCompiler;
+import com.hadii.clarpse.compiler.CompileResult;
 import com.hadii.clarpse.compiler.PackageComp;
 import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
@@ -23,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +54,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
             final List<String> implementedInterfaces =
                 implementedInterfacesGatherer.getImplementedInterfaces(baseCmp);
             for (final String implementedInterface : implementedInterfaces) {
-                baseCmp.insertComponentRef(new TypeImplementationReference(implementedInterface));
+                baseCmp.insertCmpRef(new TypeImplementationReference(implementedInterface));
             }
         }
     }
@@ -61,17 +63,21 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
      * Returns all the Go packages contained in the given code sorted by package path
      * length from smallest to greatest.
      */
-    private TreeSet<Package> sourcePkgs(final List<ProjectFile> files) {
+    private TreeSet<Package> sourcePkgs(final Collection<ProjectFile> files) {
         TreeSet<Package> sortedSet = new TreeSet<>(new PackageComp());
         if (files.size() > 0) {
             for (final ProjectFile projectFile : files) {
-                sortedSet.add(extractPackageMetadata(projectFile));
+                try {
+                    sortedSet.add(extractPackageMetadata(projectFile));
+                } catch (Exception e) {
+                    LOGGER.error("Could not parse package metadata from: " + projectFile.path(), e);
+                }
             }
         }
         return sortedSet;
     }
 
-    private Package extractPackageMetadata(ProjectFile projectFile) {
+    private Package extractPackageMetadata(ProjectFile projectFile) throws IllegalArgumentException {
         Pattern p = Pattern.compile("package +([a-zA-Z_]+)", Pattern.MULTILINE);
         String pkgPath = projectFile.path().substring(0, projectFile.path().lastIndexOf("/"));
         Matcher m = p.matcher(projectFile.content());
@@ -83,25 +89,26 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
     }
 
     @Override
-    public OOPSourceCodeModel compile(final ProjectFiles projectFiles) throws Exception {
+    public CompileResult compile(final ProjectFiles projectFiles) throws Exception {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-        final List<ProjectFile> files = projectFiles.files();
+        final Collection<ProjectFile> files = projectFiles.files();
+        final Set<ProjectFile> compileFailures = new HashSet<>();
         final List<GoModule> modules = new GoModules(projectFiles).list();
         if (modules.isEmpty() && !files.isEmpty()) {
             throw new IllegalArgumentException("No Go modules were detected, please ensure a "
                                                    + "valid go.mod file exists!");
         } else if (!modules.isEmpty()) {
             for (GoModule module : modules) {
-                compileGoCode(srcModel, module.getProjectFiles().files());
+                compileFailures.addAll(compileGoCode(srcModel, module.getProjectFiles().files()));
             }
         }
-        return srcModel;
+        return new CompileResult(srcModel, compileFailures);
     }
 
-    private void compileGoCode(OOPSourceCodeModel srcModel, List<ProjectFile> files) throws Exception {
-
+    private Collection<ProjectFile> compileGoCode(OOPSourceCodeModel srcModel,
+                                                  Collection<ProjectFile> files) throws Exception {
         TreeSet<Package> sortedSet = sourcePkgs(files);
-        parseGoFiles(files, srcModel, sortedSet);
+        Collection<ProjectFile> failures = parseGoFiles(files, srcModel, sortedSet);
         /**
          * In GoLang, interfaces are implemented implicitly. As a result, we handle
          * their detection in the following way: Once we have parsed the entire code
@@ -116,15 +123,16 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
          * non-deterministic.
          */
         updateStructCyclomaticComplexities(srcModel);
+        return failures;
     }
 
     private void updateStructCyclomaticComplexities(final OOPSourceCodeModel srcModel) {
         LOGGER.info("Updating cyclomatic complexities.");
-        srcModel.components().forEach(v -> {
-            if (v.componentType() == OOPSourceModelConstants.ComponentType.STRUCT) {
+        srcModel.components().forEach(cmp -> {
+            if (cmp.componentType() == OOPSourceModelConstants.ComponentType.STRUCT) {
                 int childCount = 0;
                 int complexityTotal = 0;
-                for (final String childrenName : v.children()) {
+                for (final String childrenName : cmp.children()) {
                     final Optional<Component> child = srcModel.getComponent(childrenName);
                     if (child.isPresent() && child.get().componentType().isMethodComponent()) {
                         childCount += 1;
@@ -132,31 +140,37 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
                     }
                 }
                 if (childCount != 0 && complexityTotal != 0) {
-                    v.setCyclo(complexityTotal / childCount);
+                    cmp.setCyclo(complexityTotal / childCount);
                 }
             }
         });
     }
 
-    private void parseGoFiles(final List<ProjectFile> moduleFiles,
+    private Collection<ProjectFile> parseGoFiles(final Collection<ProjectFile> moduleFiles,
                               final OOPSourceCodeModel srcModel,
                               final TreeSet<Package> modulePkgs) {
         // Holds types that may be accessed by all the source ProjectFile parsing operations...
         final List<Map.Entry<String, Component>> structWaitingList = new ArrayList<>();
+        Collection<ProjectFile> failures = new ArrayList<>();
         for (final ProjectFile moduleFile : moduleFiles) {
             try {
                 final CharStream charStream = new ANTLRInputStream(moduleFile.content());
                 final TokenStream tokens = new CommonTokenStream(new GoLexer(charStream));
                 final GoParser parser = new GoParser(tokens);
                 final GoParser.SourceFileContext sourceFileContext = parser.sourceFile();
+                if (parser.getNumberOfSyntaxErrors() > 0) {
+                    failures.add(moduleFile);
+                }
                 final ParseTreeWalker walker = new ParseTreeWalker();
-                final GoParserBaseListener listener = new GoLangTreeListener(srcModel, modulePkgs,
-                                                                             moduleFile, structWaitingList);
+                final GoParserBaseListener listener = new GoLangTreeListener(
+                    srcModel, modulePkgs, moduleFile, structWaitingList);
                 walker.walk(listener, sourceFileContext);
-            } catch (final Exception | StackOverflowError e) {
-                e.printStackTrace();
+            } catch (final Exception e) {
+                LOGGER.error("Failed to parse file " + moduleFile.path() + ".", e);
+                failures.add(moduleFile);
             }
         }
+        return failures;
     }
 }
 

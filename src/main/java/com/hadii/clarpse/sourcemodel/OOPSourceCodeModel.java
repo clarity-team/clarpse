@@ -1,5 +1,8 @@
 package com.hadii.clarpse.sourcemodel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +16,7 @@ import java.util.stream.Stream;
 public class OOPSourceCodeModel implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = LogManager.getLogger(OOPSourceCodeModel.class);
 
     public OOPSourceCodeModel() {
     }
@@ -30,7 +34,9 @@ public class OOPSourceCodeModel implements Serializable {
     public int size() {
         return components.size();
     }
+
     public void insertComponent(final Component component) {
+        LOGGER.debug("Inserted component " + component + ".");
         components.put(component.uniqueName(), component);
     }
 
@@ -48,8 +54,9 @@ public class OOPSourceCodeModel implements Serializable {
         }
     }
 
-    public void removeComponent(String componentName) {
-        this.components.remove(componentName);
+    public void removeComponent(String cmpUniqueName) {
+        this.components.remove(cmpUniqueName);
+        LOGGER.debug("Removed component " + cmpUniqueName + ".");
     }
 
     public Stream<Component> components() {

@@ -28,7 +28,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake").get().imports().contains("com.shapes.polygon"));
     }
 
@@ -45,7 +45,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake").get().imports().contains("com.shapes.Polygon"));
     }
 
@@ -63,7 +63,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/src/github/test.js", code));
         rawData.insertFile(new ProjectFile("/src/github/muffin.js", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.github.Muffin").get().imports()
                 .contains("src.github.test"));
     }
@@ -82,7 +82,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("polygon.js", codeA));
         rawData.insertFile(new ProjectFile("cake.js", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().contains("Polygon"));
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().contains("Cuppy"));
     }
@@ -100,7 +100,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("polygon.js", codeA));
         rawData.insertFile(new ProjectFile("cake.js", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().contains("Lemo"));
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().contains("Choco"));
     }
@@ -114,7 +114,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/test/test/polygon.js", codeA));
         rawData.insertFile(new ProjectFile("/cake.js", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().contains("test.Polygon"));
         assertTrue(!generatedSourceModel.getComponent("Cake").get().imports().contains("test.test.Polygon"));
     }
@@ -132,7 +132,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/classa.js", codeA));
         rawData.insertFile(new ProjectFile("/src/test/cake.js", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.test.Cake").get().imports().contains("ClassA"));
     }
 
@@ -148,7 +148,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/src/lol/button.js", codeA));
         rawData.insertFile(new ProjectFile("/src/lol/cake.js", codeB));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.lol.Cake").get().imports().contains("src.lol.b"));
         assertTrue(generatedSourceModel.getComponent("src.lol.Cake").get().imports().contains("src.lol.E"));
     }
@@ -166,7 +166,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("tester/ingredients/cake.js", codeB));
         rawData.insertFile(new ProjectFile("dessert.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Dessert").get().imports().contains("tester.ingredients.Cake"));
     }
 
@@ -183,7 +183,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/tester/ingredients/cake.js", codeB));
         rawData.insertFile(new ProjectFile("/dessert.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Dessert").get().imports().contains("tester.ingredients.Cake"));
     }
 
@@ -200,7 +200,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/tester/ingredients/cake.js", codeB));
         rawData.insertFile(new ProjectFile("/dessert.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Dessert").get().imports().contains("tester.ingredients.Cake"));
     }
 
@@ -217,7 +217,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/tester/ingredients/cake.js", codeB));
         rawData.insertFile(new ProjectFile("/dessert.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Dessert").get().imports().contains("tester.ingredients.Cake"));
     }
 
@@ -234,7 +234,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/tester/ingredients/cake.js", codeB));
         rawData.insertFile(new ProjectFile("/dessert.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Dessert").get().imports().contains("tester.ingredients.Cake"));
     }
 
@@ -251,7 +251,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("cake.js", codeB));
         rawData.insertFile(new ProjectFile("dessert.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Dessert").get().imports().contains("Cake"));
     }
 
@@ -268,7 +268,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("cake.js", codeB));
         rawData.insertFile(new ProjectFile("dessert.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Dessert").get().imports().contains("Muffin"));
     }
 
@@ -288,7 +288,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/codeb.js", codeB));
         rawData.insertFile(new ProjectFile("/codec.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test").get().imports().contains("test.Cake"));
     }
 
@@ -302,7 +302,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/codeb.js", codeB));
         rawData.insertFile(new ProjectFile("/codec.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test").get().imports().contains("test.Cake"));
     }
 
@@ -316,7 +316,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/codeb.js", codeB));
         rawData.insertFile(new ProjectFile("/codec.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test").get().imports().contains("test.Cake"));
     }
 
@@ -330,7 +330,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/codeb.js", codeB));
         rawData.insertFile(new ProjectFile("/codec.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test").get().imports().contains("test.k"));
     }
 
@@ -344,7 +344,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/codeb.js", codeB));
         rawData.insertFile(new ProjectFile("/codec.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test").get().imports().contains("test.k"));
     }
 
@@ -358,7 +358,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/codeb.js", codeB));
         rawData.insertFile(new ProjectFile("/codec.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test").get().imports().contains("test.k"));
     }
 
@@ -373,7 +373,7 @@ public class ResolveImportsTest {
         rawData.insertFile(new ProjectFile("/codeb.js", codeB));
         rawData.insertFile(new ProjectFile("/codec.js", codeC));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        final OOPSourceCodeModel generatedSourceModel = parseService.result();
+        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test").get().imports().contains("test.Cake"));
     }
 }

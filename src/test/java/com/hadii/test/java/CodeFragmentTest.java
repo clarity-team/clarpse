@@ -7,6 +7,7 @@ import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class CodeFragmentTest {
@@ -17,8 +18,8 @@ public class CodeFragmentTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").get().codeFragment().equals("<List>"));
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("<List>", generatedSourceModel.getComponent("Test").get().codeFragment());
     }
 
     @Test
@@ -27,8 +28,9 @@ public class CodeFragmentTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test").get().codeFragment().equals("<T extends List>"));
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("<T extends List>",
+                     generatedSourceModel.getComponent("Test").get().codeFragment());
     }
 
     @Test
@@ -37,9 +39,11 @@ public class CodeFragmentTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").get().codeFragment().equals("fieldVar : List<Integer>"));
-        assertTrue(generatedSourceModel.getComponent("Test.x").get().codeFragment().equals("x : List<Integer>"));
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("fieldVar : List<Integer>", generatedSourceModel.getComponent("Test.fieldVar"
+        ).get().codeFragment());
+        assertEquals("x : List<Integer>",
+                     generatedSourceModel.getComponent("Test.x").get().codeFragment());
     }
 
     @Test
@@ -48,9 +52,11 @@ public class CodeFragmentTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.fieldVar").get().codeFragment().equals("fieldVar : Map<String, List<String>>"));
-        assertTrue(generatedSourceModel.getComponent("Test.x").get().codeFragment().equals("x : Map<String, List<String>>"));
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("fieldVar : Map<String, List<String>>", generatedSourceModel.getComponent(
+            "Test.fieldVar").get().codeFragment());
+        assertEquals("x : Map<String, List<String>>",
+                     generatedSourceModel.getComponent("Test.x").get().codeFragment());
     }
 
     @Test
@@ -59,8 +65,9 @@ public class CodeFragmentTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.sMethod()").get().codeFragment().equals("sMethod() : Map<String, List<Integer>>"));
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("sMethod() : Map<String, List<Integer>>", generatedSourceModel.getComponent(
+            "Test.sMethod()").get().codeFragment());
     }
 
     @Test
@@ -69,8 +76,9 @@ public class CodeFragmentTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
-        assertTrue(generatedSourceModel.getComponent("Test.sMethod()").get().codeFragment().equals("sMethod() : Map<String, List<Integer>>"));
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        assertEquals("sMethod() : Map<String, List<Integer>>", generatedSourceModel.getComponent(
+            "Test.sMethod()").get().codeFragment());
     }
 
     @Test
@@ -79,8 +87,9 @@ public class CodeFragmentTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
-        OOPSourceCodeModel generatedSourceModel = parseService.result();
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         System.out.println(generatedSourceModel.getComponent("Test.sMethod(String, int)").get().codeFragment());
-        assertTrue(generatedSourceModel.getComponent("Test.sMethod(String, int)").get().codeFragment().equals("sMethod(String, int) : Map<List<String>, String[]>"));
+        assertEquals("sMethod(String, int) : Map<List<String>, String[]>",
+                     generatedSourceModel.getComponent("Test.sMethod(String, int)").get().codeFragment());
     }
 }

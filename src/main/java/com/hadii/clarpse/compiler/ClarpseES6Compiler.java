@@ -18,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +30,7 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
 
     private static final Logger LOGGER = LogManager.getLogger(ClarpseES6Compiler.class);
 
-    private OOPSourceCodeModel compileFiles(final List<ProjectFile> files) {
+    private CompileResult compileFiles(final Collection<ProjectFile> files) {
         final OOPSourceCodeModel model = new OOPSourceCodeModel();
         final Compiler compiler = setupCompiler();
         final ModulesMap modulesMap = new ModulesMap();
@@ -39,26 +40,33 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
         // module.
         resolveModuleDependencies(modulesMap);
         // Stage 3 - Final parse of all files, populate source code model.
-        parseAllSourceCode(files, model, compiler, modulesMap);
-        return model;
+        Set<ProjectFile> failures = parseAllSourceCode(files, model, compiler, modulesMap);
+        return new CompileResult(model, failures);
     }
 
-    private void parseAllSourceCode(final List<ProjectFile> files, final OOPSourceCodeModel model,
-                                    final Compiler compiler,
-                                    final ModulesMap modulesMap) {
+    private Set<ProjectFile> parseAllSourceCode(final Collection<ProjectFile> files,
+                                                final OOPSourceCodeModel model,
+                                                final Compiler compiler,
+                                                final ModulesMap modulesMap) {
+        Set<ProjectFile> failures = new HashSet<>();
         LOGGER.info("<<< Executing third pass to parse all ES6 source files.. >>>");
         files.forEach(file -> {
             try {
-                final Node root =
-                        new JsAst(com.google.javascript.jscomp.SourceFile.fromCode(file.path(),
-                                                                                   file.content())).getAstRoot(compiler);
-                final NodeTraversal.Callback jsListener = new ES6Listener(model, file, files,
-                                                                          modulesMap);
+                final Node root = new JsAst(com.google.javascript.jscomp.SourceFile.fromCode(
+                    file.path(), file.content())).getAstRoot(compiler);
+                if (root.getFirstChild() == null || file.content().isEmpty()) {
+                    LOGGER.warn("File: " + file.path() + " could not be parsed!");
+                    failures.add(file);
+                }
+                final NodeTraversal.Callback jsListener = new ES6Listener(
+                    model, file, files, modulesMap);
                 NodeTraversal.traverse(compiler, root, jsListener);
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOGGER.error("Error while parsing file: " + file.path() + ".", e);
+                failures.add(file);
             }
         });
+        return failures;
     }
 
     private void resolveModuleDependencies(final ModulesMap modulesMap) {
@@ -68,24 +76,23 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
             try {
                 resolveModuleImportsAndExports(module, recursedModules, modulesMap);
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOGGER.error("Failed to resolve module dependencies for " + module.name() + ".", e);
             }
         });
     }
 
-    private void populateModulesMap(final List<ProjectFile> files, final Compiler compiler,
+    private void populateModulesMap(final Collection<ProjectFile> files, final Compiler compiler,
                                     final ModulesMap modulesMap) {
         LOGGER.info("<<< Compiling ES6 files, executing initial pass to generate modules map.. "
-                            + ">>>");
+                        + ">>>");
         files.forEach(file -> {
             try {
-                final Node root =
-                        new JsAst(com.google.javascript.jscomp.SourceFile.fromCode(file.path(),
-                                                                                   file.content())).getAstRoot(compiler);
+                final Node root = new JsAst(com.google.javascript.jscomp.SourceFile.fromCode(
+                    file.path(), file.content())).getAstRoot(compiler);
                 final NodeTraversal.Callback jsListener = new ES6ModulesListener(file, modulesMap);
                 NodeTraversal.traverse(compiler, root, jsListener);
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOGGER.error("Failed to parse module info for " + file.path() + ".", e);
             }
         });
     }
@@ -101,7 +108,7 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
     private void resolveModuleImportsAndExports(final ES6Module currModule,
                                                 final Set<String> recursedModules,
                                                 final ModulesMap modulesMap)
-            throws Exception {
+        throws Exception {
         LOGGER.info("Resolving import/exports for module: " + currModule.modulePath());
         // Register module to avoid infinite recursion from cyclical dependencies
         recursedModules.add(currModule.modulePath());
@@ -136,21 +143,21 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
                 for (final Node exportSpecsChildNode : exportNode.getFirstChild().children()) {
                     if (exportSpecsChildNode.isExportSpec()) {
                         final String exportVal =
-                                exportSpecsChildNode.getChildAtIndex(0).getString();
+                            exportSpecsChildNode.getChildAtIndex(0).getString();
                         final String namedExport =
-                                exportSpecsChildNode.getChildAtIndex(1).getString();
+                            exportSpecsChildNode.getChildAtIndex(1).getString();
                         if (exportVal.equals("default") && namedExport.equals("default")) {
                             // Scenario: export { default } from …;
                             final ES6ClassExport matchedExport =
-                                    importedModule.getDefaultClassExport();
+                                importedModule.getDefaultClassExport();
                             currModule.insertClassExport(new ES6ClassExport(
-                                    matchedExport.qualifiedClassName(),
-                                    matchedExport.qualifiedClassName(),
-                                    true));
+                                matchedExport.qualifiedClassName(),
+                                matchedExport.qualifiedClassName(),
+                                true));
                         } else if (namedExport.equals("default")) {
                             // Scenario: export { name1 as default, … };
                             final List<ES6ClassImport> matchingImport =
-                                    currModule.matchingImportsByName(exportVal);
+                                currModule.matchingImportsByName(exportVal);
                             if (!matchingImport.isEmpty()) {
                                 currModule.exportClassImport(matchingImport.get(0), exportVal,
                                                              true);
@@ -164,14 +171,14 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
                             // } from …;
                             if (importedModule != null) {
                                 final List<ES6ClassExport> matchingExports =
-                                        importedModule.matchingExportsByName(namedExport);
+                                    importedModule.matchingExportsByName(namedExport);
                                 if (!matchingExports.isEmpty()) {
                                     currModule.exportClassExport(matchingExports.get(0),
                                                                  exportVal, false);
                                 }
                             } else {
                                 final List<ES6ClassImport> matchingImport =
-                                        currModule.matchingImportsByName(exportVal);
+                                    currModule.matchingImportsByName(exportVal);
                                 if (!matchingImport.isEmpty()) {
                                     currModule.exportClassImport(matchingImport.get(0), exportVal,
                                                                  true);
@@ -191,12 +198,12 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
                  * 4) export default class {};
                  */
                 if (exportNode.getFirstChild() != null && exportNode.getFirstChild().isClass()
-                        || (exportNode.getFirstChild().isAssign() && exportNode.getFirstChild().getSecondChild().isClass())
-                        || (exportNode.getFirstChild().isName())) {
+                    || (exportNode.getFirstChild().isAssign() && exportNode.getFirstChild().getSecondChild().isClass())
+                    || (exportNode.getFirstChild().isName())) {
                     if (exportNode.getChildAtIndex(0).getFirstChild() != null) {
                         if (exportNode.getFirstChild().getFirstChild().isName()) {
                             final String className =
-                                    exportNode.getFirstChild().getFirstChild().getString();
+                                exportNode.getFirstChild().getFirstChild().getString();
                             insertClassExport(currModule, className, className, true);
                         } else if (exportNode.getFirstChild().getFirstChild().isEmpty()) {
                             // No class name provided! Use module name.
@@ -275,14 +282,14 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
             namedImportVal = matchedExport.namedExportValue();
         }
         currModule.insertClassImport(new ES6ClassImport(
-                matchedExport.qualifiedClassName(),
-                namedImportVal,
-                true));
+            matchedExport.qualifiedClassName(),
+            namedImportVal,
+            true));
     }
 
     private boolean isDefault(final Node importNode) {
         return importNode.hasChildren() && importNode.getFirstChild().isName()
-                && importNode.getFirstChild().isDefaultValue();
+            && importNode.getFirstChild().isDefaultValue();
     }
 
     private void processImportSpecNode(final ES6Module currModule, final ES6Module importedModule,
@@ -290,11 +297,11 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
         final String importClassName = importSpecChildNode.getChildAtIndex(0).getString();
         final String importAlias = importSpecChildNode.getChildAtIndex(1).getString();
         final List<ES6ClassExport> matchingExport =
-                importedModule.matchingExportsByName(importClassName);
+            importedModule.matchingExportsByName(importClassName);
         if (!matchingExport.isEmpty()) {
             currModule.insertClassImport(new ES6ClassImport(
-                    matchingExport.get(0).qualifiedClassName(), importAlias,
-                    false));
+                matchingExport.get(0).qualifiedClassName(), importAlias,
+                false));
         }
     }
 
@@ -303,11 +310,11 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
         final String importClassName = importSpecChildNode.getChildAtIndex(0).getString();
         final String importAlias = importSpecChildNode.getChildAtIndex(1).getString();
         final List<ES6ClassExport> matchingExport =
-                importedModule.matchingExportsByName(importClassName);
+            importedModule.matchingExportsByName(importClassName);
         if (!matchingExport.isEmpty()) {
             currModule.insertClassImport(new ES6ClassImport(
-                    matchingExport.get(0).qualifiedClassName(), matchingExport.get(0).className(),
-                    false));
+                matchingExport.get(0).qualifiedClassName(), matchingExport.get(0).className(),
+                false));
         }
     }
 
@@ -337,19 +344,19 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
             importedModuleDir = "./" + importedModuleDir.trim();
         }
         final String importedModuleName = FilenameUtils.removeExtension(importedModuleDir.substring(
-                importedModuleDir.lastIndexOf("/") + 1));
+            importedModuleDir.lastIndexOf("/") + 1));
         importedModuleDir = importedModuleDir.substring(
-                0, importedModuleDir.lastIndexOf("/") + 1);
+            0, importedModuleDir.lastIndexOf("/") + 1);
         String importedModuleRelativePath = new ResolvedRelativePath(currModule.pkgPath(),
                                                                      importedModuleDir).value();
         if (importedModuleRelativePath.equals("/")) {
             importedModuleRelativePath = importedModuleRelativePath.substring(1);
         }
         importedModule = modulesMap.module(importedModuleRelativePath + "/"
-                                                   + importedModuleName);
+                                               + importedModuleName);
         if (importedModule != null) {
             LOGGER.info("Successfully matched relative import with module: "
-                                + importedModule.modulePkg());
+                            + importedModule.modulePkg());
         } else {
             LOGGER.warn("Was not able to match relative import with any local modules.");
         }
@@ -365,10 +372,10 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
         LOGGER.info("Attempting to resolve absolute import: " + importedModuleDir);
         final List<ES6Module> matchingModules = modulesMap.matchingModules(importedModuleDir);
         ES6Module importedModule = null;
-        if (!matchingModules.isEmpty() && matchingModules.size() < 2) {
+        if (matchingModules.size() == 1) {
             importedModule = modulesMap.module(matchingModules.get(0).modulePath());
             LOGGER.info("Successfully matched absolute import with module: "
-                                + importedModule.modulePkg());
+                            + importedModule.modulePkg());
         } else {
             LOGGER.warn("Was not able to match absolute import with any local modules.");
         }
@@ -380,11 +387,9 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
     }
 
     @Override
-    public OOPSourceCodeModel compile(final ProjectFiles projectFiles) {
-        final OOPSourceCodeModel srcModel;
-        final List<ProjectFile> files = projectFiles.files();
-        srcModel = compileFiles(files);
-        return srcModel;
+    public CompileResult compile(final ProjectFiles projectFiles) {
+        final Collection<ProjectFile> files = projectFiles.files();
+        return compileFiles(files);
     }
 
     private void insertClassExport(final ES6Module module, final String className,
@@ -395,7 +400,7 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
             pkgSeparator = "";
         }
         module.insertClassExport(
-                new ES6ClassExport(module.modulePkg() + pkgSeparator + className, exportAlias,
-                                   isDefault));
+            new ES6ClassExport(module.modulePkg() + pkgSeparator + className, exportAlias,
+                               isDefault));
     }
 }

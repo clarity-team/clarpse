@@ -1,5 +1,8 @@
 package com.hadii.clarpse.compiler;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,6 +16,7 @@ import java.util.Set;
  */
 public class PersistedProjectFiles {
 
+    private static final Logger LOGGER = LogManager.getLogger(PersistedProjectFiles.class);
     private final ProjectFiles projectFiles;
     private final String rootDir;
     private final Set<String> dirs;
@@ -21,6 +25,7 @@ public class PersistedProjectFiles {
         this.projectFiles = projectFiles;
         this.rootDir = rootDir;
         dirs = new HashSet<>();
+        LOGGER.info("Persisting " + projectFiles.size() + " files at " + rootDir + ".");
         persist();
     }
 

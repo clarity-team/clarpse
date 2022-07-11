@@ -14,5 +14,5 @@ public interface ClarpseCompiler {
      * @param projectFiles Files to compile.
      * @return See {@link OOPSourceCodeModel}
      */
-    OOPSourceCodeModel compile(ProjectFiles projectFiles) throws Exception;
+    CompileResult compile(ProjectFiles projectFiles) throws Exception;
 }

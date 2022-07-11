@@ -47,7 +47,7 @@ public class ParseUtil {
                 // this would cause the parent class to have a type extension to itself
                 // which will cause problems down the line.
                 if (!(invocation instanceof TypeExtensionReference || invocation instanceof TypeImplementationReference)) {
-                    parentCmp.insertComponentRef(invocation);
+                    parentCmp.insertCmpRef(invocation);
                 }
             }
         }
