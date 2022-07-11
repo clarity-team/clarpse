@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Represents a source code project.
+ * Represents a source code project that is analyzed to produce an object-oriented representation
+ * of the code.
  */
 public class ClarpseProject {
 

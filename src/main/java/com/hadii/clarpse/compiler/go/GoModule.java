@@ -40,8 +40,7 @@ public class GoModule {
                 }
             }
         });
-        LOGGER.info("Go module " + this.moduleName + " contains " + projectFiles.size() + " files" +
-                        ".");
+        LOGGER.info("Go module " + this.moduleName + " contains " + projectFiles.size() + " files");
     }
 
     private String extractModuleName(ProjectFile moduleFile) {

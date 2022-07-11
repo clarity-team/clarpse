@@ -1,10 +1,7 @@
 package com.hadii.clarpse.compiler;
 
-import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
-
 /**
- * Compiles {@link ProjectFiles source code} into
- * {@link OOPSourceCodeModel Object Oriented representations}.
+ * Compiles source code into an object-oriented representation of the original code.
  */
 public interface ClarpseCompiler {
 
@@ -12,7 +9,7 @@ public interface ClarpseCompiler {
      * Compiles source code.
      *
      * @param projectFiles Files to compile.
-     * @return See {@link OOPSourceCodeModel}
+     * @return See {@link CompileResult}
      */
     CompileResult compile(ProjectFiles projectFiles) throws Exception;
 }

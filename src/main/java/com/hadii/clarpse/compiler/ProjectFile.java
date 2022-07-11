@@ -15,8 +15,6 @@ public class ProjectFile {
     private String content;
     private String path;
 
-    public ProjectFile() {}
-
     public ProjectFile(final String path, final String fileContent) {
         content = fileContent;
         if (path.startsWith(".")) {
@@ -26,7 +24,7 @@ public class ProjectFile {
         } else {
             this.path = path;
         }
-        LOGGER.info("Created new file with path " + this.path + ".");
+        LOGGER.debug("Created new file with path " + this.path + ".");
     }
 
     public void path(final String path) {
