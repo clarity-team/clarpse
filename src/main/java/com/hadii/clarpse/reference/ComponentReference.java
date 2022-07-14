@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * Represents a reference to another component in the code base.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @Type(value = SimpleTypeReference.class, name = "simple"),
         @Type(value = TypeExtensionReference.class, name = "extension"),
@@ -19,7 +19,7 @@ public abstract class ComponentReference implements Serializable, Cloneable {
     private static final long serialVersionUID = -242718695900611890L;
     private String invokedComponent = "";
 
-    public ComponentReference(final String invocationComponentName, final int lineNum) {
+    public ComponentReference(final String invocationComponentName) {
         invokedComponent = invocationComponentName;
     }
 
@@ -37,10 +37,6 @@ public abstract class ComponentReference implements Serializable, Cloneable {
         return getClass().getSimpleName() + "[" + invokedComponent + "]";
     }
 
-    public ComponentReference(String invokedComponent2) {
-        invokedComponent = invokedComponent2;
-    }
-
     public String invokedComponent() {
         return invokedComponent;
     }
@@ -53,11 +49,8 @@ public abstract class ComponentReference implements Serializable, Cloneable {
     @Override
     public boolean equals(final Object obj) {
         ComponentReference ref = (ComponentReference) obj;
-        if (this.invokedComponent.equals(ref.invokedComponent)
-        && getClass() == obj.getClass()) {
-            return true;
-        }
-        return false;
+        return this.invokedComponent.equals(ref.invokedComponent)
+            && getClass() == obj.getClass();
     }
 
     @Override

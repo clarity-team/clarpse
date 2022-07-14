@@ -6,6 +6,7 @@ import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StringProvider;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
@@ -17,20 +18,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * JavaParser based compiler.
+ * JavaParser based compiler to process source code.
  */
 public class ClarpseJavaCompiler implements ClarpseCompiler {
 
     private static final Logger LOGGER = LogManager.getLogger(ClarpseJavaCompiler.class);
 
     @Override
-    public CompileResult compile(final ProjectFiles projectFiles) throws IOException {
+    public CompileResult compile(final ProjectFiles projectFiles) throws CompileException {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
         final Set<ProjectFile> compileFailures = new HashSet<>();
         if (projectFiles.files().size() > 0) {
@@ -56,6 +56,8 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
                         compileFailures.add(file);
                     }
                 }
+            } catch (Exception e) {
+                throw new CompileException("An error occurred while parsing!", e);
             } finally {
                 FileUtils.deleteQuietly(new File(persistDir));
             }
@@ -66,12 +68,13 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
     }
 
     private void removeInvalidRefs(OOPSourceCodeModel srcModel) {
-        srcModel.components().forEach(component -> component.setExternalTypeReferences(component.references().stream().filter(
-            componentReference -> componentReference.invokedComponent().startsWith("java.")
-                || (srcModel.containsComponent(componentReference.invokedComponent())
-                && srcModel.getComponent(
-                               componentReference.invokedComponent())
-                           .get().componentType().isBaseComponent())).collect(Collectors.toSet())));
+        srcModel.components().forEach(component -> component.setExternalTypeReferences(
+            component.references().stream().filter(
+                componentReference -> componentReference.invokedComponent().startsWith("java.")
+                    || (srcModel.containsComponent(componentReference.invokedComponent())
+                    && srcModel.getComponent(
+                                   componentReference.invokedComponent())
+                               .get().componentType().isBaseComponent())).collect(Collectors.toSet())));
         LOGGER.debug("Removed invalid components in the source code model.");
     }
 
@@ -85,7 +88,7 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
     private ParserConfiguration setupParserConfig(CombinedTypeSolver typeSolver) {
         final ParserConfiguration parserConfiguration = new ParserConfiguration();
         parserConfiguration.setLanguageLevel(ParserConfiguration.LanguageLevel.BLEEDING_EDGE);
-        //parserConfiguration.setSymbolResolver(new JavaSymbolSolver(typeSolver));
+        parserConfiguration.setSymbolResolver(new JavaSymbolSolver(typeSolver));
         parserConfiguration.setIgnoreAnnotationsWhenAttributingComments(true);
         return parserConfiguration;
     }

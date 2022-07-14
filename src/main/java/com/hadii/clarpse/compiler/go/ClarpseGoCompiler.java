@@ -4,6 +4,7 @@ import com.hadii.antlr.golang.GoLexer;
 import com.hadii.antlr.golang.GoParser;
 import com.hadii.antlr.golang.GoParserBaseListener;
 import com.hadii.clarpse.compiler.ClarpseCompiler;
+import com.hadii.clarpse.compiler.CompileException;
 import com.hadii.clarpse.compiler.CompileResult;
 import com.hadii.clarpse.compiler.PackageComp;
 import com.hadii.clarpse.compiler.ProjectFile;
@@ -44,7 +45,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
 
     private static final Logger LOGGER = LogManager.getLogger(ClarpseGoCompiler.class);
 
-    private void resolveInterfaces(final OOPSourceCodeModel srcModel) throws Exception {
+    private void resolveInterfaces(final OOPSourceCodeModel srcModel) throws CompileException {
         final Set<Component> baseComponents =
             srcModel.components().filter(s -> (s.componentType().isBaseComponent())).collect(Collectors.toSet());
         LOGGER.info("Detected " + baseComponents.size() + " interfaces to resolve.");
@@ -77,25 +78,25 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
         return sortedSet;
     }
 
-    private Package extractPackageMetadata(ProjectFile projectFile) throws IllegalArgumentException {
+    private Package extractPackageMetadata(ProjectFile projectFile) throws CompileException {
         Pattern p = Pattern.compile("package +([a-zA-Z_]+)", Pattern.MULTILINE);
         String pkgPath = projectFile.path().substring(0, projectFile.path().lastIndexOf("/"));
         Matcher m = p.matcher(projectFile.content());
         if (m.find()) {
             return new Package(m.group(1), pkgPath);
         } else {
-            throw new IllegalArgumentException("No package declaration found in " + projectFile.path());
+            throw new CompileException("No package declaration found in " + projectFile.path());
         }
     }
 
     @Override
-    public CompileResult compile(final ProjectFiles projectFiles) throws Exception {
+    public CompileResult compile(final ProjectFiles projectFiles) throws CompileException {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
         final Collection<ProjectFile> files = projectFiles.files();
         final Set<ProjectFile> compileFailures = new HashSet<>();
         final List<GoModule> modules = new GoModules(projectFiles).list();
         if (modules.isEmpty() && !files.isEmpty()) {
-            throw new IllegalArgumentException("No Go modules were detected, please ensure a "
+            throw new CompileException("No Go modules were detected, please ensure a "
                                                    + "valid go.mod file exists!");
         } else if (!modules.isEmpty()) {
             for (GoModule module : modules) {
@@ -106,7 +107,7 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
     }
 
     private Collection<ProjectFile> compileGoCode(OOPSourceCodeModel srcModel,
-                                                  Collection<ProjectFile> files) throws Exception {
+                                                  Collection<ProjectFile> files) throws CompileException {
         TreeSet<Package> sortedSet = sourcePkgs(files);
         Collection<ProjectFile> failures = parseGoFiles(files, srcModel, sortedSet);
         /**
@@ -178,7 +179,7 @@ class ImplementedInterfaces {
     private final OOPSourceCodeModel model;
     private final Map<String, List<String>> interfaceMethodSpecsPairs;
 
-    ImplementedInterfaces(final OOPSourceCodeModel srcModel) throws Exception {
+    ImplementedInterfaces(final OOPSourceCodeModel srcModel) throws CompileException {
         model = srcModel;
         final Set<Component> allInterfaceComponents =
             srcModel.components().filter(s -> (s.componentType() == OOPSourceModelConstants.ComponentType.INTERFACE)).collect(Collectors.toSet());
@@ -226,9 +227,9 @@ class ImplementedInterfaces {
      * local code base are not available) interface method specifications for the
      * given interface component.
      */
-    private List<String> getListOfMethodSpecs(final Component interfaceComponent) throws Exception {
+    private List<String> getListOfMethodSpecs(final Component interfaceComponent) throws CompileException {
         if (interfaceComponent.componentType() != OOPSourceModelConstants.ComponentType.INTERFACE) {
-            throw new Exception("Cannot retrieve method specs for a non-interface component!");
+            throw new CompileException("Cannot retrieve method specs for a non-interface component!");
         }
         final ArrayList<String> methodSpecs = new ArrayList<>();
         for (final ComponentReference extend

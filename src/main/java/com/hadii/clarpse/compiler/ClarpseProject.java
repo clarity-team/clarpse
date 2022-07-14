@@ -16,7 +16,7 @@ public class ClarpseProject {
         this.projectFiles = projectFiles;
     }
 
-    private CompileResult parseFiles(final ProjectFiles sourceFiles) throws Exception {
+    private CompileResult parseFiles(final ProjectFiles sourceFiles) throws CompileException {
         LOGGER.info("Parsing " + sourceFiles.files().size() + " " + sourceFiles.getLanguage().name()
                         + " source files..");
         long startTime = System.nanoTime();
@@ -29,7 +29,7 @@ public class ClarpseProject {
         return compileResult;
     }
 
-    public CompileResult result() throws Exception {
+    public CompileResult result() throws CompileException {
         if (!supportedLang(projectFiles.getLanguage())) {
             throw new IllegalArgumentException("The specified source language is not supported!");
         }

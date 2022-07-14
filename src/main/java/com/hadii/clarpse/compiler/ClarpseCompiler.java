@@ -11,5 +11,5 @@ public interface ClarpseCompiler {
      * @param projectFiles Files to compile.
      * @return See {@link CompileResult}
      */
-    CompileResult compile(ProjectFiles projectFiles) throws Exception;
+    CompileResult compile(ProjectFiles projectFiles) throws CompileException;
 }

@@ -7,7 +7,7 @@ import com.hadii.clarpse.compiler.go.ClarpseGoCompiler;
  */
 public class CompilerFactory {
 
-    public static ClarpseCompiler getParsingTool(final Lang language) throws Exception {
+    public static ClarpseCompiler getParsingTool(final Lang language) throws CompileException {
         switch (language) {
 
             case JAVA:
@@ -17,7 +17,7 @@ public class CompilerFactory {
             case GOLANG:
             return new ClarpseGoCompiler();
         default:
-            throw new Exception("Could not find parsing tool for: " + language.value());
+            throw new CompileException("Could not find parsing tool for: " + language.value());
         }
 
     }
