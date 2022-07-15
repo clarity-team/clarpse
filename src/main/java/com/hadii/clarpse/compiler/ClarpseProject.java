@@ -13,28 +13,23 @@ public class ClarpseProject {
     private final ProjectFiles projectFiles;
 
     public ClarpseProject(ProjectFiles projectFiles) {
-        this.projectFiles = projectFiles;
-    }
-
-    private CompileResult parseFiles(final ProjectFiles sourceFiles) throws CompileException {
-        LOGGER.info("Parsing " + sourceFiles.files().size() + " " + sourceFiles.getLanguage().name()
-                        + " source files..");
-        long startTime = System.nanoTime();
-        final ClarpseCompiler parsingTool = CompilerFactory.getParsingTool(sourceFiles.getLanguage());
-        CompileResult compileResult = parsingTool.compile(sourceFiles);
-        long duration = (System.nanoTime() - startTime) / 1000000;
-        LOGGER.info("Parsed " + compileResult.model().size() + " components from "
-                        + sourceFiles.size() + " " + sourceFiles.getLanguage().name() + " files in "
-                        + duration + " ms.");
-        return compileResult;
-    }
-
-    public CompileResult result() throws CompileException {
         if (!supportedLang(projectFiles.getLanguage())) {
             throw new IllegalArgumentException("The specified source language is not supported!");
         }
-        // parse the files
-        return parseFiles(projectFiles);
+        this.projectFiles = projectFiles;
+    }
+
+    public CompileResult result() throws CompileException {
+        LOGGER.info("Parsing " + this.projectFiles.files().size() + " " + this.projectFiles.getLanguage().name()
+                        + " source files..");
+        long startTime = System.nanoTime();
+        final ClarpseCompiler parsingTool = CompilerFactory.getParsingTool(this.projectFiles.getLanguage());
+        CompileResult compileResult = parsingTool.compile(this.projectFiles);
+        long duration = (System.nanoTime() - startTime) / 1000000;
+        LOGGER.info("Parsed " + compileResult.model().size() + " components from "
+                        + this.projectFiles.size() + " " + this.projectFiles.getLanguage().name()
+                        + " files in " + duration + " ms.");
+        return compileResult;
     }
 
     private boolean supportedLang(final Lang language) throws IllegalArgumentException {
