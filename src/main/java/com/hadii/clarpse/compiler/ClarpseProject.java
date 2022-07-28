@@ -11,6 +11,7 @@ public class ClarpseProject {
 
     private static final Logger LOGGER = LogManager.getLogger(ClarpseProject.class);
     private final ProjectFiles projectFiles;
+    private CompileResult compileResult;
 
     public ClarpseProject(ProjectFiles projectFiles) {
         if (!supportedLang(projectFiles.getLanguage())) {
@@ -20,16 +21,20 @@ public class ClarpseProject {
     }
 
     public CompileResult result() throws CompileException {
-        LOGGER.info("Parsing " + this.projectFiles.files().size() + " " + this.projectFiles.getLanguage().name()
-                        + " source files..");
-        long startTime = System.nanoTime();
-        final ClarpseCompiler parsingTool = CompilerFactory.getParsingTool(this.projectFiles.getLanguage());
-        CompileResult compileResult = parsingTool.compile(this.projectFiles);
-        long duration = (System.nanoTime() - startTime) / 1000000;
-        LOGGER.info("Parsed " + compileResult.model().size() + " components from "
-                        + this.projectFiles.size() + " " + this.projectFiles.getLanguage().name()
-                        + " files in " + duration + " ms.");
-        return compileResult;
+        if (this.compileResult != null) {
+            LOGGER.info("Parsing " + this.projectFiles.files().size() + " "
+                            + this.projectFiles.getLanguage().name() + " source files..");
+            long startTime = System.nanoTime();
+            final ClarpseCompiler parsingTool = CompilerFactory.getParsingTool(this.projectFiles.getLanguage());
+            CompileResult compileRes = parsingTool.compile(this.projectFiles);
+            long duration = (System.nanoTime() - startTime) / 1000000;
+            LOGGER.info("Parsed " + compileRes.model().size() + " components from "
+                            + this.projectFiles.size() + " " + this.projectFiles.getLanguage().name()
+                            + " files in " + duration + " ms.");
+            this.compileResult = compileRes;
+        }
+        LOGGER.info("Returning generated compile result ..");
+        return this.compileResult;
     }
 
     private boolean supportedLang(final Lang language) throws IllegalArgumentException {
