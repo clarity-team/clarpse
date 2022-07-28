@@ -296,7 +296,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                 final String resolvedType = resolveType(stmt.asString());
                 if (resolvedType != null) {
                     currMethodCmp.insertCmpRef(
-                            new TypeExtensionReference(resolvedType));
+                            new SimpleTypeReference(resolvedType));
                 }
             }
             final String methodSignature = currMethodCmp.name() + formalParametersString;
@@ -366,7 +366,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
                 final String resolvedType = resolveType(stmt.asString());
                 if (resolvedType != null) {
                     currMethodCmp.insertCmpRef(
-                            new TypeExtensionReference(resolvedType));
+                            new SimpleTypeReference(resolvedType));
                 }
             }
 
@@ -528,7 +528,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     @Override
     public final void visit(final ClassOrInterfaceType ctx, final Object arg) {
-        if (ctx.getChildNodes().isEmpty()) {
+        if (Character.isUpperCase(ctx.asString().indexOf(0)) && ctx.getChildNodes().isEmpty()) {
             if (!componentStack.isEmpty()) {
                 final Component currCmp = componentStack.peek();
                 final String resolvedType = resolveType(ctx.asString());

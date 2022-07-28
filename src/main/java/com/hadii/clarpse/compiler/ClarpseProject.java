@@ -21,7 +21,7 @@ public class ClarpseProject {
     }
 
     public CompileResult result() throws CompileException {
-        if (this.compileResult != null) {
+        if (this.compileResult == null) {
             LOGGER.info("Parsing " + this.projectFiles.files().size() + " "
                             + this.projectFiles.getLanguage().name() + " source files..");
             long startTime = System.nanoTime();

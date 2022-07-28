@@ -8,6 +8,7 @@ import com.hadii.clarpse.reference.ComponentReference;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -87,8 +88,9 @@ public class ReferenceInheritanceTest {
         rawData.insertFile(new ProjectFile("file2", code));
         final ClarpseProject parseService = new ClarpseProject(rawData);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test").get().references().toArray()[0])
-                .invokedComponent().equals("java.lang.String"));
+        assertEquals("java.lang.String", ((ComponentReference) generatedSourceModel.getComponent(
+            "Test").get().references().toArray()[0])
+            .invokedComponent());
     }
 
     @Test

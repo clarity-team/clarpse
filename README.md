@@ -43,15 +43,21 @@ final String code = " package com.foo;  "
 final ProjectFiles projectFiles = new ProjectFiles(Lang.JAVA);
 projectFiles.insertFile(new ProjectFile("SampleClass.java", code));
 final ClarpseProject project = new ClarpseProject(projectFiles);
-OOPSourceCodeModel generatedSourceModel = project.result();
+CompileResult compileResult = project.result();
+// Get the code model
+OOPSourceCodeModel codeModel = compileResult.model();
+// View any compile errors for any files
+Set<ProjectFile> failures = compileResult.failures();
 ```
 Note, the `ProjectFiles` object can be initialized from a local directory, a local zip file, or an 
-input stream to a zip file - see `ProjectFilesTest.java` for more information. Next, the compiled 
+input stream to a zip file - see `ProjectFilesTest.java` for more information.
+
+Next, the compiled 
 `OOPSourceCodeModel` is the polygot representation of our source code through a 
 collection of `Component` objects. Details about these components and the relationships 
 between them can be fetched in the following way:
 ```java
-generatedSourceModel.components().forEach(component -> {
+codeModel.components().forEach(component -> {
         System.out.println(component.name());
 	System.out.println(component.type());           
 	System.out.println(component.comment());        
@@ -64,7 +70,7 @@ generatedSourceModel.components().forEach(component -> {
 ```
 We can also get specific components by their unique name:
 ```java
-Component mainClassComponent = generatedSourceCodeModel.get("com.foo.java.SampleClass");
+Component mainClassComponent = codeModel.get("com.foo.java.SampleClass");
 mainclassComponent.name();           // --> "SampleClass"
 mainClassComponent.type();           // --> CLASS
 mainClassComponent.comment();        // --> "Sample Doc Comment"
@@ -73,7 +79,7 @@ mainClassComponent.children();       // --> ["foo.java.SampleClass.sampleMethod(
 mainClassComponent.sourceFile();     // --> "foo.java"
 mainClassComponent.references();     // --> ["SimpleTypeReference: String", "TypeExtensionReference: com.foo.AbstractClass", "SimpleTypeReference: com.foo.SampleClassB"]
 // Fetch the the inner method component
-methodComponent = generatedSourceCodeModel.get(mainClassComponent.children().get(0));
+methodComponent = codeModel.get(mainClassComponent.children().get(0));
 methodComponent.name();              // --> "sampleMethod"
 methodComponent.type();              // --> METHOD
 methodComponent.modifiers();         // --> ["public"]

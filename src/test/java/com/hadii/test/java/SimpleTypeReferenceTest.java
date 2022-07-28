@@ -81,6 +81,17 @@ public class SimpleTypeReferenceTest {
     }
 
     @Test
+    public void testMethodThrowsExceptionReference() throws Exception {
+        final String code = "class Test { \nvoid AMethod() throws Exception \n{ } \n}";
+        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        rawData.insertFile(new ProjectFile("Test.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData);
+        OOPSourceCodeModel generatedSourceModel = parseService.result().model();
+        Assert.assertEquals("java.lang.Exception", generatedSourceModel.getComponent(
+            "Test.AMethod()").get().references(TypeReferences.SIMPLE).get(0).invokedComponent());
+    }
+
+    @Test
     public void testMethodParamTypeDeclarationListSize() throws Exception {
         final String code = "class Test { void method(String s1, int s2){} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
