@@ -528,7 +528,7 @@ public class JavaTreeListener extends VoidVisitorAdapter<Object> {
 
     @Override
     public final void visit(final ClassOrInterfaceType ctx, final Object arg) {
-        if (Character.isUpperCase(ctx.asString().indexOf(0)) && ctx.getChildNodes().isEmpty()) {
+        if (Character.isUpperCase(ctx.asString().codePointAt(0)) && ctx.getChildNodes().isEmpty()) {
             if (!componentStack.isEmpty()) {
                 final Component currCmp = componentStack.peek();
                 final String resolvedType = resolveType(ctx.asString());

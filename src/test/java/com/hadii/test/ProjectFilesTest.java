@@ -8,65 +8,82 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.hadii.test.ClarpseTestUtil.unzipArchive;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ProjectFilesTest {
 
-    private static ProjectFiles filesFromZipPath;
-    private static ProjectFiles filesFromZipInputStream;
-    private static ProjectFiles filesFromSourceDirectory;
+    private static ProjectFiles zipPathProjectFiles;
+    private static ProjectFiles InputStreamProjectFiles;
+    private static ProjectFiles sourceDirProjectFiles;
+    private static String sourceDir;
 
 
     @BeforeClass
     public static void setup() throws Exception {
-        filesFromZipPath = new ProjectFiles(
+        zipPathProjectFiles = new ProjectFiles(
             Lang.JAVA, Objects.requireNonNull(ClarpseTestUtil.class.getResource("/clarpse.zip")).getFile());
-        filesFromSourceDirectory =
-            new ProjectFiles(Lang.JAVA,
-                             unzipArchive(
-                                 new File(Objects.requireNonNull(ProjectFilesTest.class.getResource(
-                                     "/clarpse.zip")).toURI())));
-        filesFromZipInputStream =
+        sourceDir = unzipArchive(
+                new File(Objects.requireNonNull(ProjectFilesTest.class.getResource(
+                        "/clarpse.zip")).toURI()));
+        sourceDirProjectFiles = new ProjectFiles(Lang.JAVA, sourceDir);
+        InputStreamProjectFiles =
             new ProjectFiles(Lang.JAVA,
                              ClarpseTestUtil.class.getResourceAsStream("/clarpse.zip"));
     }
 
     @Test
     public void testFilesFromZipInputStreamFilesNo() {
-        assertEquals(35, filesFromZipInputStream.files().size());
+        assertEquals(35, InputStreamProjectFiles.files().size());
 
     }
 
     @Test
     public void testFilesFromZipPathFilesNo() {
-        assertEquals(35, filesFromZipPath.files().size());
+        assertEquals(35, zipPathProjectFiles.files().size());
+    }
+
+    @Test
+    public void testPersistedDirFromSourceDir() throws IOException {
+        assertEquals(sourceDirProjectFiles.projectDir(), sourceDir);
+    }
+
+    @Test
+    public void testPersistedDirFromZipPath() throws IOException {
+        assertFalse(zipPathProjectFiles.projectDir().isEmpty());
+    }
+
+    @Test
+    public void testPersistedDirFromInputStream() throws IOException {
+        assertFalse(InputStreamProjectFiles.projectDir().isEmpty());
     }
 
     @Test
     public void testFilesFromSourceDirFilesNo() {
-        assertEquals(35, filesFromSourceDirectory.files().size());
+        assertEquals(35, sourceDirProjectFiles.files().size());
     }
 
     @Test
     public void testZipInputStreamComponentCheck() throws Exception {
-        assertTrue(new ClarpseProject(filesFromZipInputStream).result().model().getComponent(
+        assertTrue(new ClarpseProject(InputStreamProjectFiles).result().model().getComponent(
             "com.hadii.clarpse.listener.GoLangTreeListener.currPkg").isPresent());
     }
 
     @Test
     public void testZipPathComponentCheck() throws Exception {
-        assertTrue(new ClarpseProject(filesFromZipPath).result().model().getComponent(
+        assertTrue(new ClarpseProject(zipPathProjectFiles).result().model().getComponent(
             "com.hadii.clarpse.listener.GoLangTreeListener.currPkg").isPresent());
     }
 
     @Test
     public void testSourceDirFilesComponentCheck() throws Exception {
-        assertTrue(new ClarpseProject(filesFromSourceDirectory).result().model().getComponent(
+        assertTrue(new ClarpseProject(sourceDirProjectFiles).result().model().getComponent(
             "com.hadii.clarpse.listener.GoLangTreeListener.currPkg").isPresent());
     }
 

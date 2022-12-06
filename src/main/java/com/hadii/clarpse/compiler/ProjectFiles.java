@@ -2,19 +2,25 @@ package com.hadii.clarpse.compiler;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -27,6 +33,8 @@ public class ProjectFiles {
     private static final Logger LOGGER = LogManager.getLogger(ProjectFiles.class);
     private Lang language;
     private List<ProjectFile> files = new ArrayList<>();
+
+    private String projectDir;
 
     /**
      * Constructs a ProjectFiles instance from a path to a local directory or zip file.
@@ -102,6 +110,7 @@ public class ProjectFiles {
 
     private void initFilesFromDir(Lang language, File projectFiles) throws IOException {
         LOGGER.info("Reading source files from dir: " + projectFiles.getPath());
+        this.projectDir = projectFiles.getAbsolutePath().toString();
         Iterator<File> it = FileUtils.iterateFiles(projectFiles, null, true);
         while (it.hasNext()) {
             File nextFile = (File) it.next();
@@ -113,7 +122,7 @@ public class ProjectFiles {
                 );
             }
         }
-        LOGGER.info("Read " + this.files.size() + "files.");
+        LOGGER.info("Read " + this.files.size() + " files.");
     }
 
     private void validateFiles() {
@@ -172,7 +181,40 @@ public class ProjectFiles {
         return files;
     }
 
-    public final void setFiles(final List<ProjectFile> files) {
-        this.files = files;
+    public String projectDir() throws IOException {
+        if (this.projectDir != null && !this.projectDir.isEmpty()) {
+            return this.projectDir;
+        } else {
+            this.persistDir();
+            return this.projectDir;
+        }
+    }
+
+    private void persistDir() throws IOException {
+        long startTime = System.currentTimeMillis();
+        Set<String> dirs = new HashSet<>();
+        final String rootDir = System.getProperty("java.io.tmpdir")
+                + File.separator + RandomStringUtils.randomAlphanumeric(16);
+        LOGGER.info("Persisting files to " + rootDir);
+        dirs.add(rootDir);
+        for (final ProjectFile projectFile : this.files) {
+            final String filePath = rootDir + File.separator + projectFile.path();
+            final File file = new File(filePath);
+            File parent = new File(file.getParent());
+            if (!parent.exists()) {
+                Files.createDirectories(parent.toPath());
+            }
+            while (!dirs.contains(parent.getPath())) {
+                dirs.add(parent.getPath());
+                parent = new File(parent.getParent());
+            }
+            final FileWriter fileWriter = new FileWriter(filePath);
+            final PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter.print(projectFile.content());
+            printWriter.close();
+        }
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        LOGGER.info(this.size() + " files were persisted in " + elapsedTime + "ms");
+        this.projectDir = rootDir;
     }
 }
