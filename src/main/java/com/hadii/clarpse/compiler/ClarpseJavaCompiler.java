@@ -13,7 +13,6 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeS
 import com.hadii.clarpse.listener.JavaTreeListener;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,18 +33,16 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
         final Set<ProjectFile> compileFailures = new HashSet<>();
         if (projectFiles.files().size() > 0) {
-            final String persistDir = System.getProperty("java.io.tmpdir")
-                + File.separator + RandomStringUtils.randomAlphanumeric(16);
+            String persistDir = null;
             try {
-                final PersistedProjectFiles persistedProjectFiles =
-                    new PersistedProjectFiles(projectFiles, persistDir);
+                persistDir = projectFiles.projectDir();
                 final CombinedTypeSolver typeSolver = setupTypeSolver(persistDir);
                 final ParserConfiguration parserConfiguration = setupParserConfig(typeSolver);
                 for (final ProjectFile file : projectFiles.files()) {
                     try {
                         final CompilationUnit cu = new JavaParser(parserConfiguration)
-                            .parse(ParseStart.COMPILATION_UNIT,
-                                   new StringProvider(file.content())).getResult().get();
+                                .parse(ParseStart.COMPILATION_UNIT,
+                                        new StringProvider(file.content())).getResult().get();
                         if (cu.getParsed() == Node.Parsedness.UNPARSABLE || file.content().isEmpty()) {
                             LOGGER.warn("Compilation unit (" + file.path() + ") is unparseable!");
                             compileFailures.add(file);
@@ -59,7 +56,9 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
             } catch (Exception e) {
                 throw new CompileException("An error occurred while parsing!", e);
             } finally {
-                FileUtils.deleteQuietly(new File(persistDir));
+                if (persistDir != null && !persistDir.isEmpty()) {
+                    FileUtils.deleteQuietly(new File(persistDir));
+                }
             }
             // Remove incorrect/invalid component references
             removeInvalidRefs(srcModel);
@@ -69,12 +68,12 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
 
     private void removeInvalidRefs(OOPSourceCodeModel srcModel) {
         srcModel.components().forEach(component -> component.setExternalTypeReferences(
-            component.references().stream().filter(
-                componentReference -> componentReference.invokedComponent().startsWith("java.")
-                    || (srcModel.containsComponent(componentReference.invokedComponent())
-                    && srcModel.getComponent(
-                                   componentReference.invokedComponent())
-                               .get().componentType().isBaseComponent())).collect(Collectors.toSet())));
+                component.references().stream().filter(
+                        componentReference -> componentReference.invokedComponent().startsWith("java.")
+                                || (srcModel.containsComponent(componentReference.invokedComponent())
+                                && srcModel.getComponent(
+                                        componentReference.invokedComponent())
+                                .get().componentType().isBaseComponent())).collect(Collectors.toSet())));
         LOGGER.debug("Removed invalid components in the source code model.");
     }
 
