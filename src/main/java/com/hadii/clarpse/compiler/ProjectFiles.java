@@ -110,7 +110,7 @@ public class ProjectFiles {
 
     private void initFilesFromDir(Lang language, File projectFiles) throws IOException {
         LOGGER.info("Reading source files from dir: " + projectFiles.getPath());
-        this.projectDir = projectFiles.getAbsolutePath().toString();
+        this.projectDir = projectFiles.getAbsolutePath();
         Iterator<File> it = FileUtils.iterateFiles(projectFiles, null, true);
         while (it.hasNext()) {
             File nextFile = (File) it.next();
