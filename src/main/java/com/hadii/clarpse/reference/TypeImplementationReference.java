@@ -21,8 +21,8 @@ public class TypeImplementationReference extends ComponentReference implements S
     }
 
     @Override
-    public Object clone() {
+    public Object clone() throws CloneNotSupportedException {
+        super.clone();
         return new TypeImplementationReference(invokedComponent());
     }
-
 }

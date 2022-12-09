@@ -20,7 +20,7 @@ public class ComponentProjectFilePathTest {
         final String code = "class Polygon {}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon").get().sourceFile().equals("/polygon.js"));
     }
@@ -30,7 +30,7 @@ public class ComponentProjectFilePathTest {
         final String code = "class Polygon { say() {}}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say").get().sourceFile().equals("/polygon.js"));
     }
@@ -40,7 +40,7 @@ public class ComponentProjectFilePathTest {
         final String code = "class Polygon { constructor() {}}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().sourceFile().equals("/polygon.js"));
     }
@@ -50,7 +50,7 @@ public class ComponentProjectFilePathTest {
         final String code = "class Polygon { constructor() {this.height = 4;}}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().sourceFile().equals("/polygon.js"));
     }

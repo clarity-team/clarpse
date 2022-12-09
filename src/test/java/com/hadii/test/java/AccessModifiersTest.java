@@ -17,7 +17,7 @@ public class AccessModifiersTest {
         final String code = " public class Test { }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((String) generatedSourceModel.getComponent("Test").get().modifiers().toArray()[0])
                 .equalsIgnoreCase("public"));
@@ -29,7 +29,7 @@ public class AccessModifiersTest {
         final String code = " public interface Test { }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((String) generatedSourceModel.getComponent("Test").get().modifiers().toArray()[0])
                 .equalsIgnoreCase("public"));
@@ -41,7 +41,7 @@ public class AccessModifiersTest {
         final String code = "class Tester {private enum Test { }}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((String) generatedSourceModel.getComponent("Tester.Test").get().modifiers().toArray()[0])
                 .equalsIgnoreCase("private"));
@@ -53,7 +53,7 @@ public class AccessModifiersTest {
         final String code = "class Tester { private class Test { static boolean lolcakes(){} }}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((String) generatedSourceModel.getComponent("Tester.Test.lolcakes()").get().modifiers().toArray()[0])
                 .equalsIgnoreCase("static"));
@@ -65,7 +65,7 @@ public class AccessModifiersTest {
         final String code = "class Tester { private class Test { test(){} }}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Tester.Test.test()").get().modifiers().isEmpty());
     }
@@ -76,7 +76,7 @@ public class AccessModifiersTest {
         final String code = "class Tester { private interface Test { abstract boolean lolcakes(); }}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((String) generatedSourceModel.getComponent("Tester.Test.lolcakes()").get().modifiers().toArray()[0])
                 .equalsIgnoreCase("abstract"));
@@ -88,7 +88,7 @@ public class AccessModifiersTest {
         final String code = "public class Test { public static int fieldVar; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((String) generatedSourceModel.getComponent("Test.fieldVar").get().modifiers().toArray()[0])
                 .equalsIgnoreCase("public"));
@@ -102,7 +102,7 @@ public class AccessModifiersTest {
         final String code = "public class Test { Test(final String str){} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(
                 ((String) generatedSourceModel.getComponent("Test.Test(String).str").get().modifiers().toArray()[0])
@@ -115,7 +115,7 @@ public class AccessModifiersTest {
         final String code = "public class Test { Test(){ final String str;} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(
                 generatedSourceModel.getComponent("Test.Test().str").get().modifiers().size() == 1);
@@ -127,7 +127,7 @@ public class AccessModifiersTest {
         final String code = "public class Test { Test(){ String str;} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(
                 generatedSourceModel.getComponent("Test.Test().str").get().modifiers().isEmpty());

@@ -20,7 +20,7 @@ public class TypeExtensionReferenceTest {
         final String code = "class Shape {} \n class Polygon extends Shape { }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation
@@ -38,7 +38,7 @@ public class TypeExtensionReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/test/shape.js", codea));
         rawData.insertFile(new ProjectFile("polygon.js", codeb));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation
@@ -57,7 +57,7 @@ public class TypeExtensionReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/test/shape.js", codea));
         rawData.insertFile(new ProjectFile("polygon.js", codeb));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation

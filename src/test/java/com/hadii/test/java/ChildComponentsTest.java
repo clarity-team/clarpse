@@ -22,7 +22,7 @@ public class ChildComponentsTest {
         final String code = "class Test { void method(){} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("Test.method()",
                      generatedSourceModel.getComponent("Test").get().children().toArray()[0]);
@@ -33,7 +33,7 @@ public class ChildComponentsTest {
         final String code = "class Test { String fieldVar; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("Test.fieldVar",
                      generatedSourceModel.getComponent("Test").get().children().toArray()[0]);
@@ -44,7 +44,7 @@ public class ChildComponentsTest {
         final String code = "class Test { void method() { class Tester {} } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertFalse(generatedSourceModel.getComponent("Test.method().Tester").isPresent());
         assertEquals(2, generatedSourceModel.size());
@@ -55,7 +55,7 @@ public class ChildComponentsTest {
         final String code = "interface Test { void method(); }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("Test.method()",
                      generatedSourceModel.getComponent("Test").get().children().toArray()[0]);
@@ -66,7 +66,7 @@ public class ChildComponentsTest {
         final String code = "class Test { void method(String str); }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("Test.method(String).str", generatedSourceModel.getComponent("Test.method" +
                                                                                       "(String)").get().children().toArray()[0]);
@@ -77,7 +77,7 @@ public class ChildComponentsTest {
         final String code = "interface Test { String NEAR_TO_QUERY; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("Test.NEAR_TO_QUERY",
                      generatedSourceModel.getComponent("Test").get().children().toArray()[0]);
@@ -88,7 +88,7 @@ public class ChildComponentsTest {
         final String code = "class TestA { interface TestB { }}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("TestA.TestB",
                      generatedSourceModel.getComponent("TestA").get().children().toArray()[0]);
@@ -99,7 +99,7 @@ public class ChildComponentsTest {
         final String code = "class TestA { enum TestB { }}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("TestA.TestB",
                      generatedSourceModel.getComponent("TestA").get().children().toArray()[0]);
@@ -110,7 +110,7 @@ public class ChildComponentsTest {
         final String code = " enum TestA { A,B,C; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("TestA").get().children().contains("TestA.A"));
         assertTrue(generatedSourceModel.getComponent("TestA").get().children().contains("TestA.B"));
@@ -124,7 +124,7 @@ public class ChildComponentsTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("src/main/com/Test.java", codeA));
         rawData.insertFile(new ProjectFile("src/main/org/ClassB.java", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("com.Test", generatedSourceModel.getComponent("com.Test.fieldVar")
                                                      .get().parentUniqueName());
@@ -135,7 +135,7 @@ public class ChildComponentsTest {
         final String code = " class TestA { String fieldVar; String method(){} interface TestB {}}";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(Arrays.asList(generatedSourceModel.getComponent("TestA").get().children()
                                                      .toArray()).contains("TestA.fieldVar"));

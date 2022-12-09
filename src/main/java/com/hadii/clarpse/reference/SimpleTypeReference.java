@@ -22,7 +22,8 @@ public class SimpleTypeReference extends ComponentReference implements Serializa
     }
 
     @Override
-    public Object clone() {
+    public Object clone() throws CloneNotSupportedException {
+        super.clone();
         return new SimpleTypeReference(invokedComponent());
     }
 }

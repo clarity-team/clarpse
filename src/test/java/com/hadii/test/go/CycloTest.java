@@ -2,14 +2,10 @@ package com.hadii.test.go;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
 import com.hadii.clarpse.compiler.ProjectFile;
-import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.compiler.ProjectFiles;
-import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.Component;
+import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests accuracy of Component cyclomatic complexity attribute. See {@link Component}.
@@ -20,7 +16,7 @@ public class CycloTest extends GoTestBase{
     public void testGoInterfaceMethodComplexity() throws Exception {
         final String code = "package main\n type person interface {\n area() float64 \n} type teacher struct{}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.area() : (float64)")
                 .get()
@@ -41,7 +37,7 @@ public class CycloTest extends GoTestBase{
                 "   }" +
                 "}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 5);
     }
@@ -51,7 +47,7 @@ public class CycloTest extends GoTestBase{
         final String code = "package main\ntype person struct {} \n " +
                 "func (p person) x() int {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 1);
     }
@@ -72,7 +68,7 @@ public class CycloTest extends GoTestBase{
                 "}" +
                 "}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 3);
     }
@@ -90,7 +86,7 @@ public class CycloTest extends GoTestBase{
                 "}" +
                 "}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 3);
     }
@@ -116,7 +112,7 @@ public class CycloTest extends GoTestBase{
                 "    } " +
                 "}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person").get().cyclo() == 3);
     }
@@ -126,7 +122,7 @@ public class CycloTest extends GoTestBase{
         final String code = "package main\nimport \"fmt\"\ntype person struct {} \n " +
                 "}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("main.person").get().cyclo() == 0);
     }

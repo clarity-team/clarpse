@@ -2,6 +2,7 @@ package com.hadii.clarpse.compiler;
 
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class CompileResult {
@@ -25,7 +26,7 @@ public class CompileResult {
         return this.model;
     }
 
-    public Set<ProjectFile> failures() {
-        return this.failures;
+    public Collection<ProjectFile> failures() {
+        return Set.copyOf(failures);
     }
 }

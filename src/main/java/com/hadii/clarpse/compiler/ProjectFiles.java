@@ -68,7 +68,7 @@ public class ProjectFiles {
         this.files = extractProjectFilesFromStream(zipFileInputStream, language);
     }
 
-    public ProjectFiles(final Lang language, final List<ProjectFile> files) {
+    public ProjectFiles(final Lang language, final Collection<ProjectFile> files) {
         setLang(language);
         this.files.addAll(files);
     }
@@ -113,7 +113,7 @@ public class ProjectFiles {
         this.projectDir = projectFiles.getAbsolutePath();
         Iterator<File> it = FileUtils.iterateFiles(projectFiles, null, true);
         while (it.hasNext()) {
-            File nextFile = (File) it.next();
+            File nextFile = it.next();
             if (nextFile.isFile() && anyMatchExtensions(
                 nextFile.getName(), language.fileExtns())) {
                 this.files.add(new ProjectFile(
@@ -128,7 +128,7 @@ public class ProjectFiles {
     private void validateFiles() {
         if (this.files.size() == 0) {
             throw new IllegalArgumentException("No source files were found in this project!");
-        } else if (this.getLanguage() == Lang.GOLANG && this.files.stream().anyMatch(
+        } else if (this.lang() == Lang.GOLANG && this.files.stream().anyMatch(
             projectFile -> projectFile.shortName().endsWith(".mod"))) {
             throw new IllegalArgumentException("Go projects must include a go.mod file!");
         }
@@ -168,7 +168,7 @@ public class ProjectFiles {
         return Arrays.stream(extn).anyMatch(s::endsWith);
     }
 
-    public Lang getLanguage() {
+    public Lang lang() {
         return language;
     }
 
@@ -208,13 +208,13 @@ public class ProjectFiles {
                 dirs.add(parent.getPath());
                 parent = new File(parent.getParent());
             }
-            final FileWriter fileWriter = new FileWriter(filePath);
+            final FileWriter fileWriter = new FileWriter(filePath, StandardCharsets.UTF_8);
             final PrintWriter printWriter = new PrintWriter(fileWriter);
             printWriter.print(projectFile.content());
             printWriter.close();
         }
         long elapsedTime = System.currentTimeMillis() - startTime;
-        LOGGER.info(this.size() + " files were persisted in " + elapsedTime + "ms");
+        LOGGER.info(this.size() + " files were persisted in " + elapsedTime + " ms");
         this.projectDir = rootDir;
     }
 }

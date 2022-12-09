@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 import static com.hadii.test.ClarpseTestUtil.unzipArchive;
@@ -71,35 +72,39 @@ public class ProjectFilesTest {
 
     @Test
     public void testZipInputStreamComponentCheck() throws Exception {
-        assertTrue(new ClarpseProject(InputStreamProjectFiles).result().model().getComponent(
+        assertTrue(new ClarpseProject(InputStreamProjectFiles.files(), InputStreamProjectFiles.lang())
+                .result().model().getComponent(
             "com.hadii.clarpse.listener.GoLangTreeListener.currPkg").isPresent());
     }
 
     @Test
     public void testZipPathComponentCheck() throws Exception {
-        assertTrue(new ClarpseProject(zipPathProjectFiles).result().model().getComponent(
+        assertTrue(new ClarpseProject(zipPathProjectFiles.files(),
+                zipPathProjectFiles.lang()).result().model().getComponent(
             "com.hadii.clarpse.listener.GoLangTreeListener.currPkg").isPresent());
     }
 
     @Test
     public void testSourceDirFilesComponentCheck() throws Exception {
-        assertTrue(new ClarpseProject(sourceDirProjectFiles).result().model().getComponent(
+        assertTrue(new ClarpseProject(sourceDirProjectFiles.files(),
+                sourceDirProjectFiles.lang()).result().model().getComponent(
             "com.hadii.clarpse.listener.GoLangTreeListener.currPkg").isPresent());
     }
 
     @Test
     public void testParseEmptyJavaProjectFiles() throws Exception {
-        assertEquals(0, new ClarpseProject(new ProjectFiles(Lang.JAVA)).result().model().size());
+        assertEquals(0,
+                new ClarpseProject(Collections.emptyList(), Lang.JAVA).result().model().size());
     }
 
     @Test
     public void testParseEmptyGoLangProjectFiles() throws Exception {
-        assertEquals(0, new ClarpseProject(new ProjectFiles(Lang.GOLANG)).result().model().size());
+        assertEquals(0, new ClarpseProject(Collections.emptyList(), Lang.GOLANG).result().model().size());
     }
 
     @Test
     public void testParseEmptyJavascriptProjectFiles() throws Exception {
-        assertEquals(0, new ClarpseProject(new ProjectFiles(Lang.JAVASCRIPT)).result().model().size());
+        assertEquals(0, new ClarpseProject(Collections.emptyList(), Lang.JAVASCRIPT).result().model().size());
     }
 
     @Test

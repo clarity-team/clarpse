@@ -101,7 +101,7 @@ public class ComponentTypeTest {
     public static void parseJavaSourceFile() throws Exception {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file1", codeString));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         generatedSourceModel = parseService.result().model();
     }
 

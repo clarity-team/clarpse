@@ -17,7 +17,7 @@ public class ResolveImportsTest extends GoTestBase {
     public void testShortImportType() throws Exception {
         final String code = "package main\n import\"fmt\"\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("fmt",
                      new ArrayList<>(generatedSourceModel.getComponent("main.person").get().imports())
@@ -28,7 +28,7 @@ public class ResolveImportsTest extends GoTestBase {
     public void testLongImportType() throws Exception {
         final String code = "package main\n import m \"fmt\"\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("fmt",
                      new ArrayList<>(generatedSourceModel.getComponent("main.person").get().imports())
@@ -42,7 +42,7 @@ public class ResolveImportsTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/main.go", code));
         projectFiles.insertFile(new ProjectFile("/src/http/cakes/github/person.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("http.cakes.github", new ArrayList<>(generatedSourceModel.getComponent("main.person").get().imports())
             .get(0));
@@ -52,7 +52,7 @@ public class ResolveImportsTest extends GoTestBase {
     public void testDotImportType() throws Exception {
         final String code = "package main\n import . \"fmt\"\n type person struct {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("fmt",
                      new ArrayList<>(generatedSourceModel.getComponent("main.person").get().imports())

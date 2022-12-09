@@ -20,7 +20,7 @@ public class PackageAttributeTest extends GoTestBase{
         final String code = "package main\ntype person struct {} \n func (p person) x() int {}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals(generatedSourceModel.getComponent("main.person").get().pkg().path(),
                      generatedSourceModel.getComponent("main.person.x() : (int)").get().pkg().path());
@@ -31,7 +31,7 @@ public class PackageAttributeTest extends GoTestBase{
         final String code = "package main\ntype person struct {} \n func (p person) x(z int) int {}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("/main",
                      generatedSourceModel.getComponent("main.person.x(int) : (int).z").get().pkg().path());
@@ -42,7 +42,7 @@ public class PackageAttributeTest extends GoTestBase{
         final String code = "package main\ntype person struct {} \n func (p person) x() int {var z int}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("/main",
                      generatedSourceModel.getComponent("main.person.x() : (int).z").get().pkg().path());
@@ -52,7 +52,7 @@ public class PackageAttributeTest extends GoTestBase{
     public void testGoInterfacePackageName() throws Exception {
         final String code = "package main\ntype person interface {}";
         projectFiles.insertFile(new ProjectFile("/src/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("main",
                      generatedSourceModel.getComponent("src.person").get().pkg().name());
@@ -66,7 +66,7 @@ public class PackageAttributeTest extends GoTestBase{
     public void testGoStructPackageName() throws Exception {
         final String code = "package main\ntype person struct {}";
         projectFiles.insertFile(new ProjectFile("/src/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("main", generatedSourceModel.getComponent("src.person").get().pkg().name());
     }
@@ -76,7 +76,7 @@ public class PackageAttributeTest extends GoTestBase{
         final String code = "package strawbs\ntype person struct {}";
         projectFiles = goLangProjectFilesFixture("/pkg");
         projectFiles.insertFile(new ProjectFile("/pkg/cukpcakes/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("/cukpcakes",
                      generatedSourceModel.getComponent("cukpcakes.person").get().pkg().path());
@@ -88,7 +88,7 @@ public class PackageAttributeTest extends GoTestBase{
     public void testGoStructPackageNameInRootDir() throws Exception {
         final String code = "package strawbs\ntype person struct {}";
         projectFiles.insertFile(new ProjectFile("/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("",
                      generatedSourceModel.getComponent("strawbs.person").get().pkg().path());

@@ -24,7 +24,7 @@ public class RegressionTest {
         final String code = "module _";
         final ProjectFiles rawData = new ProjectFiles(Lang.GOLANG);
         rawData.insertFile(new ProjectFile("go.mod", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
     }
 }

@@ -1,14 +1,17 @@
 package com.hadii.test.es6;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences;
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import static org.junit.Assert.assertTrue;
 
@@ -18,11 +21,12 @@ public class JavaScriptSmokeTest {
 
 	@BeforeClass
 	public static void setup() throws Exception {
-		String code = IOUtils.toString(JavascriptParseTest.class.getClass().getResourceAsStream("/sample-es6.txt"),
-				"UTF-8");
+		String code = IOUtils.toString(Objects.requireNonNull(
+				JavaScriptSmokeTest.class.getResourceAsStream(
+						"/sample-es6.txt")), StandardCharsets.UTF_8);
 		final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
 		rawData.insertFile(new ProjectFile("polygon.js", code));
-		final ClarpseProject parseService = new ClarpseProject(rawData);
+		final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
 		generatedSourceModel = parseService.result().model();
 	}
 

@@ -21,7 +21,7 @@ public class PackageAttributeTest {
             "sampleClassField; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file1", codeString));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass").get();
         Assert.assertTrue(cmp.pkg().path().equals(pkgName));
@@ -34,7 +34,7 @@ public class PackageAttributeTest {
             "sampleClassField;  }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file1", codeString));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.sampleClassField").get();
         Assert.assertTrue(cmp.pkg().path().equals(pkgName));
@@ -47,7 +47,7 @@ public class PackageAttributeTest {
             "method(){}  }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file1", codeString));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.method()").get();
         Assert.assertTrue(cmp.pkg().name().equals(pkgName));

@@ -35,12 +35,11 @@ public class Package implements Serializable {
 
     @Override
     public boolean equals(final Object obj) {
-        Package ref = (Package) obj;
-        if (this.packageName.equals(ref.packageName) && this.packagePath.equals(ref.packagePath)
-            && getClass() == obj.getClass()) {
-            return true;
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
         }
-        return false;
+        Package ref = (Package) obj;
+        return this.packageName.equals(ref.packageName) && this.packagePath.equals(ref.packagePath);
     }
 
     @Override

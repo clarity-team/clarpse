@@ -23,7 +23,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles.insertFile(new ProjectFile("/com/main/person.go", code));
         projectFiles.insertFile(new ProjectFile("/com/html/template/person.go", codeB));
         projectFiles.insertFile(new ProjectFile("/com/text/template/person.go", codeC));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.main.berry.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()
@@ -35,7 +35,7 @@ public class ComponentReferenceTest extends GoTestBase {
         final String code = "package test \n type person struct {teacher Teacher} \n type Teacher struct{}";
         projectFiles = goLangProjectFilesFixture("/src/github");
         projectFiles.insertFile(new ProjectFile("src/github/test/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test.person.teacher")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()
@@ -48,7 +48,7 @@ public class ComponentReferenceTest extends GoTestBase {
             " func (t person) testMethod () {\n var i Teacher\n}";
         projectFiles = goLangProjectFilesFixture("/src/github");
         projectFiles.insertFile(new ProjectFile("src/github/test/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test.person.testMethod()")
                                        .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()
@@ -61,7 +61,7 @@ public class ComponentReferenceTest extends GoTestBase {
         final String code = "package main \n type plain struct \n{} \n func (t plain) testMethodv2 () {\n var i int  = 2;\n}";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2().i")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent().equals("int"));
@@ -72,7 +72,7 @@ public class ComponentReferenceTest extends GoTestBase {
         final String code = "package main \n type plain interface \n{ testMethodv2(x string, h int) (string, uintptr) {} }";
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.plain.testMethodv2(string, int) : (string, uintptr).x")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() == 1);
@@ -91,7 +91,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", codeA));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aninterface.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.IMPLEMENTATION).get(0).invokedComponent()
@@ -106,7 +106,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", codeA));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aninterface.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("lol.github.anInterface").get().pkg().name().equals("complex"));
         assertTrue(generatedSourceModel.getComponent("main.person")
@@ -121,7 +121,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", codeA));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aninterface.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         projectFiles = goLangProjectFilesFixture("/src");
         assertTrue(generatedSourceModel.getComponent("lol.github.anInterface")
@@ -138,7 +138,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", codeA));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aninterface.go", codeB));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aSecondinterface.go", codeC));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         projectFiles = goLangProjectFilesFixture("/src");
         assertTrue(generatedSourceModel.getComponent("main.person")
@@ -163,7 +163,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", codeA));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aninterface.go", codeB));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aSecondinterface.go", codeC));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.IMPLEMENTATION).size() == 1);
@@ -179,7 +179,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles.insertFile(new ProjectFile("/src/main/person.go", codeA));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aninterface.go", codeB));
         projectFiles.insertFile(new ProjectFile("/src/lol/github/aSecondinterface.go", codeC));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.IMPLEMENTATION).size() == 2);
@@ -195,7 +195,7 @@ public class ComponentReferenceTest extends GoTestBase {
     public void testParseGoStructExtensionThroughAnonymousType() throws Exception {
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {fmt.Math}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
                 .get(0).invokedComponent().equals("fmt.Math"));
@@ -205,7 +205,7 @@ public class ComponentReferenceTest extends GoTestBase {
     public void testParseGoMethodVarWithNoType() throws Exception {
         final String code = "package main\n type person struct {} \n func (p person) x(cancel <-chan struct{}) {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.x(<-chan struct{}).cancel").get().references().size() == 0);
     }
@@ -214,7 +214,7 @@ public class ComponentReferenceTest extends GoTestBase {
     public void testParseGoStructMultipleTypesInFieldVar() throws Exception {
         final String code = "package main\n import \"fmt\"\n type person struct {aField map[*fmt.Node]bool}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.aField")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() == 2);
@@ -234,7 +234,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/custom");
         projectFiles.insertFile(new ProjectFile("/custom/package/http/person.go", codeB));
         projectFiles.insertFile(new ProjectFile("/custom/main/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.EXTENSION).stream().anyMatch(reference -> reference.invokedComponent()
@@ -248,7 +248,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/custom");
         projectFiles.insertFile(new ProjectFile("/custom/package/http/person.go", codeB));
         projectFiles.insertFile(new ProjectFile("/custom/main/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person")
                                        .get().references(OOPSourceModelConstants.TypeReferences.EXTENSION).stream().anyMatch(reference -> reference.invokedComponent()
@@ -263,7 +263,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("src/custom/package/http/person.go", codeB));
         projectFiles.insertFile(new ProjectFile("/src/custom/main/person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("custom.main.person")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).stream().anyMatch(reference -> reference.invokedComponent()
@@ -274,7 +274,7 @@ public class ComponentReferenceTest extends GoTestBase {
     public void testParseGoStructExtensionThroughAnonymousTypePointer() throws Exception {
         final String code = "package main\n import \"fmt\"\n /*test*/ type person struct {*fmt.Math}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
                 .get(0).invokedComponent().equals("fmt.Math"));
@@ -285,7 +285,7 @@ public class ComponentReferenceTest extends GoTestBase {
         final String code = "package main\n type Importable struct { \n Import string \n In " +
             "[]interface{} \n } \n type person struct { Importable }";
         projectFiles.insertFile(new ProjectFile("/main.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
                                        .get(0).invokedComponent().equals("main.Importable"));
@@ -296,7 +296,7 @@ public class ComponentReferenceTest extends GoTestBase {
         final String code = "package main\n type Importable struct { } \n type person struct { "
             + "\n test  map[string]interface{} \n Importable }";
         projectFiles.insertFile(new ProjectFile("/main.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
                                        .get(0).invokedComponent().equals("main.Importable"));
@@ -309,7 +309,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/main/plain.go", code));
         projectFiles.insertFile(new ProjectFile("/src/main/test.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.plain").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
                 .get(0).invokedComponent().equals("main.Person"));
@@ -320,7 +320,7 @@ public class ComponentReferenceTest extends GoTestBase {
     public void testGoStructFieldVarReference() throws Exception {
         final String code = "package main\nimport \"test/math\"\ntype person struct {mathObj math.Person}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.mathObj")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).stream().anyMatch(reference -> reference.invokedComponent()
@@ -331,7 +331,7 @@ public class ComponentReferenceTest extends GoTestBase {
     public void testGoStructMethodSingleParamComponentReference() throws Exception {
         final String code = "package main\ntype person struct {} \n func (p person) lol(x int) {}";
         projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.lol(int).x")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent().equals("int"));
@@ -345,7 +345,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("src/main/person.go", code));
         projectFiles.insertFile(new ProjectFile("src/github/http/http.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.person.lol(int, int, *http.httpcakes).x")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).stream().anyMatch(reference -> reference.invokedComponent().equals("int")));
@@ -363,7 +363,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/test/main/cherry.go", code));
         projectFiles.insertFile(new ProjectFile("/src/main/test.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test.main.Person.x(tester.Person, tester" +
                                                          ".Person).v1").get().pkg().ellipsisSeparatedPkgPath().equals(
@@ -384,7 +384,7 @@ public class ComponentReferenceTest extends GoTestBase {
         projectFiles = goLangProjectFilesFixture("/src");
         projectFiles.insertFile(new ProjectFile("/src/test/main/cherry.go", code));
         projectFiles.insertFile(new ProjectFile("/src/main/test.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("test.main.Person.x(*tester.Person, *tester.Person).v2")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).stream().anyMatch(reference -> reference.invokedComponent()
@@ -396,7 +396,7 @@ public class ComponentReferenceTest extends GoTestBase {
         final String codeB = "package main\n import log \"github.com/sirupsen/logrus\" \n type Person struct {} \n" +
                 "func (p Person)  x(v1 log.Tester) {}";
         projectFiles.insertFile(new ProjectFile("test.go", codeB));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles);
+        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("main.Person.x(log.Tester).v1")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).stream().anyMatch(reference -> reference.invokedComponent()

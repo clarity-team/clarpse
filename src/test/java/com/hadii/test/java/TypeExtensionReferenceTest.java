@@ -22,7 +22,7 @@ public class TypeExtensionReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("com/ClassA.java", code));
         rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         generatedSourceModel = parseService.result().model();
         Assert.assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA").get().references()
                 .toArray()[0]).invokedComponent().equals("com.ClassD"));
@@ -36,7 +36,7 @@ public class TypeExtensionReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("com/ClassA.java", code));
         rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA").get().references().size() == 1);
     }
@@ -49,7 +49,7 @@ public class TypeExtensionReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("com/ClassA.java", code));
         rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         generatedSourceModel = parseService.result().model();
         Assert.assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA.ClassB")
                 .get().references().toArray()[0]).invokedComponent().equals("com.ClassD"));
@@ -65,7 +65,7 @@ public class TypeExtensionReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("com/ClassA.java", code));
         rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").get().references().size() == 1);
     }

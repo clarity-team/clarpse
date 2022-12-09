@@ -33,9 +33,10 @@ public class GoModules {
         ).collect(Collectors.toMap(projectFile -> projectFile, projectFile -> new ArrayList()));
         // Group associated source files and modules together.
         projectFiles.files().forEach(projectFile -> {
-            for (final ProjectFile moduleFile : moduletoFilesMap.keySet()) {
-                if (moduleFile.dir().equals("/") || projectFile.path().startsWith(moduleFile.dir())) {
-                    moduletoFilesMap.get(moduleFile).add(projectFile);
+            for (final Map.Entry<ProjectFile, List> moduleFileEntry : moduletoFilesMap.entrySet()) {
+                if (moduleFileEntry.getKey().dir().equals("/")
+                        || projectFile.path().startsWith(moduleFileEntry.getKey().dir())) {
+                    moduletoFilesMap.get(moduleFileEntry.getKey()).add(projectFile);
                 }
             }
         });

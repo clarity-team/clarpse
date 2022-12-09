@@ -1,15 +1,13 @@
 package com.hadii.test.es6;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.Lang;
+import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
-import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.Component;
+import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests accuracy of Component cyclomatic complexity attribute. See {@link Component}.
@@ -21,7 +19,7 @@ public class CycloTest {
         final String code = "class Polygon { constructor() {  if (true == false && false == true || true) {} } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("src.test.Polygon.constructor")
                 .get().cyclo() == 4);
@@ -32,7 +30,7 @@ public class CycloTest {
         final String code = "class Polygon { constructor() {  x = true ? true : false } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("src.test.Polygon.constructor")
                 .get().cyclo() == 2);
@@ -43,7 +41,7 @@ public class CycloTest {
         final String code = "class Polygon { constructor() { } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("src.test.Polygon")
                 .get().cyclo() == 1);
@@ -55,7 +53,7 @@ public class CycloTest {
                 "bye() {  x = true ? true : false } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("src.test.Polygon")
                 .get().cyclo() == 3);
@@ -75,7 +73,7 @@ public class CycloTest {
                 "} } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         Assert.assertTrue(generatedSourceModel.getComponent("src.test.Polygon.say")
                 .get().cyclo() == 4);

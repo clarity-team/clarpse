@@ -238,6 +238,9 @@ public final class Component implements Serializable {
 
     @Override
     public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         return (((Component) o).uniqueName().equals(uniqueName()));
     }
 

@@ -22,7 +22,7 @@ public class RegressionTests {
             IOUtils.toString(Objects.requireNonNull(RegressionTests.class.getResourceAsStream(
                 "/ParameterizedTestIntegrationTests.java")), StandardCharsets.UTF_8.name());
         rawData.insertFile(new ProjectFile("ParameterizedTestIntegrationTests.java", javaCode));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("ParameterizedTestIntegrationTests"));
     }

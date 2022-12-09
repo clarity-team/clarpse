@@ -308,7 +308,6 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
     private void processImportNode(final ES6Module currModule, final ES6Module importedModule,
                                    final Node importSpecChildNode) {
         final String importClassName = importSpecChildNode.getChildAtIndex(0).getString();
-        final String importAlias = importSpecChildNode.getChildAtIndex(1).getString();
         final List<ES6ClassExport> matchingExport =
             importedModule.matchingExportsByName(importClassName);
         if (!matchingExport.isEmpty()) {

@@ -2,9 +2,10 @@ package com.hadii.clarpse.compiler;
 
 import com.hadii.clarpse.sourcemodel.Package;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class PackageComp implements Comparator<Package> {
+public class PackageComp implements Comparator<Package>, Serializable {
     @Override
     public int compare(Package o1, Package o2) {
         if (o1.equals(o2)) {

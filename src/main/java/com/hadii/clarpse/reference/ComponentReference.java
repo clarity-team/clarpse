@@ -48,9 +48,11 @@ public abstract class ComponentReference implements Serializable, Cloneable {
 
     @Override
     public boolean equals(final Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         ComponentReference ref = (ComponentReference) obj;
-        return this.invokedComponent.equals(ref.invokedComponent)
-            && getClass() == obj.getClass();
+        return this.invokedComponent.equals(ref.invokedComponent);
     }
 
     @Override

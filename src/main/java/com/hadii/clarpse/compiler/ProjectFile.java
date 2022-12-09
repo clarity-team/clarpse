@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
@@ -35,14 +37,20 @@ public class ProjectFile {
         this.content = content;
     }
 
-    public ProjectFile(final java.io.File file) throws FileNotFoundException {
-        @SuppressWarnings("resource") final Scanner scanner = new Scanner(file, "UTF-8");
+    public ProjectFile(final java.io.File file) throws IOException {
+        final Scanner scanner = new Scanner(file, StandardCharsets.UTF_8);
         content = scanner.useDelimiter("\\A").next();
         path = file.getName();
     }
 
     public String dir() {
-        return Paths.get(this.path()).getParent().toString();
+        Path currPath = Paths.get(this.path());
+        Path currPathParent = currPath.getParent();
+        if (currPathParent != null) {
+            return currPathParent.toString();
+        } else {
+            return "/";
+        }
     }
 
     public String shortName() {
@@ -59,11 +67,14 @@ public class ProjectFile {
     }
 
     public final InputStream stream() {
-        return new ByteArrayInputStream(content().getBytes());
+        return new ByteArrayInputStream(content().getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public final boolean equals(final Object obj) {
+        if (obj == null || (getClass() != obj.getClass())) {
+            return false;
+        }
         final ProjectFile file = (ProjectFile) obj;
         return content().equals(file.content())
             && path().equals(file.path());

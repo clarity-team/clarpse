@@ -21,7 +21,7 @@ public class ReferenceInheritanceTest {
         final String code = "class Test { String fieldVar; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test").get().references().toArray()[0])
                 .invokedComponent().equals("java.lang.String"));
@@ -32,7 +32,7 @@ public class ReferenceInheritanceTest {
         final String code = "class Test { public String aMethod() { return \"\"; } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("Test.java", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test").get().references().toArray()[0])
                 .invokedComponent().equals("java.lang.String"));
@@ -43,7 +43,7 @@ public class ReferenceInheritanceTest {
         final String code = "class Test { public void fieldVar() { String test; } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test").get().references().toArray()[0])
                 .invokedComponent().equals("java.lang.String"));
@@ -54,7 +54,7 @@ public class ReferenceInheritanceTest {
         final String code = "class Test { public void fieldVar(String test) { } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test").get().references().toArray()[0])
                 .invokedComponent().equals("java.lang.String"));
@@ -65,7 +65,7 @@ public class ReferenceInheritanceTest {
         final String code = "class Test { class NestedClass { public void fieldVar(String test) { } } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test").get().references().toArray()[0])
                 .invokedComponent().equals("java.lang.String"));
@@ -76,7 +76,7 @@ public class ReferenceInheritanceTest {
         final String code = "class Test { class NestedClass extends String implements Integer { } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Test").get().references().isEmpty());
     }
@@ -86,7 +86,7 @@ public class ReferenceInheritanceTest {
         final String code = "interface Test { String localVar; }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertEquals("java.lang.String", ((ComponentReference) generatedSourceModel.getComponent(
             "Test").get().references().toArray()[0])
@@ -98,7 +98,7 @@ public class ReferenceInheritanceTest {
         final String code = "interface Test { abstract String aMethod(); }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test").get().references().toArray()[0])
                 .invokedComponent().equals("java.lang.String"));
@@ -109,7 +109,7 @@ public class ReferenceInheritanceTest {
         final String code = "interface Test { abstract void aMethod(String test); }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test").get().references().toArray()[0])
                 .invokedComponent().equals("java.lang.String"));
@@ -120,7 +120,7 @@ public class ReferenceInheritanceTest {
         final String code = "class Test { public void aMethod(){String test;} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(
                 ((ComponentReference) generatedSourceModel.getComponent("Test.aMethod()").get().references().toArray()[0])
@@ -132,7 +132,7 @@ public class ReferenceInheritanceTest {
         final String code = "class Test { public void aMethod(String test){} }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
         rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(((ComponentReference) generatedSourceModel.getComponent("Test.aMethod(String)")
                 .get().references().toArray()[0]).invokedComponent().equals("java.lang.String"));

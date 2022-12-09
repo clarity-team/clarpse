@@ -25,7 +25,7 @@ public class SimpleTypeReferenceTest {
        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
        rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
        rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
-       final ClarpseProject parseService = new ClarpseProject(rawData);
+       final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
        final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
        assertTrue(generatedSourceModel.getComponent("com.types.Cake.constructor").get()
                .references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()
@@ -42,7 +42,7 @@ public class SimpleTypeReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", codeA));
         rawData.insertFile(new ProjectFile("cake.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Cake.constructor").get()
                 .references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()
@@ -59,7 +59,7 @@ public class SimpleTypeReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/components/button.js", codeA));
         rawData.insertFile(new ProjectFile("cake.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().contains("components.Button"));
     }
@@ -74,7 +74,7 @@ public class SimpleTypeReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("components/test.js", codeA));
         rawData.insertFile(new ProjectFile("cake.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().contains("components.Button"));
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().contains("components.LoL"));
@@ -88,7 +88,7 @@ public class SimpleTypeReferenceTest {
         final String codeB = "import * as Test from \'components/Button\'; \n class Cake { }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("cake.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().size() == 0);
     }
@@ -101,7 +101,7 @@ public class SimpleTypeReferenceTest {
         final String codeB = "import \'components/Button\'; \n class Cake { }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("cake.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Cake").get().imports().size() == 0);
     }
@@ -113,7 +113,7 @@ public class SimpleTypeReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
         rawData.insertFile(new ProjectFile("/src/test/github/react.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.test.Polygon.say.test")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent().equals("src.test.github.React"));
@@ -124,7 +124,7 @@ public class SimpleTypeReferenceTest {
         final String code = "class React {} \n class Polygon { say() { var test = new React(); var lol = 4; } }";
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.say.test")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent().equals("React"));
@@ -137,7 +137,7 @@ public class SimpleTypeReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
         rawData.insertFile(new ProjectFile("/src/test/github/react.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.test.Polygon.constructor")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()
@@ -151,7 +151,7 @@ public class SimpleTypeReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
         rawData.insertFile(new ProjectFile("/src/test/github/react.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.test.Polygon.constructor")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()
@@ -165,7 +165,7 @@ public class SimpleTypeReferenceTest {
         final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
         rawData.insertFile(new ProjectFile("/src/test/polygon.js", code));
         rawData.insertFile(new ProjectFile("/src/test/github/react.js", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData);
+        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("src.test.Polygon.constructor")
                 .get().references(OOPSourceModelConstants.TypeReferences.SIMPLE).get(0).invokedComponent()
