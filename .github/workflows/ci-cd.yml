@@ -12,6 +12,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 11
+          distribution: 'microsoft'
           cache: 'maven'
       - name: "Run tests and package"
         run: "mvn clean package assembly:single"
