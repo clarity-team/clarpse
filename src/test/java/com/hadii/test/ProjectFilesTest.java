@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
@@ -115,6 +116,28 @@ public class ProjectFilesTest {
         projectFiles.shiftSubDirsLeft();
         assertEquals("/lol/cakes.go",
                      new ArrayList<>(projectFiles.files()).get(0).path());
+    }
+
+    @Test
+    public void testFilterByNonExistentPath() {
+        ProjectFiles projectFiles = new ProjectFiles(Lang.GOLANG);
+        ProjectFile projectFile = new ProjectFile("/test/lol/cakes.go", "{}");
+        projectFiles.insertFile(projectFile);
+        ArrayList<String> filterPaths = new ArrayList<>();
+        filterPaths.add("/");
+        projectFiles.filter(filterPaths);
+        assertEquals(0, projectFiles.size());
+    }
+
+    @Test
+    public void testFilterByExistentPath() {
+        ProjectFiles projectFiles = new ProjectFiles(Lang.GOLANG);
+        ProjectFile projectFile = new ProjectFile("/test/lol/cakes.go", "{}");
+        projectFiles.insertFile(projectFile);
+        ArrayList<String> filterFilePaths = new ArrayList<>();
+        filterFilePaths.add("/test/lol/cakes.go");
+        projectFiles.filter(filterFilePaths);
+        assertEquals(1, projectFiles.size());
     }
     @Test
     public void testShiftSubDirsv2() {

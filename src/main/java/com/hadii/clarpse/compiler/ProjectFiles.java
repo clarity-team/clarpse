@@ -217,4 +217,9 @@ public class ProjectFiles {
         LOGGER.info(this.size() + " files were persisted in " + elapsedTime + " ms");
         this.projectDir = rootDir;
     }
+
+    public void filter(List<String> filterFilePaths) {
+        this.files = this.files.stream().filter(
+                file -> filterFilePaths.contains(file.path())).collect(Collectors.toList());
+    }
 }
