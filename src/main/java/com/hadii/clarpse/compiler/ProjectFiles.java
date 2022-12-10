@@ -218,7 +218,7 @@ public class ProjectFiles {
         this.projectDir = rootDir;
     }
 
-    public void filter(List<String> filterFilePaths) {
+    public void filter(Collection<String> filterFilePaths) {
         this.files = this.files.stream().filter(
                 file -> filterFilePaths.contains(file.path())).collect(Collectors.toList());
     }

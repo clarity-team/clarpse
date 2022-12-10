@@ -3,7 +3,7 @@
 
 	<groupId>com.github.hadii-tech</groupId>
 	<artifactId>clarpse</artifactId>
-	<version>7.0.2</version>
+	<version>7.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
