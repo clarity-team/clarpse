@@ -1,6 +1,7 @@
 package com.hadii.test.go;
 
 import com.hadii.clarpse.compiler.ClarpseProject;
+import com.hadii.clarpse.compiler.Lang;
 import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
@@ -15,12 +16,12 @@ public class CycloTest extends GoTestBase{
     @Test
     public void testGoInterfaceMethodComplexity() throws Exception {
         final String code = "package main\n type person interface {\n area() float64 \n} type teacher struct{}";
-        projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
+        projectFiles.insertFile(new ProjectFile("/person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(projectFiles, Lang.GOLANG);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        Assert.assertTrue(generatedSourceModel.getComponent("main.person.area() : (float64)")
+        Assert.assertEquals(0, generatedSourceModel.getComponent("main.person.area() : (float64)")
                 .get()
-                .cyclo() == 0);
+                .cyclo());
     }
 
     @Test
@@ -36,20 +37,20 @@ public class CycloTest extends GoTestBase{
                 "    } \n " +
                 "   }" +
                 "}";
-        projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
+        projectFiles.insertFile(new ProjectFile("/person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(projectFiles, Lang.GOLANG);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 5);
+        Assert.assertEquals(5, generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo());
     }
 
     @Test
     public void testEmptyGoMethodComplexity() throws Exception {
         final String code = "package main\ntype person struct {} \n " +
                 "func (p person) x() int {}";
-        projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
+        projectFiles.insertFile(new ProjectFile("/person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(projectFiles, Lang.GOLANG);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 1);
+        Assert.assertEquals(1, generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo());
     }
 
 
@@ -67,10 +68,10 @@ public class CycloTest extends GoTestBase{
                 "fmt.Printf(\"%s.\", os)\n" +
                 "}" +
                 "}";
-        projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
+        projectFiles.insertFile(new ProjectFile("/person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(projectFiles, Lang.GOLANG);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 3);
+        Assert.assertEquals(3, generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo());
     }
 
     @Test
@@ -85,10 +86,10 @@ public class CycloTest extends GoTestBase{
                 "fmt.Printf(\"I don't know about type %T!\\n\", v)\n" +
                 "}" +
                 "}";
-        projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
+        projectFiles.insertFile(new ProjectFile("/person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(projectFiles, Lang.GOLANG);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        Assert.assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo() == 3);
+        Assert.assertEquals(3, generatedSourceModel.getComponent("main.person.x() : (int)").get().cyclo());
     }
 
     @Test
@@ -111,20 +112,20 @@ public class CycloTest extends GoTestBase{
                 "        fmt.Println(\"7 is odd\")\n" +
                 "    } " +
                 "}";
-        projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
+        projectFiles.insertFile(new ProjectFile("/person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(projectFiles, Lang.GOLANG);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        Assert.assertTrue(generatedSourceModel.getComponent("main.person").get().cyclo() == 3);
+        Assert.assertEquals(3, generatedSourceModel.getComponent("main.person").get().cyclo());
     }
 
     @Test
     public void testGoEmptyStructComplexity() throws Exception {
         final String code = "package main\nimport \"fmt\"\ntype person struct {} \n " +
                 "}";
-        projectFiles.insertFile(new ProjectFile("person.go", code));
-        final ClarpseProject parseService = new ClarpseProject(projectFiles.files(), projectFiles.lang());
+        projectFiles.insertFile(new ProjectFile("/person.go", code));
+        final ClarpseProject parseService = new ClarpseProject(projectFiles, Lang.GOLANG);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        Assert.assertTrue(generatedSourceModel.getComponent("main.person").get().cyclo() == 0);
+        Assert.assertEquals(0, generatedSourceModel.getComponent("main.person").get().cyclo());
     }
 
 }

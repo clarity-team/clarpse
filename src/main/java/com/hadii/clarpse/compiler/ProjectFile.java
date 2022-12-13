@@ -1,5 +1,6 @@
 package com.hadii.clarpse.compiler;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,10 +20,8 @@ public class ProjectFile {
 
     public ProjectFile(final String path, final String fileContent) {
         content = fileContent;
-        if (path.startsWith(".")) {
+        if (path.startsWith(".") || !path.startsWith("/")) {
             throw new IllegalArgumentException(("Project files must use an absolute path!"));
-        } else if (!path.startsWith("/")) {
-            this.path = "/" + path;
         } else {
             this.path = path;
         }
@@ -62,6 +61,13 @@ public class ProjectFile {
         return shortName;
     }
 
+    public String name() {
+        String name = path;
+        if (name.contains("/")) {
+            name = name.substring(name.lastIndexOf("/") + 1);
+        }
+        return name;
+    }
     public final String content() {
         return content;
     }
@@ -96,5 +102,9 @@ public class ProjectFile {
     @Override
     public String toString() {
         return this.path;
+    }
+
+    public String extension() {
+        return FilenameUtils.getExtension(this.path);
     }
 }

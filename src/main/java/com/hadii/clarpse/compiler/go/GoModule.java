@@ -18,13 +18,13 @@ public class GoModule {
     private final ProjectFiles projectFiles;
     private final String moduleName;
 
-    public GoModule(ProjectFiles files, ProjectFile moduleFile) {
+    public GoModule(ProjectFiles projectFiles, ProjectFile moduleFile) {
         this.moduleName = this.extractModuleName(moduleFile);
         if (this.moduleName.isEmpty()) {
             throw new IllegalArgumentException("Module name cannot be empty!");
         }
-        this.projectFiles = new ProjectFiles(Lang.GOLANG);
-        files.files().forEach(file -> {
+        this.projectFiles = new ProjectFiles();
+        projectFiles.files(Lang.GOLANG).forEach(file -> {
             if (file.path().endsWith(".go")) {
                 if (moduleFile.dir().equals("/")) {
                     this.projectFiles.insertFile(new ProjectFile(
@@ -40,7 +40,7 @@ public class GoModule {
                 }
             }
         });
-        LOGGER.info("Go module " + this.moduleName + " contains " + projectFiles.size() + " files");
+        LOGGER.info("Go module " + this.moduleName + " contains " + this.projectFiles.size() + " files");
     }
 
     private String extractModuleName(ProjectFile moduleFile) {
@@ -57,7 +57,7 @@ public class GoModule {
         return projectFiles;
     }
 
-    public String getModuleName() {
+    public String moduleName() {
         return moduleName;
     }
 }

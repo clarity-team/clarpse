@@ -18,7 +18,7 @@ public class GoModules {
 
     private static final Logger LOGGER = LogManager.getLogger(GoModules.class);
 
-    private List<GoModule> goModules = new ArrayList<>();
+    private final List<GoModule> goModules;
 
     public GoModules(final ProjectFiles projectFiles) {
         this.goModules = generateModules(projectFiles);
@@ -28,23 +28,22 @@ public class GoModules {
     private List<GoModule> generateModules(final ProjectFiles projectFiles) {
         List<GoModule> goModules = new ArrayList<>();
         // Collected all go.mod files from the given list of all project files.
-        final Map<ProjectFile, List> moduletoFilesMap = projectFiles.files().stream().filter(
-            projectFile -> projectFile.path().endsWith("go.mod")
-        ).collect(Collectors.toMap(projectFile -> projectFile, projectFile -> new ArrayList()));
+        final Map<ProjectFile, List<ProjectFile>> moduletoFilesMap =
+                projectFiles.files(Lang.GOLANG).stream().filter(
+                        projectFile -> projectFile.path().endsWith("go.mod")
+                ).collect(Collectors.toMap(projectFile -> projectFile, projectFile -> new ArrayList<>()));
         // Group associated source files and modules together.
-        projectFiles.files().forEach(projectFile -> {
-            for (final Map.Entry<ProjectFile, List> moduleFileEntry : moduletoFilesMap.entrySet()) {
+        projectFiles.files(Lang.GOLANG).forEach(projectFile -> {
+            for (final Map.Entry<ProjectFile, List<ProjectFile>> moduleFileEntry
+                    : moduletoFilesMap.entrySet()) {
                 if (moduleFileEntry.getKey().dir().equals("/")
                         || projectFile.path().startsWith(moduleFileEntry.getKey().dir())) {
                     moduletoFilesMap.get(moduleFileEntry.getKey()).add(projectFile);
                 }
             }
         });
-        moduletoFilesMap.keySet().forEach(moduleFile -> {
-            goModules.add(new GoModule(
-                new ProjectFiles(
-                    Lang.GOLANG, moduletoFilesMap.get(moduleFile)), moduleFile));
-        });
+        moduletoFilesMap.keySet().forEach(moduleFile -> goModules.add(new GoModule(
+                new ProjectFiles(moduletoFilesMap.get(moduleFile)), moduleFile)));
         return goModules;
     }
 

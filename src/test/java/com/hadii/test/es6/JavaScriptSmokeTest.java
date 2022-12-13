@@ -24,9 +24,9 @@ public class JavaScriptSmokeTest {
 		String code = IOUtils.toString(Objects.requireNonNull(
 				JavaScriptSmokeTest.class.getResourceAsStream(
 						"/sample-es6.txt")), StandardCharsets.UTF_8);
-		final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-		rawData.insertFile(new ProjectFile("polygon.js", code));
-		final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+		final ProjectFiles rawData = new ProjectFiles();
+		rawData.insertFile(new ProjectFile("/polygon.js", code));
+		final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
 		generatedSourceModel = parseService.result().model();
 	}
 

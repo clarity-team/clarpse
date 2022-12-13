@@ -14,9 +14,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6FieldVariableMultipleComponentTypes() throws Exception {
         final String code = "class Polygon { constructor() {this.height = 4; this.width = false;} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("Polygon.height")
                 && generatedSourceModel.containsComponent("Polygon.width"));
@@ -27,9 +27,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6FieldVariableBooleanValue() throws Exception {
         final String code = "class Polygon { constructor(height) {this.height = true;} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment()
                 .equals("height : Boolean"));
@@ -38,9 +38,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6FieldVariableStringValue() throws Exception {
         final String code = "class Polygon { constructor(height) {this.height = \"test\";} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment()
                 .equals("height : String"));
@@ -49,9 +49,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6FieldVariableNumberValue() throws Exception {
         final String code = "class Polygon { constructor(height) {this.height = { num: 24 }} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment()
                 .equals("height : Object"));
@@ -60,9 +60,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6FieldVariableTypeInstantiation() throws Exception {
         final String code = "class React {} class Polygon { constructor(height) {this.height = new React();} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment()
                 .equals("height : React"));
@@ -71,9 +71,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6FieldVariableTypeInstantiationWithValues() throws Exception {
         final String code = "class React {} class Polygon { constructor(height) {this.height = new React(2,4,\"fe\");} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment()
                 .equals("height : React"));
@@ -82,9 +82,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6FieldVariableNoTypeCodeFragment() throws Exception {
         final String code = "class Polygon { constructor(someVar) {this.height = someVar;} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.height").get().codeFragment()
                 .equals("height"));
@@ -93,9 +93,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6ClassConstructorCodeFragment() throws Exception {
         final String code = "class Polygon { constructor(height) {this.height = height;} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().codeFragment()
                 .equals("constructor(height)"));
@@ -104,9 +104,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6ClassMethodCodeFragment() throws Exception {
         final String code = "class Polygon { walk(height) {} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.walk").get().codeFragment()
                 .equals("walk(height)"));
@@ -115,9 +115,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6ClassMethodMultipleParamsWithNoSpacesCodeFragment() throws Exception {
         final String code = "class Polygon { walk(height,length) {} }"; // no space b/w params
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.walk").get().codeFragment()
                 .equals("walk(height, length)")); // Code fragment has space b/w params.
@@ -126,9 +126,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6ClassMethodParamWithDefaultValueCodeFragment() throws Exception {
         final String code = "class Polygon { walk(height = 4) {} }"; // no space b/w params
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.walk").get().codeFragment()
                 .equals("walk(height)")); // Code fragment has space b/w params.
@@ -137,9 +137,9 @@ public class CodeFragmentTest {
     @Test
     public void ES6ClassGetterMethodCodeFragment() throws Exception {
         final String code = "class Polygon extends Test {get prop() {return 'getter'; }}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.get_prop").get().codeFragment()
                 .equals("get_prop()"));
@@ -149,9 +149,9 @@ public class CodeFragmentTest {
     public void ES6ClassSetterMethodCodeFragment() throws Exception {
         final String code = "class Polygon extends Test { constructor() {this.fieldVar = 4;} set prop(newVal) " +
                 "{this.fieldVar = newVal; }}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("Polygon.set_prop").get().codeFragment()
                 .equals("set_prop(newVal)"));

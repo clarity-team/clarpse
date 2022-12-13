@@ -2,22 +2,24 @@ package com.hadii.clarpse.compiler;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Languages currently supported by Clarpse.
  */
 public enum Lang {
 
-    JAVA("java", new String[]{".java"}, new String[]{}),
-    JAVASCRIPT("javascript", new String[]{".js"}, new String[]{}),
-    GOLANG("golang", new String[]{".go"}, new String[]{".mod"});
+    JAVA("java", new HashSet<>(List.of("java")), Collections.emptySet()),
+    JAVASCRIPT("javascript", new HashSet<>(List.of("js")), Collections.emptySet()),
+    GOLANG("golang", new HashSet<>(List.of("go")), new HashSet<>(List.of("mod")));
 
     private static final Map<String, Lang> NAMES_MAP = new HashMap<>();
 
@@ -28,28 +30,38 @@ public enum Lang {
     }
 
     private final String value;
-    private final String[] sourceFileExtns;
-    private final String[] nonSourceFileExtns;
+    private final Set<String> sourceFileExtns;
+    private final Set<String> nonSourceFileExtns;
 
-    Lang(final String value, final String[] sourceFileExtns, String[] nonSourceFileExtns) {
+    Lang(final String value, final Set<String> sourceFileExtns, Set<String> nonSourceFileExtns) {
         this.value = value;
         this.sourceFileExtns = sourceFileExtns;
         this.nonSourceFileExtns = nonSourceFileExtns;
     }
 
-    public static List<String> supportedSourceFileExtns() {
-        List<String> extns = new ArrayList<>();
-        Lang.supportedLanguages().forEach(lang -> extns.addAll(
-            Arrays.asList(lang.sourceFileExtns())));
+    public static Set<String> supportedSourceFileExtns() {
+        Set<String> extns = new HashSet<>();
+        Lang.supportedLanguages().forEach(lang -> extns.addAll(lang.sourceFileExtns()));
         return extns;
     }
-    public static List<String> supportedFileExtns() {
-        List<String> extns = new ArrayList<>();
-        Lang.supportedLanguages().forEach(lang -> extns.addAll(
-            Arrays.asList(lang.fileExtns())));
+    public static Set<String> supportedFileExtns() {
+        Set<String> extns = new HashSet<>();
+        Lang.supportedLanguages().forEach(lang -> extns.addAll((lang.fileExtns())));
         return extns;
     }
 
+    /**
+     * Returns the Language for the given file extension (e.g .java, .go, etc..) if it is
+     * supported, otherwise null is returned.
+     */
+    public static Lang langFromExtn(String extension) {
+        return Lang.supportedLanguages().stream()
+                .filter(lang -> lang.fileExtns().stream()
+                        .filter(extension::equalsIgnoreCase)
+                        .collect(Collectors.toSet()).size() > 0)
+                .findFirst()
+                .orElse(null);
+    }
 
     public static List<Lang> supportedLanguages() {
         final List<Lang> langs = new ArrayList<>();
@@ -69,17 +81,17 @@ public enum Lang {
         return value;
     }
 
-    public String[] sourceFileExtns() {
+    public Set<String> sourceFileExtns() {
         return sourceFileExtns;
     }
 
-    public String[] nonSourceFileExtns() {
+    public Set<String> nonSourceFileExtns() {
         return this.nonSourceFileExtns;
     }
 
-    public String[] fileExtns() {
-        return ArrayUtils.addAll(this.sourceFileExtns, this.nonSourceFileExtns);
+    public Set<String> fileExtns() {
+        Set<String> tmpSet = this.sourceFileExtns;
+        tmpSet.addAll(this.nonSourceFileExtns);
+        return tmpSet;
     }
-
-
 }

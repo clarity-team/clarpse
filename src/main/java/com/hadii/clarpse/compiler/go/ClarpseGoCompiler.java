@@ -6,6 +6,7 @@ import com.hadii.antlr.golang.GoParserBaseListener;
 import com.hadii.clarpse.compiler.ClarpseCompiler;
 import com.hadii.clarpse.compiler.CompileException;
 import com.hadii.clarpse.compiler.CompileResult;
+import com.hadii.clarpse.compiler.Lang;
 import com.hadii.clarpse.compiler.PackageComp;
 import com.hadii.clarpse.compiler.ProjectFile;
 import com.hadii.clarpse.compiler.ProjectFiles;
@@ -91,16 +92,17 @@ public class ClarpseGoCompiler implements ClarpseCompiler {
 
     @Override
     public CompileResult compile(final ProjectFiles projectFiles) throws CompileException {
+        Collection<ProjectFile> goFiles = projectFiles.files(Lang.GOLANG);
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
-        final Collection<ProjectFile> files = projectFiles.files();
         final Set<ProjectFile> compileFailures = new HashSet<>();
         final List<GoModule> modules = new GoModules(projectFiles).list();
-        if (modules.isEmpty() && !files.isEmpty()) {
+        if (modules.isEmpty() && !goFiles.isEmpty()) {
             throw new CompileException("No Go modules were detected, please ensure a "
                                                    + "valid go.mod file exists!");
         } else if (!modules.isEmpty()) {
             for (GoModule module : modules) {
-                compileFailures.addAll(compileGoCode(srcModel, module.getProjectFiles().files()));
+                compileFailures.addAll(compileGoCode(
+                        srcModel, module.getProjectFiles().files(Lang.GOLANG)));
             }
         }
         return new CompileResult(srcModel, compileFailures);
