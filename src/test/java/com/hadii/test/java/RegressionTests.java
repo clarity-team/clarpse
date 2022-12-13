@@ -17,12 +17,12 @@ public class RegressionTests {
 
     @Test
     public void testParameterizedTestIntegrationTestsClassIsParsedProperly_i111() throws Exception {
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
+        final ProjectFiles rawData = new ProjectFiles();
         String javaCode =
             IOUtils.toString(Objects.requireNonNull(RegressionTests.class.getResourceAsStream(
-                "/ParameterizedTestIntegrationTests.java")), StandardCharsets.UTF_8.name());
-        rawData.insertFile(new ProjectFile("ParameterizedTestIntegrationTests.java", javaCode));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+                "/ParameterizedTestIntegrationTests.java")), StandardCharsets.UTF_8);
+        rawData.insertFile(new ProjectFile("/ParameterizedTestIntegrationTests.java", javaCode));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.containsComponent("ParameterizedTestIntegrationTests"));
     }

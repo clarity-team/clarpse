@@ -11,13 +11,13 @@ public class GoTestBase {
 
     @Before
     public void setUp() {
-        ProjectFile goModFile = new ProjectFile("go.mod", "module module");
-        projectFiles = new ProjectFiles(Lang.GOLANG);
+        ProjectFile goModFile = new ProjectFile("/go.mod", "module module");
+        projectFiles = new ProjectFiles();
         projectFiles.insertFile(goModFile);
     }
 
     ProjectFiles goLangProjectFilesFixture(String goModPath) {
-        ProjectFiles projectFiles = new ProjectFiles(Lang.GOLANG);
+        ProjectFiles projectFiles = new ProjectFiles();
         projectFiles.insertFile(new ProjectFile(goModPath + "/go.mod", "module/module/module"));
         return projectFiles;
     }

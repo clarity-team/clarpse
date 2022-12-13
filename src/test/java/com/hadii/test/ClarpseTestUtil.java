@@ -1,36 +1,24 @@
 package com.hadii.test;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import com.hadii.clarpse.compiler.ClarpseProject;
+import com.hadii.clarpse.compiler.Lang;
+import com.hadii.clarpse.compiler.ProjectFiles;
+import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-
-import com.hadii.clarpse.compiler.ProjectFile;
-import com.hadii.clarpse.compiler.ProjectFiles;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
-import com.hadii.clarpse.compiler.ClarpseProject;
-import com.hadii.clarpse.compiler.Lang;
-import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 
 public class ClarpseTestUtil {
 
@@ -59,8 +47,7 @@ public class ClarpseTestUtil {
     }
 
     public static OOPSourceCodeModel sourceCodeModel(String testResourceZip, Lang language) throws Exception {
-        final ProjectFiles projectFiles = new ProjectFiles(
-            language, ClarpseTestUtil.class.getResourceAsStream(testResourceZip));
-        return new ClarpseProject(projectFiles.files(), projectFiles.lang()).result().model();
+        final ProjectFiles projectFiles = new ProjectFiles(ClarpseTestUtil.class.getResourceAsStream(testResourceZip));
+        return new ClarpseProject(projectFiles, language).result().model();
     }
 }

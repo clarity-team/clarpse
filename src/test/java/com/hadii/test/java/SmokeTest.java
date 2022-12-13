@@ -35,8 +35,8 @@ public class SmokeTest {
 
     @Test
     public void spotCheckClassDocs() {
-        Assert.assertTrue(junit5Model.getComponent("org.junit.platform.launcher" +
-                                                       ".LauncherDiscoveryListener").get().comment().equals("/**\n" + " * Register a concrete " + "implementation of this interface " + "with a\n" + " * {@link org.junit.platform" + ".launcher.core" + ".LauncherDiscoveryRequestBuilder} " + "or\n" + " * {@link Launcher} to be notified" + " of events that occur during test " + "discovery.\n" + " *\n" + " * <p>All methods in this " + "interface have empty " + "<em>default</em> implementations" + ".\n" + " * Concrete implementations may " + "therefore override one or more of " + "these methods\n" + " * to be notified of the selected " + "events.\n" + " *\n" + " * <p>JUnit provides default " + "implementations that are created " + "via the factory\n" + " * methods in\n" + " * {@link org.junit.platform" + ".launcher.listeners.discovery" + ".LauncherDiscoveryListeners}.\n" + " *\n" + " * <p>The methods declared in this" + " interface are called by the " + "{@link Launcher}\n" + " * created via the {@link org" + ".junit.platform.launcher.core" + ".LauncherFactory}\n" + " * during test discovery.\n" + " *\n" + " * @see org.junit.platform" + ".launcher.listeners.discovery" + ".LauncherDiscoveryListeners\n" + " * @see LauncherDiscoveryRequest" + "#getDiscoveryListener()\n" + " * @see org.junit.platform" + ".launcher.core.LauncherConfig" + ".Builder" + "#addLauncherDiscoveryListeners\n" + " * @since 1.6\n" + " */\n"));
+        Assert.assertEquals("/**\n" + " * Register a concrete " + "implementation of this interface " + "with a\n" + " * {@link org.junit.platform" + ".launcher.core" + ".LauncherDiscoveryRequestBuilder} " + "or\n" + " * {@link Launcher} to be notified" + " of events that occur during test " + "discovery.\n" + " *\n" + " * <p>All methods in this " + "interface have empty " + "<em>default</em> implementations" + ".\n" + " * Concrete implementations may " + "therefore override one or more of " + "these methods\n" + " * to be notified of the selected " + "events.\n" + " *\n" + " * <p>JUnit provides default " + "implementations that are created " + "via the factory\n" + " * methods in\n" + " * {@link org.junit.platform" + ".launcher.listeners.discovery" + ".LauncherDiscoveryListeners}.\n" + " *\n" + " * <p>The methods declared in this" + " interface are called by the " + "{@link Launcher}\n" + " * created via the {@link org" + ".junit.platform.launcher.core" + ".LauncherFactory}\n" + " * during test discovery.\n" + " *\n" + " * @see org.junit.platform" + ".launcher.listeners.discovery" + ".LauncherDiscoveryListeners\n" + " * @see LauncherDiscoveryRequest" + "#getDiscoveryListener()\n" + " * @see org.junit.platform" + ".launcher.core.LauncherConfig" + ".Builder" + "#addLauncherDiscoveryListeners\n" + " * @since 1.6\n" + " */\n", junit5Model.getComponent("org.junit.platform.launcher" +
+                ".LauncherDiscoveryListener").get().comment());
     }
 
     @Test
@@ -58,42 +58,42 @@ public class SmokeTest {
 
     @Test
     public void spotCheckClarpseClassExtension() {
-        Assert.assertTrue(clarpseCodeModel.getComponent("com.hadii.clarpse.reference" +
-                                                            ".SimpleTypeReference").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION).get(0).invokedComponent().equals("com.hadii.clarpse.reference" + ".ComponentReference"));
+        Assert.assertEquals("com.hadii.clarpse.reference" + ".ComponentReference", clarpseCodeModel.getComponent("com.hadii.clarpse.reference" +
+                ".SimpleTypeReference").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION).get(0).invokedComponent());
     }
 
     @Test
     public void spotCheckClarpseLocalVarsExists() {
-        Assert.assertTrue(clarpseCodeModel.getComponent("com.hadii.clarpse.compiler" +
-                                                            ".ClarpseES6Compiler" +
-                                                            ".parseAllSourceCode" +
-                                                            "(List<ProjectFile>, " +
-                                                            "OOPSourceCodeModel, Compiler, " +
-                                                            "ModulesMap)").get().children().size() == 6);
+        Assert.assertEquals(6, clarpseCodeModel.getComponent("com.hadii.clarpse.compiler" +
+                ".ClarpseES6Compiler" +
+                ".parseAllSourceCode" +
+                "(List<ProjectFile>, " +
+                "OOPSourceCodeModel, Compiler, " +
+                "ModulesMap)").get().children().size());
     }
 
 
     @Test
     public void spotCheckClarpseInterfaceImplementation() {
-        Assert.assertTrue(clarpseCodeModel.getComponent("com.hadii.clarpse.compiler.go" +
-                                                            ".ClarpseGoCompiler").get().references(OOPSourceModelConstants.TypeReferences.IMPLEMENTATION).get(0).invokedComponent().equals("com.hadii.clarpse.compiler.ClarpseCompiler"));
+        Assert.assertEquals("com.hadii.clarpse.compiler.ClarpseCompiler", clarpseCodeModel.getComponent("com.hadii.clarpse.compiler.go" +
+                ".ClarpseGoCompiler").get().references(OOPSourceModelConstants.TypeReferences.IMPLEMENTATION).get(0).invokedComponent());
     }
 
     @Test
     public void spotCheckClarpseMethodDoc() {
-        Assert.assertTrue(clarpseCodeModel.getComponent("com.hadii.clarpse.compiler.go" +
-                                                            ".ClarpseGoCompiler" + ".sourcePkgs" +
-                                                            "(List<ProjectFile>, boolean)").get().comment().equals("/**\n" + " * Returns all the Go packages contained " + "in the given " + "code sorted by package path\n" + " * length from smallest to greatest.\n" + " */\n"));
+        Assert.assertEquals("/**\n" + " * Returns all the Go packages contained " + "in the given " + "code sorted by package path\n" + " * length from smallest to greatest.\n" + " */\n", clarpseCodeModel.getComponent("com.hadii.clarpse.compiler.go" +
+                ".ClarpseGoCompiler" + ".sourcePkgs" +
+                "(List<ProjectFile>, boolean)").get().comment());
     }
 
     @Test
     public void spotCheckClarpseClassDoc() {
-        Assert.assertTrue(clarpseCodeModel.getComponent("com.hadii.clarpse.compiler.go.GoModule").get().comment().equals("/**\n" + " * Represents source files to be parsed.\n" + " */\n"));
+        Assert.assertEquals("/**\n" + " * Represents source files to be parsed.\n" + " */\n", clarpseCodeModel.getComponent("com.hadii.clarpse.compiler.go.GoModule").get().comment());
     }
 
     @Test
     public void spotCheckClarpseClassImports() {
-        Assert.assertTrue(clarpseCodeModel.getComponent("com.hadii.clarpse.sourcemodel.Component").get().imports().toString().equals("[com.hadii.clarpse" + ".reference" + ".ComponentReference, " + "java.util.List, com" + ".hadii.clarpse" + ".sourcemodel" + ".OOPSourceModelConstants.ComponentType, com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences, com.fasterxml.jackson.annotation.JsonInclude, java.util.Set, com.fasterxml.jackson.annotation.JsonInclude.Include, java.util.LinkedHashSet, java.io.Serializable, java.util.ArrayList]"));
+        Assert.assertEquals("[com.hadii.clarpse" + ".reference" + ".ComponentReference, " + "java.util.List, com" + ".hadii.clarpse" + ".sourcemodel" + ".OOPSourceModelConstants.ComponentType, com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences, com.fasterxml.jackson.annotation.JsonInclude, java.util.Set, com.fasterxml.jackson.annotation.JsonInclude.Include, java.util.LinkedHashSet, java.io.Serializable, java.util.ArrayList]", clarpseCodeModel.getComponent("com.hadii.clarpse.sourcemodel.Component").get().imports().toString());
     }
 
 

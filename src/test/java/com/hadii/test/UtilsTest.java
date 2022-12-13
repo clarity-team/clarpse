@@ -21,13 +21,13 @@ public class UtilsTest {
     public void testResolvedDir() throws Exception {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/github/test/js/units/lol.js",
                 "./../../http/./forks.js");
-        assertTrue(resolvedPath.value().equals("/github/test/http"));
+        assertEquals("/github/test/http", resolvedPath.value());
     }
 
     @Test
     public void testResolvedDirv2() throws Exception {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/github/test/js/units/lol.js", "./forks.js");
-        assertTrue(resolvedPath.value().equals("/github/test/js/units"));
+        assertEquals("/github/test/js/units", resolvedPath.value());
     }
 
     @Test(expected = Exception.class)
@@ -38,31 +38,31 @@ public class UtilsTest {
     @Test
     public void testResolvedDirv4() throws Exception {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/github/test/js/units/lol.js", "http/forks.js");
-        assertTrue(resolvedPath.value().equals("/github/test/js/units/http"));
+        assertEquals("/github/test/js/units/http", resolvedPath.value());
     }
 
     @Test
     public void testResolvedDirv5() throws Exception {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/lol.js", "./test/forks.js");
-        assertTrue(resolvedPath.value().equals("/test"));
+        assertEquals("/test", resolvedPath.value());
     }
 
     @Test
     public void testResolvedDirv6() throws Exception {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/lol.js", "forks.js");
-        assertTrue(resolvedPath.value().equals("/"));
+        assertEquals("/", resolvedPath.value());
     }
 
     @Test
     public void testResolvedDirv7() throws Exception {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/src/test/foo/lol.js", "../../");
-        assertTrue(resolvedPath.value().equals("/src"));
+        assertEquals("/src", resolvedPath.value());
     }
 
     @Test
     public void testResolvedDirv8() throws Exception {
         ResolvedRelativePath resolvedPath = new ResolvedRelativePath("/src/test", "./../../");
-        assertTrue(resolvedPath.value().equals("/"));
+        assertEquals("/", resolvedPath.value());
     }
 
     @Test
@@ -137,10 +137,5 @@ public class UtilsTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             new ProjectFile("../src/test", "");
         });
-    }
-
-    @Test
-    public void testProjectFileAutoInsertsLeadingSlash() throws FileNotFoundException {
-        assertEquals("/src/test", new ProjectFile("src/test", "").path());
     }
 }

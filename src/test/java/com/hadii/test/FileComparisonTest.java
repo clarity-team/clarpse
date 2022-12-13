@@ -1,4 +1,6 @@
 package com.hadii.test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.hadii.clarpse.compiler.ProjectFile;
@@ -9,12 +11,12 @@ import org.junit.Test;
 public class FileComparisonTest {
 
     private static ProjectFile fileA;
-    private static String rawFileAName = "fileA";
-    private static String rawFileAContent = "Ain't nobody got time for that";
+    private static final String rawFileAName = "/fileA";
+    private static final String rawFileAContent = "Ain't nobody got time for that";
 
     private static ProjectFile fileB;
-    private static String rawFileBName = "fileB";
-    private static String rawFileBContent = "Ain't nobody got time for that";
+    private static final String rawFileBName = "/fileB";
+    private static final String rawFileBContent = "Ain't nobody got time for that";
 
     @BeforeClass
     public static void setup() {
@@ -26,17 +28,17 @@ public class FileComparisonTest {
 
     @Test
     public void testRawFileAEqualsRawFileBIsFalse() {
-        assertTrue(!fileA.equals(fileB));
+        assertFalse(fileA.equals(fileB));
     }
 
     @Test
     public void testRawFileBEqualsRawFileAIsFalse() {
-        assertTrue(!fileB.equals(fileA));
+        assertFalse(fileB.equals(fileA));
     }
 
     @Test
     public void testRawFileAEqualsCopyIsTrue() {
-        assertTrue(fileA.equals(fileA.copy()));
+        assertEquals(fileA, fileA.copy());
     }
 
     @Test
@@ -46,7 +48,7 @@ public class FileComparisonTest {
 
     @Test
     public void testRawFileAHashCodeEqualsCopy() {
-        assertTrue(fileA.hashCode() == fileA.copy().hashCode());
+        assertEquals(fileA.hashCode(), fileA.copy().hashCode());
     }
 
     @Test

@@ -10,6 +10,7 @@ import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants.TypeReferences;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -22,14 +23,14 @@ public class TypeImplementationReferenceTest {
         final String code = "package com; \n public class ClassA implements ClassD { }";
         final String codeD = "package com; \n public interface ClassD  { }";
         final OOPSourceCodeModel generatedSourceModel;
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
-        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("/com/ClassD.java", codeD));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         generatedSourceModel = parseService.result().model();
-        assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA").get().references()
-                                                             .toArray()[0]).invokedComponent().equals("com.ClassD"));
-        assertTrue(generatedSourceModel.getComponent("com.ClassA").get().references().size() == 1);
+        assertEquals("com.ClassD", ((ComponentReference) generatedSourceModel.getComponent("com.ClassA").get().references()
+                .toArray()[0]).invokedComponent());
+        assertEquals(1, generatedSourceModel.getComponent("com.ClassA").get().references().size());
     }
 
     @Test
@@ -38,11 +39,11 @@ public class TypeImplementationReferenceTest {
         final String codeD = "package com; \n public interface ClassD  { }";
         final String codeE = "package com; \n public interface ClassE { }";
         final OOPSourceCodeModel generatedSourceModel;
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
-        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        rawData.insertFile(new ProjectFile("com/ClassE.java", codeE));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("/com/ClassD.java", codeD));
+        rawData.insertFile(new ProjectFile("/com/ClassE.java", codeE));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent(
             "com.ClassA")
@@ -62,12 +63,12 @@ public class TypeImplementationReferenceTest {
         final String code = "package com; \n public class ClassA implements ClassD { }";
         final String codeD = "package com; \n public interface ClassD  { }";
         final OOPSourceCodeModel generatedSourceModel;
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
-        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("/com/ClassD.java", codeD));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("com.ClassA").get().references().size() == 1);
+        assertEquals(1, generatedSourceModel.getComponent("com.ClassA").get().references().size());
     }
 
     @Test
@@ -76,13 +77,13 @@ public class TypeImplementationReferenceTest {
         final String codeD = "package com; \n public interface ClassD  { }";
         final String codeE = "package com; \n public interface ClassE { }";
         final OOPSourceCodeModel generatedSourceModel;
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
-        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        rawData.insertFile(new ProjectFile("com/ClassE.java", codeE));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("/com/ClassD.java", codeD));
+        rawData.insertFile(new ProjectFile("/com/ClassE.java", codeE));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("com.ClassA").get().references().size() == 2);
+        assertEquals(2, generatedSourceModel.getComponent("com.ClassA").get().references().size());
     }
 
     @Test
@@ -91,15 +92,15 @@ public class TypeImplementationReferenceTest {
             "ClassD{} }";
         final String codeD = "package com; \n public interface ClassD { }";
         final OOPSourceCodeModel generatedSourceModel;
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
-        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("/com/ClassD.java", codeD));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         generatedSourceModel = parseService.result().model();
-        assertTrue(((ComponentReference) generatedSourceModel.getComponent("com.ClassA.ClassB")
-                                                             .get().references().toArray()[0]).invokedComponent().equals("com.ClassD"));
+        assertEquals("com.ClassD", ((ComponentReference) generatedSourceModel.getComponent("com.ClassA.ClassB")
+                .get().references().toArray()[0]).invokedComponent());
 
-        assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").get().references().size() == 1);
+        assertEquals(1, generatedSourceModel.getComponent("com.ClassA.ClassB").get().references().size());
     }
 
     @Test
@@ -108,11 +109,11 @@ public class TypeImplementationReferenceTest {
             " { } }";
         final String codeD = "package com; \n public interface ClassD  { }";
         final OOPSourceCodeModel generatedSourceModel;
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("com/ClassA.java", code));
-        rawData.insertFile(new ProjectFile("com/ClassD.java", codeD));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/ClassA.java", code));
+        rawData.insertFile(new ProjectFile("/com/ClassD.java", codeD));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("com.ClassA.ClassB").get().references().size() == 1);
+        assertEquals(1, generatedSourceModel.getComponent("com.ClassA.ClassB").get().references().size());
     }
 }

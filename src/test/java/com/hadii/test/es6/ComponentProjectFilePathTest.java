@@ -8,6 +8,7 @@ import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -18,40 +19,40 @@ public class ComponentProjectFilePathTest {
     @Test
     public void ES6ClassHasCorrectSourceFileAttr() throws Exception {
         final String code = "class Polygon {}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        final ProjectFiles rawData = new ProjectFiles();
         rawData.insertFile(new ProjectFile("/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().sourceFile().equals("/polygon.js"));
+        assertEquals("/polygon.js", generatedSourceModel.getComponent("Polygon").get().sourceFile());
     }
 
     @Test
     public void ES6ClassMethodHasCorrectSourceFileAttr() throws Exception {
         final String code = "class Polygon { say() {}}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("Polygon.say").get().sourceFile().equals("/polygon.js"));
+        assertEquals("/polygon.js", generatedSourceModel.getComponent("Polygon.say").get().sourceFile());
     }
 
     @Test
     public void ES6ClassConstructorHasCorrectSourceFileAttr() throws Exception {
         final String code = "class Polygon { constructor() {}}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("Polygon.constructor").get().sourceFile().equals("/polygon.js"));
+        assertEquals("/polygon.js", generatedSourceModel.getComponent("Polygon.constructor").get().sourceFile());
     }
 
     @Test
     public void ES6ClassFieldVarHasCorrectSourceFileAttr() throws Exception {
         final String code = "class Polygon { constructor() {this.height = 4;}}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("Polygon.height").get().sourceFile().equals("/polygon.js"));
+        assertEquals("/polygon.js", generatedSourceModel.getComponent("Polygon.height").get().sourceFile());
     }
 }

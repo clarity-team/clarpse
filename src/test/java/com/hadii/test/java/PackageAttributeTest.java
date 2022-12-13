@@ -19,9 +19,9 @@ public class PackageAttributeTest {
         String pkgName = "com.clarity.test";
         String codeString = "package " + pkgName + "; class SampleJavaClass { private String " +
             "sampleClassField; }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file1", codeString));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file1.java", codeString));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass").get();
         Assert.assertTrue(cmp.pkg().path().equals(pkgName));
@@ -32,9 +32,9 @@ public class PackageAttributeTest {
         String pkgName = "com.clarity.test";
         String codeString = "package " + pkgName + ";   class SampleJavaClass {  private String " +
             "sampleClassField;  }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file1", codeString));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file1.java", codeString));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.sampleClassField").get();
         Assert.assertTrue(cmp.pkg().path().equals(pkgName));
@@ -45,9 +45,9 @@ public class PackageAttributeTest {
         String pkgName = "com.clarity.test";
         String codeString = "package " + pkgName + ";   class SampleJavaClass { private String " +
             "method(){}  }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file1", codeString));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file1.java", codeString));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         final Component cmp = generatedSourceModel.getComponent("com.clarity.test.SampleJavaClass.method()").get();
         Assert.assertTrue(cmp.pkg().name().equals(pkgName));

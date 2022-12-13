@@ -8,6 +8,7 @@ import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.Component;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -29,11 +30,11 @@ public class CycloTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("Test.Test()").get().cyclo() == 6);
+        assertEquals(6, generatedSourceModel.getComponent("Test.Test()").get().cyclo());
     }
 
 
@@ -48,11 +49,11 @@ public class CycloTest {
                 "        } \n" +
                 "    }\n" +
                 "}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("Test.Test()").get().cyclo() == 3);
+        assertEquals(3, generatedSourceModel.getComponent("Test.Test()").get().cyclo());
     }
 
     @Test
@@ -68,11 +69,11 @@ public class CycloTest {
                 "        return true;" +
                 "    }\n" +
                 "}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 6);
+        assertEquals(6, generatedSourceModel.getComponent("test.aMethod()").get().cyclo());
     }
 
     @Test
@@ -85,11 +86,11 @@ public class CycloTest {
                 "        return true;" +
                 "    }\n" +
                 "}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 2);
+        assertEquals(2, generatedSourceModel.getComponent("test.aMethod()").get().cyclo());
     }
 
 
@@ -98,11 +99,11 @@ public class CycloTest {
         final String code = "public interface test {\n" +
                 "    boolean aMethod();\n" +
                 "}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("test.aMethod()").get().cyclo() == 0);
+        assertEquals(0, generatedSourceModel.getComponent("test.aMethod()").get().cyclo());
     }
 
 
@@ -127,11 +128,11 @@ public class CycloTest {
                 "        return true;" +
                 "    }\n" +
                 "}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("test").get().cyclo() == 5);
+        assertEquals(5, generatedSourceModel.getComponent("test").get().cyclo());
     }
 
     @Test
@@ -139,10 +140,10 @@ public class CycloTest {
         final String code = "public class test {\n" +
                 "    public String tester = \"test\";       \n" +
                 "}";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("file2", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/file2.java", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("test").get().cyclo() == 0);
+        assertEquals(0, generatedSourceModel.getComponent("test").get().cyclo());
     }
 }

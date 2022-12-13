@@ -18,10 +18,10 @@ public class ModuleInfoTest {
     public final void dontThrowExceptionWhileParsing() throws Exception {
         final String code = "package test; public class Test { }";
         final String codeB = "module lolcakes { requires test; }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVA);
-        rawData.insertFile(new ProjectFile("test.java", code));
-        rawData.insertFile(new ProjectFile("module-info.java", codeB));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/test.java", code));
+        rawData.insertFile(new ProjectFile("/module-info.java", codeB));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVA);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
     }
 }

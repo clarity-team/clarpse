@@ -7,6 +7,7 @@ import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -17,63 +18,60 @@ public class PackageAttributeTest {
     @Test
     public void ES6FieldVariablePackageName() throws Exception {
         final String code = "class React {} class Polygon { constructor(height) {this.height = new React();} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        final ProjectFiles rawData = new ProjectFiles();
         rawData.insertFile(new ProjectFile("/github/http/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().path().equals("/github/http"));
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().ellipsisSeparatedPkgPath().equals("github.http"));
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().name().equals("http"));
+        assertEquals("/github/http", generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().path());
+        assertEquals("github.http", generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().ellipsisSeparatedPkgPath());
+        assertEquals("http", generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().name());
     }
 
     @Test
     public void ES6ClassPackageName() throws Exception {
         final String code = "class React {} \n class Polygon { constructor(height) { this.height = new React(); } }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        final ProjectFiles rawData = new ProjectFiles();
         rawData.insertFile(new ProjectFile("/github/http/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().path().equals("/github/http"));
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().ellipsisSeparatedPkgPath().equals("github.http"));
-        assertTrue(generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().name().equals("http"));
+        assertEquals("/github/http", generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().path());
+        assertEquals("github.http", generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().ellipsisSeparatedPkgPath());
+        assertEquals("http", generatedSourceModel.getComponent("github.http.Polygon.height").get().pkg().name());
     }
 
     @Test
     public void ES6LocalVariablePackageName() throws Exception {
         final String code = "class Polygon { say() { var test = new React(); var lol = 4; } }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("src/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/src/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().path().equals(
-            "/src"));
-        assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().name().equals(
-            "src"));
-        assertTrue(generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().ellipsisSeparatedPkgPath().equals(
-            "src"));
+        assertEquals("/src", generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().path());
+        assertEquals("src", generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().name());
+        assertEquals("src", generatedSourceModel.getComponent("src.Polygon.say.test").get().pkg().ellipsisSeparatedPkgPath());
     }
 
     @Test
     public void ES6MethodParamPackageName() throws Exception {
         final String code = "class Polygon { say(x) {} }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("src/cupcake/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/src/cupcake/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().path().equals("/src/cupcake"));
-        assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().name().equals("cupcake"));
-        assertTrue(generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().ellipsisSeparatedPkgPath().equals("src.cupcake"));
+        assertEquals("/src/cupcake", generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().path());
+        assertEquals("cupcake", generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().name());
+        assertEquals("src.cupcake", generatedSourceModel.getComponent("src.cupcake.Polygon.say.x").get().pkg().ellipsisSeparatedPkgPath());
     }
 
     @Test
     public void ES6MethodPackageName() throws Exception {
         final String code = "class Polygon { constructor() {  new React().test(); } }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        final ProjectFiles rawData = new ProjectFiles();
         rawData.insertFile(new ProjectFile("/github/polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().path().equals("/github"));
-        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().name().equals("github"));
-        assertTrue(generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().ellipsisSeparatedPkgPath().equals("github"));
+        assertEquals("/github", generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().path());
+        assertEquals("github", generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().name());
+        assertEquals("github", generatedSourceModel.getComponent("github.Polygon.constructor").get().pkg().ellipsisSeparatedPkgPath());
     }
 }

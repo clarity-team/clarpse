@@ -8,6 +8,7 @@ import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -18,35 +19,35 @@ public class TypeExtensionReferenceTest {
     @Test
     public void testIfParseClassHasCorrectExtendsAttr() throws Exception {
         final String code = "class Shape {} \n class Polygon extends Shape { }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("polygon.js", code));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        final ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/polygon.js", code));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
-                .size() == 1);
+        assertEquals(1, generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                .size());
         // assert the component being extended is the Shape class
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
-                .get(0).invokedComponent().equals("Shape"));
+        assertEquals("Shape", generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                .get(0).invokedComponent());
     }
 
     @Test
     public void testIfParseClassHasCorrectExtendsAttrComplex() throws Exception {
         final String codea = "export default class Shape { }";
         final String codeb = "import {Shape as Shape} from 'test/shape' \n class Polygon extends Shape { }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        final ProjectFiles rawData = new ProjectFiles();
         rawData.insertFile(new ProjectFile("/test/shape.js", codea));
-        rawData.insertFile(new ProjectFile("polygon.js", codeb));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        rawData.insertFile(new ProjectFile("/polygon.js", codeb));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
-                .size() == 1);
+        assertEquals(1, generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                .size());
         // assert the component being extended is the Shape class
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
-                .get(0).invokedComponent().equals("test.Shape"));
+        assertEquals("test.Shape", generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                .get(0).invokedComponent());
     }
 
 
@@ -54,18 +55,18 @@ public class TypeExtensionReferenceTest {
     public void testIfParseClassHasCorrectExtendsAttrComplexv2() throws Exception {
         final String codea = "export default shape = class Shape { }";
         final String codeb = "import {shape as Shape} from 'test/shape' \n class Polygon extends Shape { }";
-        final ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
+        final ProjectFiles rawData = new ProjectFiles();
         rawData.insertFile(new ProjectFile("/test/shape.js", codea));
-        rawData.insertFile(new ProjectFile("polygon.js", codeb));
-        final ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        rawData.insertFile(new ProjectFile("/polygon.js", codeb));
+        final ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         // assert the Polygon class component has one type extension component
         // invocation
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
-                .size() == 1);
+        assertEquals(1, generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                .size());
         // assert the component being extended is the Shape class
-        assertTrue(generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
-                .get(0).invokedComponent().equals("test.shape"));
+        assertEquals("test.shape", generatedSourceModel.getComponent("Polygon").get().references(OOPSourceModelConstants.TypeReferences.EXTENSION)
+                .get(0).invokedComponent());
     }
 
 }

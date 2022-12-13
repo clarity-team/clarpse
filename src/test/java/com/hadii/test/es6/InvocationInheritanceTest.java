@@ -21,10 +21,10 @@ public class InvocationInheritanceTest {
         final String codeA = "let polygon = class Polygon {} \n export default polygon;";
         final String codeB = "import Muffin from './../shapes/polygon'; \n class Cake { constructor() { new Muffin();" +
                 " } }";
-        ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
-        rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
-        ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/shapes/polygon.js", codeA));
+        rawData.insertFile(new ProjectFile("/com/types/cake.js", codeB));
+        ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake").get().references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));
@@ -36,10 +36,10 @@ public class InvocationInheritanceTest {
         final String codeA = "let polygon = class Polygon {} \n export default polygon;";
         final String codeB = "import Muffin from './../shapes/polygon'; \n class Cake { constructor() { new Muffin();" +
                 " } }";
-        ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
-        rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
-        ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/shapes/polygon.js", codeA));
+        rawData.insertFile(new ProjectFile("/com/types/cake.js", codeB));
+        ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake.constructor").get()
                                        .references(OOPSourceModelConstants.TypeReferences.SIMPLE)
@@ -52,10 +52,10 @@ public class InvocationInheritanceTest {
         final String codeA = "let polygon = class Polygon {} \n export default polygon;";
         final String codeB = "import Muffin from './../shapes/polygon'; \n class Cake { constructor() { this.muffin =" +
                 " new Muffin(); } }";
-        ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
-        rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
-        ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/shapes/polygon.js", codeA));
+        rawData.insertFile(new ProjectFile("/com/types/cake.js", codeB));
+        ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake.muffin").get().references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));
@@ -67,10 +67,10 @@ public class InvocationInheritanceTest {
         final String codeA = "let polygon = class Polygon {} \n export default polygon;";
         final String codeB = "import Muffin from './../shapes/polygon'; \n class Cake { constructor() { this.muffin =" +
                 " new Muffin(); } }";
-        ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
-        rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
-        ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/shapes/polygon.js", codeA));
+        rawData.insertFile(new ProjectFile("/com/types/cake.js", codeB));
+        ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake.constructor").get()
                                        .references(OOPSourceModelConstants.TypeReferences.SIMPLE).size() == 1);
@@ -81,10 +81,10 @@ public class InvocationInheritanceTest {
         final String codeA = "let polygon = class Polygon {} \n export default polygon;";
         final String codeB = "import Muffin from './../shapes/polygon'; \n class Cake { test() { var muffin = new " +
                 "Muffin(); } }";
-        ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
-        rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
-        ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/shapes/polygon.js", codeA));
+        rawData.insertFile(new ProjectFile("/com/types/cake.js", codeB));
+        ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake.test").get().references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));
@@ -95,10 +95,10 @@ public class InvocationInheritanceTest {
         final String codeA = "let polygon = class Polygon {} \n export default polygon;";
         final String codeB = "import Muffin from './../shapes/polygon'; \n class Cake { test() { var muffin = new " +
                 "Muffin(); } }";
-        ProjectFiles rawData = new ProjectFiles(Lang.JAVASCRIPT);
-        rawData.insertFile(new ProjectFile("com/shapes/polygon.js", codeA));
-        rawData.insertFile(new ProjectFile("com/types/cake.js", codeB));
-        ClarpseProject parseService = new ClarpseProject(rawData.files(), rawData.lang());
+        ProjectFiles rawData = new ProjectFiles();
+        rawData.insertFile(new ProjectFile("/com/shapes/polygon.js", codeA));
+        rawData.insertFile(new ProjectFile("/com/types/cake.js", codeB));
+        ClarpseProject parseService = new ClarpseProject(rawData, Lang.JAVASCRIPT);
         OOPSourceCodeModel generatedSourceModel = parseService.result().model();
         assertTrue(generatedSourceModel.getComponent("com.types.Cake").get().references(OOPSourceModelConstants.TypeReferences.SIMPLE)
                                        .get(0).invokedComponent().equals("com.shapes.polygon"));

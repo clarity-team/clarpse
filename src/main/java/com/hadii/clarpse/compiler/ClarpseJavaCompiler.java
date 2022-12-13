@@ -32,13 +32,13 @@ public class ClarpseJavaCompiler implements ClarpseCompiler {
     public CompileResult compile(final ProjectFiles projectFiles) throws CompileException {
         final OOPSourceCodeModel srcModel = new OOPSourceCodeModel();
         final Set<ProjectFile> compileFailures = new HashSet<>();
-        if (projectFiles.files().size() > 0) {
+        if (projectFiles.size() > 0) {
             String persistDir = null;
             try {
                 persistDir = projectFiles.projectDir();
                 final CombinedTypeSolver typeSolver = setupTypeSolver(persistDir);
                 final ParserConfiguration parserConfiguration = setupParserConfig(typeSolver);
-                for (final ProjectFile file : projectFiles.files()) {
+                for (final ProjectFile file : projectFiles.files(Lang.JAVA)) {
                     try {
                         final CompilationUnit cu = new JavaParser(parserConfiguration)
                                 .parse(ParseStart.COMPILATION_UNIT,

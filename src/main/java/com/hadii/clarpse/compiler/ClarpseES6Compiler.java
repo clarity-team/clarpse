@@ -387,7 +387,7 @@ public class ClarpseES6Compiler implements ClarpseCompiler {
 
     @Override
     public CompileResult compile(final ProjectFiles projectFiles) {
-        final Collection<ProjectFile> files = projectFiles.files();
+        final Collection<ProjectFile> files = projectFiles.files(Lang.JAVASCRIPT);
         return compileFiles(files);
     }
 
