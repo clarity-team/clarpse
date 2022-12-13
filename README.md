@@ -40,9 +40,9 @@ final String code = " package com.foo;  "
 		       +  "     SampleClassB.fooMethod();
 		       +  "     }                                                                      "
 		       +  " }                                                                          ";;
-final ProjectFiles projectFiles = new ProjectFiles(Lang.JAVA);
+final ProjectFiles projectFiles = new ProjectFiles();
 projectFiles.insertFile(new ProjectFile("SampleClass.java", code));
-final ClarpseProject project = new ClarpseProject(projectFiles);
+final ClarpseProject project = new ClarpseProject(projectFiles, Lang.JAVA);
 CompileResult compileResult = project.result();
 // Get the code model
 OOPSourceCodeModel codeModel = compileResult.model();
