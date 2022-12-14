@@ -137,6 +137,47 @@ public class ProjectFilesTest {
     }
 
     @Test
+    public void testGetAllFiles() {
+        ProjectFiles pfs = new ProjectFiles();
+        pfs.insertFile(new ProjectFile("/test.java", "{}"));
+        pfs.insertFile(new ProjectFile("/tester.go", "{}"));
+        assertEquals(2, pfs.files().size());
+    }
+
+    @Test
+    public void testGetAllGoFiles() {
+        ProjectFiles pfs = new ProjectFiles();
+        pfs.insertFile(new ProjectFile("/test.java", "{}"));
+        pfs.insertFile(new ProjectFile("/tester.go", "{}"));
+        assertEquals(1, pfs.files(Lang.GOLANG).size());
+    }
+
+    @Test
+    public void testGetAllFilesForNonExistentLang() {
+        ProjectFiles pfs = new ProjectFiles();
+        pfs.insertFile(new ProjectFile("/test.java", "{}"));
+        pfs.insertFile(new ProjectFile("/tester.go", "{}"));
+        assertEquals(0, pfs.files(Lang.JAVASCRIPT).size());
+    }
+
+    @Test
+    public void testGetAllJavaFiles() {
+        ProjectFiles pfs = new ProjectFiles();
+        pfs.insertFile(new ProjectFile("/test.java", "{}"));
+        pfs.insertFile(new ProjectFile("/tester.go", "{}"));
+        assertEquals(1, pfs.files(Lang.JAVA).size());
+    }
+
+    @Test
+    public void testGetAllJSFiles() {
+        ProjectFiles pfs = new ProjectFiles();
+        pfs.insertFile(new ProjectFile("/test.js", "{}"));
+        pfs.insertFile(new ProjectFile("/tester.go", "{}"));
+        assertEquals(1, pfs.files(Lang.JAVASCRIPT).size());
+    }
+
+
+    @Test
     public void testEmptyProjectFilesSize() {
         ProjectFiles pfs = new ProjectFiles();
         assertEquals(0, pfs.size());

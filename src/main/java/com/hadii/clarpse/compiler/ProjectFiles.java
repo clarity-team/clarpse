@@ -173,6 +173,12 @@ public class ProjectFiles {
         return this.langToFilesMap.getOrDefault(language, new ArrayList<>());
     }
 
+    public final Collection<ProjectFile> files() {
+        Set<ProjectFile> allFiles = new HashSet<>();
+        this.langToFilesMap.forEach((lang, files) -> allFiles.addAll(files));
+        return allFiles;
+    }
+
     public String projectDir() {
         if (this.projectDir != null && !this.projectDir.isEmpty()) {
             return this.projectDir;
