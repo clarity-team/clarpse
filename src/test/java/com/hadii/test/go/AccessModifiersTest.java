@@ -80,6 +80,6 @@ public class AccessModifiersTest extends GoTestBase {
         projectFiles.insertFile(new ProjectFile("/person.go", code));
         final ClarpseProject parseService = new ClarpseProject(projectFiles, Lang.GOLANG);
         final OOPSourceCodeModel generatedSourceModel = parseService.result().model();
-        assertTrue(generatedSourceModel.getComponent("main.person.x() : (int)").get().modifiers().contains("public"));
+        assertTrue(generatedSourceModel.getComponent("main.person.X() : (int)").get().modifiers().contains("public"));
     }
 }
