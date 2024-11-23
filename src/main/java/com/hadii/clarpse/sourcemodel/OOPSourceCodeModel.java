@@ -17,11 +17,14 @@ public class OOPSourceCodeModel implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = LogManager.getLogger(OOPSourceCodeModel.class);
+    private Map<String, Component> components = new HashMap<>();
 
     public OOPSourceCodeModel() {
     }
 
-    private final Map<String, Component> components = new HashMap<>();
+    public OOPSourceCodeModel(Map<String, Component> components) {
+        this.components = new HashMap<String, Component>(components);
+    }
 
     private Map<String, Component> getComponents() {
         return components;
@@ -61,5 +64,27 @@ public class OOPSourceCodeModel implements Serializable {
 
     public Stream<Component> components() {
         return components.values().stream();
+    }
+
+    public OOPSourceCodeModel copy() {
+        return new OOPSourceCodeModel(this.components);
+    }
+
+    /**
+     * Fetches the current component's parent base component if it exists. This may
+     * not be the component's direct parent.
+     */
+    public Component parentBaseCmp(String cmpUniqueName) throws IllegalArgumentException {
+        String currParentClassName = cmpUniqueName;
+        Optional<Component> parent;
+        for (parent = this.getComponent(currParentClassName); parent.isPresent()
+                && !parent.get().componentType().isBaseComponent(); parent = this.getComponent(currParentClassName)) {
+            currParentClassName = parent.get().parentUniqueName();
+        }
+        if (parent.isPresent()) {
+            return parent.get();
+        } else {
+            throw new IllegalArgumentException("No parent exists for given component: " + cmpUniqueName);
+        }
     }
 }
