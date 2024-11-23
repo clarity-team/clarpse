@@ -1,5 +1,10 @@
 package com.hadii.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+
+import org.junit.Test;
+
 import com.hadii.clarpse.CommonDir;
 import com.hadii.clarpse.ResolvedRelativePath;
 import com.hadii.clarpse.compiler.ProjectFile;
@@ -7,13 +12,6 @@ import com.hadii.clarpse.reference.SimpleTypeReference;
 import com.hadii.clarpse.sourcemodel.Component;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
 import com.hadii.clarpse.sourcemodel.Package;
-import org.junit.Test;
-
-import java.io.FileNotFoundException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 public class UtilsTest {
 
@@ -121,7 +119,7 @@ public class UtilsTest {
     public void testCommonDirWithEmptyDirProvided() throws Exception {
         String dirA = "";
         String dirB = "/test/src/cuppy";
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             new CommonDir(dirA, dirB).value();
         });
     }
@@ -134,7 +132,7 @@ public class UtilsTest {
 
     @Test
     public void testProjectFileThrowsOnAbsolutePath() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             new ProjectFile("../src/test", "");
         });
     }

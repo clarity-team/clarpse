@@ -3,7 +3,6 @@ package com.hadii.test.go;
 import com.hadii.clarpse.compiler.ClarpseProject;
 import com.hadii.clarpse.compiler.Lang;
 import com.hadii.clarpse.compiler.ProjectFile;
-import com.hadii.clarpse.compiler.ProjectFiles;
 import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import org.junit.Test;
 
