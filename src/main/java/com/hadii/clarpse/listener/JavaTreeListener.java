@@ -36,7 +36,6 @@ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclar
 import com.github.javaparser.symbolsolver.model.resolution.SymbolReference;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.hadii.clarpse.compiler.ProjectFile;
-import com.hadii.clarpse.reference.ComponentReference;
 import com.hadii.clarpse.reference.SimpleTypeReference;
 import com.hadii.clarpse.reference.TypeExtensionReference;
 import com.hadii.clarpse.reference.TypeImplementationReference;
