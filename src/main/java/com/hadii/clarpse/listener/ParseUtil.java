@@ -8,6 +8,8 @@ import com.hadii.clarpse.sourcemodel.OOPSourceCodeModel;
 import com.hadii.clarpse.sourcemodel.OOPSourceModelConstants;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.Stack;
  * Contains utility operations shared amongst Clarpse Compilers.
  */
 public class ParseUtil {
+
+    private static final Logger LOGGER = LogManager.getLogger(ParseUtil.class);
 
     public static String goLangComments(int componentStartLine, List<String> sourceFile) {
         String comment = "";
@@ -159,5 +163,17 @@ public class ParseUtil {
             }
         }
         return false;
+    }
+
+    public static void insertCmpRef(final Component cmp, ComponentReference cmpRef, Stack<Component> cmpStack) {
+        // prevent self referencing coponents
+        for (Component stackCmp : cmpStack) {
+            if (stackCmp.uniqueName().equals(cmpRef.invokedComponent())) {
+                LOGGER.debug("Found self-reference of " + cmpRef.invokedComponent() + " from cmp " + cmp.uniqueName()
+                        + ", not adding.");
+                return;
+            }
+        }
+        cmp.insertCmpRef(cmpRef);
     }
 }
